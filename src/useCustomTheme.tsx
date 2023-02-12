@@ -1,0 +1,67 @@
+import React, {useState, useEffect, useRef, useCallback} from 'react';
+import { extendTheme } from '@chakra-ui/react'
+import '@fontsource/raleway/400.css'
+import '@fontsource/open-sans/700.css'
+import '@fontsource/inter/700.css'
+import axios from 'axios';
+
+// export const useCustomTheme = (props) => {
+//   const {server} = props;
+
+//   const [primaryColor,setPrimaryColor] = useState("black")
+//   const [secondaryColor,setSecondaryColor] = useState("black")
+//   const [customSettings,setCustomSettings] = useState(null);
+
+//   const fetchCustomTheme = useCallback(async (e) => {
+//     const subdomain = window.location.host.split(".")[0];
+//     try {
+//         await axios
+//         .get(server + `/customtheme?subdomain=${subdomain}`)
+//         .then((response) => {
+//           let r = response.data;
+//           let cSettings = r;
+//           let pColors = typeof r.primaryColor !== "undefined" ? JSON.parse(r.primaryColor) : (
+//             {
+//               hex: "#fefefe",
+//               rgb: 'rgb(100,100,100)'
+//             }
+//           );
+//           let sColors = typeof r.primaryColor !== "undefined" ? JSON.parse(r.secondaryColor) : (
+//             {
+//               hex: "#fefefe",
+//               rgb: 'rgb(100,100,100)'
+//             }
+//           );
+//           setPrimaryColor(pColors.rgb)
+//           setSecondaryColor(sColors.rgb)
+//           setCustomSettings(cSettings)
+//         })
+//     } catch(error) {
+//         console.log(error);
+//     }
+//   },[server])
+//   useEffect(()=>{
+//     fetchCustomTheme()
+//   },[fetchCustomTheme])
+//   return {customSettings,primaryColor,secondaryColor}
+// }
+
+const config = {
+  initialColorMode: 'light',
+  useSystemColorMode: false,
+  fonts: {
+    heading: 'Inter, Open Sans, sans-serif',
+    body: `'Raleway', sans-serif`
+  },
+  styles: {
+    global: {
+      '#main-content': {
+        p: '1px 16px',
+        h: '100vh',
+        marginLeft: ['0','0','275px']
+      }
+    },
+  },
+}
+
+export const theme = extendTheme( config )
