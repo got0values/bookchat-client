@@ -81,7 +81,7 @@ export default function SideNav() {
 
   const NavItem = ({ icon, linkTo, children, ...rest }: NavItemProps) => {
     return (
-      <Link to={linkTo} style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
+      <Link to={linkTo} style={{ textDecoration: 'none' }}>
         <Flex
           align="center"
           p="4"

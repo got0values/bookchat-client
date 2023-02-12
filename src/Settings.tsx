@@ -15,13 +15,11 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 
-interface LoginFormProps {
-  onLogin: (token: string) => void;
+interface SettingsProps {
   server: string;
 }
 
-export default function Settings(props) {
-  const {server} = props;
+export default function Settings({server}: SettingsProps) {
 
   return (
     <>
