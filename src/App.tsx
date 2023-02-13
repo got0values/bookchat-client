@@ -23,12 +23,8 @@ function App() {
 
     const tokenCookie = Cookies.get().token;
 
-    const axiosInstance = axios.create({
-      withCredentials: true
-    })
-
-    await axiosInstance
-      .get(server + "/api/authorize", {
+    await axios
+      .get(server + "/api/user", {
         headers: {
           authorization: tokenCookie
         }
