@@ -12,33 +12,43 @@ import {
   Link,
   Heading,
   useColorModeValue,
+  useToast
 } from "@chakra-ui/react";
 import axios from "axios";
 
-interface LoginFormProps {
-  onLogin: (token: string) => void;
+interface RegisterFormProps {
+  onRegister: (token: string) => void;
   server: string;
 }
 
-const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
+const Register: React.FC<RegisterFormProps> = ({ onRegister, server }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const toast = useToast();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     await axios
-    .post(server + "/api/login", { 
+    .post(server + "/api/register", { 
       email: email, 
       password: password 
     })
     .then((response)=>{
-      onLogin(response.data.token);
+      onRegister(response.data.token);
+      toast({
+        title: 'Account created.',
+        description: "We've created your account.",
+        status: 'success',
+        duration: 9000,
+        isClosable: true
+      })
     })
     .catch(({response})=>{
-      console.log(response?.data)
-      setError(response?.data?.errorMessage)
+      console.log(response.data)
+      setError(response.data.errorMessage)
     })
   };
 
@@ -51,7 +61,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
     >
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align={'center'}>
-          <Heading fontSize={'4xl'}>Sign in to your account</Heading>
+          <Heading fontSize={'4xl'}>Register for an account</Heading>
           <Text fontSize={'lg'} color={'gray.600'}>
             to enjoy all of our cool <Link color={'blue.400'}>features</Link> ✌️
           </Text>
@@ -95,7 +105,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
                 bg: 'blue.500',
               }}
             >
-              Login
+              Register
             </Button>
           </form>
         </Box>
@@ -104,4 +114,4 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
   );
 };
 
-export default Login;
+export default Register;
