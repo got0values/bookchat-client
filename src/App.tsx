@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Route, Routes, useNavigate } from "react-router-dom"
+import { useState, useEffect } from 'react'
+import { Route, Routes, useNavigate, Navigate } from "react-router-dom"
 import {
   Flex,
   Box,
@@ -15,41 +15,82 @@ import axios from "axios";
 
 function App() {
   const server = import.meta.env.VITE_SERVER;
-
   const navigate = useNavigate();
+  const [user,setUser] = useState<User | null>(null);
+
+  interface User {
+    created_at: string;
+    email: string;
+    id: number;
+    library: string | null;
+    password: string;
+    role: string;
+    updated_at: string;
+  }
+
+  interface ProtectedRouteProps {
+    user: User | null;
+    children: JSX.Element;
+  }
+
+  interface Response {
+    data: object
+  }
+
+  const ProtectedRoute = ({user,children}: ProtectedRouteProps) => {
+    const tokenCookie = Cookies.get().token;
+    if (!tokenCookie) {
+      return <Navigate to="/login" replace />
+    }
+    return children;
+  }
+
+  async function getUser() {
+    const tokenCookie = Cookies.get().token;
+    await axios
+    .get(server + "/api/user", {
+      headers: {
+        authorization: tokenCookie
+      }
+    })
+    .then((response)=>{
+      return response;
+    }).then((response)=>{
+      const responseData = response.data;
+      console.log(responseData)
+      if (responseData.success) {
+        setUser(responseData.message);
+      }
+      else {
+        setUser(null);
+      }
+    })
+    .catch(({response})=>{
+      console.log(response.data)
+    })
+  }
 
   async function onLogin(token: string) {
     Cookies.set("token", token);
-
-    const tokenCookie = Cookies.get().token;
-
-    await axios
-      .get(server + "/api/user", {
-        headers: {
-          authorization: tokenCookie
-        }
-      })
-      .then((response)=>{
-        console.log(response.data)
-      })
-      .catch(({response})=>{
-        console.log(response.data)
-      })
-
+    getUser();
     return navigate("/");
   }
 
-  function onRegister(token: string) {
-    console.log(token)
-    return navigate("/");
+  function onLogout(): void {
+    Cookies.remove("token");
+    return navigate("/login");
   }
 
   return (
     <Routes>
       <Route path="/login" element={<Login onLogin={onLogin} server={server} />} />
-      <Route path="/register" element={<Register onRegister={onRegister} server={server} />} />
-      <Route path="/" element={ <SideNav/> } >
-        <Route index element={ <Dashboard server={server} /> } />
+      <Route path="/register" element={<Register onLogin={onLogin} server={server} />} />
+      <Route path="/" element={ 
+        <ProtectedRoute user={user}>
+          <SideNav onLogout={onLogout}/> 
+        </ProtectedRoute>
+      } >
+        <Route index element={ <Dashboard server={server} onLogout={onLogout} /> } />
         <Route path="settings" element={ <Settings server={server} /> } />
       </Route>
     </Routes>

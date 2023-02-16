@@ -10,10 +10,11 @@ import {
   Drawer,
   DrawerContent,
   Text,
-  Heading,
+  Button,
   useDisclosure,
   BoxProps,
   FlexProps,
+  Image
 } from '@chakra-ui/react';
 import {
   FiHome,
@@ -23,6 +24,7 @@ import {
   FiSettings,
   FiMenu,
 } from 'react-icons/fi';
+import logo from './assets/community-book-club-logo3.png';
 import { IconType } from 'react-icons';
 import { ReactText } from 'react';
 
@@ -49,12 +51,17 @@ interface NavItemProps extends FlexProps {
   children: ReactText;
 }
 
-export default function SideNav() {
+interface SideNavProps {
+  onLogout: () => void;
+}
+
+export default function SideNav({onLogout}: SideNavProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
     return (
-      <Box
+      <Flex
+        direction="column"
         bg={useColorModeValue('white', 'gray.900')}
         borderRight="1px"
         borderRightColor={useColorModeValue('gray.200', 'gray.700')}
@@ -62,20 +69,21 @@ export default function SideNav() {
         pos="fixed"
         h="full"
         {...rest}>
-        <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-          <Heading 
-            size="lg"
-          >
-            Community Book Club
-          </Heading>
+        <Flex h="20" alignItems="center" mx={8} my={3} justifyContent="space-between">
+          <Image src={logo}/>
           <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
         </Flex>
-        {LinkItems.map((link) => (
-          <NavItem key={link.name} icon={link.icon} linkTo={link.linkTo}>
-            {link.name}
-          </NavItem>
-        ))}
-      </Box>
+        <Flex direction="column" justify="space-between" h="100%">
+          <Box>
+            {LinkItems.map((link) => (
+              <NavItem key={link.name} icon={link.icon} linkTo={link.linkTo}>
+                {link.name}
+              </NavItem>
+            ))}
+          </Box>
+          <Button onClick={e=>onLogout()}>Logout</Button>
+        </Flex>
+      </Flex>
     );
   };
 
@@ -117,7 +125,7 @@ export default function SideNav() {
       >
         <SidebarContent
           onClose={() => onClose}
-          display={{ base: 'none', md: 'block' }}
+          display={{ base: 'none', md: 'flex' }}
         />
         <Drawer
           autoFocus={false}
@@ -140,7 +148,7 @@ export default function SideNav() {
           bg={useColorModeValue('white', 'gray.900')}
           borderBottomWidth="1px"
           borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
-          justifyContent="flex-start"
+          justifyContent="space-between"
           display={{ base: 'flex', md: 'none' }}
         >
           <IconButton
@@ -149,9 +157,7 @@ export default function SideNav() {
             aria-label="open menu"
             icon={<FiMenu />}
           />
-          <Text fontSize="2xl" ml="8" fontFamily="monospace" fontWeight="bold">
-            Logo
-          </Text>
+          <Image src={logo} maxHeight="50px"/>
         </Flex>
       </Box>
       <Box id="main-content">

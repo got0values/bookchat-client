@@ -17,11 +17,11 @@ import {
 import axios from "axios";
 
 interface RegisterFormProps {
-  onRegister: (token: string) => void;
+  onLogin: (token: string) => void;
   server: string;
 }
 
-const Register: React.FC<RegisterFormProps> = ({ onRegister, server }) => {
+const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -37,7 +37,7 @@ const Register: React.FC<RegisterFormProps> = ({ onRegister, server }) => {
       password: password 
     })
     .then((response)=>{
-      onRegister(response.data.token);
+      onLogin(response.data.token);
       toast({
         title: 'Account created.',
         description: "We've created your account.",

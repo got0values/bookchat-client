@@ -34,7 +34,9 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
       password: password 
     })
     .then((response)=>{
-      onLogin(response.data.token);
+      if (response.data.success) {
+        onLogin(response.data.token);
+      }
     })
     .catch(({response})=>{
       console.log(response?.data)
