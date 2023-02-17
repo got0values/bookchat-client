@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   FormControl, 
   FormLabel, 
@@ -20,6 +20,12 @@ interface SettingsProps {
 }
 
 export default function Settings({server}: SettingsProps) {
+  const user = window.localStorage.getItem("user");
+  useEffect(()=>{
+    if (user) {
+      console.log(JSON.parse(user))
+    }
+  },[])
 
   return (
     <>
