@@ -1,10 +1,5 @@
 import React,{ useState, useEffect } from 'react'
-import { Route, Routes, useNavigate, Navigate } from "react-router-dom"
-import {
-  Flex,
-  Box,
-  Button
-} from "@chakra-ui/react"
+import { Route, Routes, Navigate } from "react-router-dom";
 import Login from './Login';
 import Register from './Register';
 import SideNav from './SideNav';
@@ -18,7 +13,7 @@ interface ProtectedRouteProps {
 
 function App() {
   const server = import.meta.env.VITE_SERVER;
-  const { onLogin, onLogout, user } = useAuth() as AuthContextProps;
+  const { user, onLogin, onLogout } = useAuth() as AuthContextProps;
 
   const ProtectedRoute = ({children}: ProtectedRouteProps) => {
     if (!user) {

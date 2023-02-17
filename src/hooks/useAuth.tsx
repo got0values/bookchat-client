@@ -1,9 +1,10 @@
 import React, {useState,createContext,useContext,useEffect} from 'react';
 import { Route, Routes, useNavigate, Navigate } from "react-router-dom"
+import { useLocalStorage } from './useLocalStorage';
 import Cookies from "js-cookie";
 import axios from "axios";
 
-interface User {
+export interface User {
   created_at: string;
   email: string;
   id: number;
@@ -30,7 +31,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   const server = import.meta.env.VITE_SERVER;
 
   const navigate = useNavigate();
-  const [user,setUser] = useState<User | null>(null);
+  const [user,setUser] = useLocalStorage("user", null);
   
   async function getUser() {
     const tokenCookie = Cookies.get().token;
@@ -62,12 +63,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
 
   async function onLogin(token: string) {
     Cookies.set("token", token);
-    getUser();
+    await getUser();
     return navigate("/");
   }
 
   function onLogout(): void {
     Cookies.remove("token");
+    setUser(null)
     return navigate("/login");
   }
 
