@@ -16,6 +16,7 @@ function App() {
   const { user, onLogin, onLogout } = useAuth() as AuthContextProps;
 
   const ProtectedRoute = ({children}: ProtectedRouteProps) => {
+    console.log(user)
     if (!user) {
       return (
         <Navigate to="./login" replace/>

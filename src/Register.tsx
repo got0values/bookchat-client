@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { 
   FormControl, 
   FormLabel, 
@@ -24,9 +24,21 @@ interface RegisterFormProps {
 const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [error, setError] = useState("");
 
   const toast = useToast();
+
+  function confirmPasswordCheck(text: string) {
+    setConfirmPassword(text)
+    if (text !== password) {
+      setConfirmPasswordError("Password and confirm password do not match")
+    }
+    else {
+      setConfirmPasswordError("")
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,7 +46,8 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
     await axios
     .post(server + "/api/register", { 
       email: email, 
-      password: password 
+      password: password,
+      confirmPassword: confirmPassword
     })
     .then((response)=>{
       onLogin(response.data.token);
@@ -86,6 +99,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </FormControl>
             <FormControl mb={4}>
@@ -95,7 +109,21 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
               />
+            </FormControl>
+            <FormControl mb={4}>
+              <FormLabel htmlFor="confirm-password">Confirm Password:</FormLabel>
+              <Input
+                type="password"
+                id="confirm-password"
+                value={confirmPassword}
+                onChange={(e) => confirmPasswordCheck(e.target.value)}
+                required
+              />
+              <Text color="red" mb={4}>
+                {confirmPasswordError}
+              </Text>
             </FormControl>
             <Button 
               type="submit"

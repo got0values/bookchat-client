@@ -78,6 +78,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </FormControl>
             <FormControl mb={4}>
@@ -87,6 +88,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </FormControl>
             <Button 
