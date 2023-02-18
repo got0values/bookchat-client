@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Link, Outlet } from "react-router-dom"
+import { Link, Outlet, useNavigate } from "react-router-dom"
 import {
   IconButton,
   Box,
@@ -42,7 +42,6 @@ const LinkItems: Array<LinkItemProps> = [
   { name: 'Trending', icon: FiTrendingUp, linkTo: "/" },
   { name: 'Explore', icon: FiCompass, linkTo: "/" },
   { name: 'Favourites', icon: FiStar, linkTo: "/" },
-  { name: 'Settings', icon: FiSettings, linkTo: "/settings" },
 ];
 
 interface SidebarProps extends BoxProps {
@@ -62,6 +61,7 @@ interface SideNavProps {
 export default function SideNav({onLogout}: SideNavProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
+  const navigate = useNavigate();
 
   const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
     return (
@@ -89,12 +89,11 @@ export default function SideNav({onLogout}: SideNavProps) {
           <Flex 
             align="center" 
             justify="space-evenly" 
-            flexWrap="wrap" 
+            flexWrap="wrap"
             w="100%"
           >
             <Button
-              flex="1 1 50%"
-              borderRadius={0}
+              bg="transparent"
               aria-label="toggle color mode"
               onClick={toggleColorMode}
             >
@@ -102,9 +101,15 @@ export default function SideNav({onLogout}: SideNavProps) {
                 as={colorMode === "light" ? BsFillMoonFill : BsFillSunFill}
               />
             </Button>
+            <Button
+              bg="transparent"
+              aria-label="settings"
+              onClick={e=>navigate("/settings")}
+            >
+              <Icon as={FiSettings}/>
+            </Button>
             <Button 
-              flex="1 1 50%"
-              borderRadius={0}
+              bg="transparent"
               aria-label="logout"
               onClick={e=>onLogout()}
             >
