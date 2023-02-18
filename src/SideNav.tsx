@@ -14,7 +14,8 @@ import {
   useDisclosure,
   BoxProps,
   FlexProps,
-  Image
+  Image,
+  useColorMode
 } from '@chakra-ui/react';
 import {
   FiHome,
@@ -24,7 +25,10 @@ import {
   FiSettings,
   FiMenu,
 } from 'react-icons/fi';
+import { BsFillMoonFill, BsFillSunFill } from 'react-icons/bs';
+import { MdLogout } from 'react-icons/md';
 import logo from './assets/community-book-club-logo3.png';
+import logoWhite from './assets/community-book-club-logo3-white.png';
 import { IconType } from 'react-icons';
 import { ReactText } from 'react';
 
@@ -57,6 +61,7 @@ interface SideNavProps {
 
 export default function SideNav({onLogout}: SideNavProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { colorMode, toggleColorMode } = useColorMode();
 
   const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
     return (
@@ -70,7 +75,7 @@ export default function SideNav({onLogout}: SideNavProps) {
         h="full"
         {...rest}>
         <Flex h="20" alignItems="center" mx={8} my={3} justifyContent="space-between">
-          <Image src={logo}/>
+          <Image src={colorMode === "light" ? logo : logoWhite}/>
           <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
         </Flex>
         <Flex direction="column" justify="space-between" h="100%">
@@ -81,7 +86,34 @@ export default function SideNav({onLogout}: SideNavProps) {
               </NavItem>
             ))}
           </Box>
-          <Button onClick={e=>onLogout()}>Logout</Button>
+          <Flex 
+            align="center" 
+            justify="space-evenly" 
+            flexWrap="wrap" 
+            w="100%"
+          >
+            <Button
+              flex="1 1 50%"
+              borderRadius={0}
+              aria-label="toggle color mode"
+              onClick={toggleColorMode}
+            >
+              <Icon 
+                as={colorMode === "light" ? BsFillMoonFill : BsFillSunFill}
+              />
+            </Button>
+            <Button 
+              flex="1 1 50%"
+              borderRadius={0}
+              aria-label="logout"
+              onClick={e=>onLogout()}
+            >
+              <Icon 
+                as={MdLogout} 
+                fontSize="20px" 
+              />
+            </Button>
+          </Flex>
         </Flex>
       </Flex>
     );
