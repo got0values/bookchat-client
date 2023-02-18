@@ -27,6 +27,8 @@ import {
 } from 'react-icons/fi';
 import { BsFillMoonFill, BsFillSunFill } from 'react-icons/bs';
 import { MdLogout } from 'react-icons/md';
+import { CgProfile } from 'react-icons/cg';
+import { FaReadme } from 'react-icons/fa';
 import logo from './assets/community-book-club-logo3.png';
 import logoWhite from './assets/community-book-club-logo3-white.png';
 import { IconType } from 'react-icons';
@@ -39,9 +41,9 @@ interface LinkItemProps {
 }
 const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', icon: FiHome, linkTo: "/" },
-  { name: 'Trending', icon: FiTrendingUp, linkTo: "/" },
-  { name: 'Explore', icon: FiCompass, linkTo: "/" },
-  { name: 'Favourites', icon: FiStar, linkTo: "/" },
+  { name: 'Profile', icon: CgProfile, linkTo: "/" },
+  { name: 'Reading Clubs', icon: FaReadme, linkTo: "/" },
+  { name: 'Favorites', icon: FiStar, linkTo: "/" },
 ];
 
 interface SidebarProps extends BoxProps {
