@@ -102,7 +102,7 @@ export default function SideNav({onLogout}: SideNavProps) {
               </Text>
               ) : null}
             </Box>
-            {user && user.role === "user" && user.Library ? (
+            {user.Library ? (
               <Heading 
                 as="h4" 
                 size="xs"
@@ -116,7 +116,7 @@ export default function SideNav({onLogout}: SideNavProps) {
                 size="md"
               />
               <Flex flexDirection="column">
-                <Heading as="h4" size="xs">{user.role === "user" ? user.email : user.Library.name}</Heading>
+                <Heading as="h4" size="xs">{user.email}</Heading>
                 {user.role === "admin" ? (
                   <Text as="span" fontSize="sm">(admin)</Text>
                 ) : null}
