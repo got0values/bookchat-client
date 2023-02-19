@@ -1,6 +1,6 @@
 import React,{ useState, useEffect } from 'react'
-import { Route, Routes, Navigate } from "react-router-dom";
-import { AuthContextProps, ProtectedRouteProps } from './types/types';
+import { Route, Routes } from "react-router-dom";
+import { AuthContextProps } from './types/types';
 import { ProtectedRoute } from './shared/ProtectedRoute';
 import Login from './Login';
 import Register from './Register';
