@@ -7,20 +7,24 @@ import {
   Text,
   Box,
   Flex,
-  Checkbox,
+  Image,
   Stack,
   Link,
   Heading,
-  useColorModeValue,
+  useColorModeValue
 } from "@chakra-ui/react";
+import { LibraryFromSubdomain } from "./utils/getLibraryFromSubdomain";
+import logo from './assets/community-book-club-logo3.png';
+import logoWhite from './assets/community-book-club-logo3-white.png';
 import axios from "axios";
 
 interface LoginFormProps {
   onLogin: (token: string) => void;
   server: string;
+  libraryFromSubdomain: LibraryFromSubdomain | null;
 }
 
-const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
+const Login: React.FC<LoginFormProps> = ({ onLogin, server, libraryFromSubdomain }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -53,6 +57,12 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
     >
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align={'center'}>
+          <Stack align="center">
+            {libraryFromSubdomain ? (
+              <Text>{libraryFromSubdomain.name}</Text>
+            ): null}
+            <Image src={useColorModeValue(logo,logoWhite)} maxH="75px"/>
+          </Stack>
           <Heading fontSize={'4xl'}>Sign in to your account</Heading>
           <Text fontSize={'lg'} color={'gray.600'}>
             to enjoy all of our cool <Link color={'blue.400'}>features</Link> ✌️

@@ -5,6 +5,7 @@ import Register from './Register';
 import SideNav from './SideNav';
 import Dashboard from './Dashboard';
 import Settings from './Settings';
+import { getLibraryFromSubdomain } from './utils/getLibraryFromSubdomain';
 import { useAuth, AuthContextProps } from './hooks/useAuth';
 
 interface ProtectedRouteProps {
@@ -14,6 +15,8 @@ interface ProtectedRouteProps {
 function App() {
   const server = import.meta.env.VITE_SERVER;
   const { user, onLogin, onLogout } = useAuth() as AuthContextProps;
+  const subdomain = window.location.hostname.split(".")[0];
+  const {libraryFromSubdomain} = getLibraryFromSubdomain({subdomain,server});
 
   const ProtectedRoute = ({children}: ProtectedRouteProps) => {
     console.log(user)
@@ -27,8 +30,8 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/login" element={<Login onLogin={onLogin} server={server} />} />
-      <Route path="/register" element={<Register onLogin={onLogin} server={server} />} />
+      <Route path="/login" element={<Login onLogin={onLogin} server={server} libraryFromSubdomain={libraryFromSubdomain} />} />
+      <Route path="/register" element={<Register onLogin={onLogin} server={server} libraryFromSubdomain={libraryFromSubdomain} />} />
       <Route path="/" element={ 
         <ProtectedRoute>
           <SideNav onLogout={onLogout}/>

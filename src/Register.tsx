@@ -7,21 +7,25 @@ import {
   Text,
   Box,
   Flex,
-  Checkbox,
+  Image,
   Stack,
   Link,
   Heading,
   useColorModeValue,
   useToast
 } from "@chakra-ui/react";
+import { LibraryFromSubdomain } from "./utils/getLibraryFromSubdomain";
+import logo from './assets/community-book-club-logo3.png';
+import logoWhite from './assets/community-book-club-logo3-white.png';
 import axios from "axios";
 
 interface RegisterFormProps {
   onLogin: (token: string) => void;
   server: string;
+  libraryFromSubdomain: LibraryFromSubdomain | null;
 }
 
-const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
+const Register: React.FC<RegisterFormProps> = ({ onLogin, server, libraryFromSubdomain }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -47,7 +51,8 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
     .post(server + "/api/register", { 
       email: email, 
       password: password,
-      confirmPassword: confirmPassword
+      confirmPassword: confirmPassword,
+      libraryId: libraryFromSubdomain.id
     })
     .then((response)=>{
       onLogin(response.data.token);
@@ -73,6 +78,12 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
       bg={useColorModeValue('gray.50', 'gray.800')}
     >
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
+        <Stack align="center">
+          {libraryFromSubdomain ? (
+            <Text>{libraryFromSubdomain.name}</Text>
+          ): null}
+          <Image src={useColorModeValue(logo,logoWhite)} maxH="75px"/>
+        </Stack>
         <Stack align={'center'}>
           <Heading fontSize={'4xl'}>Register for an account</Heading>
           <Text fontSize={'lg'} color={'gray.600'}>
