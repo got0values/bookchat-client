@@ -1,6 +1,7 @@
 import React,{ useState, useEffect } from 'react'
 import { Route, Routes, Navigate } from "react-router-dom";
 import { AuthContextProps, ProtectedRouteProps } from './types/types';
+import { ProtectedRoute } from './shared/ProtectedRoute';
 import Login from './Login';
 import Register from './Register';
 import SideNav from './SideNav';
@@ -12,19 +13,9 @@ import { useAuth } from './hooks/useAuth';
 
 function App() {
   const server = import.meta.env.VITE_SERVER;
-  const { user, onLogin, onLogout } = useAuth() as AuthContextProps;
+  const { onLogin, onLogout } = useAuth() as AuthContextProps;
   const subdomain = window.location.hostname.split(".")[0];
   const {libraryFromSubdomain} = getLibraryFromSubdomain({subdomain,server});
-
-  const ProtectedRoute = ({children}: ProtectedRouteProps) => {
-    console.log(user)
-    if (!user) {
-      return (
-        <Navigate to="./login" replace/>
-      )
-    }
-    return children;
-  }
 
   return (
     <Routes>

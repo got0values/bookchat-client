@@ -1,4 +1,4 @@
-import React, {useState,createContext,useContext,useEffect} from 'react';
+import React, {useState,createContext,useContext,useEffect,useCallback} from 'react';
 import { Route, Routes, useNavigate, Navigate } from "react-router-dom"
 import { User, AuthProviderProps, AuthContextProps } from '../types/types';
 import { useLocalStorage } from './useLocalStorage';
@@ -37,10 +37,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     })
   }
 
-  useEffect(()=>{
-    getUser();
-  },[])
-
   async function onLogin(token: string) {
     Cookies.set("token", token);
     await getUser();
@@ -54,7 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, getUser, onLogin, onLogout}}>
+    <AuthContext.Provider value={{ user, onLogin, onLogout}}>
       {children}
     </AuthContext.Provider>
   )

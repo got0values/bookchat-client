@@ -33,7 +33,6 @@ export interface AuthProviderProps {
 
 export interface AuthContextProps {
   user: User;
-  getUser: ()=>void;
   onLogin: (token: string) => Promise<void>;
   onLogout: ()=>void;
 }
