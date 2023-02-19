@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { LoginFormProps } from "./types/types";
 import { 
   FormControl, 
   FormLabel, 
@@ -13,16 +14,10 @@ import {
   Heading,
   useColorModeValue
 } from "@chakra-ui/react";
-import { LibraryFromSubdomain } from "./utils/getLibraryFromSubdomain";
 import logo from './assets/community-book-club-logo3.png';
 import logoWhite from './assets/community-book-club-logo3-white.png';
 import axios from "axios";
 
-interface LoginFormProps {
-  onLogin: (token: string) => void;
-  server: string;
-  libraryFromSubdomain: LibraryFromSubdomain | null;
-}
 
 const Login: React.FC<LoginFormProps> = ({ onLogin, server, libraryFromSubdomain }) => {
   const [email, setEmail] = useState("");

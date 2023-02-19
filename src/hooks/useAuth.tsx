@@ -5,7 +5,7 @@ import { useLocalStorage } from './useLocalStorage';
 import Cookies from "js-cookie";
 import axios from "axios";
 
-const AuthContext = createContext<AuthContextProps | null>(null);
+const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   const server = import.meta.env.VITE_SERVER;

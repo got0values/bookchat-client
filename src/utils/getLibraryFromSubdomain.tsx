@@ -1,19 +1,10 @@
 import React, {useState,useEffect} from 'react';
+import { Library, LibraryFromSubdomainArgs } from '../types/types';
 import axios from "axios";
 
-export interface LibraryFromSubdomain {
-  name: string;
-  id: number;
-  logo?: string;
-}
 
-type LibraryFromSubdomainArgs = {
-  subdomain: string
-  server: string
-}
-
-export const getLibraryFromSubdomain = ({subdomain,server}: LibraryFromSubdomainArgs): {libraryFromSubdomain: LibraryFromSubdomain | null} => {
-  const [library,setLibrary] = useState<LibraryFromSubdomain | null>(null);
+export const getLibraryFromSubdomain = ({subdomain,server}: LibraryFromSubdomainArgs): {libraryFromSubdomain: Library} => {
+  const [library,setLibrary] = useState<Library>({} as Library);
 
   const getLibrary = async () => {
     await axios

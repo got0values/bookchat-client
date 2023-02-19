@@ -3,6 +3,7 @@ export interface SideNavProps {
   onLogout: () => void;
 }
 
+
 //User
 export interface User {
   created_at: string;
@@ -12,8 +13,18 @@ export interface User {
   password: string;
   role: string;
   updated_at: string;
+  Library: Library;
 }
 
+
+//Library
+export interface Library {
+  id?: number;
+  name: string;
+  subdomain?: string;
+  version?: string;
+  logo?: string;
+}
 
 //Auth
 export interface AuthProviderProps {
@@ -29,6 +40,28 @@ export interface AuthContextProps {
 
 export interface ProtectedRouteProps {
   children: JSX.Element;
+}
+
+
+//LibraryFromSubdomain
+export type LibraryFromSubdomainArgs = {
+  subdomain: string
+  server: string
+}
+
+//Login
+export interface LoginFormProps {
+  onLogin: (token: string) => void;
+  server: string;
+  libraryFromSubdomain: Library;
+}
+
+
+//Register
+export interface RegisterFormProps {
+  onLogin: (token: string) => void;
+  server: string;
+  libraryFromSubdomain: Library;
 }
 
 
