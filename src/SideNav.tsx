@@ -1,6 +1,11 @@
 import React, { ReactNode } from 'react';
 import { Link, Outlet, useNavigate } from "react-router-dom"
+import { SideNavProps } from './types/types';
+import { useAuth } from './hooks/useAuth';
 import {
+  Avatar,
+  Stack,
+  Heading,
   IconButton,
   Box,
   CloseButton,
@@ -25,10 +30,9 @@ import {
   FiSettings,
   FiMenu,
 } from 'react-icons/fi';
-import { BsFillMoonFill, BsFillSunFill } from 'react-icons/bs';
+import { BsFillMoonFill, BsFillSunFill, BsBook } from 'react-icons/bs';
 import { MdLogout } from 'react-icons/md';
 import { CgProfile } from 'react-icons/cg';
-import { FaReadme } from 'react-icons/fa';
 import logo from './assets/community-book-club-logo3.png';
 import logoWhite from './assets/community-book-club-logo3-white.png';
 import { IconType } from 'react-icons';
@@ -39,12 +43,6 @@ interface LinkItemProps {
   linkTo: string;
   icon: IconType;
 }
-const LinkItems: Array<LinkItemProps> = [
-  { name: 'Home', icon: FiHome, linkTo: "/" },
-  { name: 'Profile', icon: CgProfile, linkTo: "/" },
-  { name: 'Reading Clubs', icon: FaReadme, linkTo: "/" },
-  { name: 'Favorites', icon: FiStar, linkTo: "/" },
-];
 
 interface SidebarProps extends BoxProps {
   onClose: () => void;
@@ -56,13 +54,18 @@ interface NavItemProps extends FlexProps {
   children: ReactText;
 }
 
-interface SideNavProps {
-  onLogout: () => void;
-}
+
+const LinkItems: Array<LinkItemProps> = [
+  { name: 'Home', icon: FiHome, linkTo: "/" },
+  { name: 'Profile', icon: CgProfile, linkTo: "/profile" },
+  { name: 'Reading Clubs', icon: BsBook, linkTo: "/" },
+  { name: 'Favorites', icon: FiStar, linkTo: "/" },
+];
 
 export default function SideNav({onLogout}: SideNavProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
@@ -76,8 +79,50 @@ export default function SideNav({onLogout}: SideNavProps) {
         pos="fixed"
         h="full"
         {...rest}>
-        <Flex h="20" alignItems="center" mx={8} my={3} justifyContent="space-between">
-          <Image src={colorMode === "light" ? logo : logoWhite}/>
+        <Flex alignItems="center" mx={8} my={3} justifyContent="space-between">
+          <Stack align="center">
+            <Box position="relative">
+              <Image src={colorMode === "light" ? logo : logoWhite}/>
+              {user && user.role === "admin" && user.Library.version === "free" ? (
+              <Text  
+                fontSize="xs" 
+                position="absolute"
+                bottom="0"
+                right="0"
+                fontWeight="800"
+                px={1}
+                bg="black"
+                color="white"
+                _dark={{
+                  bg: "white",
+                  color: "black"
+                }}
+              >
+                FREE
+              </Text>
+              ) : null}
+            </Box>
+            {user && user.role === "user" && user.Library ? (
+              <Heading 
+                as="h4" 
+                size="xs"
+                textTransform="uppercase"
+              >
+                {user.Library.name}
+              </Heading>
+            ) : null}
+            <Flex align="center" gap={2}>
+              <Avatar
+                size="md"
+              />
+              <Flex flexDirection="column">
+                <Heading as="h4" size="xs">{user.role === "user" ? user.email : user.Library.name}</Heading>
+                {user.role === "admin" ? (
+                  <Text as="span" fontSize="sm">(admin)</Text>
+                ) : null}
+              </Flex>
+            </Flex>
+          </Stack>
           <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
         </Flex>
         <Flex direction="column" justify="space-between" h="100%">

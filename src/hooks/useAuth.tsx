@@ -1,29 +1,9 @@
 import React, {useState,createContext,useContext,useEffect} from 'react';
 import { Route, Routes, useNavigate, Navigate } from "react-router-dom"
+import { User, AuthProviderProps, AuthContextProps } from '../types/types';
 import { useLocalStorage } from './useLocalStorage';
 import Cookies from "js-cookie";
 import axios from "axios";
-
-export interface User {
-  created_at: string;
-  email: string;
-  id: number;
-  library: string | null;
-  password: string;
-  role: string;
-  updated_at: string;
-}
-
-interface AuthProviderProps {
-  children: React.ReactNode;
-}
-
-export interface AuthContextProps {
-  user: User | null;
-  getUser: ()=>void;
-  onLogin: (token: string) => Promise<void>;
-  onLogout: ()=>void;
-}
 
 const AuthContext = createContext<AuthContextProps | null>(null);
 
