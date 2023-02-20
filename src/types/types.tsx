@@ -20,8 +20,15 @@ export interface User {
   role: string;
   updated_at: string;
   Library: Library;
+  Profile: Profile
 }
 
+
+export interface Profile {
+  id: number;
+  user: number;
+  profile_photo: string;
+}
 
 //Library
 export interface Library {
@@ -39,6 +46,7 @@ export interface AuthProviderProps {
 
 export interface AuthContextProps {
   user: User;
+  setUser: (user: User)=>void;
   onLogin: (token: string) => Promise<void>;
   onLogout: ()=>void;
 }

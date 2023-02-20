@@ -5,6 +5,7 @@ import {
   Heading,
   Avatar,
   Stack,
+  HStack,
   Flex,
   Text,
   Image,
@@ -24,10 +25,11 @@ import {
 } from "@chakra-ui/react";
 import { FiFile } from 'react-icons/fi';
 import { useAuth } from './hooks/useAuth';
+import Cookies from "js-cookie";
 import axios from "axios";
 
 export default function Profile({server}: ProfileProps) {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const { 
     isOpen: isOpenProfileModal, 
     onOpen: onOpenProfileModal, 
@@ -51,6 +53,30 @@ export default function Profile({server}: ProfileProps) {
     reader.readAsDataURL(previewImage)
   }
 
+  const [profilePhotoError,setProfilePhotoError] = useState<string>("");
+  async function updateProfilePhoto() {
+    const tokenCookie = Cookies.get().token;
+    await axios
+    .post(server + "/api/updateprofilephoto", 
+    {photo: profileImageBlob},
+    {headers: {
+      authorization: tokenCookie
+    }}
+    )
+    .then((response)=>{
+      console.log(response)
+      if (response.data.success){
+        setProfilePhotoError("")
+        setUser(response.data.message)
+        return;
+      }
+    })
+    .catch(({response})=>{
+      console.log(response?.data)
+      setProfilePhotoError(response?.data?.errorMessage)
+    })
+  }
+
   return (
     <Box>
       <Heading as="h1" size="lg">
@@ -58,7 +84,11 @@ export default function Profile({server}: ProfileProps) {
       </Heading>
       <Stack>
         <Flex align="center">
-          <Avatar onClick={onOpenProfileModal} cursor="pointer"/>
+          <Avatar 
+            onClick={onOpenProfileModal} 
+            cursor="pointer"
+            src={user.Profile.profile_photo ? user.Profile.profile_photo : ""}
+          />
           <Heading as="h2" size="md">
             {user.email}
           </Heading>
@@ -104,9 +134,14 @@ export default function Profile({server}: ProfileProps) {
             />
           </ModalBody>
           <ModalFooter>
-            <Button variant='ghost' mr={3} onClick={onCloseProfileModal}>
-              Save
-            </Button>
+            <HStack>
+              <Text color="red">
+                {profilePhotoError}
+              </Text>
+              <Button variant='ghost' mr={3} onClick={updateProfilePhoto}>
+                Save
+              </Button>
+            </HStack>
           </ModalFooter>
         </ModalContent>
       </Modal>
