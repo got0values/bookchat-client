@@ -112,6 +112,7 @@ export default function SideNav({onLogout}: SideNavProps) {
             <Flex align="center" gap={2}>
               <Avatar
                 size="md"
+                src={user.Profile.profile_photo ? user.Profile.profile_photo : ""}
               />
               <Flex flexDirection="column">
                 <Heading as="h4" size="xs">{user.email}</Heading>

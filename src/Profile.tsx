@@ -43,24 +43,38 @@ export default function Profile({server}: ProfileProps) {
   function photoImageChange(e: HTMLInputEvent) {
     imagePrefiewRef.current.style.display = "block";
     let targetFiles = e.target.files as FileList
-    let previewImage = targetFiles[0];
-    setPreviewImage(URL.createObjectURL(previewImage))
-    const reader = new FileReader();
-    reader.onload = function(readerEvent: Event) {
-      let readerEventTarget = readerEvent.target as FileReader;
-      setProfileImageBlob(readerEventTarget.result)
-    }
-    reader.readAsDataURL(previewImage)
+    let previewImageFile = targetFiles[0];
+    setPreviewImage(URL.createObjectURL(previewImageFile))
+
+    // let blob = previewImageFile.slice(0, previewImageFile.size, "image/png")
+    // let newFile = new File([blob], "newFile.png", {type: "image/png"})
+    // setProfileImageBlob(newFile)
+
+    // const reader = new FileReader();
+    // reader.onload = function(readerEvent: Event) {
+    //   let readerEventTarget = readerEvent.target as FileReader;
+    //   setProfileImageBlob(readerEventTarget.result)
+    // }
+    // reader.readAsDataURL(previewImageFile)
   }
 
   const [profilePhotoError,setProfilePhotoError] = useState<string>("");
   async function updateProfilePhoto() {
     const tokenCookie = Cookies.get().token;
+    const file = profileUploadRef.current.files[0]
+    let blob = file.slice(0,file.size,"image/png")
+    let newFile = new File([blob], file.name, {type: "image/png"})
+    const formData = new FormData();
+    formData.append("photo", newFile)
+    formData.forEach(x=>console.log(x))
+
     await axios
     .post(server + "/api/updateprofilephoto", 
-    {photo: profileImageBlob},
+    formData,
     {headers: {
-      authorization: tokenCookie
+      'authorization': tokenCookie,
+      'content-type': 'multipart/form-data',
+      'content-length': newFile.size
     }}
     )
     .then((response)=>{
