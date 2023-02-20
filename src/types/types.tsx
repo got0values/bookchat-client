@@ -1,3 +1,9 @@
+//Generic
+export interface HTMLInputEvent extends Event {
+  target: HTMLInputElement & EventTarget;
+}
+
+
 //SideNav
 export interface SideNavProps {
   onLogout: () => void;
