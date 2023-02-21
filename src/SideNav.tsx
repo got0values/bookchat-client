@@ -105,18 +105,31 @@ export default function SideNav({onLogout}: SideNavProps) {
                 as="h4" 
                 size="xs"
                 textTransform="uppercase"
+                whiteSpace="break-spaces"
               >
                 {user.Library.name}
               </Heading>
             ) : null}
-            <Flex align="center" gap={2} cursor="pointer" onClick={e=>navigate("./profile")}>
+            <Flex 
+              align="center" 
+              gap={2} 
+              flexWrap="wrap"
+              cursor="pointer" 
+              onClick={e=>navigate("./profile")}
+            >
               <Avatar
                 size="md"
                 src={user.Profile.profile_photo ? user.Profile.profile_photo : ""}
                 border="2px solid gray"
               />
               <Flex flexDirection="column">
-                <Heading as="h4" size="xs">{user.email}</Heading>
+                <Heading 
+                  as="h4" 
+                  size="xs"
+                  overflowWrap="anywhere"
+                >
+                  {user.email}
+                </Heading>
                 {user.role === "admin" ? (
                   <Text as="span" fontSize="sm">(admin)</Text>
                 ) : null}
