@@ -40,7 +40,7 @@ export default function Profile({server}: ProfileProps) {
   const imagePrefiewRef = useRef<HTMLImageElement>({} as HTMLImageElement);
   const [previewImage,setPreviewImage] = useState("");
   const [profileImageFile,setProfileImageFile] = useState<Blob | string | ArrayBuffer | null>(null);
-  function photoImageChange(e: HTMLInputEvent) {
+  function photoImageChange(e: HTMLInputEvent | any) {
     imagePrefiewRef.current.style.display = "block";
     let targetFiles = e.target.files as FileList
     let previewImageFile = targetFiles[0];
