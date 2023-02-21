@@ -68,6 +68,7 @@ export default function Profile({server}: ProfileProps) {
         setProfilePhotoError("")
         setUser(response.data.message)
         onCloseProfileModal();
+        window.location.reload();
         return;
       }
     })
