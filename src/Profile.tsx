@@ -39,46 +39,32 @@ export default function Profile({server}: ProfileProps) {
   const profileUploadRef = useRef<HTMLInputElement>({} as HTMLInputElement);
   const imagePrefiewRef = useRef<HTMLImageElement>({} as HTMLImageElement);
   const [previewImage,setPreviewImage] = useState("");
-  const [profileImageBlob,setProfileImageBlob] = useState<string | ArrayBuffer | null>(null);
+  const [profileImageFile,setProfileImageFile] = useState<Blob | string | ArrayBuffer | null>(null);
   function photoImageChange(e: HTMLInputEvent) {
     imagePrefiewRef.current.style.display = "block";
     let targetFiles = e.target.files as FileList
     let previewImageFile = targetFiles[0];
     setPreviewImage(URL.createObjectURL(previewImageFile))
-
-    // let blob = previewImageFile.slice(0, previewImageFile.size, "image/png")
-    // let newFile = new File([blob], "newFile.png", {type: "image/png"})
-    // setProfileImageBlob(newFile)
-
-    // const reader = new FileReader();
-    // reader.onload = function(readerEvent: Event) {
-    //   let readerEventTarget = readerEvent.target as FileReader;
-    //   setProfileImageBlob(readerEventTarget.result)
-    // }
-    // reader.readAsDataURL(previewImageFile)
+    let blob = previewImageFile.slice(0,previewImageFile.size,"image/png")
+    let newFile = new File([blob], previewImageFile.name, {type: "image/png"})
+    setProfileImageFile(newFile)
   }
 
   const [profilePhotoError,setProfilePhotoError] = useState<string>("");
   async function updateProfilePhoto() {
     const tokenCookie = Cookies.get().token;
-    const file = profileUploadRef.current.files[0]
-    let blob = file.slice(0,file.size,"image/png")
-    let newFile = new File([blob], file.name, {type: "image/png"})
     const formData = new FormData();
-    formData.append("photo", newFile)
-    formData.forEach(x=>console.log(x))
-
+    formData.append("photo", profileImageFile as Blob)
     await axios
     .post(server + "/api/updateprofilephoto", 
     formData,
     {headers: {
       'authorization': tokenCookie,
-      'content-type': 'multipart/form-data',
-      'content-length': newFile.size
+      'content-type': 'multipart/form-data'
     }}
     )
     .then((response)=>{
-      console.log(response)
+      console.log("heyy",response)
       if (response.data.success){
         setProfilePhotoError("")
         setUser(response.data.message)
@@ -87,7 +73,7 @@ export default function Profile({server}: ProfileProps) {
     })
     .catch(({response})=>{
       console.log(response?.data)
-      setProfilePhotoError(response?.data?.errorMessage)
+      setProfilePhotoError(response?.data?.message)
     })
   }
 
