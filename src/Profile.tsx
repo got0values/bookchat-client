@@ -64,10 +64,10 @@ export default function Profile({server}: ProfileProps) {
     }}
     )
     .then((response)=>{
-      console.log("heyy",response)
       if (response.data.success){
         setProfilePhotoError("")
         setUser(response.data.message)
+        onCloseProfileModal();
         return;
       }
     })
@@ -79,15 +79,14 @@ export default function Profile({server}: ProfileProps) {
 
   return (
     <Box>
-      <Heading as="h1" size="lg">
-        Profile
-      </Heading>
       <Stack>
-        <Flex align="center">
+        <Flex align="center" gap={2}>
           <Avatar 
             onClick={onOpenProfileModal} 
+            size="xl"
             cursor="pointer"
             src={user.Profile.profile_photo ? user.Profile.profile_photo : ""}
+            border="2px solid gray"
           />
           <Heading as="h2" size="md">
             {user.email}
@@ -123,15 +122,18 @@ export default function Profile({server}: ProfileProps) {
                 onClick={()=>profileUploadRef.current.click()}
               />
             </InputGroup>
-            <Image 
-              src={previewImage} 
-              objectFit="cover"
-              boxSize="100%" 
-              ref={imagePrefiewRef}
-              p={5}
-              maxW="80%"
-              display="none"
-            />
+            <Flex justify="center" mt={5}>
+              <Image 
+                src={previewImage || user.Profile.profile_photo ? (previewImage ? previewImage : user.Profile.profile_photo) : ""} 
+                objectFit="cover"
+                boxSize="100%" 
+                ref={imagePrefiewRef}
+                p={5}
+                maxW="80%"
+                border="2px solid gray"
+                display={previewImage || user.Profile.profile_photo ? "block" : "none"}
+              />
+            </Flex>
           </ModalBody>
           <ModalFooter>
             <HStack>

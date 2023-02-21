@@ -56,7 +56,7 @@ const config = {
   styles: {
     global: {
       '#main-content': {
-        p: '1px 16px',
+        p: '10px 16px',
         h: '100vh',
         marginLeft: ['0','0','275px']
       }

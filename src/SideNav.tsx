@@ -109,10 +109,11 @@ export default function SideNav({onLogout}: SideNavProps) {
                 {user.Library.name}
               </Heading>
             ) : null}
-            <Flex align="center" gap={2}>
+            <Flex align="center" gap={2} cursor="pointer" onClick={e=>navigate("./profile")}>
               <Avatar
                 size="md"
                 src={user.Profile.profile_photo ? user.Profile.profile_photo : ""}
+                border="2px solid gray"
               />
               <Flex flexDirection="column">
                 <Heading as="h4" size="xs">{user.email}</Heading>
