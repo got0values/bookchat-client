@@ -20,6 +20,11 @@ import {
   BoxProps,
   FlexProps,
   Image,
+  Menu,
+  MenuItem,
+  MenuButton,
+  MenuGroup,
+  MenuList,
   useColorMode
 } from '@chakra-ui/react';
 import {
@@ -113,15 +118,43 @@ export default function SideNav({onLogout}: SideNavProps) {
             <Flex 
               align="center" 
               gap={2} 
-              flexWrap="wrap"
-              cursor="pointer" 
-              onClick={e=>navigate("./profile")}
+              flexWrap="wrap" 
             >
-              <Avatar
-                size="md"
-                src={user.Profile.profile_photo ? user.Profile.profile_photo : ""}
-                border="2px solid gray"
-              />
+              <Menu>
+                <MenuButton 
+                  as={Avatar}
+                  size="md"
+                  src={user.Profile.profile_photo ? user.Profile.profile_photo : ""}
+                  border="2px solid gray"
+                  cursor="pointer"
+                />
+                <MenuList>
+                  <MenuGroup>
+                    <MenuItem>Profile</MenuItem>
+                    <MenuItem
+                      aria-label="toggle color mode"
+                      onClick={toggleColorMode}
+                      icon={colorMode === "light" ? <BsFillMoonFill/> : <BsFillSunFill/>}
+                    >
+                      {colorMode === "light" ? "Dark" : "Light"} Mode
+                    </MenuItem>
+                    <MenuItem
+                      aria-label="settings"
+                      onClick={e=>navigate("/settings")}
+                      icon={<FiSettings/>}
+                    >
+                      Settings
+                    </MenuItem>
+                    <MenuItem
+                      aria-label="logout"
+                      onClick={e=>onLogout()}
+                      icon={<MdLogout/>} 
+                    >
+                     Log out
+                    </MenuItem>
+                  </MenuGroup>
+                </MenuList>
+              </Menu>
               <Flex flexDirection="column">
                 <Heading 
                   as="h4" 
@@ -146,39 +179,6 @@ export default function SideNav({onLogout}: SideNavProps) {
               </NavItem>
             ))}
           </Box>
-          <Flex 
-            align="center" 
-            justify="space-evenly" 
-            flexWrap="wrap"
-            w="100%"
-          >
-            <Button
-              bg="transparent"
-              aria-label="toggle color mode"
-              onClick={toggleColorMode}
-            >
-              <Icon 
-                as={colorMode === "light" ? BsFillMoonFill : BsFillSunFill}
-              />
-            </Button>
-            <Button
-              bg="transparent"
-              aria-label="settings"
-              onClick={e=>navigate("/settings")}
-            >
-              <Icon as={FiSettings}/>
-            </Button>
-            <Button 
-              bg="transparent"
-              aria-label="logout"
-              onClick={e=>onLogout()}
-            >
-              <Icon 
-                as={MdLogout} 
-                fontSize="20px" 
-              />
-            </Button>
-          </Flex>
         </Flex>
       </Flex>
     );
