@@ -68,8 +68,6 @@ export default function Profile({server}: ProfileProps) {
         setProfilePhotoError("")
         setUser(response.data.message)
         onCloseProfileModal();
-        window.location.reload();
-        return;
       }
     })
     .catch(({response})=>{
@@ -105,25 +103,24 @@ export default function Profile({server}: ProfileProps) {
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <InputGroup>
-            <InputLeftElement
-              pointerEvents="none"
-              children={<Icon as={FiFile} />}
+            <Input 
+              type="file" 
+              accept="image/png, image/jpeg"
+              ref={profileUploadRef}
+              isRequired={true} 
+              display="none"
+              onChange={e=>photoImageChange(e)}
             />
-              <Input 
-                type="file" 
-                accept="image/png, image/jpeg"
-                ref={profileUploadRef}
-                isRequired={true} 
-                display="none"
-                onChange={e=>photoImageChange(e)}
-              />
-              <Input
-                placeholder={"Your file ..."}
-                onClick={()=>profileUploadRef.current.click()}
-              />
-            </InputGroup>
-            <Flex justify="center" mt={5}>
+            <Flex 
+              justify="center" 
+              mt={5} 
+              border="2px solid gray"
+              _hover={{
+                cursor: "pointer"
+              }}
+              onClick={()=>profileUploadRef.current.click()}
+            >
+              {previewImage || user.Profile.profile_photo ? (
               <Image 
                 src={previewImage || user.Profile.profile_photo ? (previewImage ? previewImage : user.Profile.profile_photo) : ""} 
                 objectFit="cover"
@@ -131,9 +128,12 @@ export default function Profile({server}: ProfileProps) {
                 ref={imagePrefiewRef}
                 p={5}
                 maxW="80%"
-                border="2px solid gray"
-                display={previewImage || user.Profile.profile_photo ? "block" : "none"}
               />
+              ) : (
+              <Box p="15%">
+              <Icon as={FiFile} />
+              </Box>
+              )}
             </Flex>
           </ModalBody>
           <ModalFooter>

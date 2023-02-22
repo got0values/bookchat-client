@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Link, Outlet, useNavigate } from "react-router-dom"
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom"
 import { SideNavProps } from './types/types';
 import { useAuth } from './hooks/useAuth';
 import {
@@ -186,7 +186,16 @@ export default function SideNav({onLogout}: SideNavProps) {
 
   const NavItem = ({ icon, linkTo, children, ...rest }: NavItemProps) => {
     return (
-      <Link to={linkTo} style={{ textDecoration: 'none' }}>
+      <NavLink
+        to={linkTo} 
+        style={({ isActive }) =>
+              isActive ? (
+                {
+                  textDecoration: "underline"
+                } 
+              ) : undefined
+            }
+      >
         <Flex
           align="center"
           p="4"
@@ -195,8 +204,7 @@ export default function SideNav({onLogout}: SideNavProps) {
           role="group"
           cursor="pointer"
           _hover={{
-            bg: 'cyan.400',
-            color: 'white',
+            color: 'cyan.400'
           }}
           {...rest}>
           {icon && (
@@ -204,14 +212,14 @@ export default function SideNav({onLogout}: SideNavProps) {
               mr="4"
               fontSize="16"
               _groupHover={{
-                color: 'white',
+                color: 'cyan.400'
               }}
               as={icon}
             />
           )}
           {children}
         </Flex>
-      </Link>
+      </NavLink>
     );
   };
 
