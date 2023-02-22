@@ -4,6 +4,7 @@ import {
   Box,
   Heading,
   Avatar,
+  AvatarGroup,
   Stack,
   HStack,
   Flex,
@@ -82,14 +83,27 @@ export default function Profile({server}: ProfileProps) {
         <Flex align="center" gap={2}>
           <Avatar 
             onClick={onOpenProfileModal} 
-            size="xl"
+            size="2xl"
             cursor="pointer"
             src={user.Profile.profile_photo ? user.Profile.profile_photo : ""}
             border="2px solid gray"
           />
-          <Heading as="h2" size="md">
-            {user.email}
-          </Heading>
+          <Flex direction="column" justify="space-between" gap={2}>
+            <Heading as="h2" size="md">
+              {user.email}
+            </Heading>
+            <Box>
+              <Heading as="h5" size="sm">0 friends</Heading>
+            </Box>
+            <Box>
+              <AvatarGroup size="sm" max={3}>
+                <Avatar/>
+                <Avatar/>
+                <Avatar/>
+                <Avatar/>
+              </AvatarGroup>
+            </Box>
+          </Flex>
         </Flex>
       </Stack>
 
