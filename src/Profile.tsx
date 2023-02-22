@@ -22,9 +22,11 @@ import {
   InputGroup,
   InputLeftElement,
   Icon,
-  useDisclosure
+  useDisclosure,
+  useColorModeValue
 } from "@chakra-ui/react";
 import { FiFile } from 'react-icons/fi';
+import { MdEdit } from 'react-icons/md';
 import { useAuth } from './hooks/useAuth';
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -78,34 +80,57 @@ export default function Profile({server}: ProfileProps) {
   }
 
   return (
-    <Box>
-      <Stack>
-        <Flex align="center" gap={2}>
-          <Avatar 
-            onClick={onOpenProfileModal} 
-            size="2xl"
-            cursor="pointer"
-            src={user.Profile.profile_photo ? user.Profile.profile_photo : ""}
-            border="2px solid gray"
-          />
-          <Flex direction="column" justify="space-between" gap={2}>
-            <Heading as="h2" size="md">
-              {`${user.first_name} ${user.last_name}`}
-            </Heading>
-            <Box>
-              <Heading as="h5" size="sm">0 friends</Heading>
-            </Box>
-            <Box>
-              <AvatarGroup size="sm" max={3}>
-                <Avatar/>
-                <Avatar/>
-                <Avatar/>
-                <Avatar/>
-              </AvatarGroup>
-            </Box>
+    <Box className="main-content">
+      <Stack className="well">
+        <Flex align="center" justify="space-between" flexWrap="wrap">
+          <Flex align="center" gap={2}>
+            <Avatar 
+              onClick={onOpenProfileModal} 
+              size="2xl"
+              cursor="pointer"
+              src={user.Profile.profile_photo ? user.Profile.profile_photo : ""}
+              border="2px solid gray"
+            />
+            <Flex direction="column" justify="space-between" gap={2}>
+              <Heading as="h2" size="md">
+                {`${user.first_name} ${user.last_name}`}
+              </Heading>
+              <Box>
+                <Heading as="h5" size="sm">0 friends</Heading>
+              </Box>
+              <Box>
+                <AvatarGroup size="sm" max={3}>
+                  <Avatar/>
+                  <Avatar/>
+                  <Avatar/>
+                  <Avatar/>
+                </AvatarGroup>
+              </Box>
+            </Flex>
           </Flex>
+          <Box m={2}>
+            <Button leftIcon={<MdEdit/>}>
+              Edit profile
+            </Button>
+          </Box>
         </Flex>
       </Stack>
+
+      <HStack flexWrap="wrap" w="100%" align="start">
+        <Stack className="well" flex="1 1 30%">
+          <Text>Age:</Text>
+          <Text>Grade:</Text>
+          <Text>School:</Text>
+          <Text>Gender:</Text>
+        </Stack>
+        <Stack className="well" flex="1 1 65%">
+          <Flex gap={2} align="center">
+            <Text >Status:</Text>
+            <Input type="text" borderRadius="25px" bg={useColorModeValue("gray.200", "gray.500")} />
+            <Button>Submit</Button>
+          </Flex>
+        </Stack>
+      </HStack>
 
       <Modal isOpen={isOpenProfileModal} onClose={onCloseProfileModal}>
         <ModalOverlay />

@@ -10,6 +10,12 @@ export interface SideNavProps {
 }
 
 
+//TopNav
+export interface TopNavProps {
+  onLogout: () => void;
+}
+
+
 //User
 export interface User {
   created_at: string;

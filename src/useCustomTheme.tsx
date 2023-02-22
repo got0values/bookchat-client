@@ -55,10 +55,26 @@ const config = {
   },
   styles: {
     global: {
-      '#main-content': {
-        p: '10px 16px',
-        h: '100vh',
-        marginLeft: ['0','0','275px']
+      '#main': {
+        py: "20px",
+        display: "flex",
+        justifyContent: "center"
+        // h: '100vh',
+        // marginLeft: ['0','0','275px']
+      },
+      '.main-content': {
+        w: "100%",
+        px: "20px",
+        maxW: '1218px'
+      },
+      '.well': {
+        bg: 'gray.100',
+        p: 4,
+        m: '0.5rem!important',
+        borderRadius: 10,
+        _dark: {
+          bg: 'gray.700'
+        }
       }
     },
   },

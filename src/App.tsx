@@ -5,6 +5,7 @@ import { ProtectedRoute } from './shared/ProtectedRoute';
 import Login from './Login';
 import Register from './Register';
 import SideNav from './SideNav';
+import TopNav from './TopNav';
 import Dashboard from './Dashboard';
 import Profile from './Profile';
 import Settings from './Settings';
@@ -23,7 +24,7 @@ function App() {
       <Route path="/register" element={<Register onLogin={onLogin} server={server} libraryFromSubdomain={libraryFromSubdomain} />} />
       <Route path="/" element={ 
         <ProtectedRoute>
-          <SideNav onLogout={onLogout} />
+          <TopNav onLogout={onLogout} />
         </ProtectedRoute>
       } >
         <Route index element={ <Dashboard server={server} /> } />
