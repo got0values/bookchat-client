@@ -13,6 +13,8 @@ export interface SideNavProps {
 //User
 export interface User {
   created_at: string;
+  first_name: string;
+  last_name: string;
   email: string;
   id: number;
   library: string | null;

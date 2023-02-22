@@ -90,7 +90,7 @@ export default function Profile({server}: ProfileProps) {
           />
           <Flex direction="column" justify="space-between" gap={2}>
             <Heading as="h2" size="md">
-              {user.email}
+              {`${user.first_name} ${user.last_name}`}
             </Heading>
             <Box>
               <Heading as="h5" size="sm">0 friends</Heading>

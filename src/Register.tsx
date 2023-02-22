@@ -21,6 +21,8 @@ import axios from "axios";
 
 
 const Register: React.FC<RegisterFormProps> = ({ onLogin, server, libraryFromSubdomain }) => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -44,6 +46,8 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server, libraryFromSub
 
     await axios
     .post(server + "/api/register", { 
+      firstName: firstName,
+      lastName: lastName,
       email: email, 
       password: password,
       confirmPassword: confirmPassword,
@@ -61,7 +65,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server, libraryFromSub
     })
     .catch(({response})=>{
       console.log(response.data)
-      setError(response.data.errorMessage)
+      setError(response.data.errorMessage ? response.data.errorMessage : response.data.error)
     })
   };
 
@@ -98,31 +102,46 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server, libraryFromSub
                 {error}
               </Text>
             )}
+            <Flex as={FormControl} mb={4} gap={2}>
+              <Input
+                type="text"
+                placeholder="First name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                flex="1 1 auto"
+                required
+              />
+              <Input
+                type="text"
+                placeholder="Last name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                flex="1 1 auto"
+                required
+              />
+            </Flex>
             <FormControl mb={4}>
-              <FormLabel htmlFor="email">Email:</FormLabel>
               <Input
                 type="email"
-                id="email"
+                placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </FormControl>
             <FormControl mb={4}>
-              <FormLabel htmlFor="password">Password:</FormLabel>
               <Input
                 type="password"
-                id="password"
+                placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </FormControl>
             <FormControl mb={4}>
-              <FormLabel htmlFor="confirm-password">Confirm Password:</FormLabel>
               <Input
                 type="password"
-                id="confirm-password"
+                placeholder="Confirm password"
                 value={confirmPassword}
                 onChange={(e) => confirmPasswordCheck(e.target.value)}
                 required
@@ -131,16 +150,18 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server, libraryFromSub
                 {confirmPasswordError}
               </Text>
             </FormControl>
-            <Button 
-              type="submit"
-              bg={'blue.400'}
-              color={'white'}
-              _hover={{
-                bg: 'blue.500',
-              }}
-            >
-              Register
-            </Button>
+            <Box textAlign="center">
+              <Button 
+                type="submit"
+                bg={'blue.400'}
+                color={'white'}
+                _hover={{
+                  bg: 'blue.500',
+                }}
+              >
+                Register
+              </Button>
+            </Box>
           </form>
         </Box>
       </Stack>

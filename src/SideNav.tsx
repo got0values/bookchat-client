@@ -161,7 +161,7 @@ export default function SideNav({onLogout}: SideNavProps) {
                   size="xs"
                   overflowWrap="anywhere"
                 >
-                  {user.email}
+                  {`${user.first_name} ${user.last_name}`}
                 </Heading>
                 {user.role === "admin" ? (
                   <Text as="span" fontSize="sm">(admin)</Text>

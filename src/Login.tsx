@@ -60,7 +60,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server, libraryFromSubdomain
           </Stack>
           <Heading fontSize={'4xl'}>Sign in to your account</Heading>
           <Text fontSize={'lg'} color={'gray.600'}>
-            to enjoy all of our cool <Link color={'blue.400'}>features</Link> ✌️
+            or create one <Link href="/register" color={'blue.400'}>Register</Link>
           </Text>
         </Stack>
         <Box
