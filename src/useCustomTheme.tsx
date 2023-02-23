@@ -51,7 +51,7 @@ const config = {
   useSystemColorMode: false,
   fonts: {
     heading: 'Inter, Open Sans, sans-serif',
-    body: `'Raleway', sans-serif`
+    body: 'Roboto, Raleway, sans-serif'
   },
   styles: {
     global: {
