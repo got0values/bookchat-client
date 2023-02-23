@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { LoginFormProps } from "./types/types";
 import { 
   FormControl, 
@@ -17,6 +18,7 @@ import {
 import logo from './assets/community-book-club-logo3.png';
 import logoWhite from './assets/community-book-club-logo3-white.png';
 import { getLibraryFromSubdomain } from './utils/getLibraryFromSubdomain';
+import { useAuth } from "./hooks/useAuth";
 import axios from "axios";
 
 
@@ -24,6 +26,14 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(()=>{
+    if (user) {
+      navigate("/");
+    }
+  },[])
 
   const subdomain = window.location.hostname.split(".")[0];
   const {libraryFromSubdomain} = getLibraryFromSubdomain({subdomain,server});
