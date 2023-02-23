@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
 import { TopNavProps } from './types/types';
 import { useAuth } from './hooks/useAuth';
 import {
@@ -7,7 +7,6 @@ import {
   Flex,
   Avatar,
   HStack,
-  Text,
   Image,
   IconButton,
   Button,
@@ -27,8 +26,6 @@ import { GiHamburgerMenu } from 'react-icons/gi';
 import { MdClose, MdLogout } from 'react-icons/md';
 import { BsFillMoonFill, BsFillSunFill } from 'react-icons/bs';
 import { FiSettings } from 'react-icons/fi';
-import logo from './assets/community-book-club-logo3.png';
-import logoWhite from './assets/community-book-club-logo3-white.png';
 import logoIcon from './assets/community-book-club-logo-logo-only.png';
 import logoIconWhite from './assets/community-book-club-logo-logo-only-white.png';
 
@@ -38,8 +35,7 @@ interface LinkItemProps {
 }
 
 const LinkItems: Array<LinkItemProps> = [
-  { name: 'Home', linkTo: "/" },
-  { name: 'Profile', linkTo: "/profile" },
+  { name: 'Book Clubs', linkTo: "/" },
   { name: 'Reading Clubs', linkTo: "/" },
   { name: 'Favorites', linkTo: "/" },
 ];
@@ -64,24 +60,26 @@ export default function TopNav({onLogout}: TopNavProps) {
           />
           <HStack spacing={8} alignItems={'center'}>
             <Box position="relative" minW="max-content">
-              <Image 
-                src={colorMode === "light" ? logoIcon : logoIconWhite}
-                h="40px"
-              />
-              {user && user.role === "admin" && user.Library.version === "free" ? (
-              <Badge
-                colorScheme="green"
-                position="absolute"
-                rounded="lg"
-                bottom="0"
-                right="0"
-                cursor="default"
-                backgroundColor="green"
-                color="white"
-              >
-                FREE
-              </Badge>
-              ) : null}
+              <Link to="/">
+                <Image 
+                  src={colorMode === "light" ? logoIcon : logoIconWhite}
+                  h="40px"
+                  onClick={e=>navigate("/")}
+                />
+                {user && user.role === "admin" && user.Library.version === "free" ? (
+                <Badge
+                  colorScheme="green"
+                  position="absolute"
+                  rounded="lg"
+                  bottom="0"
+                  right="0"
+                  backgroundColor="green"
+                  color="white"
+                >
+                  FREE
+                </Badge>
+                ) : null}
+              </Link>
             </Box>
             {user.Library ? (
               <Heading 
@@ -100,7 +98,19 @@ export default function TopNav({onLogout}: TopNavProps) {
               spacing={4}
               display={{ base: 'none', md: 'flex' }}>
               {LinkItems.map((linkItem, index) => (
-                <NavLink key={index} to={linkItem.linkTo}>{linkItem.name}</NavLink>
+                <Box
+                  as={NavLink} 
+                  key={index} 
+                  to={linkItem.linkTo}
+                  p={2}
+                  rounded="md"
+                  _hover={{
+                    bg: useColorModeValue("gray.200","gray.500"),
+                    color: useColorModeValue("black","white")
+                  }}
+                >
+                  {linkItem.name}
+                </Box>
               ))}
             </HStack>
           </HStack>
