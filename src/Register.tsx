@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { RegisterFormProps } from './types/types';
+import { HTMLInputEvent, RegisterFormProps } from './types/types';
 import { 
   FormControl, 
   FormLabel, 
@@ -45,9 +45,8 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
+    setError("")
     await axios
     .post(server + "/api/register", { 
       firstName: firstName,
@@ -100,7 +99,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
           p={8}
         >
           <Stack spacing={4}></Stack>
-          <form onSubmit={handleSubmit}>
+          <Box>
             {error && (
               <Text color="red" mb={4}>
                 {error}
@@ -110,6 +109,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
               <Input
                 type="text"
                 placeholder="First name"
+                id="first-name"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 flex="1 1 auto"
@@ -118,6 +118,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
               <Input
                 type="text"
                 placeholder="Last name"
+                id="last-name"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 flex="1 1 auto"
@@ -156,17 +157,17 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
             </FormControl>
             <Box textAlign="center">
               <Button 
-                type="submit"
                 bg={'blue.400'}
                 color={'white'}
                 _hover={{
                   bg: 'blue.500',
                 }}
+                onClick={e=>handleSubmit()}
               >
                 Register
               </Button>
             </Box>
-          </form>
+          </Box>
         </Box>
       </Stack>
     </Flex>

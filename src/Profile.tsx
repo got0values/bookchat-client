@@ -19,8 +19,9 @@ import {
   ModalBody,
   ModalCloseButton,
   Input,
-  InputGroup,
-  InputLeftElement,
+  Center,
+  Link,
+  Badge,
   Icon,
   useDisclosure,
   useColorModeValue
@@ -117,12 +118,100 @@ export default function Profile({server}: ProfileProps) {
       </Stack>
 
       <HStack flexWrap="wrap" w="100%" align="start">
-        <Stack className="well" flex="1 1 30%">
-          <Text>Age:</Text>
-          <Text>Grade:</Text>
-          <Text>School:</Text>
-          <Text>Gender:</Text>
+
+        <Stack flex="1 1 30%">
+          <Center
+            flexDirection="column"
+            className="profile-card"
+            rounded={'lg'}
+            textAlign={'center'}
+          >
+            <Avatar
+              mb={4}
+              onClick={onOpenProfileModal} 
+              size="xl"
+              cursor="pointer"
+              src={user.Profile.profile_photo ? user.Profile.profile_photo : ""}
+              border="2px solid gray"
+            />
+            <Heading fontSize={'2xl'} fontFamily={'body'}>
+              {`${user.first_name} ${user.last_name}`}
+            </Heading>
+            <Text fontWeight={600} color={'gray.500'} mb={4}>
+              @lindsey_jam3s
+            </Text>
+            <Text
+              textAlign={'center'}
+              color={useColorModeValue('gray.700', 'gray.400')}
+              px={3}>
+              Actress, musician, songwriter and artist. PM for work inquires
+            </Text>
+
+            <HStack align={'center'} justify={'center'} my={6}>
+              <Badge
+                px={2}
+                py={1}
+                bg={useColorModeValue('gray.50', 'gray.800')}
+                fontWeight={'400'}>
+                #art
+              </Badge>
+              <Badge
+                px={2}
+                py={1}
+                bg={useColorModeValue('gray.50', 'gray.800')}
+                fontWeight={'400'}>
+                #photography
+              </Badge>
+            </HStack>
+
+            <Stack>
+              <Box>
+                <Heading as="h5" size="sm">0 friends</Heading>
+              </Box>
+              <Box>
+                <AvatarGroup size="sm" max={5}>
+                  <Avatar/>
+                  <Avatar/>
+                  <Avatar/>
+                  <Avatar/>
+                  <Avatar/>
+                  <Avatar/>
+                  <Avatar/>
+                  <Avatar/>
+                </AvatarGroup>
+              </Box>
+            </Stack>
+
+            <Box mt={8}>
+              <Button
+                flex={1}
+                rounded={'full'}
+                bg={'blue.400'}
+                color={'white'}
+                _hover={{
+                  bg: 'blue.500',
+                }}
+                _focus={{
+                  bg: 'blue.500',
+                }}>
+                Follow
+              </Button>
+              <Box m={2}>
+                <Button leftIcon={<MdEdit/>}>
+                  Edit
+                </Button>
+              </Box>
+            </Box>
+          </Center>
+
+          <Stack className="well">
+            <Text>Age:</Text>
+            <Text>Grade:</Text>
+            <Text>School:</Text>
+            <Text>Gender:</Text>
+          </Stack>
         </Stack>
+
         <Stack className="well" flex="1 1 65%">
           <Flex gap={2} align="center">
             <Text >Status:</Text>
