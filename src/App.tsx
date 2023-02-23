@@ -4,24 +4,21 @@ import { AuthContextProps } from './types/types';
 import { ProtectedRoute } from './shared/ProtectedRoute';
 import Login from './Login';
 import Register from './Register';
-import SideNav from './SideNav';
+// import SideNav from './SideNav';
 import TopNav from './TopNav';
 import Dashboard from './Dashboard';
 import Profile from './Profile';
 import Settings from './Settings';
-import { getLibraryFromSubdomain } from './utils/getLibraryFromSubdomain';
 import { useAuth } from './hooks/useAuth';
 
 function App() {
   const server = import.meta.env.VITE_SERVER;
   const { onLogin, onLogout } = useAuth() as AuthContextProps;
-  const subdomain = window.location.hostname.split(".")[0];
-  const {libraryFromSubdomain} = getLibraryFromSubdomain({subdomain,server});
 
   return (
     <Routes>
-      <Route path="/login" element={<Login onLogin={onLogin} server={server} libraryFromSubdomain={libraryFromSubdomain} />} />
-      <Route path="/register" element={<Register onLogin={onLogin} server={server} libraryFromSubdomain={libraryFromSubdomain} />} />
+      <Route path="/login" element={<Login onLogin={onLogin} server={server} />} />
+      <Route path="/register" element={<Register onLogin={onLogin} server={server} />} />
       <Route path="/" element={ 
         <ProtectedRoute>
           <TopNav onLogout={onLogout} />

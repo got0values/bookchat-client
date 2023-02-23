@@ -32,7 +32,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 
 export default function Profile({server}: ProfileProps) {
-  const { user, setUser } = useAuth();
+  const { user, setUser, getUser } = useAuth();
   const { 
     isOpen: isOpenProfileModal, 
     onOpen: onOpenProfileModal, 
@@ -74,8 +74,8 @@ export default function Profile({server}: ProfileProps) {
       }
     })
     .catch(({response})=>{
-      console.log(response?.data)
-      setProfilePhotoError(response?.data?.message)
+      console.log(response)
+      setProfilePhotoError(response?.statusText)
     })
   }
 
@@ -126,7 +126,12 @@ export default function Profile({server}: ProfileProps) {
         <Stack className="well" flex="1 1 65%">
           <Flex gap={2} align="center">
             <Text >Status:</Text>
-            <Input type="text" borderRadius="25px" bg={useColorModeValue("gray.200", "gray.500")} />
+            <Input 
+              type="text" 
+              borderRadius="25px" 
+              border="transparent"
+              bg={useColorModeValue("gray.100", "gray.500")} 
+            />
             <Button>Submit</Button>
           </Flex>
         </Stack>

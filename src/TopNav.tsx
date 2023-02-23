@@ -29,6 +29,8 @@ import { BsFillMoonFill, BsFillSunFill } from 'react-icons/bs';
 import { FiSettings } from 'react-icons/fi';
 import logo from './assets/community-book-club-logo3.png';
 import logoWhite from './assets/community-book-club-logo3-white.png';
+import logoIcon from './assets/community-book-club-logo-logo-only.png';
+import logoIconWhite from './assets/community-book-club-logo-logo-only-white.png';
 
 interface LinkItemProps {
   name: string;
@@ -50,7 +52,7 @@ export default function TopNav({onLogout}: TopNavProps) {
 
   return (
     <>
-      <Box bg={useColorModeValue('gray.100', 'gray.900')} overflow="hidden" px={4} boxShadow="1px 1px 6px lightgray" _dark={{boxShadow: "0 0 0"}}>
+      <Box bg={useColorModeValue('white', 'gray.900')} overflow="hidden" px={4} boxShadow="1px 1px 6px lightgray" _dark={{boxShadow: "0 0 0"}}>
         <Flex py={2} flexWrap="wrap" alignItems={'center'} justifyContent={'space-between'}>
           <IconButton
             size={'md'}
@@ -63,15 +65,19 @@ export default function TopNav({onLogout}: TopNavProps) {
           <HStack spacing={8} alignItems={'center'}>
             <Box position="relative" minW="max-content">
               <Image 
-                src={colorMode === "light" ? logo : logoWhite}
+                src={colorMode === "light" ? logoIcon : logoIconWhite}
                 h="40px"
               />
               {user && user.role === "admin" && user.Library.version === "free" ? (
               <Badge
                 colorScheme="green"
                 position="absolute"
+                rounded="lg"
                 bottom="0"
                 right="0"
+                cursor="default"
+                backgroundColor="green"
+                color="white"
               >
                 FREE
               </Badge>
@@ -105,7 +111,17 @@ export default function TopNav({onLogout}: TopNavProps) {
                 rounded={'full'}
                 variant={'link'}
                 cursor={'pointer'}
-                minW={0}>
+                minW={0}
+                p="4px"
+                _hover={{
+                  p: "2px",
+                  border: "2px solid lightblue"
+                }}
+                _active={{
+                  p: "2px",
+                  border: "2px solid lightblue"
+                }}
+              >
                 <Avatar
                   size={'sm'}
                   src={user.Profile.profile_photo ? user.Profile.profile_photo : ""}

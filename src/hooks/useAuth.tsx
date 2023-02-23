@@ -33,6 +33,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
       }
     })
     .catch(({response})=>{
+      setUser(null)
       console.log(response.data) 
     })
   }
@@ -50,7 +51,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, setUser, onLogin, onLogout}}>
+    <AuthContext.Provider value={{ user, setUser, getUser, onLogin, onLogout}}>
       {children}
     </AuthContext.Provider>
   )

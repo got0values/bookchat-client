@@ -55,6 +55,12 @@ const config = {
   },
   styles: {
     global: {
+      body: {
+        bg: 'gray.100',
+        _dark: {
+          bg: 'gray.800'
+        }
+      },
       '#main': {
         py: "20px",
         display: "flex",
@@ -68,7 +74,7 @@ const config = {
         maxW: '1218px'
       },
       '.well': {
-        bg: 'gray.100',
+        bg: 'white',
         p: 4,
         m: '0.5rem!important',
         borderRadius: 10,

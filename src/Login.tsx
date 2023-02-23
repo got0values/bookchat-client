@@ -16,13 +16,17 @@ import {
 } from "@chakra-ui/react";
 import logo from './assets/community-book-club-logo3.png';
 import logoWhite from './assets/community-book-club-logo3-white.png';
+import { getLibraryFromSubdomain } from './utils/getLibraryFromSubdomain';
 import axios from "axios";
 
 
-const Login: React.FC<LoginFormProps> = ({ onLogin, server, libraryFromSubdomain }) => {
+const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const subdomain = window.location.hostname.split(".")[0];
+  const {libraryFromSubdomain} = getLibraryFromSubdomain({subdomain,server});
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

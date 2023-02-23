@@ -17,10 +17,11 @@ import {
 } from "@chakra-ui/react";
 import logo from './assets/community-book-club-logo3.png';
 import logoWhite from './assets/community-book-club-logo3-white.png';
+import { getLibraryFromSubdomain } from './utils/getLibraryFromSubdomain';
 import axios from "axios";
 
 
-const Register: React.FC<RegisterFormProps> = ({ onLogin, server, libraryFromSubdomain }) => {
+const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -28,6 +29,9 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server, libraryFromSub
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [error, setError] = useState("");
+
+  const subdomain = window.location.hostname.split(".")[0];
+  const {libraryFromSubdomain} = getLibraryFromSubdomain({subdomain,server});
 
   const toast = useToast();
 

@@ -55,6 +55,7 @@ export interface AuthProviderProps {
 export interface AuthContextProps {
   user: User;
   setUser: (user: User)=>void;
+  getUser: ()=>void;
   onLogin: (token: string) => Promise<void>;
   onLogout: ()=>void;
 }
@@ -74,7 +75,6 @@ export type LibraryFromSubdomainArgs = {
 export interface LoginFormProps {
   onLogin: (token: string) => void;
   server: string;
-  libraryFromSubdomain: Library;
 }
 
 
@@ -82,7 +82,6 @@ export interface LoginFormProps {
 export interface RegisterFormProps {
   onLogin: (token: string) => void;
   server: string;
-  libraryFromSubdomain: Library;
 }
 
 
