@@ -36,6 +36,9 @@ export interface Profile {
   id: number;
   user: number;
   profile_photo: string;
+  username: string;
+  about: string;
+  interests: Array<string>;
 }
 
 //Library
