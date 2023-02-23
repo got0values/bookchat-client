@@ -20,7 +20,8 @@ import {
   ModalCloseButton,
   Input,
   Center,
-  Link,
+  FormControl,
+  FormLabel,
   Badge,
   Icon,
   useDisclosure,
@@ -38,6 +39,12 @@ export default function Profile({server}: ProfileProps) {
     isOpen: isOpenProfilePicModal, 
     onOpen: onOpenProfilePicModal, 
     onClose: onCloseProfilePicModal 
+  } = useDisclosure()
+
+  const { 
+    isOpen: isOpenProfileDataModal, 
+    onOpen: onOpenProfileDataModal, 
+    onClose: onCloseProfileDataModal 
   } = useDisclosure()
 
   const profileUploadRef = useRef<HTMLInputElement>({} as HTMLInputElement);
@@ -80,6 +87,45 @@ export default function Profile({server}: ProfileProps) {
     })
   }
 
+  const [profileDataError,setProfileDataError] = useState<string>("");
+  const profileUserNameRef = useRef({} as HTMLInputElement);
+  const profileAboutRef = useRef({} as HTMLInputElement);
+  const profileInterestsRef = useRef({} as HTMLInputElement);
+  async function updateProfileData() {
+    const tokenCookie = Cookies.get().token;
+    const formData = new FormData();
+    formData.append("username", profileUserNameRef.current.value)
+    formData.append("about", profileAboutRef.current.value)
+    formData.append("interests", profileInterestsRef.current.value)
+    await axios
+    .post(server + "/api/updateprofiledata", 
+    {
+      username: profileUserNameRef.current.value,
+      about: profileAboutRef.current.value,
+      interests: profileInterestsRef.current.value
+    },
+    {headers: {
+      'authorization': tokenCookie
+    }}
+    )
+    .then((response)=>{
+      if (response.data.success){
+        setProfileDataError("")
+        setUser(response.data.message)
+        onCloseProfileDataModal();
+      }
+    })
+    .catch(({response})=>{
+      console.log(response)
+      if (response.data) {
+        setProfileDataError(response.data.message)
+      }
+      else if (response.statusText) {
+        setProfileDataError(response?.statusText)
+      }
+    })
+  }
+
   return (
     <Box className="main-content">
 
@@ -110,7 +156,8 @@ export default function Profile({server}: ProfileProps) {
               <Text
                 textAlign={'center'}
                 color={useColorModeValue('gray.700', 'gray.400')}
-                px={3}>
+                px={3}
+                mb={4}>
                 {user.Profile.about}
               </Text>
             ): null}
@@ -164,7 +211,7 @@ export default function Profile({server}: ProfileProps) {
                 Follow
               </Button>
               <Box m={2}>
-                <Button leftIcon={<MdEdit/>}>
+                <Button leftIcon={<MdEdit/>} onClick={onOpenProfileDataModal}>
                   Edit
                 </Button>
               </Box>
@@ -179,7 +226,10 @@ export default function Profile({server}: ProfileProps) {
               type="text" 
               borderRadius="25px" 
               border="transparent"
-              bg={useColorModeValue("gray.100", "gray.500")} 
+              bg="gray.100" 
+              _dark={{
+                bg: "gray.500"
+              }}
             />
             <Button>Submit</Button>
           </Flex>
@@ -235,6 +285,62 @@ export default function Profile({server}: ProfileProps) {
                 {profilePhotoError}
               </Text>
               <Button variant='ghost' mr={3} onClick={updateProfilePhoto}>
+                Save
+              </Button>
+            </HStack>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isOpenProfileDataModal} onClose={onCloseProfileDataModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            <Heading as="h3" size="md">
+              Update Profile
+            </Heading>
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormControl mt="5%">
+              <FormLabel htmlFor="userName">Username</FormLabel>
+              <Input 
+                type="text" 
+                id="userName"
+                ref={profileUserNameRef}
+                defaultValue={user.Profile.username}
+              />
+            </FormControl>
+            <FormControl mt="5%">
+              <FormLabel htmlFor="about">About</FormLabel>
+              <Input 
+                type="text" 
+                id="about"
+                ref={profileAboutRef}
+                defaultValue={user.Profile.about}
+              />
+            </FormControl>
+            <FormControl mt="5%">
+              <FormLabel htmlFor="interests">Interests</FormLabel>
+              <HStack>
+                <Input 
+                  type="text" 
+                  id="interests"
+                  ref={profileInterestsRef}
+                  defaultValue={user.Profile.interests}
+                />
+                <Button>
+                  Add
+                </Button>
+              </HStack>
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <HStack>
+              <Text color="red">
+                {profileDataError}
+              </Text>
+              <Button variant='ghost' mr={3} onClick={updateProfileData}>
                 Save
               </Button>
             </HStack>
