@@ -24,6 +24,9 @@ import {
   FormLabel,
   Badge,
   Icon,
+  Tag,
+  TagLabel,
+  TagCloseButton,
   useDisclosure
 } from "@chakra-ui/react";
 import { FiFile } from 'react-icons/fi';
@@ -89,19 +92,14 @@ export default function Profile({server}: ProfileProps) {
   const [profileDataError,setProfileDataError] = useState<string>("");
   const profileUserNameRef = useRef({} as HTMLInputElement);
   const profileAboutRef = useRef({} as HTMLInputElement);
-  const profileInterestsRef = useRef({} as HTMLInputElement);
   async function updateProfileData() {
     const tokenCookie = Cookies.get().token;
-    const formData = new FormData();
-    formData.append("username", profileUserNameRef.current.value)
-    formData.append("about", profileAboutRef.current.value)
-    formData.append("interests", profileInterestsRef.current.value)
     await axios
     .post(server + "/api/updateprofiledata", 
     {
       username: profileUserNameRef.current.value,
       about: profileAboutRef.current.value,
-      interests: profileInterestsRef.current.value
+      interests: profileInterests
     },
     {headers: {
       'authorization': tokenCookie
@@ -124,6 +122,18 @@ export default function Profile({server}: ProfileProps) {
       }
     })
   }
+
+  function toArray(dataObject: object) {
+    return Object.values(dataObject)
+    .map(
+      obj=>Object.values(obj)
+    )
+    .map(val=>val[0])
+  }
+  console.log(toArray(user.Profile.Interests))
+
+  const interestsInputRef = useRef({} as HTMLInputElement);
+  const [profileInterests,setProfileInterests] = useState<string[]>(toArray(user.Profile.Interests));
 
   const [profilePhoto,setProfilePhoto] = useState<string | null>(null);
  useLayoutEffect(()=>{
@@ -170,11 +180,12 @@ export default function Profile({server}: ProfileProps) {
               </Text>
             ): null}
 
-            {user.Profile.interests ? (
+            {profileInterests ? (
             <HStack align={'center'} justify={'center'} my={6}>
-              {user.Profile.interests.map((interest)=>{
+              {profileInterests.map((interest, i)=>{
                 return (
                   <Badge
+                    key={i}
                     px={2}
                     py={1}
                     bg='gray.50'
@@ -338,14 +349,56 @@ export default function Profile({server}: ProfileProps) {
                 <Input 
                   type="text" 
                   id="interests"
-                  ref={profileInterestsRef}
-                  defaultValue={user.Profile.interests}
+                  ref={interestsInputRef}
                 />
-                <Button>
+                <Button
+                  onClick={e=>{
+                    setProfileInterests([...profileInterests, interestsInputRef.current.value])
+
+                    // setUser({
+                    //   ...user, 
+                    //   Profile: {
+                    //     ...user.Profile, 
+                    //     Interests: [
+                    //       ...user.Profile.Interests, 
+                    //       interestsInputRef.current.value
+                    //     ] 
+                    //   }
+                    // })
+                  }}
+                >
                   Add
                 </Button>
               </HStack>
             </FormControl>
+            <Flex
+              gap={1}
+              maxW="100%"
+              flexWrap="wrap"
+              alignItems="center"
+              justify="flex-start"
+            >
+              {Array.isArray(user.Profile.Interests) && user.Profile.Interests.length ? (
+                user.Profile.Interests.map((interest,i)=>{
+                  return (
+                    <Tag 
+                      key={i}
+                      borderRadius="full"
+                      size="md"
+                      variant="solid"
+                      colorScheme="blackAlpha"
+                    >
+                      <TagLabel>{interest}</TagLabel>
+                      <TagCloseButton
+                        data-tagname={interest}
+                        color="red"
+                        // onClick={e=>handleDeleteTag(e)}
+                      />
+                    </Tag>
+                  )
+                })
+              ): null}
+            </Flex>
           </ModalBody>
           <ModalFooter>
             <HStack>

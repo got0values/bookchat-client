@@ -193,13 +193,17 @@ export default function TopNav({onLogout}: TopNavProps) {
                   as={NavLink} 
                   key={index} 
                   to={linkItem.linkTo}
+                  onClick={onClose}
                   px={2}
                   py={1}
                   rounded={'md'}
                   _hover={{
                     textDecoration: 'none',
                     color: 'blue',
-                    bg: useColorModeValue('gray.200', 'gray.700'),
+                    bg: 'gray.200'
+                  }}
+                  _dark={{
+                    bg: 'gray.700'
                   }}
                 >
                   {linkItem.name}

@@ -38,7 +38,11 @@ export interface Profile {
   profile_photo: string;
   username: string;
   about: string;
-  interests: Array<string>;
+  Interests: Interests;
+}
+
+export interface Interests {
+  interest: string;
 }
 
 //Library
