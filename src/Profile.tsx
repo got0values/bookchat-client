@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useLayoutEffect } from "react";
 import { ProfileProps, HTMLInputEvent } from './types/types';
 import { 
   Box,
@@ -24,8 +24,7 @@ import {
   FormLabel,
   Badge,
   Icon,
-  useDisclosure,
-  useColorModeValue
+  useDisclosure
 } from "@chakra-ui/react";
 import { FiFile } from 'react-icons/fi';
 import { MdEdit } from 'react-icons/md';
@@ -126,6 +125,11 @@ export default function Profile({server}: ProfileProps) {
     })
   }
 
+  const [profilePhoto,setProfilePhoto] = useState<string | null>(null);
+ useLayoutEffect(()=>{
+  setProfilePhoto(`${user.Profile.profile_photo}?x=${new Date().getTime()}`)
+ },[user.Profile])
+
   return (
     <Box className="main-content">
 
@@ -143,7 +147,7 @@ export default function Profile({server}: ProfileProps) {
               onClick={onOpenProfilePicModal} 
               size="xl"
               cursor="pointer"
-              src={user.Profile.profile_photo ? user.Profile.profile_photo : ""}
+              src={profilePhoto ? profilePhoto : ""}
               border="2px solid gray"
             />
             <Heading fontSize={'2xl'} fontFamily={'body'}>
@@ -155,9 +159,13 @@ export default function Profile({server}: ProfileProps) {
             {user.Profile.about ? (
               <Text
                 textAlign={'center'}
-                color={useColorModeValue('gray.700', 'gray.400')}
+                color='gray.700'
                 px={3}
-                mb={4}>
+                mb={4}
+                _dark={{
+                  color: 'gray.400'
+                }}
+              >
                 {user.Profile.about}
               </Text>
             ): null}
@@ -169,8 +177,12 @@ export default function Profile({server}: ProfileProps) {
                   <Badge
                     px={2}
                     py={1}
-                    bg={useColorModeValue('gray.50', 'gray.800')}
-                    fontWeight={'400'}>
+                    bg='gray.50'
+                    fontWeight={'400'}
+                    _dark={{
+                      bg: 'gray.800'
+                    }}
+                  >
                     {`#${interest}`}
                   </Badge>
                 )}

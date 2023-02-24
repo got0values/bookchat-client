@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState, useLayoutEffect } from 'react';
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
 import { TopNavProps } from './types/types';
 import { useAuth } from './hooks/useAuth';
@@ -46,6 +46,11 @@ export default function TopNav({onLogout}: TopNavProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  const [profilePhoto,setProfilePhoto] = useState<string | null>(null);
+  useLayoutEffect(()=>{
+    setProfilePhoto(`${user.Profile.profile_photo}?x=${new Date().getTime()}`);
+  },[user.Profile])
+
   return (
     <>
       <Box bg={useColorModeValue('white', 'gray.900')} overflow="hidden" px={4} boxShadow="1px 1px 6px lightgray" _dark={{boxShadow: "0 0 0"}}>
@@ -81,18 +86,6 @@ export default function TopNav({onLogout}: TopNavProps) {
                 ) : null}
               </Link>
             </Box>
-            {user.Library ? (
-              <Heading 
-                as="h6" 
-                size="xs"
-                maxW="25%"
-                textTransform="uppercase"
-                whiteSpace="break-spaces"
-                display={["none","none","block"]}
-              >
-                {user.Library.name}
-              </Heading>
-            ) : null}
             <HStack
               as={'nav'}
               spacing={4}
@@ -104,6 +97,8 @@ export default function TopNav({onLogout}: TopNavProps) {
                   to={linkItem.linkTo}
                   p={2}
                   rounded="md"
+                  fontSize="lg"
+                  fontWeight="600"
                   _hover={{
                     bg: useColorModeValue("gray.200","gray.500"),
                     color: useColorModeValue("black","white")
@@ -114,7 +109,19 @@ export default function TopNav({onLogout}: TopNavProps) {
               ))}
             </HStack>
           </HStack>
-          <Flex alignItems={'center'}>
+          <Flex alignItems={'center'} justify="space-between" gap={3}>
+            {user.Library ? (
+              <Heading 
+                as="h6" 
+                size="xs"
+                // maxW="25%"
+                textTransform="uppercase"
+                whiteSpace="break-spaces"
+                display={["none","none","block"]}
+              >
+                {user.Library.name}
+              </Heading>
+            ) : null}
             <Menu>
               <MenuButton
                 as={Button}
@@ -134,12 +141,14 @@ export default function TopNav({onLogout}: TopNavProps) {
               >
                 <Avatar
                   size={'sm'}
-                  src={user.Profile.profile_photo ? user.Profile.profile_photo : ""}
+                  src={profilePhoto ? profilePhoto : ""}
                 />
               </MenuButton>
               <MenuList>
                 <MenuItem
                   onClick={e=>navigate("/profile")}
+                  fontSize="lg"
+                  fontWeight="600"
                 >
                   {`${user.first_name} ${user.last_name}`}
                 </MenuItem>
@@ -147,21 +156,27 @@ export default function TopNav({onLogout}: TopNavProps) {
                 <MenuItem
                   aria-label="toggle color mode"
                   onClick={toggleColorMode}
-                  icon={colorMode === "light" ? <BsFillMoonFill/> : <BsFillSunFill/>}
+                  icon={colorMode === "light" ? <BsFillMoonFill size={20}/> : <BsFillSunFill size={20}/>}
+                  fontSize="lg"
+                  fontWeight="600"
                 >
                   {colorMode === "light" ? "Dark" : "Light"} Mode
                 </MenuItem>
                 <MenuItem
                   aria-label="settings"
                   onClick={e=>navigate("/settings")}
-                  icon={<FiSettings/>}
+                  icon={<FiSettings size={20}/>}
+                  fontSize="lg"
+                  fontWeight="600"
                 >
                   Settings
                 </MenuItem>
                 <MenuItem
                   aria-label="logout"
                   onClick={e=>onLogout()}
-                  icon={<MdLogout/>} 
+                  icon={<MdLogout size={25}/>} 
+                  fontSize="lg"
+                  fontWeight="600"
                 >
                   Log out
                 </MenuItem>

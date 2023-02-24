@@ -65,8 +65,6 @@ const config = {
         py: "20px",
         display: "flex",
         justifyContent: "center"
-        // h: '100vh',
-        // marginLeft: ['0','0','275px']
       },
       '.main-content': {
         w: "100%",
@@ -83,7 +81,7 @@ const config = {
         }
       },
       '.profile-card': {
-        bg: 'gray.200',
+        bg: 'white',
         p: 4,
         m: '0.5rem!important',
         borderRadius: 10,

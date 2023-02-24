@@ -10,7 +10,7 @@ export default function Dashboard({server}: DashboardProps) {
 
   return (
     <>
-      <Heading as="h1" size="lg">
+      <Heading as="h1" size="2xl">
         Dashboard
       </Heading>
     </>
