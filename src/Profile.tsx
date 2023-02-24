@@ -181,22 +181,33 @@ export default function Profile({server}: ProfileProps) {
             ): null}
 
             {user.Profile.Interests ? (
-            <HStack align={'center'} justify={'center'} my={6}>
+            <HStack align={'center'} justify={'center'} my={6} flexWrap="wrap">
               {toArray(user.Profile.Interests).map((interest, i)=>{
-                return (
-                  <Badge
-                    key={i}
-                    px={2}
-                    py={1}
-                    bg='gray.50'
-                    fontWeight={'400'}
-                    _dark={{
-                      bg: 'gray.800'
-                    }}
-                  >
-                    {`#${interest}`}
-                  </Badge>
-                )}
+                if (i === 5) {
+                  return <Text>...</Text>
+                }
+                else if (i > 5 ) {
+                  return;
+                }
+                else {
+                  return (
+                    <Badge
+                      key={i}
+                      px={1}
+                      py={0}
+                      m={1}
+                      size="sm"
+                      bg='gray.50'
+                      fontWeight={'400'}
+                      _dark={{
+                        bg: 'gray.600',
+                        color: 'white'
+                      }}
+                    >
+                      {`#${interest}`}
+                    </Badge>
+                  )}
+                }
               )}
             </HStack>
             ) : null}
