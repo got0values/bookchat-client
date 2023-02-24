@@ -38,7 +38,7 @@ export interface Profile {
   profile_photo: string;
   username: string;
   about: string;
-  Interests: Interests;
+  Interests: Interests[];
 }
 
 export interface Interests {

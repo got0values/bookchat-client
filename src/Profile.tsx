@@ -1,5 +1,5 @@
 import React, { useState, useRef, useLayoutEffect } from "react";
-import { ProfileProps, HTMLInputEvent } from './types/types';
+import { ProfileProps, HTMLInputEvent, Interests } from './types/types';
 import { 
   Box,
   Heading,
@@ -123,7 +123,7 @@ export default function Profile({server}: ProfileProps) {
     })
   }
 
-  function toArray(dataObject: object) {
+  function toArray(dataObject: Interests[]) {
     return Object.values(dataObject)
     .map(
       obj=>Object.values(obj)
@@ -180,9 +180,9 @@ export default function Profile({server}: ProfileProps) {
               </Text>
             ): null}
 
-            {profileInterests ? (
+            {user.Profile.Interests ? (
             <HStack align={'center'} justify={'center'} my={6}>
-              {profileInterests.map((interest, i)=>{
+              {toArray(user.Profile.Interests).map((interest, i)=>{
                 return (
                   <Badge
                     key={i}
@@ -354,17 +354,7 @@ export default function Profile({server}: ProfileProps) {
                 <Button
                   onClick={e=>{
                     setProfileInterests([...profileInterests, interestsInputRef.current.value])
-
-                    // setUser({
-                    //   ...user, 
-                    //   Profile: {
-                    //     ...user.Profile, 
-                    //     Interests: [
-                    //       ...user.Profile.Interests, 
-                    //       interestsInputRef.current.value
-                    //     ] 
-                    //   }
-                    // })
+                    interestsInputRef.current.value = "";
                   }}
                 >
                   Add
@@ -378,8 +368,8 @@ export default function Profile({server}: ProfileProps) {
               alignItems="center"
               justify="flex-start"
             >
-              {Array.isArray(user.Profile.Interests) && user.Profile.Interests.length ? (
-                user.Profile.Interests.map((interest,i)=>{
+              {profileInterests.length ? (
+                profileInterests.map((interest,i)=>{
                   return (
                     <Tag 
                       key={i}
