@@ -68,8 +68,14 @@ export default function TopNav({onLogout}: TopNavProps) {
               <Link to="/">
                 <Image 
                   src={colorMode === "light" ? logoIcon : logoIconWhite}
-                  h="40px"
+                  h="45px"
                   onClick={e=>navigate("/")}
+                  border="1px solid transparent"
+                  borderRadius="4px"
+                  p={1}
+                  _hover={{
+                    bg: "gray.100"
+                  }}
                 />
                 {user && user.role === "admin" && user.Library.version === "free" ? (
                 <Badge
