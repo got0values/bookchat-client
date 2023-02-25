@@ -124,13 +124,18 @@ export default function Profile({server}: ProfileProps) {
   }
 
   function toArray(dataObject: Interests[]) {
-    return Object.values(dataObject)
-    .map(
-      obj=>Object.values(obj)
-    )
-    .map(val=>val[0])
+    return dataObject.flatMap(obj=>Object.values(obj))
   }
   console.log(toArray(user.Profile.Interests))
+
+
+
+  function collectionToArray<T extends Array>(dataObject: Array<T>, keyName: string) {
+    return dataObject.flatMap(obj=>obj[keyName])
+  }
+  console.log(collectionToArray(user.Profile.Interests, "interest"))
+
+
 
   const interestsInputRef = useRef({} as HTMLInputElement);
   const [profileInterests,setProfileInterests] = useState<string[]>(toArray(user.Profile.Interests));
@@ -297,9 +302,9 @@ export default function Profile({server}: ProfileProps) {
               }}
               onClick={()=>profileUploadRef.current.click()}
             >
-              {previewImage || user.Profile.profile_photo ? (
+              {previewImage || profilePhoto ? (
               <Image 
-                src={previewImage || user.Profile.profile_photo ? (previewImage ? previewImage : user.Profile.profile_photo) : ""} 
+                src={previewImage || profilePhoto ? (previewImage ? previewImage : profilePhoto) : ""} 
                 objectFit="cover"
                 boxSize="100%" 
                 ref={imagePrefiewRef}
