@@ -1,5 +1,5 @@
-import React, { useState, useRef, useLayoutEffect } from "react";
-import { ProfileProps, HTMLInputEvent, Interests } from './types/types';
+import React, { useState, useRef, useLayoutEffect, MouseEvent } from "react";
+import { ProfileProps, HTMLInputEvent } from './types/types';
 import { 
   Box,
   Heading,
@@ -124,13 +124,19 @@ export default function Profile({server}: ProfileProps) {
     })
   }
 
-  const interestsInputRef = useRef({} as HTMLInputElement);
-  const [profileInterests,setProfileInterests] = useState<string[]>(collectionToArray(user.Profile.Interests, "interest"));
-
   const [profilePhoto,setProfilePhoto] = useState<string>("");
  useLayoutEffect(()=>{
   setProfilePhoto(`${user.Profile.profile_photo}?x=${new Date().getTime()}`)
  },[user.Profile])
+
+ const interestsInputRef = useRef({} as HTMLInputElement);
+  const [profileInterests,setProfileInterests] = useState<string[]>(collectionToArray(user.Profile.Interests, "interest"));
+
+  function handleDeleteInterest(e: MouseEvent<HTMLButtonElement | MouseEvent>, index: number) {
+  setProfileInterests(prev=>{
+      return prev.filter((item,i)=> i != index)
+    })
+  }
 
   return (
     <Box className="main-content">
@@ -371,6 +377,7 @@ export default function Profile({server}: ProfileProps) {
               flexWrap="wrap"
               alignItems="center"
               justify="flex-start"
+              my={4}
             >
               {profileInterests.length ? (
                 profileInterests.map((interest,i)=>{
@@ -379,14 +386,23 @@ export default function Profile({server}: ProfileProps) {
                       key={i}
                       borderRadius="full"
                       size="md"
-                      variant="solid"
-                      colorScheme="blackAlpha"
+                      variant="outline"
+                      // colorScheme="black"
                     >
-                      <TagLabel>{interest}</TagLabel>
+                      <TagLabel
+                        _hover={{
+                          cursor: "default"
+                        }}
+                      >
+                        {interest}
+                      </TagLabel>
                       <TagCloseButton
                         data-tagname={interest}
                         color="red"
-                        // onClick={e=>handleDeleteTag(e)}
+                        onClick={e=>handleDeleteInterest(e,i)}
+                        _hover={{
+                          bg: "lightgray"
+                        }}
                       />
                     </Tag>
                   )
