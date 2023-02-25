@@ -1,4 +1,5 @@
 import React, { useState, useRef, useLayoutEffect, MouseEvent } from "react";
+import { Outlet } from "react-router-dom";
 import { ProfileProps, HTMLInputEvent } from './types/types';
 import { 
   Box,

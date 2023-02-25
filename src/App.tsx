@@ -17,16 +17,44 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/login" element={<Login onLogin={onLogin} server={server} />} />
-      <Route path="/register" element={<Register onLogin={onLogin} server={server} />} />
-      <Route path="/" element={ 
-        <ProtectedRoute>
-          <TopNav onLogout={onLogout} />
-        </ProtectedRoute>
-      } >
-        <Route index element={ <Dashboard server={server} /> } />
-        <Route path="profile" element={ <Profile server={server} /> } />
-        <Route path="settings" element={ <Settings server={server} /> } />
+      <Route 
+        path="/login" 
+        element={
+          <Login onLogin={onLogin} server={server} />
+        } 
+      />
+      <Route 
+        path="/register" 
+        element={<Register onLogin={onLogin} server={server} />} 
+      />
+      <Route 
+        path="/" 
+        element={ 
+          <ProtectedRoute>
+            <TopNav onLogout={onLogout} />
+          </ProtectedRoute>
+        } 
+      >
+        <Route 
+          index 
+          element={ <Dashboard server={server} /> } 
+        />
+        <Route 
+          path="profile" 
+        >
+          <Route 
+            index 
+            element={ <Profile server={server} /> }
+          />
+          <Route 
+            path=":profile_id" 
+            element={ <div>Hello</div> }
+          />
+        </Route>
+        <Route 
+          path="settings" 
+          element={ <Settings server={server} /> } 
+        />
       </Route>
     </Routes>
   )
