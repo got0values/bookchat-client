@@ -29,6 +29,7 @@ import {
   TagCloseButton,
   useDisclosure
 } from "@chakra-ui/react";
+import collectionToArray from "./utils/collectionToArray";
 import { FiFile } from 'react-icons/fi';
 import { MdEdit } from 'react-icons/md';
 import { useAuth } from './hooks/useAuth';
@@ -123,24 +124,10 @@ export default function Profile({server}: ProfileProps) {
     })
   }
 
-  function toArray(dataObject: Interests[]) {
-    return dataObject.flatMap(obj=>Object.values(obj))
-  }
-  console.log(toArray(user.Profile.Interests))
-
-
-
-  function collectionToArray<T extends Array>(dataObject: Array<T>, keyName: string) {
-    return dataObject.flatMap(obj=>obj[keyName])
-  }
-  console.log(collectionToArray(user.Profile.Interests, "interest"))
-
-
-
   const interestsInputRef = useRef({} as HTMLInputElement);
-  const [profileInterests,setProfileInterests] = useState<string[]>(toArray(user.Profile.Interests));
+  const [profileInterests,setProfileInterests] = useState<string[]>(collectionToArray(user.Profile.Interests, "interest"));
 
-  const [profilePhoto,setProfilePhoto] = useState<string | null>(null);
+  const [profilePhoto,setProfilePhoto] = useState<string>("");
  useLayoutEffect(()=>{
   setProfilePhoto(`${user.Profile.profile_photo}?x=${new Date().getTime()}`)
  },[user.Profile])
@@ -150,7 +137,7 @@ export default function Profile({server}: ProfileProps) {
 
       <HStack flexWrap="wrap" w="100%" align="start">
 
-        <Stack flex="1 1 30%">
+        <Stack flex="1 1 25%">
           <Center
             flexDirection="column"
             className="profile-card"
@@ -186,8 +173,8 @@ export default function Profile({server}: ProfileProps) {
             ): null}
 
             {user.Profile.Interests ? (
-            <HStack align={'center'} justify={'center'} my={6} flexWrap="wrap">
-              {toArray(user.Profile.Interests).map((interest, i)=>{
+            <HStack align={'center'} justify={'center'} px={3} mb={4} flexWrap="wrap">
+              {collectionToArray(user.Profile.Interests, "interest").map((interest, i)=>{
                 if (i === 5) {
                   return <Text>...</Text>
                 }
@@ -202,7 +189,8 @@ export default function Profile({server}: ProfileProps) {
                       py={0}
                       m={1}
                       size="sm"
-                      bg='gray.50'
+                      bg='gray.200'
+                      rounded="md"
                       fontWeight={'400'}
                       _dark={{
                         bg: 'gray.600',
@@ -217,7 +205,7 @@ export default function Profile({server}: ProfileProps) {
             </HStack>
             ) : null}
 
-            <Stack>
+            <Stack mb={4}>
               <Box>
                 <Heading as="h5" size="sm">0 friends</Heading>
               </Box>
@@ -235,7 +223,7 @@ export default function Profile({server}: ProfileProps) {
               </Box>
             </Stack>
 
-            <Box mt={8}>
+            <Box>
               <Button
                 flex={1}
                 rounded={'full'}
