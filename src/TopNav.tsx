@@ -74,7 +74,7 @@ export default function TopNav({onLogout}: TopNavProps) {
                   borderRadius="4px"
                   p={1}
                   _hover={{
-                    bg: "gray.100"
+                    bg: "gray.400"
                   }}
                 />
                 {user && user.role === "admin" && user.Library.version === "free" ? (
