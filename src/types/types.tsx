@@ -39,6 +39,7 @@ export interface ProfileType {
   username: string;
   about?: string;
   Interests?: Interests[];
+  User: User;
   Following_Following_self_profile_idToProfile?: Following_Following_self_profile_idToProfile[];
 }
 
