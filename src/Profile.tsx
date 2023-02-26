@@ -1,6 +1,6 @@
-import React, { useState, useRef, useLayoutEffect, MouseEvent } from "react";
-import { Outlet } from "react-router-dom";
-import { ProfileProps, HTMLInputEvent } from './types/types';
+import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
+import { useParams } from "react-router-dom";
+import { ProfileProps, HTMLInputEvent, ProfileType } from './types/types';
 import { 
   Box,
   Heading,
@@ -39,6 +39,49 @@ import axios from "axios";
 
 export default function Profile({server}: ProfileProps) {
   const { user, setUser } = useAuth();
+  let { username } = useParams<{username: string}>();
+
+  //self, non_follower, requesting, follower
+  const [ viewer, setViewer ] = useState("non_follower");
+  const [profileData, setProfileData] = useState<ProfileType | null>(null);
+  async function getProfile() {
+    const tokenCookie = Cookies.get().token;
+    if (username === user.Profile.username) {
+      setViewer("self")
+      setProfileData(user.Profile)
+    }
+    else {
+      if (tokenCookie) {
+        await axios
+        .post(server + "/api/getprofile", 
+        {
+          profileUsername: username
+        },
+        {headers: {
+          Authorization: tokenCookie
+        }}
+        )
+        .then((response)=>{
+          console.log(response)
+          if (response.data.success){
+            setProfilePhotoError("")
+            setProfileData(response.data.message);
+          }
+        })
+        .catch(({response})=>{
+          console.log(response)
+          // setProfilePhotoError(response?.statusText)
+        })
+      }
+      else {
+        return;
+      }
+    }
+  }
+  useEffect(()=>{
+    getProfile();
+  },[])
+
   const { 
     isOpen: isOpenProfilePicModal, 
     onOpen: onOpenProfilePicModal, 
@@ -96,42 +139,50 @@ export default function Profile({server}: ProfileProps) {
   const profileAboutRef = useRef({} as HTMLInputElement);
   async function updateProfileData() {
     const tokenCookie = Cookies.get().token;
-    await axios
-    .post(server + "/api/updateprofiledata", 
-    {
-      username: profileUserNameRef.current.value,
-      about: profileAboutRef.current.value,
-      interests: profileInterests
-    },
-    {headers: {
-      'authorization': tokenCookie
-    }}
-    )
-    .then((response)=>{
-      if (response.data.success){
-        setProfileDataError("")
-        setUser(response.data.message)
-        onCloseProfileDataModal();
-      }
-    })
-    .catch(({response})=>{
-      console.log(response)
-      if (response.data) {
-        setProfileDataError(response.data.message)
-      }
-      else if (response.statusText) {
-        setProfileDataError(response?.statusText)
-      }
-    })
+    if (tokenCookie){
+      await axios
+      .post(server + "/api/updateprofiledata", 
+      {
+        username: profileUserNameRef.current.value,
+        about: profileAboutRef.current.value,
+        interests: profileInterests
+      },
+      {headers: {
+        'authorization': tokenCookie
+      }}
+      )
+      .then((response)=>{
+        if (response.data.success){
+          setProfileDataError("")
+          setUser(response.data.message)
+          onCloseProfileDataModal();
+        }
+      })
+      .catch(({response})=>{
+        console.log(response)
+        if (response.data) {
+          setProfileDataError(response.data.message)
+        }
+        else if (response.statusText) {
+          setProfileDataError(response?.statusText)
+        }
+      })
+    }
+    else {
+      setProfileDataError("Please login again")
+    }
+    
   }
 
   const [profilePhoto,setProfilePhoto] = useState<string>("");
- useLayoutEffect(()=>{
-  setProfilePhoto(`${user.Profile.profile_photo}?x=${new Date().getTime()}`)
- },[user.Profile])
+  useLayoutEffect(()=>{
+    setProfilePhoto(`${user.Profile.profile_photo}?x=${new Date().getTime()}`)
+  },[user.Profile])
 
- const interestsInputRef = useRef({} as HTMLInputElement);
-  const [profileInterests,setProfileInterests] = useState<string[]>(collectionToArray(user.Profile.Interests, "interest"));
+  const interestsInputRef = useRef({} as HTMLInputElement);
+  const [profileInterests,setProfileInterests] = useState<string[]>(
+    user.Profile.Interests ? (collectionToArray(user.Profile.Interests, "interest")) : [""]
+    );
 
   function handleDeleteInterest(e: MouseEvent<HTMLButtonElement | MouseEvent>, index: number) {
   setProfileInterests(prev=>{
@@ -183,7 +234,7 @@ export default function Profile({server}: ProfileProps) {
             <HStack align={'center'} justify={'center'} px={3} mb={4} flexWrap="wrap">
               {collectionToArray(user.Profile.Interests, "interest").map((interest, i)=>{
                 if (i === 5) {
-                  return <Text>...</Text>
+                  return <Text key={i}>...</Text>
                 }
                 else if (i > 5 ) {
                   return;

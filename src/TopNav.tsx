@@ -152,7 +152,7 @@ export default function TopNav({onLogout}: TopNavProps) {
               </MenuButton>
               <MenuList>
                 <MenuItem
-                  onClick={e=>navigate("/profile")}
+                  onClick={e=>navigate(`/profile/${user.Profile.username}`)}
                   fontSize="lg"
                   fontWeight="600"
                 >

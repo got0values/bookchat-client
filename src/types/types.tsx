@@ -28,21 +28,29 @@ export interface User {
   role: string;
   updated_at: string;
   Library: Library;
-  Profile: Profile
+  Profile: ProfileType
 }
 
 
-export interface Profile {
+export interface ProfileType {
   id: number;
   user: number;
-  profile_photo: string;
+  profile_photo?: string;
   username: string;
-  about: string;
-  Interests: Interests[];
+  about?: string;
+  Interests?: Interests[];
+  Following_Following_self_profile_idToProfile?: Following_Following_self_profile_idToProfile[];
 }
 
 export interface Interests {
   interest: string;
+}
+
+export interface Following_Following_self_profile_idToProfile {
+  id: number;
+  self_profile_id: number;
+  following_profile_id: number;
+  status: string;
 }
 
 //Library

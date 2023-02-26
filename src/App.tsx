@@ -43,12 +43,8 @@ function App() {
           path="profile" 
         >
           <Route 
-            index 
+            path=":username" 
             element={ <Profile server={server} /> }
-          />
-          <Route 
-            path=":profile_id" 
-            element={ <div>Hello</div> }
           />
         </Route>
         <Route 
