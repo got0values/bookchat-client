@@ -36,6 +36,7 @@ import { FiFile } from 'react-icons/fi';
 import { MdEdit } from 'react-icons/md';
 import { BsPlusLg } from 'react-icons/bs';
 import { useAuth } from '../hooks/useAuth';
+import { FollowProfileButton, CancelRequestButton, UnFollowProfileButton } from "./profileButtons";
 import Cookies from "js-cookie";
 import axios from "axios";
 
@@ -98,6 +99,8 @@ export default function Profile({server}: ProfileProps) {
   useEffect(()=>{
     getProfile();
   },[])
+
+  const [profileActionError,setProfileActionError] = useState<string>("")
 
   //User update stuff
   const profileUploadRef = useRef<HTMLInputElement>({} as HTMLInputElement);
@@ -336,23 +339,21 @@ export default function Profile({server}: ProfileProps) {
                     <Button leftIcon={<MdEdit/>} onClick={openProfileDataModal}>
                       Edit
                     </Button>
-                  ) : (
-                    <Button
-                      flex={1}
-                      rounded={'full'}
-                      bg={viewer === "requesting" ? 'gray.400' : 'blue.400'}
-                      color={'white'}
-                      _hover={{
-                        bg: 'blue.500',
-                      }}
-                      _focus={{
-                        bg: 'blue.500',
-                      }}
-                    >
-                      {viewer === "nonFollower" ? "Follow" : (viewer === "requesting" ? "Requesting" : "Unfollow")}
-                    </Button>
+                    ) : (
+                    viewer === "nonFollower" ? (
+                    <FollowProfileButton server={server} profileId={profileData.id} getProfile={getProfile} setProfileActionError={setProfileActionError} /> 
+                    ) : (
+                      viewer === "requesting" ? (
+                        <CancelRequestButton server={server} profileId={profileData.id} getProfile={getProfile} setProfileActionError={setProfileActionError} />
+                      ) : (
+                        viewer === "following" ? (
+                          <UnFollowProfileButton server={server} profileId={profileData.id} getProfile={getProfile} setProfileActionError={setProfileActionError} />
+                        ) : null
+                      )
+                    ) 
                   )}
                 </Box>
+                <Text color="red" pt={2}>{profileActionError}</Text>
               </Center>
             </Stack>
 

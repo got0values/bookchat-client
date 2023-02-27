@@ -1,3 +1,5 @@
+import { SetStateAction, Dispatch } from "react";
+
 //Generic
 export interface HTMLInputEvent extends Event {
   target: HTMLInputElement & EventTarget;
@@ -31,6 +33,17 @@ export interface User {
   Profile: ProfileType
 }
 
+
+//Profile
+export interface ProfileProps {
+  server: string;
+}
+
+export interface ProfileButtonProps extends ProfileProps {
+  profileId: number;
+  getProfile: ()=>void;
+  setProfileActionError: Dispatch<SetStateAction<string>>;
+}
 
 export interface ProfileType {
   id: number;
@@ -113,11 +126,5 @@ export interface RegisterFormProps {
 
 //Dashboard
 export interface DashboardProps {
-  server: string;
-}
-
-
-//Profile
-export interface ProfileProps {
   server: string;
 }
