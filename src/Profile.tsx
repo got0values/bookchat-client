@@ -42,7 +42,6 @@ export default function Profile({server}: ProfileProps) {
   const { user, setUser } = useAuth();
   const { username } = useParams<{username: string}>();
   const [isLoading,setIsLoading] = useState(true);
-  const navigate = useNavigate();
 
   //self, unauthorized (differentLibrary), nonFollower, requesting, follower
   const [ viewer, setViewer ] = useState("nonFollower");
@@ -92,35 +91,15 @@ export default function Profile({server}: ProfileProps) {
           }
         })
         .catch(({response})=>{
-          //if unauthorized (e.g. Not the same library)
-          if (response.status === 401) {
-            console.log("HEYYYYY")
-            throw new Response("Unauthorized", { status: 401 })
-            return;
-            // navigate("/")
-          }
+          console.log(response)
         })
-      }
-      else {
-        throw new Response("", { status: 401 });
       }
   }
   useEffect(()=>{
     getProfile();
   },[])
 
-  const { 
-    isOpen: isOpenProfilePicModal, 
-    onOpen: onOpenProfilePicModal, 
-    onClose: onCloseProfilePicModal 
-  } = useDisclosure()
-
-  const { 
-    isOpen: isOpenProfileDataModal, 
-    onOpen: onOpenProfileDataModal, 
-    onClose: onCloseProfileDataModal 
-  } = useDisclosure()
-
+  //User update stuff
   const profileUploadRef = useRef<HTMLInputElement>({} as HTMLInputElement);
   const imagePrefiewRef = useRef<HTMLImageElement>({} as HTMLImageElement);
   const [previewImage,setPreviewImage] = useState("");
@@ -135,8 +114,8 @@ export default function Profile({server}: ProfileProps) {
     setProfileImageFile(newFile)
   }
 
-  const [profilePhotoError,setProfilePhotoError] = useState<string>("");
-  async function updateProfilePhoto() {
+  const [userProfilePhotoError,setUserProfilePhotoError] = useState<string>("");
+  async function updateUserProfilePhoto() {
     const tokenCookie = Cookies.get().token;
     const formData = new FormData();
     formData.append("photo", profileImageFile as Blob)
@@ -150,14 +129,14 @@ export default function Profile({server}: ProfileProps) {
     )
     .then((response)=>{
       if (response.data.success){
-        setProfilePhotoError("")
+        setUserProfilePhotoError("")
         setUser(response.data.message)
         onCloseProfilePicModal();
       }
     })
     .catch(({response})=>{
       console.log(response)
-      setProfilePhotoError(response?.statusText)
+      setUserProfilePhotoError(response?.statusText)
     })
   }
 
@@ -166,6 +145,7 @@ export default function Profile({server}: ProfileProps) {
   const profileAboutRef = useRef({} as HTMLInputElement);
   async function updateProfileData() {
     const tokenCookie = Cookies.get().token;
+    console.log(profileInterests)
     if (tokenCookie){
       await axios
       .post(server + "/api/updateprofiledata", 
@@ -201,15 +181,31 @@ export default function Profile({server}: ProfileProps) {
     
   }
 
-  const [profilePhoto,setProfilePhoto] = useState<string>("");
+  //User edit modals
+  const { 
+    isOpen: isOpenProfilePicModal, 
+    onOpen: onOpenProfilePicModal, 
+    onClose: onCloseProfilePicModal 
+  } = useDisclosure()
+
+  const [userProfilePhoto,setUserProfilePhoto] = useState<string>("");
   useLayoutEffect(()=>{
-    setProfilePhoto(`${user.Profile.profile_photo}?x=${new Date().getTime()}`)
+    setUserProfilePhoto(`${user.Profile.profile_photo}?x=${new Date().getTime()}`)
   },[user.Profile])
 
+  const { 
+    isOpen: isOpenProfileDataModal, 
+    onOpen: onOpenProfileDataModal, 
+    onClose: onCloseProfileDataModal 
+  } = useDisclosure()
+
+  function openProfileDataModal() {
+    setProfileInterests(user.Profile.Interests ? (collectionToArray(user.Profile.Interests, "interest")) : [""])
+    onOpenProfileDataModal()
+  }
+
   const interestsInputRef = useRef({} as HTMLInputElement);
-  const [profileInterests,setProfileInterests] = useState<string[]>(
-    user.Profile.Interests ? (collectionToArray(user.Profile.Interests, "interest")) : [""]
-    );
+  const [profileInterests,setProfileInterests] = useState<string[]>([]);
 
   function handleDeleteInterest(e: MouseEvent<HTMLButtonElement | MouseEvent>, index: number) {
   setProfileInterests(prev=>{
@@ -236,7 +232,7 @@ export default function Profile({server}: ProfileProps) {
                   onClick={e=> viewer === "self" ? onOpenProfilePicModal() : e.preventDefault()} 
                   size="xl"
                   cursor={viewer === "self" ? "pointer": "default"}
-                  src={profilePhoto ? profilePhoto : ""}
+                  src={viewer === "self" ? (userProfilePhoto ? userProfilePhoto : "") : profileData.profile_photo ? profileData.profile_photo : ""}
                   border="2px solid gray"
                 />
                 <Heading fontSize={'2xl'} fontFamily={'body'}>
@@ -314,7 +310,7 @@ export default function Profile({server}: ProfileProps) {
 
                 <Box>
                   {viewer === "self" ? (
-                    <Button leftIcon={<MdEdit/>} onClick={onOpenProfileDataModal}>
+                    <Button leftIcon={<MdEdit/>} onClick={openProfileDataModal}>
                       Edit
                     </Button>
                   ) : (
@@ -383,9 +379,9 @@ export default function Profile({server}: ProfileProps) {
                     }}
                     onClick={()=>profileUploadRef.current.click()}
                   >
-                    {previewImage || profilePhoto ? (
+                    {previewImage || userProfilePhoto ? (
                     <Image 
-                      src={previewImage || profilePhoto ? (previewImage ? previewImage : profilePhoto) : ""} 
+                      src={previewImage || userProfilePhoto ? (previewImage ? previewImage : userProfilePhoto) : ""} 
                       objectFit="cover"
                       boxSize="100%" 
                       ref={imagePrefiewRef}
@@ -402,9 +398,9 @@ export default function Profile({server}: ProfileProps) {
                 <ModalFooter>
                   <HStack>
                     <Text color="red">
-                      {profilePhotoError}
+                      {userProfilePhotoError}
                     </Text>
-                    <Button variant='ghost' mr={3} onClick={updateProfilePhoto}>
+                    <Button variant='ghost' mr={3} onClick={updateUserProfilePhoto}>
                       Save
                     </Button>
                   </HStack>
