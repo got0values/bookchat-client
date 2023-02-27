@@ -305,6 +305,8 @@ export default function Profile({server}: ProfileProps) {
                               <Avatar 
                                 key={i}
                                 src={follower.Profile_Following_self_profile_idToProfile?.profile_photo}
+                                title={follower.Profile_Following_self_profile_idToProfile?.username}
+                                cursor="pointer"
                               />
                             )
                           })
@@ -324,6 +326,8 @@ export default function Profile({server}: ProfileProps) {
                               <Avatar 
                                 key={i}
                                 src={follower.Profile_Following_following_profile_idToProfile?.profile_photo}
+                                title={follower.Profile_Following_following_profile_idToProfile?.username}
+                                cursor="pointer"
                               />
                             )
                           })
