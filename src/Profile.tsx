@@ -140,7 +140,7 @@ export default function Profile({server}: ProfileProps) {
     })
   }
 
-  const [profileDataError,setProfileDataError] = useState<string>("");
+  const [userProfileDataError,setUserProfileDataError] = useState<string>("");
   const profileUserNameRef = useRef({} as HTMLInputElement);
   const profileAboutRef = useRef({} as HTMLInputElement);
   async function updateProfileData() {
@@ -160,7 +160,7 @@ export default function Profile({server}: ProfileProps) {
       )
       .then((response)=>{
         if (response.data.success){
-          setProfileDataError("")
+          setUserProfileDataError("")
           setUser(response.data.message)
           onCloseProfileDataModal();
         }
@@ -168,17 +168,16 @@ export default function Profile({server}: ProfileProps) {
       .catch(({response})=>{
         console.log(response)
         if (response.data) {
-          setProfileDataError(response.data.message)
+          setUserProfileDataError(response.data.message)
         }
         else if (response.statusText) {
-          setProfileDataError(response?.statusText)
+          setUserProfileDataError(response?.statusText)
         }
       })
     }
     else {
-      setProfileDataError("Please login again")
+      setUserProfileDataError("Please login again")
     }
-    
   }
 
   //User edit modals
@@ -200,6 +199,7 @@ export default function Profile({server}: ProfileProps) {
   } = useDisclosure()
 
   function openProfileDataModal() {
+    setUserProfileDataError("")
     setProfileInterests(user.Profile.Interests ? (collectionToArray(user.Profile.Interests, "interest")) : [""])
     onOpenProfileDataModal()
   }
@@ -496,7 +496,7 @@ export default function Profile({server}: ProfileProps) {
                 <ModalFooter>
                   <HStack>
                     <Text color="red">
-                      {profileDataError}
+                      {userProfileDataError}
                     </Text>
                     <Button variant='ghost' mr={3} onClick={updateProfileData}>
                       Save
