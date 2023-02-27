@@ -81,7 +81,6 @@ export default function Profile({server}: ProfileProps) {
               case "following":
                 setViewer("following")
                 setProfileData(responseProfileData)
-                setProfileData(message)
                 break;
               default:
                 setViewer("nonFollower")
@@ -237,7 +236,7 @@ export default function Profile({server}: ProfileProps) {
                   border="2px solid gray"
                 />
                 <Heading fontSize={'3xl'} fontFamily={'body'}>
-                  {`${profileData.User.first_name} ${profileData.User.last_name}`}
+                  {`${profileData.User?.first_name} ${profileData.User?.last_name}`}
                 </Heading>
                 <Text fontWeight={600} color={'gray.500'} mb={4}>
                   {`@${profileData.username}`}
@@ -256,57 +255,80 @@ export default function Profile({server}: ProfileProps) {
                   </Text>
                 ): null}
 
-                {profileData.Interests ? (
+                {profileData.Interests && profileData.Interests.length ? (
                 <HStack align={'center'} justify={'center'} px={3} mb={4} flexWrap="wrap">
-                  {profileData.Interests ? (
-                    collectionToArray(profileData.Interests, "interest").map((interest, i)=>{
-                      if (i === 5) {
-                        return <Text key={i}>...</Text>
-                      }
-                      else if (i > 5 ) {
-                        return;
-                      }
-                      else {
-                        return (
-                          <Badge
-                            key={i}
-                            px={1}
-                            py={0}
-                            m={1}
-                            size="sm"
-                            bg='gray.200'
-                            rounded="md"
-                            fontWeight={'400'}
-                            _dark={{
-                              bg: 'gray.600',
-                              color: 'white'
-                            }}
-                          >
-                            {`#${interest}`}
-                          </Badge>
-                        )}
-                      }
-                    ) 
-                  ): null}
+                  {collectionToArray(profileData.Interests, "interest").map((interest, i)=>{
+                    if (i === 5) {
+                      return <Text key={i}>...</Text>
+                    }
+                    else if (i > 5 ) {
+                      return;
+                    }
+                    else {
+                      return (
+                        <Badge
+                          key={i}
+                          px={1}
+                          py={0}
+                          m={1}
+                          size="sm"
+                          bg='gray.200'
+                          rounded="md"
+                          fontWeight={'400'}
+                          _dark={{
+                            bg: 'gray.600',
+                            color: 'white'
+                          }}
+                        >
+                          {`#${interest}`}
+                        </Badge>
+                      )}
+                    }) 
+                  }
                 </HStack>
                 ) : null}
 
                 <Stack mb={4}>
-                  <Box>
-                    <Heading as="h5" size="sm">0 friends</Heading>
-                  </Box>
-                  <Box>
-                    <AvatarGroup size="sm" max={5}>
-                      <Avatar/>
-                      <Avatar/>
-                      <Avatar/>
-                      <Avatar/>
-                      <Avatar/>
-                      <Avatar/>
-                      <Avatar/>
-                      <Avatar/>
-                    </AvatarGroup>
-                  </Box>
+                  <Flex justify="space-between" gap={3} flexWrap="wrap">
+                    <Box flex="1">
+                      <Heading as="h5" size="sm" whiteSpace="nowrap">
+                        {profileData.Following_Following_following_profile_idToProfile?.length} followers
+                      </Heading>
+                      <Flex justify="center">
+                        <AvatarGroup size="sm" max={4} mt={1}>
+                        {profileData.Following_Following_following_profile_idToProfile?.length ? (
+                          profileData.Following_Following_following_profile_idToProfile?.map((follower,i)=>{
+                            return (
+                              <Avatar 
+                                key={i}
+                                src={follower.Profile_Following_self_profile_idToProfile?.profile_photo}
+                              />
+                            )
+                          })
+                        ): null}
+                        </AvatarGroup>
+                      </Flex>
+                    </Box>
+                    <Box flex="1">
+                      <Heading as="h5" size="sm" whiteSpace="nowrap">
+                        {profileData.Following_Following_self_profile_idToProfile?.length} following
+                      </Heading>
+                      <Flex justify="center">
+                        <AvatarGroup size="sm" max={4} mt={1}>
+                        {profileData.Following_Following_self_profile_idToProfile?.length ? (
+                          profileData.Following_Following_self_profile_idToProfile?.map((follower,i)=>{
+                            return (
+                              <Avatar 
+                                key={i}
+                                src={follower.Profile_Following_following_profile_idToProfile?.profile_photo}
+                              />
+                            )
+                          })
+                        ): null}
+                        </AvatarGroup>
+                      </Flex>
+                    </Box>
+                  </Flex>
                 </Stack>
 
                 <Box>
@@ -315,7 +337,6 @@ export default function Profile({server}: ProfileProps) {
                       Edit
                     </Button>
                   ) : (
-                    //self, nonFollower, requesting, follower
                     <Button
                       flex={1}
                       rounded={'full'}
@@ -327,7 +348,6 @@ export default function Profile({server}: ProfileProps) {
                       _focus={{
                         bg: 'blue.500',
                       }}
-                      size="lg"
                     >
                       {viewer === "nonFollower" ? "Follow" : (viewer === "requesting" ? "Requesting" : "Unfollow")}
                     </Button>

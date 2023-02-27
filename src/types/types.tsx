@@ -41,6 +41,7 @@ export interface ProfileType {
   Interests?: Interests[];
   User: User;
   Following_Following_self_profile_idToProfile?: Following_Following_self_profile_idToProfile[];
+  Following_Following_following_profile_idToProfile?: Following_Following_following_profile_idToProfile[];
 }
 
 export interface Interests {
@@ -52,6 +53,15 @@ export interface Following_Following_self_profile_idToProfile {
   self_profile_id: number;
   following_profile_id: number;
   status: string;
+  Profile_Following_following_profile_idToProfile?: ProfileType;
+}
+
+export interface Following_Following_following_profile_idToProfile {
+  id: number;
+  self_profile_id: number;
+  following_profile_id: number;
+  status: string;
+  Profile_Following_self_profile_idToProfile?: ProfileType;
 }
 
 //Library
