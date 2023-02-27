@@ -68,7 +68,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
     })
     .catch(({response})=>{
       console.log(response.data)
-      setError(response.data.errorMessage ? response.data.errorMessage : response.data.error)
+      setError(response.data.message ? response.data.message : response.data.error)
     })
   };
 
