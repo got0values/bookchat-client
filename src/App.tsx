@@ -8,7 +8,7 @@ import Register from './Register';
 // import SideNav from './SideNav';
 import TopNav from './TopNav';
 import Dashboard from './Dashboard';
-import Profile from './Profile';
+import Profile from './Profile/Profile';
 import Settings from './Settings';
 import { useAuth } from './hooks/useAuth';
 

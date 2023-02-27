@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ProfileProps, HTMLInputEvent, ProfileType } from './types/types';
+import { ProfileProps, HTMLInputEvent, ProfileType } from '../types/types';
 import { 
   Box,
   Heading,
@@ -31,11 +31,11 @@ import {
   Skeleton,
   useDisclosure
 } from "@chakra-ui/react";
-import collectionToArray from "./utils/collectionToArray";
+import collectionToArray from "../utils/collectionToArray";
 import { FiFile } from 'react-icons/fi';
 import { MdEdit } from 'react-icons/md';
 import { BsPlusLg } from 'react-icons/bs';
-import { useAuth } from './hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
 import axios from "axios";
 
