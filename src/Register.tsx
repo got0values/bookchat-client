@@ -90,7 +90,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
         <Stack align={'center'}>
           <Heading fontSize={'4xl'}>Register for an account</Heading>
           <Text fontSize={'lg'} color={'gray.600'}>
-            to enjoy all of our cool <Link color={'blue.400'}>features</Link> ✌️
+            to enjoy all of our cool <Link href="https://communitybookclub.com" color={'blue.400'}>features</Link> ✌️
           </Text>
         </Stack>
         <Box
@@ -178,6 +178,9 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
             </Box>
           </form>
         </Box>
+        <Text fontSize={'lg'} color={'gray.600'} textAlign="center">
+          Already have an account? <Link href="/login" color={'blue.400'}>Login</Link>
+        </Text>
       </Stack>
     </Flex>
   );

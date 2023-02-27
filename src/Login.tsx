@@ -73,9 +73,6 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
             <Image src={useColorModeValue(logo,logoWhite)} maxH="75px"/>
           </Stack>
           <Heading fontSize={'4xl'}>Sign in to your account</Heading>
-          <Text fontSize={'lg'} color={'gray.600'}>
-            or create one <Link href="/register" color={'blue.400'}>Register</Link>
-          </Text>
         </Stack>
         <Box
           rounded={'lg'}
@@ -97,6 +94,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                size="lg"
                 required
               />
             </FormControl>
@@ -107,21 +105,28 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                size="lg"
                 required
               />
             </FormControl>
-            <Button 
-              type="submit"
-              bg={'blue.400'}
-              color={'white'}
-              _hover={{
-                bg: 'blue.500',
-              }}
-            >
-              Login
-            </Button>
+            <Box textAlign="center">
+              <Button 
+                type="submit"
+                bg={'blue.400'}
+                color={'white'}
+                _hover={{
+                  bg: 'blue.500',
+                }}
+                size="lg"
+              >
+                Login
+              </Button>
+            </Box>
           </form>
         </Box>
+        <Text fontSize={'lg'} color={'gray.600'} textAlign="center">
+          Don't have an account? <Link href="/register" color={'blue.400'}>Register</Link>
+        </Text>
       </Stack>
     </Flex>
   );
