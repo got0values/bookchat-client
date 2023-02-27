@@ -34,6 +34,7 @@ import {
 import collectionToArray from "./utils/collectionToArray";
 import { FiFile } from 'react-icons/fi';
 import { MdEdit } from 'react-icons/md';
+import { BsPlusLg } from 'react-icons/bs';
 import { useAuth } from './hooks/useAuth';
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -235,7 +236,7 @@ export default function Profile({server}: ProfileProps) {
                   src={viewer === "self" ? (userProfilePhoto ? userProfilePhoto : "") : profileData.profile_photo ? profileData.profile_photo : ""}
                   border="2px solid gray"
                 />
-                <Heading fontSize={'2xl'} fontFamily={'body'}>
+                <Heading fontSize={'3xl'} fontFamily={'body'}>
                   {`${profileData.User.first_name} ${profileData.User.last_name}`}
                 </Heading>
                 <Text fontWeight={600} color={'gray.500'} mb={4}>
@@ -325,7 +326,9 @@ export default function Profile({server}: ProfileProps) {
                       }}
                       _focus={{
                         bg: 'blue.500',
-                      }}>
+                      }}
+                      size="lg"
+                    >
                       {viewer === "nonFollower" ? "Follow" : (viewer === "requesting" ? "Requesting" : "Unfollow")}
                     </Button>
                   )}
@@ -356,7 +359,7 @@ export default function Profile({server}: ProfileProps) {
               <ModalOverlay />
               <ModalContent>
                 <ModalHeader>
-                  <Heading as="h3" size="md">
+                  <Heading as="h3" size="lg">
                     Change Profile Photo
                   </Heading>
                 </ModalHeader>
@@ -400,7 +403,7 @@ export default function Profile({server}: ProfileProps) {
                     <Text color="red">
                       {userProfilePhotoError}
                     </Text>
-                    <Button variant='ghost' mr={3} onClick={updateUserProfilePhoto}>
+                    <Button variant='ghost' mr={3} onClick={updateUserProfilePhoto}  size="lg">
                       Save
                     </Button>
                   </HStack>
@@ -412,7 +415,7 @@ export default function Profile({server}: ProfileProps) {
               <ModalOverlay />
               <ModalContent>
                 <ModalHeader>
-                  <Heading as="h3" size="md">
+                  <Heading as="h3" size="lg">
                     Update Profile
                   </Heading>
                 </ModalHeader>
@@ -425,6 +428,7 @@ export default function Profile({server}: ProfileProps) {
                       id="userName"
                       ref={profileUserNameRef}
                       defaultValue={user.Profile.username}
+                      size="lg"
                     />
                   </FormControl>
                   <FormControl mt="5%">
@@ -434,6 +438,7 @@ export default function Profile({server}: ProfileProps) {
                       id="about"
                       ref={profileAboutRef}
                       defaultValue={user.Profile.about}
+                      size="lg"
                     />
                   </FormControl>
                   <FormControl mt="5%">
@@ -443,14 +448,18 @@ export default function Profile({server}: ProfileProps) {
                         type="text" 
                         id="interests"
                         ref={interestsInputRef}
+                        size="lg"
                       />
                       <Button
                         onClick={e=>{
                           setProfileInterests([...profileInterests, interestsInputRef.current.value])
                           interestsInputRef.current.value = "";
                         }}
+                        variant="ghost"
+                        px={0}
+                        size="lg"
                       >
-                        Add
+                        <BsPlusLg/>
                       </Button>
                     </HStack>
                   </FormControl>
@@ -498,7 +507,7 @@ export default function Profile({server}: ProfileProps) {
                     <Text color="red">
                       {userProfileDataError}
                     </Text>
-                    <Button variant='ghost' mr={3} onClick={updateProfileData}>
+                    <Button mr={3} onClick={updateProfileData} size="lg">
                       Save
                     </Button>
                   </HStack>
