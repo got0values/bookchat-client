@@ -45,7 +45,8 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
     }
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setError("")
     await axios
     .post(server + "/api/register", { 
@@ -99,75 +100,83 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
           p={8}
         >
           <Stack spacing={4}></Stack>
-          <Box>
-            {error && (
-              <Text color="red" mb={4}>
-                {error}
-              </Text>
-            )}
-            <Flex as={FormControl} mb={4} gap={2}>
-              <Input
-                type="text"
-                placeholder="First name"
-                id="first-name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                flex="1 1 auto"
-                required
-              />
-              <Input
-                type="text"
-                placeholder="Last name"
-                id="last-name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                flex="1 1 auto"
-                required
-              />
-            </Flex>
-            <FormControl mb={4}>
-              <Input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </FormControl>
-            <FormControl mb={4}>
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </FormControl>
-            <FormControl mb={4}>
-              <Input
-                type="password"
-                placeholder="Confirm password"
-                value={confirmPassword}
-                onChange={(e) => confirmPasswordCheck(e.target.value)}
-                required
-              />
-              <Text color="red" mb={4}>
-                {confirmPasswordError}
-              </Text>
-            </FormControl>
-            <Box textAlign="center">
-              <Button 
-                bg={'blue.400'}
-                color={'white'}
-                _hover={{
-                  bg: 'blue.500',
-                }}
-                onClick={e=>handleSubmit()}
-              >
-                Register
-              </Button>
+          <form onSubmit={e=>handleSubmit(e)}>
+            <Box>
+              {error && (
+                <Text color="red" mb={4}>
+                  {error}
+                </Text>
+              )}
+              <Flex as={FormControl} mb={4} gap={2}>
+                <Input
+                  type="text"
+                  placeholder="First name*"
+                  id="first-name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  flex="1 1 auto"
+                  size="lg"
+                  required
+                />
+                <Input
+                  type="text"
+                  placeholder="Last name*"
+                  id="last-name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  flex="1 1 auto"
+                  size="lg"
+                  required
+                />
+              </Flex>
+              <FormControl mb={4}>
+                <Input
+                  type="email"
+                  placeholder="Email*"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  size="lg"
+                  required
+                />
+              </FormControl>
+              <FormControl mb={4}>
+                <Input
+                  type="password"
+                  placeholder="Password*"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  size="lg"
+                  required
+                />
+              </FormControl>
+              <FormControl mb={4}>
+                <Input
+                  type="password"
+                  placeholder="Confirm password*"
+                  value={confirmPassword}
+                  onChange={(e) => confirmPasswordCheck(e.target.value)}
+                  size="lg"
+                  required
+                />
+                <Text color="red" mb={4}>
+                  {confirmPasswordError}
+                </Text>
+              </FormControl>
+              <Box textAlign="center">
+                <Button 
+                  type="submit"
+                  bg={'blue.400'}
+                  color={'white'}
+                  _hover={{
+                    bg: 'blue.500',
+                  }}
+                  size="lg"
+                >
+                  Register
+                </Button>
+              </Box>
             </Box>
-          </Box>
+          </form>
         </Box>
       </Stack>
     </Flex>
