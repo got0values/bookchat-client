@@ -70,7 +70,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
     if (user.Profile.Following_Following_following_profile_idToProfile?.length) {
       user.Profile.Following_Following_following_profile_idToProfile.forEach((follower)=>{
         if (follower.status === "requesting") {
-          let followerData = follower.Profile_Following_self_profile_idToProfile;
+          let followerData = {...follower.Profile_Following_self_profile_idToProfile};
           //TODO Fix this so spred goes in
           Object.assign(followerData, {"followId": follower.id})
           setUserMessages({...userMessages, followRequests: [...userMessages.followRequests as any[], followerData] })
@@ -331,7 +331,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                     <Box m={1}>
                       <Button 
                         size="sm"
-                        onClick={e=>acceptFollowRequest(followRequest?.followId)}
+                        onClick={e=>acceptFollowRequest(followRequest.followId!)}
                       >
                         Accept
                       </Button>
