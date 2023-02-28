@@ -42,8 +42,9 @@ import axios from "axios";
 
 export default function Profile({server}: ProfileProps) {
   const { user, setUser } = useAuth();
-  const { username } = useParams<{username: string}>();
+  const { paramsUsername } = useParams<{paramsUsername: string}>();
   const [isLoading,setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   //self, unauthorized (differentLibrary), nonFollower, requesting, follower
   const [ viewer, setViewer ] = useState("nonFollower");
@@ -52,10 +53,11 @@ export default function Profile({server}: ProfileProps) {
     setIsLoading(true);
     const tokenCookie = Cookies.get().token;
       if (tokenCookie) {
+        console.log(paramsUsername)
         await axios
         .post(server + "/api/getprofile", 
         {
-          profileUsername: username
+          profileUsername: paramsUsername
         },
         {headers: {
           Authorization: tokenCookie
@@ -158,6 +160,12 @@ export default function Profile({server}: ProfileProps) {
   async function updateProfileData() {
     const tokenCookie = Cookies.get().token;
     console.log(profileInterests)
+
+    let navigateToNewUsernameOnReponse = false;
+    if (paramsUsername !== profileUserNameRef.current.value) {
+      navigateToNewUsernameOnReponse = true;
+    }
+
     if (tokenCookie){
       await axios
       .post(server + "/api/updateprofiledata", 
@@ -174,6 +182,15 @@ export default function Profile({server}: ProfileProps) {
         if (response.data.success){
           setUserProfileDataError("")
           setUser(response.data.message)
+
+          if (navigateToNewUsernameOnReponse) {
+            const newUsername = response.data.message.Profile.username
+            navigate("/profile/" + newUsername)
+            window.location.reload();
+          }
+          else {
+            getProfile()
+          }
           onCloseProfileDataModal();
         }
       })

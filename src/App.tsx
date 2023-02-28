@@ -44,7 +44,7 @@ function App() {
           path="profile"
         >
           <Route 
-            path=":username" 
+            path=":paramsUsername" 
             element={ <Profile server={server} /> }
           />
         </Route>
