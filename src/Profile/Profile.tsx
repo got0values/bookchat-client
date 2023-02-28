@@ -122,9 +122,12 @@ export default function Profile({server}: ProfileProps) {
     const tokenCookie = Cookies.get().token;
     const formData = new FormData();
     formData.append("photo", profileImageFile as Blob)
+
+    const CancelToken=axios.CancelToken;
+    const source = CancelToken.source();
     await axios
     .post(server + "/api/updateprofilephoto", 
-    formData,
+    {...formData, cancelToken: source.token},
     {headers: {
       'authorization': tokenCookie,
       'content-type': 'multipart/form-data'
@@ -138,9 +141,15 @@ export default function Profile({server}: ProfileProps) {
       }
     })
     .catch(({response})=>{
+      if (axios.isCancel(response)) {
+        console.log("successfully aborted")
+      }
       console.log(response)
       setUserProfilePhotoError(response?.statusText)
     })
+    return () => {
+      source.cancel();
+    }
   }
 
   const [userProfileDataError,setUserProfileDataError] = useState<string>("");

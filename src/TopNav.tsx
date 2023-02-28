@@ -6,6 +6,7 @@ import {
   Box,
   Flex,
   Avatar,
+  AvatarBadge,
   HStack,
   Image,
   IconButton,
@@ -148,7 +149,9 @@ export default function TopNav({onLogout}: TopNavProps) {
                 <Avatar
                   size={'sm'}
                   src={profilePhoto ? profilePhoto : ""}
-                />
+                >
+                  <AvatarBadge borderColor="papayawhip" bg="tomato" boxSize="1.25em"/>
+                </Avatar>
               </MenuButton>
               <MenuList>
                 <MenuItem
