@@ -32,7 +32,7 @@ function App() {
         path="/" 
         element={ 
           <ProtectedRoute>
-            <TopNav onLogout={onLogout} />
+            <TopNav server={server} onLogout={onLogout} />
           </ProtectedRoute>
         } 
       >

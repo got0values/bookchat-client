@@ -1,6 +1,6 @@
-import { ReactNode, useState, useLayoutEffect } from 'react';
+import { ReactNode, useState, useLayoutEffect, useEffect, SetStateAction } from 'react';
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
-import { TopNavProps } from './types/types';
+import { TopNavProps, UserMessagesType, Follower, Following_Following_following_profile_idToProfile } from './types/types';
 import { useAuth } from './hooks/useAuth';
 import {
   Box,
@@ -21,14 +21,27 @@ import {
   useColorModeValue,
   Stack,
   Badge,
-  useColorMode
+  Text,
+  Icon,
+  useColorMode,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  AvatarGroup,
 } from '@chakra-ui/react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { MdClose, MdLogout } from 'react-icons/md';
 import { BsFillMoonFill, BsFillSunFill } from 'react-icons/bs';
-import { FiSettings } from 'react-icons/fi';
+import { FiSettings, FiMail } from 'react-icons/fi';
+import { RxDotFilled } from 'react-icons/rx';
 import logoIcon from './assets/community-book-club-logo-logo-only.png';
 import logoIconWhite from './assets/community-book-club-logo-logo-only-white.png';
+import Cookies from "js-cookie";
+import axios from "axios";
 
 interface LinkItemProps {
   name: string;
@@ -41,16 +54,66 @@ const LinkItems: Array<LinkItemProps> = [
   { name: 'Favorites', linkTo: "/" },
 ];
 
-export default function TopNav({onLogout}: TopNavProps) {
+
+
+export default function TopNav({server,onLogout}: TopNavProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
-  const { user } = useAuth();
+  const { user, getUser } = useAuth();
   const navigate = useNavigate();
+  const [userMessages,setUserMessages] = useState<UserMessagesType>({
+    followRequests: [],
+  })
+
+  function getMessages() {
+    //check if any follow requests
+    if (user.Profile.Following_Following_following_profile_idToProfile?.length) {
+      user.Profile.Following_Following_following_profile_idToProfile.forEach((follower)=>{
+        if (follower.status === "requesting") {
+          let followerData = follower.Profile_Following_self_profile_idToProfile;
+          //TODO Fix this so spred goes in
+          Object.assign(followerData, {"followId": follower.id})
+          setUserMessages({...userMessages, followRequests: [...userMessages.followRequests as any[], followerData] })
+        }
+      })
+    }
+  }
+
+  useEffect(()=>{
+    getMessages()
+  },[])
 
   const [profilePhoto,setProfilePhoto] = useState<string | null>(null);
   useLayoutEffect(()=>{
     setProfilePhoto(`${user.Profile.profile_photo}?x=${new Date().getTime()}`);
   },[user.Profile])
+
+
+  //User edit modals
+  const { 
+    isOpen: isOpenMessagesModal, 
+    onOpen: onOpenMessagesModal, 
+    onClose: onCloseMessagesModal 
+  } = useDisclosure()
+
+  async function acceptFollowRequest(requestId: number) {
+    const tokenCookie = Cookies.get().token;
+    await axios
+    .post(server + "/api/acceptfollowrequest",
+    {followId: requestId},
+    {headers: {
+      'authorization': tokenCookie
+    }})
+    .then((response)=>{
+      if (response.data.success) {
+        getUser()
+        getMessages();
+      }
+    })
+    .catch(({response})=>{
+      console.log(response)
+    })
+  }
 
   return (
     <>
@@ -150,7 +213,23 @@ export default function TopNav({onLogout}: TopNavProps) {
                   size={'sm'}
                   src={profilePhoto ? profilePhoto : ""}
                 >
-                  <AvatarBadge borderColor="papayawhip" bg="tomato" boxSize="1.25em"/>
+                  {userMessages.followRequests?.length ? (
+                    <AvatarBadge 
+                      borderColor="papayawhip" 
+                      borderBottomLeftRadius="1px"
+                      borderBottomRightRadius="1px"
+                      borderWidth="1.5px"
+                      bg="tomato" 
+                      boxSize="1.25em"
+                      _before={{
+                        content: `"1"`,
+                        fontWeight: "800",
+                        fontSize: "13",
+                        fontFamily: "Inter",
+                        padding: "1px"
+                      }}
+                    />
+                  ) : null}
                 </Avatar>
               </MenuButton>
               <MenuList>
@@ -161,6 +240,19 @@ export default function TopNav({onLogout}: TopNavProps) {
                 >
                   {`${user.first_name} ${user.last_name}`}
                 </MenuItem>
+                <MenuDivider/>
+                  <MenuItem
+                    aria-label="messages"
+                    onClick={onOpenMessagesModal}
+                    icon={<FiMail size={20}/>}
+                    fontSize="lg"
+                    fontWeight="600"
+                  >
+                      Messages
+                      {userMessages.followRequests?.length ? (
+                        <Icon as={RxDotFilled} boxSize="1.5em" color="red" verticalAlign="middle" />
+                      ) : null}
+                  </MenuItem>
                 <MenuDivider/>
                 <MenuItem
                   aria-label="toggle color mode"
@@ -221,6 +313,45 @@ export default function TopNav({onLogout}: TopNavProps) {
             </Stack>
           </Box>
         ) : null}
+
+        <Modal isOpen={isOpenMessagesModal} onClose={onCloseMessagesModal} size="lg">
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader fontSize="2xl">Messages</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              {userMessages?.followRequests?.map((followRequest,i)=>{
+                {console.log(followRequest)}
+                return (
+                  <Flex align="center" gap={2} key={i}>
+                    <Avatar src={followRequest.profile_photo} size="sm"/>
+                    <Text>
+                      <Text as="span" fontWeight="bold">@{followRequest.username}</Text> would like to follow you
+                    </Text>
+                    <Box m={1}>
+                      <Button 
+                        size="sm"
+                        onClick={e=>acceptFollowRequest(followRequest?.followId)}
+                      >
+                        Accept
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        Reject
+                      </Button>
+                    </Box>
+                  </Flex>
+                )
+              })}
+              
+            </ModalBody>
+            <ModalFooter>
+              <Button variant='ghost' onClick={onCloseMessagesModal}>
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+
       </Box>
 
       <Box id="main">

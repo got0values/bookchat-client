@@ -52,51 +52,50 @@ export default function Profile({server}: ProfileProps) {
   async function getProfile() {
     setIsLoading(true);
     const tokenCookie = Cookies.get().token;
-      if (tokenCookie) {
-        console.log(paramsUsername)
-        await axios
-        .post(server + "/api/getprofile", 
-        {
-          profileUsername: paramsUsername
-        },
-        {headers: {
-          Authorization: tokenCookie
-        }}
-        )
-        .then((response)=>{
-          if (response.data.success){
-            console.log(response.data.profileData)
-            const message = response.data.message;
-            const responseProfileData = response.data.profileData
-            switch(message) {
-              case "self":
-                setViewer("self")
-                setProfileData(responseProfileData)
-                break;
-              case "nonFollower":
-                setViewer("nonFollower")
-                setProfileData(responseProfileData)
-                break;
-              case "requesting":
-                setViewer("requesting")
-                setProfileData(responseProfileData)
-                break;
-              case "following":
-                setViewer("following")
-                setProfileData(responseProfileData)
-                break;
-              default:
-                setViewer("nonFollower")
-                setProfileData(responseProfileData)
-                break;
-            }
-            setIsLoading(false);
+    if (tokenCookie) {
+      await axios
+      .post(server + "/api/getprofile", 
+      {
+        profileUsername: paramsUsername
+      },
+      {headers: {
+        Authorization: tokenCookie
+      }}
+      )
+      .then((response)=>{
+        if (response.data.success){
+          console.log(response.data.profileData)
+          const message = response.data.message;
+          const responseProfileData = response.data.profileData
+          switch(message) {
+            case "self":
+              setViewer("self")
+              setProfileData(responseProfileData)
+              break;
+            case "nonFollower":
+              setViewer("nonFollower")
+              setProfileData(responseProfileData)
+              break;
+            case "requesting":
+              setViewer("requesting")
+              setProfileData(responseProfileData)
+              break;
+            case "following":
+              setViewer("following")
+              setProfileData(responseProfileData)
+              break;
+            default:
+              setViewer("nonFollower")
+              setProfileData(responseProfileData)
+              break;
           }
-        })
-        .catch(({response})=>{
-          console.log(response)
-        })
-      }
+          setIsLoading(false);
+        }
+      })
+      .catch(({response})=>{
+        console.log(response)
+      })
+    }
   }
   useEffect(()=>{
     getProfile();

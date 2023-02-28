@@ -14,6 +14,7 @@ export interface SideNavProps {
 
 //TopNav
 export interface TopNavProps {
+  server: string;
   onLogout: () => void;
 }
 
@@ -31,6 +32,17 @@ export interface User {
   updated_at: string;
   Library: Library;
   Profile: ProfileType
+}
+
+export interface UserMessagesType {
+  followRequests: Follower[] | null;
+}
+
+export interface Follower {
+  id: number;
+  username: string;
+  profile_photo: string;
+  followId?: number;
 }
 
 
