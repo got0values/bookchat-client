@@ -25,8 +25,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
       }
     })
     .then((response)=>{
-      return response;
-    }).then((response)=>{
       const responseData = response.data;
       if (responseData.success) {
         setUser(responseData.message);
@@ -43,7 +41,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
         duration: 9000,
         isClosable: true
       })
-      console.log(response.data) 
     })
   }
 

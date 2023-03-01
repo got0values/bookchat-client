@@ -1,6 +1,6 @@
-import React,{ useState, useEffect } from 'react'
+// import React,{ useState, useEffect } from 'react'
 import { Route, Routes } from "react-router-dom";
-import { Box } from '@chakra-ui/react';
+// import { Box } from '@chakra-ui/react';
 import { AuthContextProps } from './types/types';
 import { ProtectedRoute } from './shared/ProtectedRoute';
 import Login from './Login';

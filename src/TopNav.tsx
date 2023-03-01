@@ -31,6 +31,8 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  useToast,
+  Link as ChakraLink,
   AvatarGroup,
 } from '@chakra-ui/react';
 import { GiHamburgerMenu } from 'react-icons/gi';
@@ -54,12 +56,11 @@ const LinkItems: Array<LinkItemProps> = [
   { name: 'Favorites', linkTo: "/" },
 ];
 
-
-
 export default function TopNav({server,onLogout}: TopNavProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
   const { user, getUser } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
   const [userMessages,setUserMessages] = useState<UserMessagesType>({
     followRequests: [],
@@ -68,26 +69,30 @@ export default function TopNav({server,onLogout}: TopNavProps) {
   function getMessages() {
     //check if any follow requests
     if (user.Profile.Following_Following_following_profile_idToProfile?.length) {
-      user.Profile.Following_Following_following_profile_idToProfile.forEach((follower)=>{
-        if (follower.status === "requesting") {
-          let followerData = {...follower.Profile_Following_self_profile_idToProfile};
-          //TODO Fix this so spred goes in
-          Object.assign(followerData, {"followId": follower.id})
-          setUserMessages({...userMessages, followRequests: [...userMessages.followRequests as any[], followerData] })
+      let followers = user.Profile.Following_Following_following_profile_idToProfile;
+      for (let i = 0; i < followers.length; i++) {
+        if(followers[i].status === "requesting") {
+          let followerData = {...followers[i].Profile_Following_self_profile_idToProfile};
+          Object.assign(followerData, {"followId": followers[i].id})
+          setUserMessages((prev)=>({...prev, followRequests: [...prev.followRequests as any[], followerData] }))
         }
-      })
+      }
     }
   }
 
-  useLayoutEffect(()=>{
+  useEffect(()=>{
+    //This only runs on window reload and login
+    // getUser()
     getMessages()
-  },[])
+    return(()=>{
+      setUserMessages({followRequests: []})
+    })
+  },[user])
 
   const [profilePhoto,setProfilePhoto] = useState<string | null>(null);
   useLayoutEffect(()=>{
     setProfilePhoto(`${user.Profile.profile_photo}?x=${new Date().getTime()}`);
   },[user.Profile])
-
 
   //User edit modals
   const { 
@@ -96,7 +101,6 @@ export default function TopNav({server,onLogout}: TopNavProps) {
     onClose: onCloseMessagesModal 
   } = useDisclosure()
 
-  const [messagesError,setMessagesError] = useState("")
   async function acceptFollowRequest(requestId: number) {
     const tokenCookie = Cookies.get().token;
     await axios
@@ -113,7 +117,12 @@ export default function TopNav({server,onLogout}: TopNavProps) {
     })
     .catch(({response})=>{
       console.log(response)
-      setMessagesError("An error has occured")
+      toast({
+        description: "An error has occurred",
+        status: "error",
+        duration: 9000,
+        isClosable: true
+      })
     })
   }
 
@@ -224,7 +233,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                       bg="tomato" 
                       boxSize="1.25em"
                       _before={{
-                        content: `"1"`,
+                        content: `"${userMessages?.followRequests?.length}"`,
                         fontWeight: "800",
                         fontSize: "13",
                         fontFamily: "Inter",
@@ -316,22 +325,40 @@ export default function TopNav({server,onLogout}: TopNavProps) {
           </Box>
         ) : null}
 
-        <Modal isOpen={isOpenMessagesModal} onClose={onCloseMessagesModal} size="lg">
+        <Modal isOpen={isOpenMessagesModal} onClose={onCloseMessagesModal} size="xl">
           <ModalOverlay />
           <ModalContent>
             <ModalHeader fontSize="2xl">Messages</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <Text color="tomato">{messagesError}</Text>
               {userMessages?.followRequests?.map((followRequest,i)=>{
-                {console.log(followRequest)}
                 return (
-                  <Flex align="center" gap={2} key={i}>
-                    <Avatar src={followRequest.profile_photo} size="sm"/>
-                    <Text>
-                      <Text as="span" fontWeight="bold">@{followRequest.username}</Text> would like to follow you
-                    </Text>
-                    <Box m={1}>
+                  <Flex 
+                    align="center" 
+                    gap={1} 
+                    justify="space-between" 
+                    flexWrap="wrap"
+                    key={i}
+                  >
+                    <Flex align="center" gap={1} flex="1 1 auto">
+                      <Avatar src={followRequest.profile_photo} size="sm"/>
+                      <Text>
+                        <Text
+                          as={Link} 
+                          to={`/profile/${followRequest.username}`}
+                          onClick={onCloseMessagesModal}
+                        >
+                          <Text 
+                            as="span"
+                            fontWeight="bold"
+                          >
+                          @{followRequest.username}
+                          </Text> 
+                        </Text>
+                        {" "} would like to follow you
+                      </Text>
+                    </Flex>
+                    <Flex m={1} flex="1 1 auto" justify="center">
                       <Button 
                         size="sm"
                         onClick={e=>acceptFollowRequest(followRequest.followId!)}
@@ -341,7 +368,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                       <Button variant="ghost" size="sm">
                         Reject
                       </Button>
-                    </Box>
+                    </Flex>
                   </Flex>
                 )
               })}
