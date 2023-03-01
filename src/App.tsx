@@ -11,6 +11,7 @@ import TopNav from './TopNav';
 import Dashboard from './Dashboard';
 import Profile from './Profile/Profile';
 import Settings from './Settings';
+import { Members } from "./Members";
 import { useAuth } from './hooks/useAuth';
 
 function App() {
@@ -52,6 +53,10 @@ function App() {
         <Route 
           path="settings" 
           element={ <Settings server={server} /> } 
+        />
+        <Route 
+          path="members" 
+          element={ <Members server={server} /> } 
         />
         <Route 
           path="*" 
