@@ -79,7 +79,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
     }
   }
 
-  useEffect(()=>{
+  useLayoutEffect(()=>{
     getMessages()
   },[])
 
