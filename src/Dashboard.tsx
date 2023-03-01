@@ -8,13 +8,13 @@ import axios from "axios";
 
 
 export default function Dashboard({server}: DashboardProps) {
-  // const { getUser } = useAuth();
-  // useLayoutEffect(()=>{
-  //   getUser()
-  //   return(()=>{
-  //     null
-  //   })
-  // },[])
+  const { getUser } = useAuth();
+  useLayoutEffect(()=>{
+    getUser()
+    return(()=>{
+      null
+    })
+  },[])
 
   return (
     <>

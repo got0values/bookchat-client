@@ -1,7 +1,8 @@
-import React, {useState,createContext,useContext,useEffect,useCallback} from 'react';
-import { Route, Routes, useNavigate, Navigate } from "react-router-dom"
-import { User, AuthProviderProps, AuthContextProps } from '../types/types';
+import React, {createContext,useContext} from 'react';
+import { useNavigate,  } from "react-router-dom"
+import { AuthProviderProps, AuthContextProps } from '../types/types';
 import { useLocalStorage } from './useLocalStorage';
+import { useToast } from '@chakra-ui/react';
 import Cookies from "js-cookie";
 import axios from "axios";
 
@@ -9,6 +10,8 @@ const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   const server = import.meta.env.VITE_SERVER;
+
+  const toast = useToast();
 
   const navigate = useNavigate();
   const [user,setUser] = useLocalStorage("user", null);
@@ -34,6 +37,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     })
     .catch(({response})=>{
       setUser(null)
+      toast({
+        description: "An error has occured",
+        status: "error",
+        duration: 9000,
+        isClosable: true
+      })
       console.log(response.data) 
     })
   }
