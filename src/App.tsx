@@ -5,6 +5,7 @@ import { AuthContextProps } from './types/types';
 import { ProtectedRoute } from './shared/ProtectedRoute';
 import Login from './Login';
 import Register from './Register';
+import { RedirectPage } from './shared/RedirectPage';
 // import SideNav from './SideNav';
 import TopNav from './TopNav';
 import Dashboard from './Dashboard';
@@ -51,6 +52,10 @@ function App() {
         <Route 
           path="settings" 
           element={ <Settings server={server} /> } 
+        />
+        <Route 
+          path="*" 
+          element={ <RedirectPage /> } 
         />
       </Route>
     </Routes>

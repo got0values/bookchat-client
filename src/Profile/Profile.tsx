@@ -32,6 +32,7 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import collectionToArray from "../utils/collectionToArray";
+import { redirectToErrorPage } from "../utils/redirectToErrorPage";
 import { FiFile } from 'react-icons/fi';
 import { MdEdit } from 'react-icons/md';
 import { BsPlusLg } from 'react-icons/bs';
@@ -94,6 +95,7 @@ export default function Profile({server}: ProfileProps) {
       })
       .catch(({response})=>{
         console.log(response)
+        redirectToErrorPage(response.status)
       })
     }
   }
