@@ -53,7 +53,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
     })
     .catch(({response})=>{
       console.log(response?.data)
-      setError(response?.data?.errorMessage)
+      setError(response?.data?.message)
     })
   };
 
