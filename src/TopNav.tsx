@@ -96,6 +96,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
     onClose: onCloseMessagesModal 
   } = useDisclosure()
 
+  const [messagesError,setMessagesError] = useState("")
   async function acceptFollowRequest(requestId: number) {
     const tokenCookie = Cookies.get().token;
     await axios
@@ -112,6 +113,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
     })
     .catch(({response})=>{
       console.log(response)
+      setMessagesError("An error has occured")
     })
   }
 
@@ -320,6 +322,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
             <ModalHeader fontSize="2xl">Messages</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
+              <Text color="tomato">{messagesError}</Text>
               {userMessages?.followRequests?.map((followRequest,i)=>{
                 {console.log(followRequest)}
                 return (
