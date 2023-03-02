@@ -130,7 +130,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
 
   return (
     <>
-      <Box bg={useColorModeValue('white', 'gray.900')} overflow="hidden" px={4} boxShadow="1px 1px 6px lightgray" _dark={{boxShadow: "0 0 0"}}>
+      <Box as="nav" bg={useColorModeValue('white', 'gray.900')} overflow="hidden" px={4} boxShadow="1px 1px 6px lightgray" _dark={{boxShadow: "0 0 0"}}>
         <Flex py={2} flexWrap="wrap" alignItems={'center'} justifyContent={'space-between'}>
           <IconButton
             size={'md'}
@@ -386,7 +386,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
 
       </Box>
 
-      <Box id="main">
+      <Box as="main" id="main">
         <Outlet />
       </Box>
     </>

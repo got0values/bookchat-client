@@ -12,6 +12,7 @@ import Dashboard from './Dashboard';
 import Profile from './Profile/Profile';
 import Settings from './Settings';
 import { Members } from "./Members";
+import { Isso } from "./Isso";
 import { useAuth } from './hooks/useAuth';
 
 function App() {
@@ -57,6 +58,10 @@ function App() {
         <Route 
           path="members" 
           element={ <Members server={server} /> } 
+        />
+        <Route 
+          path="isso" 
+          element={ <Isso server={server} /> } 
         />
         <Route 
           path="*" 
