@@ -236,6 +236,11 @@ export default function Profile({server}: ProfileProps) {
   const interestsInputRef = useRef({} as HTMLInputElement);
   const [profileInterests,setProfileInterests] = useState<string[]>([]);
 
+  function handleAddInterest() {
+    setProfileInterests([...profileInterests, interestsInputRef.current.value])
+    interestsInputRef.current.value = "";
+  }
+
   function handleDeleteInterest(e: MouseEvent<HTMLButtonElement | MouseEvent>, index: number) {
   setProfileInterests(prev=>{
       return prev.filter((item,i)=> i != index)
@@ -500,12 +505,10 @@ export default function Profile({server}: ProfileProps) {
                         id="interests"
                         ref={interestsInputRef}
                         size="lg"
+                        onKeyDown={e=>e.key==='Enter' ? handleAddInterest() : null}
                       />
                       <Button
-                        onClick={e=>{
-                          setProfileInterests([...profileInterests, interestsInputRef.current.value])
-                          interestsInputRef.current.value = "";
-                        }}
+                        onClick={e=>handleAddInterest()}
                         variant="ghost"
                         px={0}
                         size="lg"
