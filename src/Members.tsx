@@ -39,11 +39,11 @@ export const Members = ({server}: MembersProps) => {
 
   return (
     <Box id="main" flexDirection="column">
-      <Heading as="h1" size="3xl">Members</Heading>
+      <Heading as="h1" size="3xl" mb={5}>Members</Heading>
       <OrderedList>
         {members?.map((member,i)=>{
           return (
-            <ListItem key={i}>
+            <ListItem key={i} m={5}>
               <Link to={`/profile/${member.username}`}>{member.username}</Link>
             </ListItem>
           )
