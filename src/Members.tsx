@@ -3,12 +3,9 @@ import { Link } from 'react-router-dom';
 import { 
   Box,
   Heading,
-  Stack,
-  HStack,
-  Flex,
-  Text,
-  Input,
-  Badge
+  OrderedList,
+  ListItem,
+  Center
 } from "@chakra-ui/react";
 import { ProfileType } from './types/types';
 import Cookies from 'js-cookie';
@@ -43,13 +40,15 @@ export const Members = ({server}: MembersProps) => {
   return (
     <Box id="main" flexDirection="column">
       <Heading as="h1" size="3xl">Members</Heading>
-      {members?.map((member,i)=>{
-        return (
-          <Box key={i}>
-            <Link to={`/profile/${member.username}`}>{member.username}</Link>
-          </Box>
-        )
-      })}
+      <OrderedList>
+        {members?.map((member,i)=>{
+          return (
+            <ListItem key={i}>
+              <Link to={`/profile/${member.username}`}>{member.username}</Link>
+            </ListItem>
+          )
+        })}
+      </OrderedList>
     </Box>
   )
 }
