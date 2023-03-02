@@ -27,7 +27,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     .then((response)=>{
       const responseData = response.data;
       if (responseData.success) {
-        setUser(responseData.message);
+        const responseUser = responseData.message;
+        setUser(responseUser);
+
+        //change the subdomain if it doesn't match the user Library subdomain
+        const subdomain = window.location.host.split(".")[0];
+        const librarySubdomain = responseUser.Library.subdomain;
+        if (subdomain !== librarySubdomain) {
+          let protocol = window.location.protocol;
+          let slicedHost = window.location.host.split(".").slice(1);
+          let domain = slicedHost.join(".");
+          const newLocation = `${librarySubdomain}.${domain}`;
+          window.location.href = `${protocol}//${newLocation}/`;
+        }
       }
       else {
         setUser(null);
