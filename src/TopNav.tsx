@@ -55,7 +55,7 @@ const LinkItems: Array<LinkItemProps> = [
   { name: 'Reading Clubs', linkTo: "/" },
   { name: 'Favorites', linkTo: "/" },
   { name: 'Members', linkTo: "/members" },
-  { name: 'Isso', linkTo: "/isso" }
+  { name: 'Commento', linkTo: "/commento" }
 ];
 
 export default function TopNav({server,onLogout}: TopNavProps) {
