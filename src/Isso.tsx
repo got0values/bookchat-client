@@ -9,7 +9,7 @@ export const Isso = ({server}: {server: string}) => {
         <Box id="thread-id">
 
         </Box>
-      <script data-isso="/prefix/"
+      <script data-isso="/"
         data-isso-id="thread-id"
         data-isso-css="true"
         data-isso-css-url="null"
@@ -24,7 +24,7 @@ export const Isso = ({server}: {server: string}) => {
         data-isso-vote-levels=""
         data-isso-page-author-hashes="f124cf6b2f01,7831fe17a8cd"
         data-isso-reply-notifications-default-enabled="false"
-        src="./assets/embed.js"></script>
+        src="https://isso.communitybookclub.com/js/embed.js"></script>
       </Box>
     </Box>
   )
