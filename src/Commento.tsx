@@ -1,9 +1,7 @@
 import { useEffect } from 'react';
 import { Box, Heading } from "@chakra-ui/react";
 
-
-export const Commento = ({server}: {server: string}) => {
-
+const useCommento = () => {
   let scriptElement: HTMLScriptElement = document.createElement("script");
   scriptElement.id = "scriptelement"
   scriptElement.src = "https://commento.communitybookclub.com/js/commento.js";
@@ -19,6 +17,11 @@ export const Commento = ({server}: {server: string}) => {
       documentScriptElement = null;
     }
   },[])
+}
+
+export const Commento = ({server}: {server: string}) => {
+
+  useCommento();
 
   return (
     <Box>
