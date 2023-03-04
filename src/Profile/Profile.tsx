@@ -40,7 +40,7 @@ import { FollowProfileButton, CancelRequestButton, UnFollowProfileButton } from 
 import Cookies from "js-cookie";
 import axios from "axios";
 
-export default function Profile({server}: ProfileProps) {
+const useProfile = ({server}: ProfileProps) => {
   const { user, setUser } = useAuth();
   const { paramsUsername } = useParams<{paramsUsername: string}>();
   const [isLoading,setIsLoading] = useState(true);
@@ -247,6 +247,17 @@ export default function Profile({server}: ProfileProps) {
     })
   }
 
+  return {user,setUser,getProfile,paramsUsername,navigate,isLoading,profileData,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,onCloseProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,userProfilePhotoError,updateUserProfilePhoto,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,userProfileDataError,updateProfileData};
+  
+}
+
+
+
+
+export default function Profile({server}: ProfileProps) {
+
+  const {user,getProfile,isLoading,profileData,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,onCloseProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,userProfilePhotoError,updateUserProfilePhoto,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,userProfileDataError,updateProfileData} = useProfile({server});
+  
   return (
     <Box className="main-content">
       <Skeleton isLoaded={!isLoading}>
