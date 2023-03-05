@@ -50,7 +50,6 @@ const useProfile = ({server}: ProfileProps) => {
   const [ viewer, setViewer ] = useState("nonFollower");
   const [profileData, setProfileData] = useState<ProfileType | null>(null);
   async function getProfile() {
-    let cleanUpBool = true;
     setIsLoading(true);
     const tokenCookie = Cookies.get().token;
     if (tokenCookie) {
@@ -68,31 +67,28 @@ const useProfile = ({server}: ProfileProps) => {
           console.log(response.data.profileData)
           const message = response.data.message;
           const responseProfileData = response.data.profileData
-          if (cleanUpBool) {
-            switch(message) {
-              case "self":
-                setViewer("self")
-                setProfileData(responseProfileData)
-                break;
-              case "nonFollower":
-                setViewer("nonFollower")
-                setProfileData(responseProfileData)
-                break;
-              case "requesting":
-                setViewer("requesting")
-                setProfileData(responseProfileData)
-                break;
-              case "following":
-                setViewer("following")
-                setProfileData(responseProfileData)
-                break;
-              default:
-                setViewer("nonFollower")
-                setProfileData(responseProfileData)
-                break;
-            }
+          switch(message) {
+            case "self":
+              setViewer("self")
+              setProfileData(responseProfileData)
+              break;
+            case "nonFollower":
+              setViewer("nonFollower")
+              setProfileData(responseProfileData)
+              break;
+            case "requesting":
+              setViewer("requesting")
+              setProfileData(responseProfileData)
+              break;
+            case "following":
+              setViewer("following")
+              setProfileData(responseProfileData)
+              break;
+            default:
+              setViewer("nonFollower")
+              setProfileData(responseProfileData)
+              break;
           }
-          cleanUpBool = false;
           setIsLoading(false);
         }
       })
@@ -103,11 +99,15 @@ const useProfile = ({server}: ProfileProps) => {
     }
   }
   useEffect(()=>{
-    getProfile();
+    let cleanUpBool = true;
+    if (cleanUpBool) {
+      getProfile();
+    }
     return ()=>{
+      cleanUpBool = false;
       setProfileData(null)
     }
-  },[])
+  },[paramsUsername])
 
   const [profileActionError,setProfileActionError] = useState<string>("")
 
@@ -128,36 +128,38 @@ const useProfile = ({server}: ProfileProps) => {
 
   const [userProfilePhotoError,setUserProfilePhotoError] = useState<string>("");
   async function updateUserProfilePhoto() {
-    const tokenCookie = Cookies.get().token;
+    let tokenCookie = Cookies.get().token;
     const formData = new FormData();
     formData.append("photo", profileImageFile as Blob)
 
-    const CancelToken=axios.CancelToken;
-    const source = CancelToken.source();
-    await axios
-    .post(server + "/api/updateprofilephoto", 
-    {...formData, cancelToken: source.token},
-    {headers: {
-      'authorization': tokenCookie,
-      'content-type': 'multipart/form-data'
-    }}
-    )
-    .then((response)=>{
-      if (response.data.success){
-        setUserProfilePhotoError("")
-        setUser(response.data.message)
-        onCloseProfilePicModal();
+    if (tokenCookie) {
+      const CancelToken=axios.CancelToken;
+      const source = CancelToken.source();
+      await axios
+      .post(server + "/api/updateprofilephoto", 
+      {...formData, cancelToken: source.token},
+      {headers: {
+        'authorization': tokenCookie,
+        'content-type': 'multipart/form-data'
+      }}
+      )
+      .then((response)=>{
+        if (response.data.success){
+          setUserProfilePhotoError("")
+          setUser(response.data.message)
+          onCloseProfilePicModal();
+        }
+      })
+      .catch(({response})=>{
+        if (axios.isCancel(response)) {
+          console.log("successfully aborted")
+        }
+        console.log(response)
+        setUserProfilePhotoError(response?.statusText)
+      })
+      return () => {
+        source.cancel();
       }
-    })
-    .catch(({response})=>{
-      if (axios.isCancel(response)) {
-        console.log("successfully aborted")
-      }
-      console.log(response)
-      setUserProfilePhotoError(response?.statusText)
-    })
-    return () => {
-      source.cancel();
     }
   }
 
@@ -165,14 +167,11 @@ const useProfile = ({server}: ProfileProps) => {
   const profileUserNameRef = useRef({} as HTMLInputElement);
   const profileAboutRef = useRef({} as HTMLInputElement);
   async function updateProfileData() {
-    const tokenCookie = Cookies.get().token;
-    console.log(profileInterests)
-
+    let tokenCookie: string | null = Cookies.get().token;
     let navigateToNewUsernameOnReponse = false;
     if (paramsUsername !== profileUserNameRef.current.value) {
       navigateToNewUsernameOnReponse = true;
     }
-
     if (tokenCookie){
       await axios
       .post(server + "/api/updateprofiledata", 
@@ -189,11 +188,9 @@ const useProfile = ({server}: ProfileProps) => {
         if (response.data.success){
           setUserProfileDataError("")
           setUser(response.data.message)
-
           if (navigateToNewUsernameOnReponse) {
             const newUsername = response.data.message.Profile.username
             navigate("/profile/" + newUsername)
-            window.location.reload();
           }
           else {
             getProfile()
@@ -214,6 +211,7 @@ const useProfile = ({server}: ProfileProps) => {
     else {
       setUserProfileDataError("Please login again")
     }
+    tokenCookie = null;
   }
 
   //User edit modals
@@ -254,7 +252,7 @@ const useProfile = ({server}: ProfileProps) => {
     })
   }
 
-  return {user,setUser,getProfile,paramsUsername,navigate,isLoading,profileData,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,onCloseProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,userProfilePhotoError,updateUserProfilePhoto,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,userProfileDataError,updateProfileData};
+  return {user,setUser,getProfile,navigate,isLoading,profileData,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,onCloseProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,userProfilePhotoError,updateUserProfilePhoto,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,userProfileDataError,updateProfileData};
   
 }
 
