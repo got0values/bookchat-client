@@ -53,7 +53,7 @@ export interface ProfileProps {
 
 export interface ProfileButtonProps extends ProfileProps {
   profileId: number;
-  getProfile: ()=>void;
+  setProfileDataUpdated: Dispatch<SetStateAction<boolean>>;
   setProfileActionError: Dispatch<SetStateAction<string>>;
 }
 

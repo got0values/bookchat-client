@@ -3,7 +3,7 @@ import { Button } from "@chakra-ui/react"
 import Cookies from "js-cookie"
 import axios from "axios"
 
-export const FollowProfileButton = ({server,profileId,getProfile,setProfileActionError}: ProfileButtonProps) => {
+export const FollowProfileButton = ({server,profileId,setProfileDataUpdated,setProfileActionError}: ProfileButtonProps) => {
   async function follow() {
     const tokenCookie = Cookies.get().token;
     await axios
@@ -18,7 +18,7 @@ export const FollowProfileButton = ({server,profileId,getProfile,setProfileActio
     )
     .then((response)=>{
       if (response.data.success) {
-        getProfile()
+        setProfileDataUpdated(true)
       }
     })
     .catch(({response})=>{
@@ -47,7 +47,7 @@ export const FollowProfileButton = ({server,profileId,getProfile,setProfileActio
   )
 }
 
-export const CancelRequestButton = ({server,profileId,getProfile,setProfileActionError}: ProfileButtonProps) => {
+export const CancelRequestButton = ({server,profileId,setProfileDataUpdated,setProfileActionError}: ProfileButtonProps) => {
   async function cancelRequest() {
     const tokenCookie = Cookies.get().token;
     await axios
@@ -62,7 +62,7 @@ export const CancelRequestButton = ({server,profileId,getProfile,setProfileActio
     )
     .then((response)=>{
       if (response.data.success) {
-        getProfile()
+        setProfileDataUpdated(true)
       }
     })
     .catch(({response})=>{
@@ -90,7 +90,7 @@ export const CancelRequestButton = ({server,profileId,getProfile,setProfileActio
   )
 }
 
-export const UnFollowProfileButton = ({server,profileId,getProfile,setProfileActionError}: ProfileButtonProps) => {
+export const UnFollowProfileButton = ({server,profileId,setProfileDataUpdated,setProfileActionError}: ProfileButtonProps) => {
   async function unFollow() {
     const tokenCookie = Cookies.get().token;
     await axios
@@ -105,7 +105,7 @@ export const UnFollowProfileButton = ({server,profileId,getProfile,setProfileAct
     )
     .then((response)=>{
       if (response.data.success) {
-        getProfile()
+        setProfileDataUpdated(true)
       }
     })
     .catch(({response})=>{

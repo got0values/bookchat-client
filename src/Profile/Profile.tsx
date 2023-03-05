@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
+import { SetStateAction, Dispatch } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ProfileProps, HTMLInputEvent, ProfileType } from '../types/types';
 import { 
@@ -43,6 +44,7 @@ import axios from "axios";
 const useProfile = ({server}: ProfileProps) => {
   const { user, setUser } = useAuth();
   const { paramsUsername } = useParams<{paramsUsername: string}>();
+  const [ profileDataUpdated, setProfileDataUpdated ] = useState(false);
   const [isLoading,setIsLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -105,9 +107,10 @@ const useProfile = ({server}: ProfileProps) => {
     }
     return ()=>{
       cleanUpBool = false;
+      setProfileDataUpdated(false)
       setProfileData(null)
     }
-  },[paramsUsername])
+  },[paramsUsername,profileDataUpdated])
 
   const [profileActionError,setProfileActionError] = useState<string>("")
 
@@ -197,7 +200,7 @@ const useProfile = ({server}: ProfileProps) => {
             navigate("/profile/" + newUsername)
           }
           else {
-            getProfile()
+            setProfileDataUpdated(true);
           }
           onCloseProfileDataModal();
         }
@@ -256,7 +259,7 @@ const useProfile = ({server}: ProfileProps) => {
     })
   }
 
-  return {user,setUser,getProfile,navigate,isLoading,profileData,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,userProfilePhotoError,updateUserProfilePhoto,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,userProfileDataError,updateProfileData};
+  return {user,setUser,setProfileDataUpdated,navigate,isLoading,profileData,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,userProfilePhotoError,updateUserProfilePhoto,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,userProfileDataError,updateProfileData};
   
 }
 
@@ -265,7 +268,7 @@ const useProfile = ({server}: ProfileProps) => {
 
 export default function Profile({server}: ProfileProps) {
 
-  const {user,getProfile,isLoading,profileData,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,userProfilePhotoError,updateUserProfilePhoto,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,userProfileDataError,updateProfileData} = useProfile({server});
+  const {user,setProfileDataUpdated,isLoading,profileData,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,userProfilePhotoError,updateUserProfilePhoto,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,userProfileDataError,updateProfileData} = useProfile({server});
   
   return (
     <Box className="main-content">
@@ -396,13 +399,13 @@ export default function Profile({server}: ProfileProps) {
                     </Button>
                     ) : (
                     viewer === "nonFollower" ? (
-                    <FollowProfileButton server={server} profileId={profileData.id} getProfile={getProfile} setProfileActionError={setProfileActionError} /> 
+                    <FollowProfileButton server={server} profileId={profileData.id} setProfileDataUpdated={setProfileDataUpdated} setProfileActionError={setProfileActionError} /> 
                     ) : (
                       viewer === "requesting" ? (
-                        <CancelRequestButton server={server} profileId={profileData.id} getProfile={getProfile} setProfileActionError={setProfileActionError} />
+                        <CancelRequestButton server={server} profileId={profileData.id} setProfileDataUpdated={setProfileDataUpdated} setProfileActionError={setProfileActionError} />
                       ) : (
                         viewer === "following" ? (
-                          <UnFollowProfileButton server={server} profileId={profileData.id} getProfile={getProfile} setProfileActionError={setProfileActionError} />
+                          <UnFollowProfileButton server={server} profileId={profileData.id} setProfileDataUpdated={setProfileDataUpdated} setProfileActionError={setProfileActionError} />
                         ) : null
                       )
                     ) 
