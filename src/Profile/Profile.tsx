@@ -126,6 +126,11 @@ const useProfile = ({server}: ProfileProps) => {
     setProfileImageFile(newFile)
   }
 
+  function closeProfilePicModal() {
+    onCloseProfilePicModal();
+    setUserProfilePhotoError("")
+  }
+
   const [userProfilePhotoError,setUserProfilePhotoError] = useState<string>("");
   async function updateUserProfilePhoto() {
     let tokenCookie = Cookies.get().token;
@@ -145,9 +150,8 @@ const useProfile = ({server}: ProfileProps) => {
       )
       .then((response)=>{
         if (response.data.success){
-          setUserProfilePhotoError("")
           setUser(response.data.message)
-          onCloseProfilePicModal();
+          closeProfilePicModal();
         }
       })
       .catch(({response})=>{
@@ -252,7 +256,7 @@ const useProfile = ({server}: ProfileProps) => {
     })
   }
 
-  return {user,setUser,getProfile,navigate,isLoading,profileData,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,onCloseProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,userProfilePhotoError,updateUserProfilePhoto,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,userProfileDataError,updateProfileData};
+  return {user,setUser,getProfile,navigate,isLoading,profileData,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,userProfilePhotoError,updateUserProfilePhoto,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,userProfileDataError,updateProfileData};
   
 }
 
@@ -261,7 +265,7 @@ const useProfile = ({server}: ProfileProps) => {
 
 export default function Profile({server}: ProfileProps) {
 
-  const {user,getProfile,isLoading,profileData,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,onCloseProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,userProfilePhotoError,updateUserProfilePhoto,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,userProfileDataError,updateProfileData} = useProfile({server});
+  const {user,getProfile,isLoading,profileData,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,userProfilePhotoError,updateUserProfilePhoto,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,userProfileDataError,updateProfileData} = useProfile({server});
   
   return (
     <Box className="main-content">
@@ -427,7 +431,7 @@ export default function Profile({server}: ProfileProps) {
 
           {viewer === "self" ? (
           <>
-            <Modal isOpen={isOpenProfilePicModal} onClose={onCloseProfilePicModal}>
+            <Modal isOpen={isOpenProfilePicModal} onClose={closeProfilePicModal}>
               <ModalOverlay />
               <ModalContent>
                 <ModalHeader>
