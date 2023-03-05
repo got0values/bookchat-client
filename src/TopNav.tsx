@@ -333,48 +333,53 @@ export default function TopNav({server,onLogout}: TopNavProps) {
             <ModalHeader fontSize="2xl">Messages</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              {userMessages?.followRequests?.map((followRequest,i)=>{
-                return (
-                  <Flex 
-                    align="center" 
-                    gap={1} 
-                    justify="space-between" 
-                    flexWrap="wrap"
-                    key={i}
-                  >
-                    <Flex align="center" gap={1} flex="1 1 auto">
-                      <Avatar src={followRequest.profile_photo} size="sm"/>
-                      <Text>
-                        <Text
-                          as={Link} 
-                          to={`/profile/${followRequest.username}`}
-                          onClick={onCloseMessagesModal}
-                        >
-                          <Text 
-                            as="span"
-                            fontWeight="bold"
+              <Flex flexDirection="column" gap={5} justify="space-between">
+                {userMessages?.followRequests?.map((followRequest,i)=>{
+                  return (
+                    <Flex 
+                      align="center" 
+                      gap={1} 
+                      justify="space-between" 
+                      flexWrap="wrap"
+                      width="100%"
+                      key={i}
+                    >
+                      <Flex align="center" gap={1}>
+                        <Avatar src={followRequest.profile_photo} size="sm"/>
+                        <Text>
+                          <Text
+                            as={Link} 
+                            to={`/profile/${followRequest.username}`}
+                            onClick={onCloseMessagesModal}
                           >
-                          @{followRequest.username}
-                          </Text> 
+                            <Text 
+                              as="span"
+                              fontWeight="bold"
+                            >
+                            @{followRequest.username}
+                            </Text> 
+                          </Text>
+                          {" "} would like to follow you
                         </Text>
-                        {" "} would like to follow you
-                      </Text>
+                      </Flex>
+                      <Flex m={1} gap={1} justify="flex-end">
+                        <Button 
+                          size="sm"
+                          onClick={e=>acceptFollowRequest(followRequest.followId!)}
+                        >
+                          Accept
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                        >
+                          Reject
+                        </Button>
+                      </Flex>
                     </Flex>
-                    <Flex m={1} flex="1 1 auto" justify="center">
-                      <Button 
-                        size="sm"
-                        onClick={e=>acceptFollowRequest(followRequest.followId!)}
-                      >
-                        Accept
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        Reject
-                      </Button>
-                    </Flex>
-                  </Flex>
-                )
-              })}
-              
+                  )
+                })}
+              </Flex>
             </ModalBody>
             <ModalFooter>
               <Button variant='ghost' onClick={onCloseMessagesModal}>
