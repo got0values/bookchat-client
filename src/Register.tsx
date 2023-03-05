@@ -1,4 +1,5 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { HTMLInputEvent, RegisterFormProps } from './types/types';
 import { 
   FormControl, 
@@ -22,6 +23,21 @@ import axios from "axios";
 
 
 const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
+  const [searchParams] = useSearchParams();
+  const [role,setRole] = useState("user");
+
+  useEffect(()=>{
+    if (searchParams.get("role")) {
+      let paramsRole = searchParams.get("role");
+      if (paramsRole === "admin") {
+        setRole(paramsRole)
+      }
+      else {
+        setRole("user");
+      }
+    }
+  },[searchParams])
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -48,29 +64,35 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("")
-    await axios
-    .post(server + "/api/register", { 
-      firstName: firstName,
-      lastName: lastName,
-      email: email, 
-      password: password,
-      confirmPassword: confirmPassword,
-      libraryId: libraryFromSubdomain.id
-    })
-    .then((response)=>{
-      onLogin(response.data.token);
-      toast({
-        title: 'Account created.',
-        description: "We've created your account.",
-        status: 'success',
-        duration: 9000,
-        isClosable: true
+    if (role === "user" || role === "admin"){
+      await axios
+      .post(server + "/api/register", { 
+        firstName: firstName,
+        lastName: lastName,
+        email: email, 
+        password: password,
+        confirmPassword: confirmPassword,
+        libraryId: libraryFromSubdomain.id,
+        role: role
       })
-    })
-    .catch(({response})=>{
-      console.log(response.data)
-      setError(response.data.message ? response.data.message : response.data.error)
-    })
+      .then((response)=>{
+        onLogin(response.data.token);
+        toast({
+          title: 'Account created.',
+          description: "We've created your account.",
+          status: 'success',
+          duration: 9000,
+          isClosable: true
+        })
+      })
+      .catch(({response})=>{
+        console.log(response.data)
+        setError(response.data.message ? response.data.message : response.data.error)
+      })
+    }
+    else {
+      setError("An error has occurred")
+    }
   };
 
   return (
