@@ -405,7 +405,9 @@ export default function Profile({server}: ProfileProps) {
                         <CancelRequestButton server={server} profileId={profileData.id} setProfileDataUpdated={setProfileDataUpdated} setProfileActionError={setProfileActionError} />
                       ) : (
                         viewer === "following" ? (
-                          <UnFollowProfileButton server={server} profileId={profileData.id} setProfileDataUpdated={setProfileDataUpdated} setProfileActionError={setProfileActionError} />
+                          profileData.User.role === "admin" ? null : (
+                            <UnFollowProfileButton server={server} profileId={profileData.id} setProfileDataUpdated={setProfileDataUpdated} setProfileActionError={setProfileActionError} />
+                          )
                         ) : null
                       )
                     ) 

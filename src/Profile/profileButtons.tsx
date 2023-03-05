@@ -23,7 +23,7 @@ export const FollowProfileButton = ({server,profileId,setProfileDataUpdated,setP
     })
     .catch(({response})=>{
       console.log(response)
-      setProfileActionError(response.error ? response.error : response.status)
+      setProfileActionError(response.data?.error ? response.data?.error : response.status)
     })
     
   }
@@ -67,7 +67,7 @@ export const CancelRequestButton = ({server,profileId,setProfileDataUpdated,setP
     })
     .catch(({response})=>{
       console.log(response)
-      setProfileActionError(response.error ? response.error : response.status)
+      setProfileActionError(response.data?.error ? response.data?.error : response.status)
     })
   }
 
@@ -110,7 +110,7 @@ export const UnFollowProfileButton = ({server,profileId,setProfileDataUpdated,se
     })
     .catch(({response})=>{
       console.log(response)
-      setProfileActionError(response.error ? response.error : response.status)
+      setProfileActionError(response.data?.error ? response.data?.error : response.status)
     })
   }
 
