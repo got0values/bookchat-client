@@ -50,6 +50,7 @@ const useProfile = ({server}: ProfileProps) => {
   const [ viewer, setViewer ] = useState("nonFollower");
   const [profileData, setProfileData] = useState<ProfileType | null>(null);
   async function getProfile() {
+    let cleanUpBool = true;
     setIsLoading(true);
     const tokenCookie = Cookies.get().token;
     if (tokenCookie) {
@@ -67,28 +68,31 @@ const useProfile = ({server}: ProfileProps) => {
           console.log(response.data.profileData)
           const message = response.data.message;
           const responseProfileData = response.data.profileData
-          switch(message) {
-            case "self":
-              setViewer("self")
-              setProfileData(responseProfileData)
-              break;
-            case "nonFollower":
-              setViewer("nonFollower")
-              setProfileData(responseProfileData)
-              break;
-            case "requesting":
-              setViewer("requesting")
-              setProfileData(responseProfileData)
-              break;
-            case "following":
-              setViewer("following")
-              setProfileData(responseProfileData)
-              break;
-            default:
-              setViewer("nonFollower")
-              setProfileData(responseProfileData)
-              break;
+          if (cleanUpBool) {
+            switch(message) {
+              case "self":
+                setViewer("self")
+                setProfileData(responseProfileData)
+                break;
+              case "nonFollower":
+                setViewer("nonFollower")
+                setProfileData(responseProfileData)
+                break;
+              case "requesting":
+                setViewer("requesting")
+                setProfileData(responseProfileData)
+                break;
+              case "following":
+                setViewer("following")
+                setProfileData(responseProfileData)
+                break;
+              default:
+                setViewer("nonFollower")
+                setProfileData(responseProfileData)
+                break;
+            }
           }
+          cleanUpBool = false;
           setIsLoading(false);
         }
       })
@@ -100,6 +104,9 @@ const useProfile = ({server}: ProfileProps) => {
   }
   useEffect(()=>{
     getProfile();
+    return ()=>{
+      setProfileData(null)
+    }
   },[])
 
   const [profileActionError,setProfileActionError] = useState<string>("")
