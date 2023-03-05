@@ -168,6 +168,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   size="lg"
+                  minLength={8}
                   required
                 />
               </FormControl>
@@ -178,6 +179,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                   value={confirmPassword}
                   onChange={(e) => confirmPasswordCheck(e.target.value)}
                   size="lg"
+                  minLength={8}
                   required
                 />
                 <Text color="red" mb={4}>
