@@ -279,7 +279,7 @@ export default function Profile({server}: ProfileProps) {
         <>
           <HStack flexWrap="wrap" w="100%" align="start">
 
-            <Stack flex="1 1 25%">
+            <Stack flex="1 1 20%">
               <Center
                 flexDirection="column"
                 className="profile-card"

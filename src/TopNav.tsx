@@ -40,6 +40,7 @@ import { MdClose, MdLogout } from 'react-icons/md';
 import { BsFillMoonFill, BsFillSunFill } from 'react-icons/bs';
 import { FiSettings, FiMail } from 'react-icons/fi';
 import { RxDotFilled } from 'react-icons/rx';
+import { AiOutlineBell } from 'react-icons/ai';
 import logoIcon from './assets/community-book-club-logo-logo-only.png';
 import logoIconWhite from './assets/community-book-club-logo-logo-only-white.png';
 import Cookies from "js-cookie";
@@ -260,7 +261,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                   <MenuItem
                     aria-label="notifications"
                     onClick={onOpenNotificationsModal}
-                    icon={<FiMail size={20}/>}
+                    icon={<AiOutlineBell size={20}/>}
                     fontSize="lg"
                     fontWeight="600"
                   >
