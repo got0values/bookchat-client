@@ -69,7 +69,7 @@ const config = {
       '.main-content': {
         w: "100%",
         px: "20px",
-        maxW: '1218px'
+        maxW: '1000px'
       },
       '.well': {
         bg: 'white',

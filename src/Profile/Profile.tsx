@@ -279,7 +279,7 @@ export default function Profile({server}: ProfileProps) {
         <>
           <HStack flexWrap="wrap" w="100%" align="start">
 
-            <Stack flex="1 1 20%">
+            <Stack flex="1 1 30%">
               <Center
                 flexDirection="column"
                 className="profile-card"
@@ -419,21 +419,35 @@ export default function Profile({server}: ProfileProps) {
               </Center>
             </Stack>
 
-            <Stack className="well" flex="1 1 65%">
-              <Flex gap={2} align="center">
-                <Text >Status:</Text>
-                <Input 
-                  type="text" 
-                  borderRadius="25px" 
-                  border="transparent"
-                  bg="gray.100" 
-                  _dark={{
-                    bg: "gray.500"
-                  }}
-                />
-                <Button>Submit</Button>
+            <Stack flex="1 1 65%">
+
+              <Box className="well">
+                <Heading as="h3" size="md" mb={2}>
+                  What I'm Reading
+                </Heading>
+                <Flex gap={2} align="center">
+                  <Input 
+                    type="text" 
+                    placeholder="What i'm reading"
+                    borderRadius="25px" 
+                    border="transparent"
+                    bg="gray.100" 
+                    _dark={{
+                      bg: "gray.500"
+                    }}
+                  />
+                  <Button>Submit</Button>
+                </Flex>
+              </Box>
+
+              <Flex className="well" gap={2} align="center">
+                <Heading as="h3" size="md" mb={2}>
+                  Books I've Read
+                </Heading>
               </Flex>
+
             </Stack>
+
           </HStack>
 
           {viewer === "self" ? (

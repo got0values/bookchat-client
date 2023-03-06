@@ -1,6 +1,7 @@
 import React, { useState, useLayoutEffect } from "react";
 import { DashboardProps } from './types/types';
 import { 
+  Box,
   Heading
 } from "@chakra-ui/react";
 import { useAuth } from './hooks/useAuth';
@@ -17,10 +18,10 @@ export default function Dashboard({server}: DashboardProps) {
   },[])
 
   return (
-    <>
-      <Heading as="h1" size="2xl">
+    <Box className="main-content">
+      <Heading as="h1" size="2xl" textAlign="center">
         Dashboard
       </Heading>
-    </>
+    </Box>
   );
 };
