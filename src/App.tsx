@@ -1,18 +1,16 @@
-// import React,{ useState, useEffect } from 'react'
 import { Route, Routes } from "react-router-dom";
-// import { Box } from '@chakra-ui/react';
 import { AuthContextProps } from './types/types';
 import { ProtectedRoute } from './shared/ProtectedRoute';
 import Login from './Login';
 import Register from './Register';
 import { RedirectPage } from './shared/RedirectPage';
-// import SideNav from './SideNav';
 import TopNav from './TopNav';
 import Dashboard from './Dashboard';
+import BookClubs from './BookClubs/BookClubs';
+import BookClub from './BookClubs/BookClub';
 import Profile from './Profile/Profile';
 import Settings from './Settings';
 import { Members } from "./Members";
-import { Commento } from "./Commento";
 import { useAuth } from './hooks/useAuth';
 
 function App() {
@@ -52,16 +50,24 @@ function App() {
           />
         </Route>
         <Route 
-          path="settings" 
-          element={ <Settings server={server} /> } 
-        />
+          path="bookclubs"
+        >
+          <Route
+            index
+            element={<BookClubs server={server} />}
+          />
+          <Route 
+            path=":paramsBookClubId" 
+            element={ <BookClub server={server} /> }
+          />
+        </Route>
         <Route 
           path="members" 
           element={ <Members server={server} /> } 
         />
         <Route 
-          path="commento" 
-          element={ <Commento server={server} /> } 
+          path="settings" 
+          element={ <Settings server={server} /> } 
         />
         <Route 
           path="*" 

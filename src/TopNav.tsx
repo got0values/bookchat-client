@@ -52,11 +52,9 @@ interface LinkItemProps {
 }
 
 const LinkItems: Array<LinkItemProps> = [
-  { name: 'Book Clubs', linkTo: "/" },
+  { name: 'Book Clubs', linkTo: "/bookclubs" },
   { name: 'Reading Clubs', linkTo: "/" },
-  { name: 'Favorites', linkTo: "/" },
-  { name: 'Members', linkTo: "/members" },
-  { name: 'Commento', linkTo: "/commento" }
+  { name: 'Members', linkTo: "/members" }
 ];
 
 const useTopNav = ({server,onLogout}: TopNavProps) => {
