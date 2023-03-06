@@ -113,7 +113,6 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
     .then((response)=>{
       if (response.data.success) {
         getUser()
-        // getNotifications();
       }
     })
     .catch(({response})=>{
@@ -126,11 +125,40 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
       })
     })
   }
-  return { isOpen, onOpen, onClose, colorMode, navigate, user, userNotifications, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest };
+
+  async function rejectFollowRequest(requestId: number) {
+    const tokenCookie = Cookies.get().token;
+    await axios
+    .delete(server + "/api/rejectfollowrequest",
+    {
+      headers: {
+        'authorization': tokenCookie
+      },
+      data: {
+        followId: requestId
+      }
+    })
+    .then((response)=>{
+      if (response.data.success) {
+        getUser()
+      }
+    })
+    .catch(({response})=>{
+      console.log(response)
+      toast({
+        description: "An error has occurred",
+        status: "error",
+        duration: 9000,
+        isClosable: true
+      })
+    })
+  }
+
+  return { isOpen, onOpen, onClose, colorMode, navigate, user, userNotifications, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest };
 }
 
 export default function TopNav({server,onLogout}: TopNavProps) {
-  const { isOpen, onOpen, onClose, colorMode, navigate, user, userNotifications, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest } = useTopNav({server,onLogout});
+  const { isOpen, onOpen, onClose, colorMode, navigate, user, userNotifications, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest } = useTopNav({server,onLogout});
 
   return (
     <>
@@ -376,6 +404,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                         <Button 
                           variant="ghost" 
                           size="sm"
+                          onClick={e=>rejectFollowRequest(followRequest.followId!)}
                         >
                           Reject
                         </Button>
