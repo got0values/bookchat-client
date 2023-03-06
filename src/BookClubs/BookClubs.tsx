@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
-import { SetStateAction, Dispatch } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-// import { ProfileProps, HTMLInputEvent, ProfileType } from '../types/types';
+import { useNavigate, Link } from "react-router-dom";
 import { 
   Box,
   Heading,
@@ -29,11 +27,16 @@ import { MdGroups } from 'react-icons/md';
 import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
 import axios from "axios";
+import { BookClubsType } from "../types/types";
 
 
 export default function BookClubs({server}: {server: string}) {
   const toast = useToast();
   const navigate = useNavigate();
+  const [isLoading,setIsLoading] = useState<boolean>(true);
+  const [bookClubsError,setBookClubsError] = useState<string | null>(null);
+  const [bookClubs,setBookClubs] = useState<BookClubsType[] | null>(null);
+  // const subdomain = window.location.hostname.split(".")[0];
 
   const { 
     isOpen: isOpenCreateBookClubModal, 
@@ -44,6 +47,45 @@ export default function BookClubs({server}: {server: string}) {
   function createBookClubModalOpen() {
     onOpenCreateBookClubModal();
   }
+
+  async function getBookClubs() {
+    let tokenCookie: string | null = Cookies.get().token;
+    setIsLoading(true)
+    if (tokenCookie) {
+      axios
+      .post(server + "/api/getbookclubs",
+        {},
+        {
+          headers: {
+            'authorization': tokenCookie
+          }
+        }
+      )
+      .then((response)=>{
+        console.log(response)
+        if (response.data.success) {
+          setBookClubs(response.data.bookClubs)
+        }
+        setIsLoading(false);
+      })
+      .catch(({response})=>{
+        console.log(response)
+        if (response.data?.error) {
+          setBookClubsError(response.data.error)
+        }
+      })
+    }
+    else {
+      setBookClubsError("An error has occured")
+    }
+  }
+
+  useEffect(()=>{
+    getBookClubs();
+    return()=>{
+      setIsLoading(false)
+    }
+  },[])
 
   const createBookClubNameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
   const [createBookClubError,setCreateBookClubError] = useState<string>("");
@@ -93,66 +135,92 @@ export default function BookClubs({server}: {server: string}) {
   return (
     <Box className="main-content">
       <Skeleton 
-        isLoaded={true}
+        isLoaded={!isLoading}
       >
-        <Stack>
+        {bookClubsError ? bookClubsError : (
+          <>
+            <Flex flexWrap="wrap" w="100%" align="start" justify="space-between">
 
-          <Box className="well">
-            <Flex align="center" justify="space-between">
-              <Flex align="center" justify="space-between" gap={2}>
-                <MdGroups size={30} />
-                <Heading as="h3" size="md">
-                  My Book Clubs
-                </Heading>
-              </Flex>
-              <Button
-                variant="ghost"
-                leftIcon={<IoIosAdd size={25} />}
-                onClick={createBookClubModalOpen}
-              >
-                Create a book club
-              </Button>
+              <Stack flex="1 1 30%">
+                <Box className="well">
+
+                </Box>
+              </Stack>
+
+              <Stack flex="1 1 65%">
+                <Box className="well">
+                  <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
+                    <Flex align="center" justify="space-between" gap={2}>
+                      <MdGroups size={30} />
+                      <Heading as="h3" size="md">
+                        My Book Clubs
+                      </Heading>
+                    </Flex>
+                    <Button
+                      variant="ghost"
+                      leftIcon={<IoIosAdd size={25} />}
+                      onClick={createBookClubModalOpen}
+                    >
+                      Create a book club
+                    </Button>
+                  </Flex>
+
+                  <Box>
+                    {bookClubs ? (
+                      bookClubs.map((bookClub, i)=>{
+                        return (
+                          <Link to={`/bookclubs/${bookClub.id}`}>
+                            <Box key={i} p={5} bg="gray.600" m={2} rounded="md">
+                              <Heading as="h4" size="sm">
+                                {bookClub.name}
+                              </Heading>
+                            </Box>
+                          </Link>
+                        )
+                      })
+                    ) : null}
+                  </Box>
+                </Box>
+              </Stack>
+
             </Flex>
 
-            <Box>
-            </Box>
-          </Box>
-
-        </Stack>
-
-        <Modal isOpen={isOpenCreateBookClubModal} onClose={closeCreateBookClubModal} size="xl">
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>
-              <Heading as="h3" size="lg">
-                What is your book club name?
-              </Heading>
-            </ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <Input
-               type="text"
-               ref={createBookClubNameRef}
-               required
-              />
-            </ModalBody>
-            <ModalFooter>
-              <HStack>
-                <Text color="red">
-                  {createBookClubError}
-                </Text>
-                <Button 
-                  variant='ghost' 
-                  mr={3}
-                  size="lg"
-                  onClick={createBookClub}
-                >
-                  Create
-                </Button>
-              </HStack>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+            <Modal isOpen={isOpenCreateBookClubModal} onClose={closeCreateBookClubModal} size="xl">
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>
+                  <Heading as="h3" size="lg">
+                    What is your book club name?
+                  </Heading>
+                </ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  <Input
+                  type="text"
+                  ref={createBookClubNameRef}
+                  required
+                  />
+                </ModalBody>
+                <ModalFooter>
+                  <HStack>
+                    <Text color="red">
+                      {createBookClubError}
+                    </Text>
+                    <Button 
+                      variant='ghost' 
+                      mr={3}
+                      size="lg"
+                      onClick={createBookClub}
+                    >
+                      Create
+                    </Button>
+                  </HStack>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
+          </>
+        )}
+        
 
       </Skeleton>
     </Box>

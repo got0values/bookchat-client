@@ -59,25 +59,32 @@ export default function BookClub({server}: {server: string}) {
       <Skeleton 
         isLoaded={true}
       >
-        <Stack>
+        <Flex flexWrap="wrap" w="100%" align="start" justify="space-between">
+          <Stack flex="1 1 30%">
+            <Box className="well">
+              <Heading as="h4" size="sm">Admin</Heading>
+            </Box>
+          </Stack>
 
-          <Box className="well">
+          <Stack flex="1 1 65%">
+            <Box className="well">
 
-            <Flex align="center" justify="space-between">
-            </Flex>
+              <Flex align="center" justify="space-between">
+              </Flex>
 
-            <Box>
+              <Box>
+              </Box>
+
+              <Box 
+                id="commento" 
+              >
+              </Box>
+
             </Box>
 
-            <Box 
-              id="commento" 
-            >
-            </Box>
+          </Stack>
 
-          </Box>
-          
-        </Stack>
-
+        </Flex>
       </Skeleton>
     </Box>
   );

@@ -277,7 +277,7 @@ export default function Profile({server}: ProfileProps) {
       <Skeleton isLoaded={!isLoading}>
         {profileData ? (
         <>
-          <HStack flexWrap="wrap" w="100%" align="start">
+          <Flex flexWrap="wrap" w="100%" align="start" justify="space-between">
 
             <Stack flex="1 1 30%">
               <Center
@@ -448,7 +448,7 @@ export default function Profile({server}: ProfileProps) {
 
             </Stack>
 
-          </HStack>
+          </Flex>
 
           {viewer === "self" ? (
           <>

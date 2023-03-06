@@ -136,6 +136,14 @@ export interface RegisterFormProps {
 }
 
 
+//BookClubs
+export interface BookClubsType {
+  id: number;
+  creator: number;
+  name: string;
+}
+
+
 //Dashboard
 export interface DashboardProps {
   server: string;
