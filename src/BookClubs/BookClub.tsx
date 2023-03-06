@@ -67,19 +67,18 @@ export default function BookClub({server}: {server: string}) {
           </Stack>
 
           <Stack flex="1 1 65%">
+
             <Box className="well">
+              <Heading as="h4" size="sm">Currently Reading</Heading>
+            </Box>
 
-              <Flex align="center" justify="space-between">
-              </Flex>
+            <Box className="well">
+              <Heading as="h4" size="sm">Next Meeting</Heading>
+            </Box>
 
-              <Box>
-              </Box>
-
-              <Box 
-                id="commento" 
-              >
-              </Box>
-
+            <Box className="well">
+              <Heading as="h4" size="sm">General Discussion</Heading>
+              <Box id="commento"></Box>
             </Box>
 
           </Stack>
