@@ -83,8 +83,6 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
   }
 
   useLayoutEffect(()=>{
-    //This only runs on window reload and login
-    // getUser()
     getNotifications()
     return(()=>{
       setUserNotifications({followRequests: []})
