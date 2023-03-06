@@ -1,6 +1,6 @@
 import { ReactNode, useState, useLayoutEffect, useEffect, SetStateAction } from 'react';
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
-import { TopNavProps, UserMessagesType, Follower, Following_Following_following_profile_idToProfile } from './types/types';
+import { TopNavProps, UserNotificationsType, Follower, Following_Following_following_profile_idToProfile } from './types/types';
 import { useAuth } from './hooks/useAuth';
 import {
   Box,
@@ -64,11 +64,11 @@ export default function TopNav({server,onLogout}: TopNavProps) {
   const { user, getUser } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
-  const [userMessages,setUserMessages] = useState<UserMessagesType>({
+  const [userNotifications,setUserNotifications] = useState<UserNotificationsType>({
     followRequests: [],
   })
 
-  function getMessages() {
+  function getNotifications() {
     //check if any follow requests
     if (user.Profile.Following_Following_following_profile_idToProfile?.length) {
       let followers = user.Profile.Following_Following_following_profile_idToProfile;
@@ -76,7 +76,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
         if(followers[i].status === "requesting") {
           let followerData = {...followers[i].Profile_Following_self_profile_idToProfile};
           Object.assign(followerData, {"followId": followers[i].id})
-          setUserMessages((prev)=>({...prev, followRequests: [...prev.followRequests as any[], followerData] }))
+          setUserNotifications((prev)=>({...prev, followRequests: [...prev.followRequests as any[], followerData] }))
         }
       }
     }
@@ -85,9 +85,9 @@ export default function TopNav({server,onLogout}: TopNavProps) {
   useEffect(()=>{
     //This only runs on window reload and login
     // getUser()
-    getMessages()
+    getNotifications()
     return(()=>{
-      setUserMessages({followRequests: []})
+      setUserNotifications({followRequests: []})
     })
   },[user])
 
@@ -98,9 +98,9 @@ export default function TopNav({server,onLogout}: TopNavProps) {
 
   //User edit modals
   const { 
-    isOpen: isOpenMessagesModal, 
-    onOpen: onOpenMessagesModal, 
-    onClose: onCloseMessagesModal 
+    isOpen: isOpenNotificationsModal, 
+    onOpen: onOpenNotificationsModal, 
+    onClose: onCloseNotificationsModal 
   } = useDisclosure()
 
   async function acceptFollowRequest(requestId: number) {
@@ -114,7 +114,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
     .then((response)=>{
       if (response.data.success) {
         getUser()
-        getMessages();
+        getNotifications();
       }
     })
     .catch(({response})=>{
@@ -226,7 +226,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                   size={'sm'}
                   src={profilePhoto ? profilePhoto : ""}
                 >
-                  {userMessages.followRequests?.length ? (
+                  {userNotifications.followRequests?.length ? (
                     <AvatarBadge 
                       borderColor="papayawhip" 
                       borderBottomLeftRadius="1px"
@@ -235,7 +235,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                       bg="tomato" 
                       boxSize="1.25em"
                       _before={{
-                        content: `"${userMessages?.followRequests?.length}"`,
+                        content: `"${userNotifications?.followRequests?.length}"`,
                         fontWeight: "800",
                         fontSize: "13",
                         fontFamily: "Inter",
@@ -255,14 +255,14 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                 </MenuItem>
                 <MenuDivider/>
                   <MenuItem
-                    aria-label="messages"
-                    onClick={onOpenMessagesModal}
+                    aria-label="notifications"
+                    onClick={onOpenNotificationsModal}
                     icon={<FiMail size={20}/>}
                     fontSize="lg"
                     fontWeight="600"
                   >
-                      Messages
-                      {userMessages.followRequests?.length ? (
+                      Notifications
+                      {userNotifications.followRequests?.length ? (
                         <Icon as={RxDotFilled} boxSize="1.5em" color="red" verticalAlign="middle" />
                       ) : null}
                   </MenuItem>
@@ -327,14 +327,14 @@ export default function TopNav({server,onLogout}: TopNavProps) {
           </Box>
         ) : null}
 
-        <Modal isOpen={isOpenMessagesModal} onClose={onCloseMessagesModal} size="xl">
+        <Modal isOpen={isOpenNotificationsModal} onClose={onCloseNotificationsModal} size="xl">
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader fontSize="2xl">Messages</ModalHeader>
+            <ModalHeader fontSize="2xl">Notifications</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Flex flexDirection="column" gap={5} justify="space-between">
-                {userMessages?.followRequests?.map((followRequest,i)=>{
+                {userNotifications?.followRequests?.map((followRequest,i)=>{
                   return (
                     <Flex 
                       align="center" 
@@ -350,7 +350,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                           <Text
                             as={Link} 
                             to={`/profile/${followRequest.username}`}
-                            onClick={onCloseMessagesModal}
+                            onClick={onCloseNotificationsModal}
                           >
                             <Text 
                               as="span"
@@ -382,7 +382,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
               </Flex>
             </ModalBody>
             <ModalFooter>
-              <Button variant='ghost' onClick={onCloseMessagesModal}>
+              <Button variant='ghost' onClick={onCloseNotificationsModal}>
                 Close
               </Button>
             </ModalFooter>

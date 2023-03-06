@@ -34,7 +34,7 @@ export interface User {
   Profile: ProfileType
 }
 
-export interface UserMessagesType {
+export interface UserNotificationsType {
   followRequests: Follower[] | null;
 }
 
