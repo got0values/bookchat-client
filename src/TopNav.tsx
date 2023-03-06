@@ -58,7 +58,7 @@ const LinkItems: Array<LinkItemProps> = [
   { name: 'Commento', linkTo: "/commento" }
 ];
 
-export default function TopNav({server,onLogout}: TopNavProps) {
+const useTopNav = ({server,onLogout}: TopNavProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
   const { user, getUser } = useAuth();
@@ -82,7 +82,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
     }
   }
 
-  useEffect(()=>{
+  useLayoutEffect(()=>{
     //This only runs on window reload and login
     // getUser()
     getNotifications()
@@ -114,7 +114,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
     .then((response)=>{
       if (response.data.success) {
         getUser()
-        getNotifications();
+        // getNotifications();
       }
     })
     .catch(({response})=>{
@@ -127,6 +127,11 @@ export default function TopNav({server,onLogout}: TopNavProps) {
       })
     })
   }
+  return { isOpen, onOpen, onClose, colorMode, navigate, user, userNotifications, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest };
+}
+
+export default function TopNav({server,onLogout}: TopNavProps) {
+  const { isOpen, onOpen, onClose, colorMode, navigate, user, userNotifications, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest } = useTopNav({server,onLogout});
 
   return (
     <>
