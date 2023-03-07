@@ -36,7 +36,6 @@ export default function BookClubs({server}: {server: string}) {
   const [isLoading,setIsLoading] = useState<boolean>(true);
   const [bookClubsError,setBookClubsError] = useState<string | null>(null);
   const [bookClubs,setBookClubs] = useState<BookClubsType[] | null>(null);
-  // const subdomain = window.location.hostname.split(".")[0];
 
   const { 
     isOpen: isOpenCreateBookClubModal, 
@@ -53,8 +52,7 @@ export default function BookClubs({server}: {server: string}) {
     setIsLoading(true)
     if (tokenCookie) {
       axios
-      .post(server + "/api/getbookclubs",
-        {},
+      .get(server + "/api/getbookclubs",
         {
           headers: {
             'authorization': tokenCookie
@@ -62,7 +60,6 @@ export default function BookClubs({server}: {server: string}) {
         }
       )
       .then((response)=>{
-        console.log(response)
         if (response.data.success) {
           setBookClubs(response.data.bookClubs)
         }
@@ -84,6 +81,7 @@ export default function BookClubs({server}: {server: string}) {
     getBookClubs();
     return()=>{
       setIsLoading(false)
+      setBookClubs(null);
     }
   },[])
 
@@ -92,11 +90,13 @@ export default function BookClubs({server}: {server: string}) {
   async function createBookClub() {
     const createBookClubName = createBookClubNameRef.current.value;
     let tokenCookie: string | null = Cookies.get().token;
+    const subdomain = window.location.hostname.split(".")[0];
     if (createBookClubName.length) {
       await axios
       .post(server + "/api/createbookclub", 
       {
-        bookClubName: createBookClubName
+        bookClubName: createBookClubName,
+        subdomain: subdomain
       },
       {headers: {
         'authorization': tokenCookie
@@ -169,8 +169,8 @@ export default function BookClubs({server}: {server: string}) {
                     {bookClubs ? (
                       bookClubs.map((bookClub, i)=>{
                         return (
-                          <Link to={`/bookclubs/${bookClub.id}`}>
-                            <Box key={i} p={5} bg="gray.600" m={2} rounded="md">
+                          <Link to={`/bookclubs/${bookClub.id}`} key={i}>
+                            <Box p={5} bg="gray.600" m={2} rounded="md">
                               <Heading as="h4" size="sm">
                                 {bookClub.name}
                               </Heading>

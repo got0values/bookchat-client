@@ -143,6 +143,10 @@ export interface BookClubsType {
   name: string;
 }
 
+export interface BookClubType {
+  id: number;
+}
+
 
 //Dashboard
 export interface DashboardProps {
