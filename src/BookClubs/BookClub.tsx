@@ -35,8 +35,7 @@ export default function BookClub({server}: {server: string}) {
 
   let scriptElement: HTMLScriptElement = document.createElement("script");
   scriptElement.id = "scriptelement"
-  scriptElement.src = "https://commento.communitybookclub.com/js/commento.js";
-  scriptElement.async = true;
+  scriptElement.src = "https://isso.communitybookclub.com/js/embed.min.js";
 
   function getBookClub() {
     let tokenCookie: string | null = Cookies.get().token;
@@ -128,7 +127,9 @@ export default function BookClub({server}: {server: string}) {
 
               <Box className="well">
                 <Heading as="h4" size="sm">General Discussion</Heading>
-                <Box id="commento"></Box>
+                <Box as="section" id="isso-thread">
+                  <noscript>Javascript needs to be activated to view comments.</noscript>
+                </Box>
               </Box>
             </Stack>
           </Flex>
