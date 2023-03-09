@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { BookClubGeneralCommentsType } from "../types/types";
 import { BookClubType } from '../types/types';
 import { 
   Box,
@@ -7,17 +8,14 @@ import {
   Text,
   Avatar,
   AvatarGroup,
-  Stack,
-  HStack,
   Button,
-  Input,
+  Stack,
   Flex,
   Skeleton,
-  useToast,
-  useDisclosure
+  Textarea,
+  useToast
 } from "@chakra-ui/react";
-import { IoIosAdd } from 'react-icons/io';
-import { MdGroups } from 'react-icons/md';
+import { BookClubGeneralComments } from "../shared/BookClubGeneralComments";
 import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -33,9 +31,7 @@ export default function BookClub({server}: {server: string}) {
   const [isBookClubCreator,setIsBookClubCreator] = useState<boolean>(false);
   const [isLoading,setIsLoading] = useState<boolean>(true);
 
-  let scriptElement: HTMLScriptElement = document.createElement("script");
-  scriptElement.id = "scriptelement"
-  scriptElement.src = "https://isso.communitybookclub.com/js/embed.min.js";
+  
 
   function getBookClub() {
     let tokenCookie: string | null = Cookies.get().token;
@@ -78,14 +74,8 @@ export default function BookClub({server}: {server: string}) {
 
   useEffect(()=>{
     getBookClub()
-
-    let documentScriptElement = document.getElementById("scriptelement");
-    if (!documentScriptElement){
-      document.body.appendChild(scriptElement);
-    }
+    
     return ()=>{
-      document.body.removeChild(scriptElement)
-      documentScriptElement = null;
       setBookClub(null)
     }
   },[])
@@ -126,10 +116,13 @@ export default function BookClub({server}: {server: string}) {
               </Box>
 
               <Box className="well">
-                <Heading as="h4" size="sm">General Discussion</Heading>
-                <Box as="section" id="isso-thread">
-                  <noscript>Javascript needs to be activated to view comments.</noscript>
-                </Box>
+                <Heading as="h4" size="sm" mb={2}>General Discussion</Heading>
+                <BookClubGeneralComments 
+                  server={server}
+                  bookClubId={paramsBookClubId}
+                  subdomain={window.location.host.split(".")[0]}
+                  uri={window.location.pathname}
+                />
               </Box>
             </Stack>
           </Flex>

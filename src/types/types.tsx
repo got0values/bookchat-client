@@ -152,3 +152,17 @@ export interface BookClubType {
 export interface DashboardProps {
   server: string;
 }
+
+
+
+//Comments
+export interface BookClubGeneralCommentsType {
+  id: number;
+  profile_id: number;
+  book_club_id: number;
+  library_id: number;
+  uri: string;
+  comment: string;
+  datetime: string;
+  Profile: ProfileType;
+}

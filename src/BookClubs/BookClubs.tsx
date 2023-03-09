@@ -33,6 +33,7 @@ import { BookClubsType } from "../types/types";
 export default function BookClubs({server}: {server: string}) {
   const toast = useToast();
   const navigate = useNavigate();
+  const {getUser} = useAuth();
   const [isLoading,setIsLoading] = useState<boolean>(true);
   const [bookClubsError,setBookClubsError] = useState<string | null>(null);
   const [bookClubs,setBookClubs] = useState<BookClubsType[] | null>(null);
@@ -74,6 +75,7 @@ export default function BookClubs({server}: {server: string}) {
     }
     else {
       setBookClubsError("An error has occured")
+      setIsLoading(false)
     }
   }
 
@@ -170,7 +172,15 @@ export default function BookClubs({server}: {server: string}) {
                       bookClubs.map((bookClub, i)=>{
                         return (
                           <Link to={`/bookclubs/${bookClub.id}`} key={i}>
-                            <Box p={5} bg="gray.600" m={2} rounded="md">
+                            <Box 
+                              p={5} 
+                              bg="gray.100" 
+                              m={2} 
+                              rounded="md"
+                              _dark={{
+                                bg: "gray.600"
+                              }}
+                            >
                               <Heading as="h4" size="sm">
                                 {bookClub.name}
                               </Heading>
