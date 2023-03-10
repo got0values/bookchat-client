@@ -89,8 +89,7 @@ export default function BookClub({server}: {server: string}) {
           <Heading as="h2" size="2xl" >bookClubError</Heading>
           ) : (
           <Flex flexWrap="wrap" w="100%" align="start" justify="space-between">
-            <Stack flex="1 1 30%">
-
+            <Stack flex="1 1 30%" position="sticky" top="0">
               {isBookClubCreator ? (
                 <Box className="well">
                   <Heading as="h4" size="sm">Admin</Heading>
