@@ -156,24 +156,32 @@ export const BookClubGeneralComments = (props: any) => {
                       bg: "gray.600"
                     }}
                   >
-                    <Flex justify="flex-end">
-                      <Text fontSize="sm">
-                        {new Date(comment.datetime).toLocaleString()}
-                      </Text>
-                    </Flex>
                     <HStack 
-                      align="center" 
+                      align="flex-start" 
                     >
                       <Avatar
                         onClick={e=>navigate(`/profile/${comment.Profile.username}`)} 
-                        size="sm"
+                        size="md"
                         cursor="pointer"
                         src={comment.Profile.profile_photo}
                         border="2px solid gray"
                       />
-                      <Text>
-                        <Text as="span" fontWeight="bold">@{comment.Profile.username}</Text>: {comment.comment}
+                      <Box flex="1">
+                        <Flex align="baseline" justify="space-between">
+                          <Flex gap={2} align="center">
+                            <Text as="span" fontWeight="bold">
+                              {comment.Profile.User.first_name} {comment.Profile.User.last_name}
+                            </Text>
+                            <Text as="span" fontSize="sm">@{comment.Profile.username}</Text>
+                          </Flex>
+                          <Text fontSize="sm">
+                            {new Date(comment.datetime).toLocaleString()}
+                          </Text>
+                        </Flex>
+                        <Text>
+                          {comment.comment}
                         </Text>
+                      </Box>
                     </HStack>
                   </Box>
                 )
