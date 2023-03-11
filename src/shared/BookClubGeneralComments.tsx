@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { BookClubGeneralCommentsType } from "../types/types";
+import dayjs from "dayjs";
 import { 
   Box,
   Heading,
@@ -14,6 +15,11 @@ import {
   Skeleton,
   Textarea,
   Divider,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuDivider,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -24,6 +30,8 @@ import {
   useDisclosure,
   useToast
 } from "@chakra-ui/react";
+import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
+import { BsReplyFill } from 'react-icons/bs';
 import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -159,10 +167,10 @@ export const BookClubGeneralComments = (props: any) => {
     let tokenCookie: string | null = Cookies.get().token;
     if (tokenCookie) {
       await axios
-      .post(server + "/api/bookclubgeneralcommentreply",
+      .post(server + "/api/bookclubgeneralreply",
       {
         replyText,
-        commentReplyId
+        commentId: parseInt(commentReplyId as string)
       },
       {headers: {
         'authorization': tokenCookie
@@ -253,41 +261,124 @@ export const BookClubGeneralComments = (props: any) => {
                           border="2px solid gray"
                         />
                         <Box flex="1">
-                          <Flex align="baseline" justify="space-between">
-                            <Flex gap={2} align="center">
+                          <Flex align="flex-start" justify="space-between">
+                            <Flex columnGap={2} align="center" flexWrap="wrap">
                               <Text as="span" fontWeight="bold">
                                 {comment.Profile.User.first_name} {comment.Profile.User.last_name}
                               </Text>
-                              <Text as="span" fontSize="sm">@{comment.Profile.username}</Text>
+                              <Flex align="center" gap={1}>
+                                <Text as="span" fontSize="sm">@{comment.Profile.username}</Text>
+                                ·
+                                <Text fontSize="sm" title={new Date(comment.datetime).toLocaleDateString()}>
+                                  {dayjs(comment.datetime).format('MMM d')}
+                                </Text>
+                              </Flex>
                             </Flex>
-                            <Text fontSize="sm">
-                              {new Date(comment.datetime).toLocaleString()}
-                            </Text>
+
+                            <Menu>
+                              <MenuButton 
+                                as={Button}
+                                size="md"
+                                variant="ghost"
+                                rounded="full"
+                                height="25px"
+                              >
+                                <BiDotsHorizontalRounded/>
+                              </MenuButton>
+                              <MenuList>
+                              {comment.Profile.id === user.Profile.id ? (
+                                <>
+                                  <MenuItem
+                                    color="tomato"
+                                    value={comment.id}
+                                    onClick={e=>deleteComment(e)}
+                                    fontWeight="bold"
+                                    icon={<BiTrash size={20} />}
+                                  >
+                                    Delete
+                                  </MenuItem>
+                                </>
+                              ): null}
+                              <MenuItem 
+                                value={comment.id}
+                                onClick={e=>openReplyModal(e)}
+                                fontWeight="bold"
+                                icon={<BsReplyFill size={20} />}
+                              >
+                                Reply
+                              </MenuItem>
+                              </MenuList>
+                            </Menu>
+
                           </Flex>
                           <Text>
                             {comment.comment}
                           </Text>
                         </Box>
                       </HStack>
-                      <Flex justify="flex-end" gap={1}>
-                        {comment.Profile.id === user.Profile.id ? (
-                          <Button 
-                            size="xs"
-                            color="tomato"
-                            value={comment.id}
-                            onClick={e=>deleteComment(e)}
-                          >
-                            Delete
-                          </Button>
-                        ): null}
-                          <Button 
-                            size="xs"
-                            value={comment.id}
-                            onClick={e=>openReplyModal(e)}
-                          >
-                            Reply
-                          </Button>
-                      </Flex>
+                      {comment.BookClubGeneralReply.length ? ( <Divider my={3} /> ) : null}
+                      {comment.BookClubGeneralReply.length ? (
+                        comment.BookClubGeneralReply.reverse().map((reply)=>{
+                        return (
+                          <>
+                            <HStack 
+                              align="flex-start"
+                              ml={5}
+                            >
+                              <Avatar
+                                onClick={e=>navigate(`/profile/${reply.Profile.username}`)} 
+                                size="md"
+                                cursor="pointer"
+                                src={reply.Profile.profile_photo}
+                                border="2px solid gray"
+                              />
+                              <Box flex="1">
+                                <Flex align="flex-start" justify="space-between">
+                                  <Flex columnGap={2} align="center" flexWrap="wrap">
+                                    <Text as="span" fontWeight="bold">
+                                      {reply.Profile.User.first_name} {reply.Profile.User.last_name}
+                                    </Text>
+                                    <Flex align="center" gap={1}>
+                                      <Text as="span" fontSize="sm">@{reply.Profile.username}</Text>
+                                      ·
+                                      <Text fontSize="sm">
+                                        {dayjs(reply.datetime).format('MM')}
+                                      </Text>
+                                    </Flex>
+                                  </Flex>
+                                  <Menu>
+                                    <MenuButton 
+                                      as={Button}
+                                      size="md"
+                                      variant="ghost"
+                                      rounded="full"
+                                      height="25px"
+                                    >
+                                      <BiDotsHorizontalRounded/>
+                                    </MenuButton>
+                                    <MenuList>
+                                    {reply.Profile.id === user.Profile.id ? (
+                                      <>
+                                        <MenuItem
+                                          color="tomato"
+                                          value={comment.id}
+                                          onClick={e=>deleteComment(e)}
+                                        >
+                                          Delete
+                                        </MenuItem>
+                                      </>
+                                    ): null}
+                                    </MenuList>
+                                  </Menu>
+                                </Flex>
+                                <Text>
+                                  {reply.reply}
+                                </Text>
+                              </Box>
+                            </HStack>
+                          </>
+                        )
+                      })) : null}
                     </Box>
                   )
                 }): null}

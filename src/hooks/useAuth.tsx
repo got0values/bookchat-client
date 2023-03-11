@@ -10,7 +10,7 @@ const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   const server = import.meta.env.VITE_SERVER;
-
+  
   const toast = useToast();
 
   const navigate = useNavigate();

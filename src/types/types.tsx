@@ -165,4 +165,14 @@ export interface BookClubGeneralCommentsType {
   comment: string;
   datetime: string;
   Profile: ProfileType;
+  BookClubGeneralReply: BookClubGeneralReply[];
+}
+
+export interface BookClubGeneralReply {
+  id: number;
+  comment_id: number;
+  Profile: ProfileType;
+  profile_id: number;
+  reply: string;
+  datetime: string;
 }
