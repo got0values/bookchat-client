@@ -157,7 +157,7 @@ export interface DashboardProps {
 
 //Comments
 export interface BookClubGeneralCommentsType {
-  id: number;
+  id: number | string;
   profile_id: number;
   book_club_id: number;
   library_id: number;
