@@ -357,19 +357,18 @@ export const BookClubGeneralComments = (props: any) => {
                                       </Text>
                                     </Flex>
                                   </Flex>
-                                  <Menu>
-                                    <MenuButton 
-                                      as={Button}
-                                      size="md"
-                                      variant="ghost"
-                                      rounded="full"
-                                      height="25px"
-                                    >
-                                      <BiDotsHorizontalRounded/>
-                                    </MenuButton>
-                                    <MenuList>
-                                    {reply.Profile.id === user.Profile.id ? (
-                                      <>
+                                  {reply.Profile.id === user.Profile.id ? (
+                                    <Menu>
+                                      <MenuButton 
+                                        as={Button}
+                                        size="md"
+                                        variant="ghost"
+                                        rounded="full"
+                                        height="25px"
+                                      >
+                                        <BiDotsHorizontalRounded/>
+                                      </MenuButton>
+                                      <MenuList>
                                         <MenuItem
                                           color="tomato"
                                           value={comment.id}
@@ -379,10 +378,9 @@ export const BookClubGeneralComments = (props: any) => {
                                         >
                                           Delete
                                         </MenuItem>
-                                      </>
-                                    ): null}
-                                    </MenuList>
-                                  </Menu>
+                                      </MenuList>
+                                    </Menu>
+                                  ): null}
                                 </Flex>
                                 <Text>
                                   {reply.reply}
@@ -496,19 +494,18 @@ export const BookClubGeneralComments = (props: any) => {
                                   </Text>
                                 </Flex>
                               </Flex>
-                              <Menu>
-                                <MenuButton 
-                                  as={Button}
-                                  size="md"
-                                  variant="ghost"
-                                  rounded="full"
-                                  height="25px"
-                                >
-                                  <BiDotsHorizontalRounded/>
-                                </MenuButton>
-                                <MenuList>
-                                {reply.Profile.id === user.Profile.id ? (
-                                  <>
+                              {reply.Profile.id === user.Profile.id ? (
+                                <Menu>
+                                  <MenuButton 
+                                    as={Button}
+                                    size="md"
+                                    variant="ghost"
+                                    rounded="full"
+                                    height="25px"
+                                  >
+                                    <BiDotsHorizontalRounded/>
+                                  </MenuButton>
+                                  <MenuList>
                                     <MenuItem
                                       color="tomato"
                                       value={commentReplyData.id}
@@ -518,10 +515,9 @@ export const BookClubGeneralComments = (props: any) => {
                                     >
                                       Delete
                                     </MenuItem>
-                                  </>
-                                ): null}
-                                </MenuList>
-                              </Menu>
+                                  </MenuList>
+                                </Menu>
+                              ): null}
                             </Flex>
                             <Text>
                               {reply.reply}
