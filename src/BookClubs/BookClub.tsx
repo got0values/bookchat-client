@@ -238,32 +238,34 @@ export default function BookClub({server}: {server: string}) {
                   <Box className="well">
                     <Flex align="center" justify="space-between">
                       <Heading as="h4" size="sm">Members</Heading>
-                      {memberStatus > 0 ? (
-                        memberStatus === 1 ? (
-                          <Button 
-                            size="xs"
-                            value={bookClub.id}
-                            onClick={e=>unJoinBookClub(e)}
-                          >
-                            Cancel Request
-                          </Button>
-                        ) : memberStatus === 2 ? (
-                          <Button 
-                            size="xs"
-                            value={bookClub.id}
-                            onClick={e=>unJoinBookClub(e)}
-                          >
-                            Unjoin
-                          </Button>
-                        ) : null
-                      ) : (
-                      <Button 
-                        size="xs"
-                        value={bookClub.id}
-                        onClick={e=>joinBookClub(e)}
-                      >
-                        Join
-                      </Button>
+                      {isBookClubCreator ? null : (
+                        memberStatus > 0 ? (
+                          memberStatus === 1 ? (
+                            <Button 
+                              size="xs"
+                              value={bookClub.id}
+                              onClick={e=>unJoinBookClub(e)}
+                            >
+                              Cancel Request
+                            </Button>
+                          ) : memberStatus === 2 ? (
+                            <Button 
+                              size="xs"
+                              value={bookClub.id}
+                              onClick={e=>unJoinBookClub(e)}
+                            >
+                              Unjoin
+                            </Button>
+                          ) : null
+                        ) : (
+                        <Button 
+                          size="xs"
+                          value={bookClub.id}
+                          onClick={e=>joinBookClub(e)}
+                        >
+                          Join
+                        </Button>
+                        )
                       )}
                     </Flex>
                     <Box>
