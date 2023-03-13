@@ -35,16 +35,13 @@ export interface User {
 }
 
 export interface UserNotificationsType {
-  followRequests: Requester[];
-  bookClubRequests: Requester[];
+  followRequests: FollowRequest[];
+  bookClubRequests: BookClubMember[];
 }
 
-export interface Requester {
+export interface FollowRequest {
   id: number;
-  username: string;
-  profile_photo: string;
-  followId?: number;
-  memberRequestId: number;
+  Profile_Following_self_profile_idToProfile: ProfileType;
 }
 
 
@@ -153,6 +150,7 @@ export interface BookClubMember {
   Profile: ProfileType;
   book_club: number;
   status: number;
+  BookClubs: BookClubsType;
 }
 
 export interface BookClubBookType {

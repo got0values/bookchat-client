@@ -70,7 +70,7 @@ export default function BookClub({server}: {server: string}) {
             setIsBookClubCreator(false);
           }
           if (responseBookClub.BookClubMembers.filter((member: BookClubMember)=>member.Profile.id === user.Profile?.id).length) {
-            setMemberStatus(responseBookClub.BookClubMembers.filter((member: BookClubMember)=>member.Profile.id === user.Profile?.id)[0])
+            setMemberStatus(responseBookClub.BookClubMembers.filter((member: BookClubMember)=>member.Profile.id === user.Profile?.id)[0].status)
           }
           else {
             setMemberStatus(0)
@@ -238,17 +238,27 @@ export default function BookClub({server}: {server: string}) {
                   <Box className="well">
                     <Flex align="center" justify="space-between">
                       <Heading as="h4" size="sm">Members</Heading>
-                      {memberStatus ? (
-                      <Button 
-                        size="sm"
-                        value={bookClub.id}
-                        onClick={e=>unJoinBookClub(e)}
-                      >
-                        Unjoin
-                      </Button>
+                      {memberStatus > 0 ? (
+                        memberStatus === 1 ? (
+                          <Button 
+                            size="xs"
+                            value={bookClub.id}
+                            onClick={e=>unJoinBookClub(e)}
+                          >
+                            Cancel Request
+                          </Button>
+                        ) : memberStatus === 2 ? (
+                          <Button 
+                            size="xs"
+                            value={bookClub.id}
+                            onClick={e=>unJoinBookClub(e)}
+                          >
+                            Unjoin
+                          </Button>
+                        ) : null
                       ) : (
                       <Button 
-                        size="sm"
+                        size="xs"
                         value={bookClub.id}
                         onClick={e=>joinBookClub(e)}
                       >
@@ -259,9 +269,11 @@ export default function BookClub({server}: {server: string}) {
                     <Box>
                       {bookClub.BookClubMembers.length ? bookClub.BookClubMembers.map((member,i)=>{
                         return (
-                          <Text key={i}>
-                            {member.Profile.username}
-                          </Text>
+                          member.status === 2 ? (
+                            <Text key={i}>
+                              {member.Profile.username}
+                            </Text>
+                          ) : null
                         )
                       }) : null}
                     </Box>
@@ -269,7 +281,7 @@ export default function BookClub({server}: {server: string}) {
                 </Stack>
 
                 <Stack flex="1 1 65%" maxW="100%">
-                  {memberStatus ? (
+                  {memberStatus === 2 ? (
                     <>
                       <Box className="well">
                         <Heading as="h4" size="sm">Currently Reading</Heading>

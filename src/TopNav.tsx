@@ -1,6 +1,6 @@
 import { ReactNode, useState, useLayoutEffect, useEffect, SetStateAction } from 'react';
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
-import { TopNavProps, UserNotificationsType, Requester, Following_Following_following_profile_idToProfile } from './types/types';
+import { TopNavProps, UserNotificationsType } from './types/types';
 import { useAuth } from './hooks/useAuth';
 import {
   Box,
@@ -75,9 +75,9 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
       let followers = user.Profile.Following_Following_following_profile_idToProfile;
       for (let i = 0; i < followers.length; i++) {
         if(followers[i].status === "requesting") {
-          let followerData = {...followers[i].Profile_Following_self_profile_idToProfile};
-          Object.assign(followerData, {"followId": followers[i].id})
-          setUserNotifications((prev)=>({...prev, followRequests: [...prev.followRequests as any[], followerData] }))
+          // let followerData = {...followers[i].Profile_Following_self_profile_idToProfile};
+          // Object.assign(followerData, {"followId": followers[i].id})
+          setUserNotifications((prev)=>({...prev, followRequests: [...prev.followRequests as any[], followers[i]] }))
         }
       }
     }
@@ -85,10 +85,7 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
       let bookClubMembers = user.Profile.BookClubMembers_BookClubMembers_book_club_creatorToProfile;
       for (let i = 0; i < bookClubMembers.length; i++) {
         if(bookClubMembers[i].status === 1) {
-          let bookClubMemberData = {...bookClubMembers[i].Profile};
-          Object.assign(bookClubMemberData, {"memberRequestId": bookClubMembers[i].id})
-          Object.assign(bookClubMemberData, {"memberRequestBookClub": bookClubMembers[i].BookClubs})
-          setUserNotifications((prev)=>({...prev, bookClubRequests: [...prev.bookClubRequests as any[], bookClubMemberData] }))
+          setUserNotifications((prev)=>({...prev, bookClubRequests: [...prev.bookClubRequests as any[], bookClubMembers[i]] }))
         }
       }
     }
@@ -169,11 +166,62 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
     })
   }
 
-  return { isOpen, onOpen, onClose, colorMode, navigate, user, userNotifications, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, totalRequests };
+  async function acceptBookClubRequest(requestId: number) {
+    const tokenCookie = Cookies.get().token;
+    await axios
+    .put(server + "/api/acceptbookclubrequest",
+    {memberRequestId: requestId},
+    {headers: {
+      'authorization': tokenCookie
+    }})
+    .then((response)=>{
+      if (response.data.success) {
+        getUser()
+      }
+    })
+    .catch(({response})=>{
+      console.log(response)
+      toast({
+        description: "An error has occurred",
+        status: "error",
+        duration: 9000,
+        isClosable: true
+      })
+    })
+  }
+
+  async function rejectBookClubRequest(requestId: number) {
+    const tokenCookie = Cookies.get().token;
+    await axios
+    .delete(server + "/api/rejectbookclubrequest",
+    {headers: {
+      'authorization': tokenCookie,
+    },
+    data: {
+      memberRequestId: requestId
+      }
+    })
+    .then((response)=>{
+      if (response.data.success) {
+        getUser()
+      }
+    })
+    .catch(({response})=>{
+      console.log(response)
+      toast({
+        description: "An error has occurred",
+        status: "error",
+        duration: 9000,
+        isClosable: true
+      })
+    })
+  }
+
+  return { isOpen, onOpen, onClose, colorMode, navigate, user, userNotifications, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, totalRequests, acceptBookClubRequest, rejectBookClubRequest };
 }
 
 export default function TopNav({server,onLogout}: TopNavProps) {
-  const { isOpen, onOpen, onClose, colorMode, navigate, user, userNotifications, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, totalRequests } = useTopNav({server,onLogout});
+  const { isOpen, onOpen, onClose, colorMode, navigate, user, userNotifications, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, totalRequests, acceptBookClubRequest, rejectBookClubRequest } = useTopNav({server,onLogout});
 
   return (
     <>
@@ -392,18 +440,18 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                       key={i}
                     >
                       <Flex align="center" gap={1}>
-                        <Avatar src={followRequest.profile_photo} size="sm"/>
+                        <Avatar src={followRequest.Profile_Following_self_profile_idToProfile.profile_photo} size="sm"/>
                         <Text>
                           <Text
                             as={Link} 
-                            to={`/profile/${followRequest.username}`}
+                            to={`/profile/${followRequest.Profile_Following_self_profile_idToProfile.username}`}
                             onClick={onCloseNotificationsModal}
                           >
                             <Text 
                               as="span"
                               fontWeight="bold"
                             >
-                            @{followRequest.username}
+                            @{followRequest.Profile_Following_self_profile_idToProfile.username}
                             </Text> 
                           </Text>
                           {" "} would like to follow you
@@ -412,14 +460,14 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                       <Flex m={1} gap={1} justify="flex-end">
                         <Button 
                           size="sm"
-                          onClick={e=>acceptFollowRequest(followRequest.followId!)}
+                          onClick={e=>acceptFollowRequest(followRequest.id)}
                         >
                           Accept
                         </Button>
                         <Button 
                           variant="ghost" 
                           size="sm"
-                          onClick={e=>rejectFollowRequest(followRequest.followId!)}
+                          onClick={e=>rejectFollowRequest(followRequest.id!)}
                         >
                           Reject
                         </Button>
@@ -429,6 +477,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                 })}
 
                 {userNotifications?.bookClubRequests?.map((bookClubRequest,i)=>{
+                  console.log(bookClubRequest)
                   return (
                     <Flex 
                       align="center" 
@@ -439,34 +488,41 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                       key={i}
                     >
                       <Flex align="center" gap={1}>
-                        <Avatar src={bookClubRequest.profile_photo} size="sm"/>
+                        <Avatar src={bookClubRequest.Profile.profile_photo} size="sm"/>
                         <Text>
                           <Text
                             as={Link} 
-                            to={`/profile/${bookClubRequest.username}`}
+                            to={`/profile/${bookClubRequest.Profile.username}`}
                             onClick={onCloseNotificationsModal}
                           >
                             <Text 
                               as="span"
                               fontWeight="bold"
                             >
-                            @{bookClubRequest.username}
+                            @{bookClubRequest.Profile.username}
                             </Text> 
                           </Text>
-                          {" "} would like to join {bookClubRequest.memberRequestBookClub.name}
+                            {" "} would like to join {" "}
+                            <Text 
+                              as={Link} 
+                              to={`/bookclubs/${bookClubRequest.BookClubs.id}`}
+                              onClick={onCloseNotificationsModal}
+                            >
+                              {bookClubRequest.BookClubs.name}
+                            </Text>
                         </Text>
                       </Flex>
                       <Flex m={1} gap={1} justify="flex-end">
                         <Button 
                           size="sm"
-                          // onClick={e=>acceptFollowRequest(bookClubRequest?.memberRequestId!)}
+                          onClick={e=>acceptBookClubRequest(bookClubRequest?.id)}
                         >
                           Accept
                         </Button>
                         <Button 
                           variant="ghost" 
                           size="sm"
-                          // onClick={e=>rejectFollowRequest(bookClubRequest.memberRequestId!)}
+                          onClick={e=>rejectBookClubRequest(bookClubRequest.id)}
                         >
                           Reject
                         </Button>
