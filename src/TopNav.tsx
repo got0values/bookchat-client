@@ -75,8 +75,6 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
       let followers = user.Profile.Following_Following_following_profile_idToProfile;
       for (let i = 0; i < followers.length; i++) {
         if(followers[i].status === "requesting") {
-          // let followerData = {...followers[i].Profile_Following_self_profile_idToProfile};
-          // Object.assign(followerData, {"followId": followers[i].id})
           setUserNotifications((prev)=>({...prev, followRequests: [...prev.followRequests as any[], followers[i]] }))
         }
       }
