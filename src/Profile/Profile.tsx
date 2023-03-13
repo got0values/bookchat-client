@@ -412,6 +412,10 @@ export default function Profile({server}: ProfileProps) {
                 </Box>
                 <Text color="red" pt={2}>{profileActionError}</Text>
               </Center>
+
+              <Box className="well">
+                <Heading as="h2" size="md">My Book Clubs</Heading>
+              </Box>
             </Stack>
 
             <Stack flex="1 1 65%">

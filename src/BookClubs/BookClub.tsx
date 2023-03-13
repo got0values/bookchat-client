@@ -272,9 +272,14 @@ export default function BookClub({server}: {server: string}) {
                       {bookClub.BookClubMembers.length ? bookClub.BookClubMembers.map((member,i)=>{
                         return (
                           member.status === 2 ? (
-                            <Text key={i}>
-                              {member.Profile.username}
-                            </Text>
+                            <Flex align="center" justify="space-between">
+                              <Text key={i}>
+                                {member.Profile.username}
+                              </Text>
+                              {isBookClubCreator ? (
+                                <Button size="xs" variant="ghost">Remove</Button>
+                              ) : null}
+                            </Flex>
                           ) : null
                         )
                       }) : null}
@@ -283,7 +288,7 @@ export default function BookClub({server}: {server: string}) {
                 </Stack>
 
                 <Stack flex="1 1 65%" maxW="100%">
-                  {memberStatus === 2 ? (
+                  {memberStatus === 2 || isBookClubCreator ? (
                     <>
                       <Box className="well">
                         <Heading as="h4" size="sm">Currently Reading</Heading>
@@ -300,6 +305,7 @@ export default function BookClub({server}: {server: string}) {
                           bookClubId={paramsBookClubId}
                           subdomain={window.location.host.split(".")[0]}
                           uri={window.location.pathname}
+                          isBookClubCreator={isBookClubCreator}
                         />
                       </Box>
                     </>

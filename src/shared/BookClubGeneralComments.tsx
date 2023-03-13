@@ -38,7 +38,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 
 export const BookClubGeneralComments = (props: any) => {
-  const {server,bookClubId,subdomain,uri} = props;
+  const {server,bookClubId,subdomain,uri,isBookClubCreator} = props;
   const navigate = useNavigate();
   const toast = useToast();
   const {user} = useAuth();
@@ -284,7 +284,7 @@ export const BookClubGeneralComments = (props: any) => {
                               <BiDotsHorizontalRounded/>
                             </MenuButton>
                             <MenuList>
-                            {comment.Profile.id === user.Profile.id ? (
+                            {comment.Profile.id === user.Profile.id || isBookClubCreator ? (
                               <>
                                 <MenuItem
                                   color="tomato"
@@ -356,7 +356,7 @@ export const BookClubGeneralComments = (props: any) => {
                                       </Text>
                                     </Flex>
                                   </Flex>
-                                  {reply.Profile.id === user.Profile.id ? (
+                                  {reply.Profile.id === user.Profile.id || isBookClubCreator ? (
                                     <Menu>
                                       <MenuButton 
                                         as={Button}
@@ -493,7 +493,7 @@ export const BookClubGeneralComments = (props: any) => {
                                   </Text>
                                 </Flex>
                               </Flex>
-                              {reply.Profile.id === user.Profile.id ? (
+                              {reply.Profile.id === user.Profile.id || isBookClubCreator ? (
                                 <Menu>
                                   <MenuButton 
                                     as={Button}

@@ -41,6 +41,7 @@ import { BsFillMoonFill, BsFillSunFill } from 'react-icons/bs';
 import { FiSettings, FiMail } from 'react-icons/fi';
 import { RxDotFilled } from 'react-icons/rx';
 import { AiOutlineBell } from 'react-icons/ai';
+import { BiMessageDetail } from 'react-icons/bi';
 import logoIcon from './assets/community-book-club-logo-logo-only.png';
 import logoIconWhite from './assets/community-book-club-logo-logo-only-white.png';
 import Cookies from "js-cookie";
@@ -347,18 +348,27 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                   {`${user.first_name} ${user.last_name}`}
                 </MenuItem>
                 <MenuDivider/>
-                  <MenuItem
-                    aria-label="notifications"
-                    onClick={onOpenNotificationsModal}
-                    icon={<AiOutlineBell size={20}/>}
-                    fontSize="lg"
-                    fontWeight="600"
-                  >
-                      Notifications
-                      {totalRequests > 0 ? (
-                        <Icon as={RxDotFilled} boxSize="1.5em" color="red" verticalAlign="middle" />
-                      ) : null}
-                  </MenuItem>
+                <MenuItem
+                  aria-label="notifications"
+                  onClick={onOpenNotificationsModal}
+                  icon={<AiOutlineBell size={20}/>}
+                  fontSize="lg"
+                  fontWeight="600"
+                >
+                    Notifications
+                    {totalRequests > 0 ? (
+                      <Icon as={RxDotFilled} boxSize="1.5em" color="red" verticalAlign="middle" />
+                    ) : null}
+                </MenuItem>
+                <MenuDivider/>
+                <MenuItem
+                  aria-label="messages"
+                  icon={<BiMessageDetail size={20}/>}
+                  fontSize="lg"
+                  fontWeight="600"
+                >
+                    Messages
+                </MenuItem>
                 <MenuDivider/>
                 <MenuItem
                   aria-label="toggle color mode"
