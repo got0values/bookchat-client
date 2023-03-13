@@ -8,6 +8,7 @@ import TopNav from './TopNav';
 import Dashboard from './Dashboard';
 import BookClubs from './BookClubs/BookClubs';
 import BookClub from './BookClubs/BookClub';
+import BookClubBook from './BookClubs/BookClubBook';
 import Profile from './Profile/Profile';
 import Settings from './Settings';
 import { Members } from "./Members";
@@ -58,8 +59,16 @@ function App() {
           />
           <Route 
             path=":paramsBookClubId" 
-            element={ <BookClub server={server} /> }
-          />
+          >
+            <Route
+              index
+              element={ <BookClub server={server} /> }
+            />
+            <Route
+              path=":paramsBookClubBookId"
+              element={ <BookClubBook server={server} /> }
+            />
+          </Route>
         </Route>
         <Route 
           path="members" 

@@ -138,13 +138,23 @@ export interface RegisterFormProps {
 
 //BookClubs
 export interface BookClubsType {
-  id: number;
+  id: number | string;
   creator: number;
   name: string;
+  about: string;
+  BookClubMembers: BookClubMember[];
 }
 
-export interface BookClubType {
+export interface BookClubMember {
   id: number;
+  Profile: ProfileType;
+  book_club: number;
+}
+
+export interface BookClubBookType {
+  // id: number;
+  // creator: number;
+  // name: string;
 }
 
 

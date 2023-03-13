@@ -184,6 +184,9 @@ export default function BookClubs({server}: {server: string}) {
                               <Heading as="h4" size="sm">
                                 {bookClub.name}
                               </Heading>
+                              <Text>
+                                  {bookClub.about}
+                              </Text>
                             </Box>
                           </Link>
                         )

@@ -59,7 +59,6 @@ export const BookClubGeneralComments = (props: any) => {
         }
       )
       .then((response)=>{
-        console.log(response)
         if (response.data.success) {
           setCommentsError("")
           setComments(response.data.comments)
@@ -269,7 +268,7 @@ export const BookClubGeneralComments = (props: any) => {
                               <Text as="span" fontSize="sm">@{comment.Profile.username}</Text>
                               ·
                               <Text fontSize="sm" title={new Date(comment.datetime).toLocaleDateString()}>
-                                {dayjs(comment.datetime).format('MMM d')}
+                                {dayjs(comment.datetime).format('MMM D')}
                               </Text>
                             </Flex>
                           </Flex>
@@ -353,7 +352,7 @@ export const BookClubGeneralComments = (props: any) => {
                                       <Text as="span" fontSize="sm">@{reply.Profile.username}</Text>
                                       ·
                                       <Text fontSize="sm" title={new Date(reply.datetime).toLocaleDateString()}>
-                                        {dayjs(reply.datetime).format('MMM d')}
+                                        {dayjs(reply.datetime).format('MMM D')}
                                       </Text>
                                     </Flex>
                                   </Flex>
@@ -443,7 +442,7 @@ export const BookClubGeneralComments = (props: any) => {
                             <Text as="span" fontSize="sm">@{commentReplyData.Profile.username}</Text>
                             ·
                             <Text fontSize="sm" title={new Date(commentReplyData.datetime).toLocaleDateString()}>
-                              {dayjs(commentReplyData.datetime).format('MMM d')}
+                              {dayjs(commentReplyData.datetime).format('MMM D')}
                             </Text>
                           </Flex>
                         </Flex>
@@ -490,7 +489,7 @@ export const BookClubGeneralComments = (props: any) => {
                                   <Text as="span" fontSize="sm">@{reply.Profile.username}</Text>
                                   ·
                                   <Text fontSize="sm" title={new Date(reply.datetime).toLocaleDateString()}>
-                                    {dayjs(reply.datetime).format('MMM d')}
+                                    {dayjs(reply.datetime).format('MMM D')}
                                   </Text>
                                 </Flex>
                               </Flex>
