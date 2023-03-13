@@ -35,14 +35,16 @@ export interface User {
 }
 
 export interface UserNotificationsType {
-  followRequests: Follower[] | null;
+  followRequests: Requester[];
+  bookClubRequests: Requester[];
 }
 
-export interface Follower {
+export interface Requester {
   id: number;
   username: string;
   profile_photo: string;
   followId?: number;
+  memberRequestId: number;
 }
 
 
@@ -67,6 +69,7 @@ export interface ProfileType {
   User: User;
   Following_Following_self_profile_idToProfile?: Following_Following_self_profile_idToProfile[];
   Following_Following_following_profile_idToProfile?: Following_Following_following_profile_idToProfile[];
+  BookClubMembers_BookClubMembers_book_club_creatorToProfile: BookClubMember[];
 }
 
 export interface Interests {
@@ -149,6 +152,7 @@ export interface BookClubMember {
   id: number;
   Profile: ProfileType;
   book_club: number;
+  status: number;
 }
 
 export interface BookClubBookType {

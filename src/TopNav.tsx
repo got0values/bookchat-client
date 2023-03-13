@@ -1,6 +1,6 @@
 import { ReactNode, useState, useLayoutEffect, useEffect, SetStateAction } from 'react';
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
-import { TopNavProps, UserNotificationsType, Follower, Following_Following_following_profile_idToProfile } from './types/types';
+import { TopNavProps, UserNotificationsType, Requester, Following_Following_following_profile_idToProfile } from './types/types';
 import { useAuth } from './hooks/useAuth';
 import {
   Box,
@@ -65,7 +65,9 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
   const navigate = useNavigate();
   const [userNotifications,setUserNotifications] = useState<UserNotificationsType>({
     followRequests: [],
+    bookClubRequests: []
   })
+  const [totalRequests,setTotalRequests] = useState<number>(0);
 
   function getNotifications() {
     //check if any follow requests
@@ -79,12 +81,27 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
         }
       }
     }
+    if (user.Profile.BookClubMembers_BookClubMembers_book_club_creatorToProfile?.length) {
+      let bookClubMembers = user.Profile.BookClubMembers_BookClubMembers_book_club_creatorToProfile;
+      for (let i = 0; i < bookClubMembers.length; i++) {
+        if(bookClubMembers[i].status === 1) {
+          let bookClubMemberData = {...bookClubMembers[i].Profile};
+          Object.assign(bookClubMemberData, {"memberRequestId": bookClubMembers[i].id})
+          Object.assign(bookClubMemberData, {"memberRequestBookClub": bookClubMembers[i].BookClubs})
+          setUserNotifications((prev)=>({...prev, bookClubRequests: [...prev.bookClubRequests as any[], bookClubMemberData] }))
+        }
+      }
+    }
+    setTotalRequests(userNotifications.followRequests.length + userNotifications.bookClubRequests.length)
   }
 
   useLayoutEffect(()=>{
     getNotifications()
     return(()=>{
-      setUserNotifications({followRequests: []})
+      setUserNotifications({
+        followRequests: [],
+        bookClubRequests: []
+      })
     })
   },[user])
 
@@ -152,11 +169,11 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
     })
   }
 
-  return { isOpen, onOpen, onClose, colorMode, navigate, user, userNotifications, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest };
+  return { isOpen, onOpen, onClose, colorMode, navigate, user, userNotifications, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, totalRequests };
 }
 
 export default function TopNav({server,onLogout}: TopNavProps) {
-  const { isOpen, onOpen, onClose, colorMode, navigate, user, userNotifications, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest } = useTopNav({server,onLogout});
+  const { isOpen, onOpen, onClose, colorMode, navigate, user, userNotifications, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, totalRequests } = useTopNav({server,onLogout});
 
   return (
     <>
@@ -256,22 +273,22 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                   size={'sm'}
                   src={profilePhoto ? profilePhoto : ""}
                 >
-                  {userNotifications.followRequests?.length ? (
-                    <AvatarBadge 
-                      borderColor="papayawhip" 
-                      borderBottomLeftRadius="1px"
-                      borderBottomRightRadius="1px"
-                      borderWidth="1.5px"
-                      bg="tomato" 
-                      boxSize="1.25em"
-                      _before={{
-                        content: `"${userNotifications?.followRequests?.length}"`,
-                        fontWeight: "800",
-                        fontSize: "13",
-                        fontFamily: "Inter",
-                        padding: "1px"
-                      }}
-                    />
+                  {totalRequests ? (
+                  <AvatarBadge 
+                    borderColor="papayawhip" 
+                    borderBottomLeftRadius="1px"
+                    borderBottomRightRadius="1px"
+                    borderWidth="1.5px"
+                    bg="tomato" 
+                    boxSize="1.25em"
+                    _before={{
+                      content: `"${totalRequests > 0 ? totalRequests : ''}"`,
+                      fontWeight: "800",
+                      fontSize: "13",
+                      fontFamily: "Inter",
+                      padding: "1px"
+                    }}
+                  />
                   ) : null}
                 </Avatar>
               </MenuButton>
@@ -292,7 +309,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                     fontWeight="600"
                   >
                       Notifications
-                      {userNotifications.followRequests?.length ? (
+                      {totalRequests > 0 ? (
                         <Icon as={RxDotFilled} boxSize="1.5em" color="red" verticalAlign="middle" />
                       ) : null}
                   </MenuItem>
@@ -403,6 +420,53 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                           variant="ghost" 
                           size="sm"
                           onClick={e=>rejectFollowRequest(followRequest.followId!)}
+                        >
+                          Reject
+                        </Button>
+                      </Flex>
+                    </Flex>
+                  )
+                })}
+
+                {userNotifications?.bookClubRequests?.map((bookClubRequest,i)=>{
+                  return (
+                    <Flex 
+                      align="center" 
+                      gap={1} 
+                      justify="space-between" 
+                      flexWrap="wrap"
+                      width="100%"
+                      key={i}
+                    >
+                      <Flex align="center" gap={1}>
+                        <Avatar src={bookClubRequest.profile_photo} size="sm"/>
+                        <Text>
+                          <Text
+                            as={Link} 
+                            to={`/profile/${bookClubRequest.username}`}
+                            onClick={onCloseNotificationsModal}
+                          >
+                            <Text 
+                              as="span"
+                              fontWeight="bold"
+                            >
+                            @{bookClubRequest.username}
+                            </Text> 
+                          </Text>
+                          {" "} would like to join {bookClubRequest.memberRequestBookClub.name}
+                        </Text>
+                      </Flex>
+                      <Flex m={1} gap={1} justify="flex-end">
+                        <Button 
+                          size="sm"
+                          // onClick={e=>acceptFollowRequest(bookClubRequest?.memberRequestId!)}
+                        >
+                          Accept
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          // onClick={e=>rejectFollowRequest(bookClubRequest.memberRequestId!)}
                         >
                           Reject
                         </Button>
