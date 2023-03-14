@@ -38,6 +38,7 @@ export default function BookClubs({server}: {server: string}) {
   const [bookClubsError,setBookClubsError] = useState<string | null>(null);
   const [bookClubsOwned,setBookClubsOwned] = useState<BookClubsType[] | null>(null);
   const [bookClubsJoined,setBookClubsJoined] = useState<BookClubsType[] | null>(null);
+  const [bookClubsPublic,setBookClubsPublic] = useState<BookClubsType[] | null>(null);
 
   const { 
     isOpen: isOpenCreateBookClubModal, 
@@ -66,6 +67,7 @@ export default function BookClubs({server}: {server: string}) {
         if (response.data.success) {
           setBookClubsOwned(response.data.bookClubsOwned)
           setBookClubsJoined(response.data.bookClubsJoined)
+          setBookClubsPublic(response.data.bookClubsPublic)
         }
         setIsLoading(false);
       })
@@ -207,7 +209,7 @@ export default function BookClubs({server}: {server: string}) {
                   </Flex>
 
                   <Box>
-                    {bookClubsJoined ? (
+                    {bookClubsJoined && bookClubsJoined.length ? (
                       bookClubsJoined.map((bookClub, i)=>{
                         return (
                           <Link to={`/bookclubs/${bookClub.id}`} key={i}>
@@ -230,7 +232,46 @@ export default function BookClubs({server}: {server: string}) {
                           </Link>
                         )
                       })
-                    ) : null}
+                    ) : (
+                      <Text>You are not a member of any book clubs at the moment.</Text>
+                    )}
+                  </Box>
+                </Box>
+
+                <Box className="well">
+                  <Flex align="center" justify="space-between" gap={2} mb={2}>
+                    <Heading as="h3" size="md">
+                      Public Book Clubs
+                    </Heading>
+                  </Flex>
+
+                  <Box>
+                    {bookClubsPublic && bookClubsPublic.length ? (
+                      bookClubsPublic.map((bookClub, i)=>{
+                        return (
+                          <Link to={`/bookclubs/${bookClub.id}`} key={i}>
+                            <Box 
+                              p={5} 
+                              bg="gray.100" 
+                              m={2} 
+                              rounded="md"
+                              _dark={{
+                                bg: "gray.600"
+                              }}
+                            >
+                              <Heading as="h4" size="sm">
+                                {bookClub.name}
+                              </Heading>
+                              <Text>
+                                  {bookClub.about}
+                              </Text>
+                            </Box>
+                          </Link>
+                        )
+                      })
+                    ) : (
+                      <Text>There are no public book clubs at this time.</Text>
+                    )}
                   </Box>
                 </Box>
               </Stack>
