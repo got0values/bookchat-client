@@ -142,6 +142,7 @@ export interface BookClubsType {
   creator: number;
   name: string;
   about: string;
+  visibility: number;
   BookClubMembers: BookClubMember[];
 }
 

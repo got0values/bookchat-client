@@ -14,6 +14,7 @@ import {
   Flex,
   Skeleton,
   FormControl,
+  Switch,
   FormLabel,
   FormErrorMessage,
   Textarea,
@@ -106,7 +107,6 @@ export default function BookClub({server}: {server: string}) {
   } = useDisclosure()
 
   function openEditModal() {
-    console.log(bookClub)
     onOpenEditModal()
   }
 
@@ -115,6 +115,7 @@ export default function BookClub({server}: {server: string}) {
     onClosEditModal()
   }
 
+  const [switchVisibility,setSwitchVisibility] = useState(false);
   const [updateError,setUpdateError] = useState<string>("");
   const idRef = useRef<HTMLInputElement>({} as HTMLInputElement);
   const nameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
@@ -128,7 +129,8 @@ export default function BookClub({server}: {server: string}) {
         {
           bookClubId: parseInt(idRef.current.value),
           bookClubName: nameRef.current.value,
-          bookClubAbout: aboutRef.current.value
+          bookClubAbout: aboutRef.current.value,
+          bookClubVisibility: switchVisibility === true ? 1 : 0
         },
         {
           headers: {
@@ -222,9 +224,10 @@ export default function BookClub({server}: {server: string}) {
                 <Stack flex="1 1 30%" top="0">
                   <Flex className="well" direction="column" align="center" gap={3}>
                     <Heading as="h4" size="md">{bookClub.name}</Heading>
-                    <Stack gap={2}>
-                      <Text>{bookClub.about}</Text>
-                    </Stack>
+                    <Text>{bookClub.about}</Text>
+                    <Text fontStyle="italic">
+                      {bookClub.visibility === 0 ? "private (friends only)" : "public"}
+                    </Text>
                     {isBookClubCreator ? (
                       <Flex>
                         <Button
@@ -272,8 +275,8 @@ export default function BookClub({server}: {server: string}) {
                       {bookClub.BookClubMembers.length ? bookClub.BookClubMembers.map((member,i)=>{
                         return (
                           member.status === 2 ? (
-                            <Flex align="center" justify="space-between">
-                              <Text key={i}>
+                            <Flex key={i} align="center" justify="space-between">
+                              <Text>
                                 {member.Profile.username}
                               </Text>
                               {isBookClubCreator ? (
@@ -356,6 +359,14 @@ export default function BookClub({server}: {server: string}) {
                   id="about"
                   defaultValue={bookClub?.about}
                 />
+                <Flex direction="column" align="center" justify="center" mt={2}>
+                  <Text>{switchVisibility === true ? "public" : "private (friends only)"}</Text>
+                  <Switch 
+                    isChecked={switchVisibility}
+                    onChange={e=>setSwitchVisibility(prev=>e.target.checked)}
+                    defaultChecked={bookClub ? (bookClub.visibility === 0 ? false : true) : false}
+                  />
+                </Flex>
               </ModalBody>
               <ModalFooter flexDirection="column">
                 <Text color="red">
