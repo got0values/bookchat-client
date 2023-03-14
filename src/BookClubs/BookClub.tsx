@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { BookClubGeneralCommentsType, BookClubMember } from "../types/types";
-import { BookClubsType } from '../types/types';
+import { BookClubMember, BookClubsType } from "../types/types";
 import { 
   Box,
   Heading,
@@ -29,10 +28,15 @@ import {
   useToast,
   Input
 } from "@chakra-ui/react";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { HiOutlinePencil } from 'react-icons/hi';
 import { BookClubGeneralComments } from "../shared/BookClubGeneralComments";
 import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
 import axios from "axios";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 
 export default function BookClub({server}: {server: string}) {
@@ -46,6 +50,7 @@ export default function BookClub({server}: {server: string}) {
   //non-member: 0, requesting: 1, member: 2
   const [memberStatus,setMemberStatus] = useState<number>(0);
   const [isLoading,setIsLoading] = useState<boolean>(true);
+  dayjs.extend(utc)
 
   function getBookClub() {
     let tokenCookie: string | null = Cookies.get().token;
@@ -142,7 +147,7 @@ export default function BookClub({server}: {server: string}) {
         console.log(response)
         if (response.data.success) {
           getBookClub();
-          onClosEditModal();
+          closeEditModal();
         }
         else {
           setUpdateError(response.data.message)
@@ -209,6 +214,63 @@ export default function BookClub({server}: {server: string}) {
       })
     }
   }
+
+  const { 
+    isOpen: isOpenMeetingModal, 
+    onOpen: onOpenMeetingModal, 
+    onClose: onClosMeetingModal 
+  } = useDisclosure()
+
+  function openMeetingModal() {
+    onOpenMeetingModal()
+  }
+
+  function closeMeetingModal() {
+    setUpdateError("")
+    onClosMeetingModal()
+  }
+
+  const meetingLocationRef = useRef({} as ReactQuill);
+  const meetingStartRef = useRef({} as HTMLInputElement);
+  const meetingEndRef = useRef({} as HTMLInputElement);
+  function updateBookClubMeeting(e: React.FormEvent) {
+    e.preventDefault();
+    let tokenCookie: string | null = Cookies.get().token;
+    if (tokenCookie) {
+      axios
+      .put(server + "/api/updatebookclubmeeting",
+        {
+          bookClubId: bookClub?.id,
+          bookClubMeetingLocation: meetingLocationRef.current.value,
+          bookClubMeetingStart: dayjs(meetingStartRef.current.value).utc(),
+          bookClubMeetingEnd: dayjs(meetingEndRef.current.value).utc()
+        },
+        {
+          headers: {
+            authorization: tokenCookie
+          }
+        }
+      )
+      .then((response)=>{
+        if (response.data.success) {
+          getBookClub();
+          closeMeetingModal();
+        }
+        else {
+          setUpdateError(response.data.message)
+        }
+      })
+      .catch(({response})=>{
+        console.log(response)
+        if (response.data?.message) {
+          setUpdateError(response.data?.message)
+        }
+      })
+    }
+    else {
+      setUpdateError("An error has occured")
+    }
+  }
   
   return (
     <>
@@ -232,6 +294,7 @@ export default function BookClub({server}: {server: string}) {
                       <Flex>
                         <Button
                           onClick={openEditModal}
+                          leftIcon={<HiOutlinePencil/>}
                         >
                           Edit
                         </Button>
@@ -297,9 +360,45 @@ export default function BookClub({server}: {server: string}) {
                         <Heading as="h4" size="sm">Currently Reading</Heading>
                       </Box>
 
-                      <Box className="well">
-                        <Heading as="h4" size="sm">Next Meeting</Heading>
-                      </Box>
+                      <Flex className="well" direction="column" gap={2}>
+                        <Flex align="center" justify="space-between">
+                          <Heading as="h4" size="sm">Next Meeting</Heading>
+                          {isBookClubCreator ? (
+                            <Button 
+                              size="sm"
+                              leftIcon={<HiOutlinePencil/>}
+                              variant="ghost"
+                              onClick={openMeetingModal}
+                            >
+                              Edit
+                            </Button>
+                          ) : null}
+                        </Flex>
+                        <Stack>
+                          <Box>
+                          {bookClub.next_meeting_location ? ( 
+                            <Box 
+                              dangerouslySetInnerHTML={{__html: bookClub?.next_meeting_location}}
+                              p={2}
+                              bg="gray.100"
+                              rounded="md"
+                              sx={{
+                                '*': {
+                                  all: "revert"
+                                }
+                              }}
+                            >
+                            </Box>
+                          ) : null}
+                          </Box>
+                          <Flex gap={2} fontWeight="bold" justify="center">
+                            <Text>{bookClub.next_meeting_start ? dayjs(bookClub.next_meeting_start).local().format('MMM DD, hh:mm a') : null}</Text>
+                            <Text>-</Text>
+                            <Text>{bookClub.next_meeting_end ? dayjs(bookClub.next_meeting_end).local().format('MMM DD, hh:mm a'): null}</Text>
+                          </Flex>
+                        </Stack>
+                        
+                      </Flex>
 
                       <Box className="well">
                         <Heading as="h4" size="sm" mb={2}>General Discussion</Heading>
@@ -368,6 +467,65 @@ export default function BookClub({server}: {server: string}) {
                   />
                 </Flex>
               </ModalBody>
+              <ModalFooter flexDirection="column">
+                <Text color="red">
+                  {updateError}
+                </Text>
+                <Flex align="center" justify="flex-end">
+                  <Button 
+                    type="submit"
+                    mr={3}
+                    size="md"
+                  >
+                    Update
+                  </Button>
+                </Flex>
+              </ModalFooter>
+            </Flex>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isOpenMeetingModal} onClose={closeMeetingModal} size="xl" isCentered>
+        <ModalOverlay />
+        <ModalContent maxH="80vh">
+          <ModalHeader>
+            Edit Book Club Meeting
+          </ModalHeader>
+          <ModalCloseButton />
+            <Flex as="form" direction="column" w="100%" onSubmit={e=>updateBookClubMeeting(e)}>
+              <ModalBody>
+                <Stack gap={2}>
+                  <Box>
+                    <FormLabel htmlFor="location">Location</FormLabel>
+                    <ReactQuill 
+                      id="location" 
+                      theme="snow"
+                      ref={meetingLocationRef}
+                      value={bookClub?.next_meeting_location}
+                    />
+                  </Box>
+                  <Flex gap={1} justify="space-between" flexWrap="wrap">
+                    <Flex direction="column">
+                      <FormLabel htmlFor="from">From</FormLabel>
+                      <Input
+                        id="from"
+                        type="datetime-local"
+                        defaultValue={bookClub?.next_meeting_start ? dayjs(bookClub?.next_meeting_start).format('YYYY-MM-DD hh:mm') :  ""}
+                        ref={meetingStartRef}
+                      />
+                    </Flex>
+                    <Flex direction="column">
+                      <FormLabel htmlFor="to">To</FormLabel>
+                      <Input
+                        id="to"
+                        type="datetime-local"
+                        defaultValue={bookClub?.next_meeting_end ? dayjs(bookClub?.next_meeting_end).format('YYYY-MM-DD hh:mm') :  ""}
+                        ref={meetingEndRef}
+                      />
+                    </Flex>
+                  </Flex>
+                </Stack>
+                </ModalBody>
               <ModalFooter flexDirection="column">
                 <Text color="red">
                   {updateError}
