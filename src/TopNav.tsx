@@ -74,7 +74,16 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
   })
   const [totalRequests,setTotalRequests] = useState<number>(0);
 
+  function resetNotifications() {
+    setUserNotifications({
+      followRequests: [],
+      bookClubRequests: []
+    })
+    setTotalRequests(0)
+  }
+
   function getNotifications() {
+    resetNotifications();
     //check if any follow requests
     if (user.Profile.Following_Following_following_profile_idToProfile?.length) {
       let followers = user.Profile.Following_Following_following_profile_idToProfile;
@@ -92,18 +101,15 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
         }
       }
     }
-    setTotalRequests(userNotifications.followRequests.length + userNotifications.bookClubRequests.length)
+    setTotalRequests(prev=>userNotifications.followRequests.length + userNotifications.bookClubRequests.length)
   }
 
-  useLayoutEffect(()=>{
+  useEffect(()=>{
     getNotifications()
     return(()=>{
-      setUserNotifications({
-        followRequests: [],
-        bookClubRequests: []
-      })
+      resetNotifications();
     })
-  },[user])
+  },[getUser])
 
   const [profilePhoto,setProfilePhoto] = useState<string | null>(null);
   useLayoutEffect(()=>{
@@ -129,6 +135,9 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
       if (response.data.success) {
         getUser()
       }
+    })
+    .then((r)=>{
+      window.location.reload()
     })
     .catch(({response})=>{
       console.log(response)
@@ -158,6 +167,9 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
         getUser()
       }
     })
+    .then((r)=>{
+      window.location.reload()
+    })
     .catch(({response})=>{
       console.log(response)
       toast({
@@ -181,6 +193,9 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
       if (response.data.success) {
         getUser()
       }
+    })
+    .then((r)=>{
+      window.location.reload()
     })
     .catch(({response})=>{
       console.log(response)
@@ -208,6 +223,9 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
       if (response.data.success) {
         getUser()
       }
+    })
+    .then((r)=>{
+      window.location.reload()
     })
     .catch(({response})=>{
       console.log(response)
