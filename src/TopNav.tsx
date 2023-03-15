@@ -16,6 +16,8 @@ import {
   MenuList,
   MenuItem,
   MenuDivider,
+  InputGroup,
+  InputRightElement,
   Heading,
   useDisclosure,
   useColorModeValue,
@@ -24,6 +26,7 @@ import {
   Text,
   Icon,
   useColorMode,
+  Input,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -42,6 +45,7 @@ import { FiSettings, FiMail } from 'react-icons/fi';
 import { RxDotFilled } from 'react-icons/rx';
 import { AiOutlineBell } from 'react-icons/ai';
 import { BiMessageDetail } from 'react-icons/bi';
+import { FaSearch } from 'react-icons/fa';
 import logoIcon from './assets/community-book-club-logo-logo-only.png';
 import logoIconWhite from './assets/community-book-club-logo-logo-only-white.png';
 import Cookies from "js-cookie";
@@ -225,7 +229,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
   return (
     <>
       <Box as="nav" bg={useColorModeValue('white', 'gray.900')} overflow="hidden" px={4} boxShadow="1px 1px 6px lightgray" _dark={{boxShadow: "0 0 0"}}>
-        <Flex py={2} flexWrap="wrap" alignItems={'center'} justifyContent={'space-between'}>
+        <Flex py={2} flexWrap="nowrap" alignItems={'center'} justifyContent={'space-between'}>
           <IconButton
             size={'md'}
             icon={isOpen ? <MdClose /> : <GiHamburgerMenu />}
@@ -235,7 +239,11 @@ export default function TopNav({server,onLogout}: TopNavProps) {
             onClick={isOpen ? onClose : onOpen}
           />
           <HStack spacing={8} alignItems={'center'}>
-            <Box position="relative" minW="max-content">
+            <Box 
+              position="relative" 
+              minW="max-content"
+              display={{ base: 'none', md: 'flex' }}
+            >
               <Link to="/">
                 <Image 
                   src={colorMode === "light" ? logoIcon : logoIconWhite}
@@ -263,28 +271,45 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                 ) : null}
               </Link>
             </Box>
-            <HStack
-              as={'nav'}
-              spacing={4}
-              display={{ base: 'none', md: 'flex' }}>
-              {LinkItems.map((linkItem, index) => (
-                <Box
-                  as={NavLink} 
-                  key={index} 
-                  to={linkItem.linkTo}
-                  p={2}
-                  rounded="md"
-                  fontSize="lg"
-                  fontWeight="600"
-                  _hover={{
-                    bg: useColorModeValue("gray.200","gray.500"),
-                    color: useColorModeValue("black","white")
-                  }}
-                >
-                  {linkItem.name}
-                </Box>
-              ))}
-            </HStack>
+            <InputGroup marginInlineStart="2!important">
+              <Input 
+                type="text"
+                rounded="2xl"
+                width="100%"
+                placeholder="Search"
+                bg="gray.100"
+                _dark={{
+                  bg: "gray.600"
+                }}
+              />
+              <InputRightElement
+                pointerEvents="none"
+                children={<FaSearch/>}
+              />
+            </InputGroup>
+          </HStack>
+          <HStack
+            as={'nav'}
+            spacing={4}
+            display={{ base: 'none', md: 'flex' }}>
+            {LinkItems.map((linkItem, index) => (
+              <Box
+                as={NavLink} 
+                key={index} 
+                to={linkItem.linkTo}
+                p={2}
+                rounded="md"
+                fontSize="lg"
+                fontWeight="600"
+                whiteSpace="nowrap"
+                _hover={{
+                  bg: useColorModeValue("gray.200","gray.500"),
+                  color: useColorModeValue("black","white")
+                }}
+              >
+                {linkItem.name}
+              </Box>
+            ))}
           </HStack>
           <Flex alignItems={'center'} justify="space-between" gap={3}>
             {user.Library ? (
