@@ -147,6 +147,7 @@ export interface BookClubsType {
   next_meeting_start: Date;
   next_meeting_end: Date;
   BookClubMembers: BookClubMember[];
+  BookClubBook: BookClubBookType[];
 }
 
 export interface BookClubMember {
@@ -158,9 +159,12 @@ export interface BookClubMember {
 }
 
 export interface BookClubBookType {
-  // id: number;
-  // creator: number;
-  // name: string;
+  id: number;
+  book_club: number;
+  author: string;
+  image: string;
+  title: string;
+  created_on: Date;
 }
 
 

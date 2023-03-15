@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, ReactHTMLElement } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { BookClubMember, BookClubsType } from "../types/types";
+import { BookClubMember, BookClubsType, BookClubBookType } from "../types/types";
 import { 
   Box,
   Heading,
@@ -13,10 +13,17 @@ import {
   Flex,
   Skeleton,
   FormControl,
+  Link,
+  Image,
+  Center,
   Switch,
   FormLabel,
   FormErrorMessage,
   Textarea,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -24,6 +31,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Spinner,
   useDisclosure,
   useToast,
   Input
@@ -31,6 +39,8 @@ import {
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { HiOutlinePencil } from 'react-icons/hi';
+import { BiDotsHorizontalRounded } from 'react-icons/bi';
+import { AiOutlinePlus } from 'react-icons/ai';
 import { BookClubGeneralComments } from "../shared/BookClubGeneralComments";
 import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
@@ -52,6 +62,7 @@ export default function BookClub({server}: {server: string}) {
   const [isLoading,setIsLoading] = useState<boolean>(true);
   dayjs.extend(utc)
 
+  const [currentBook,setCurrentBook] = useState<BookClubBookType>();
   function getBookClub() {
     let tokenCookie: string | null = Cookies.get().token;
     setIsLoading(true);
@@ -69,6 +80,9 @@ export default function BookClub({server}: {server: string}) {
         if (response.data.success) {
           const responseBookClub = response.data.message
           setBookClub(responseBookClub)
+
+          setCurrentBook(responseBookClub.BookClubBook.reverse()[0])
+          
           if (responseBookClub.creator === user.Profile.id) {
             setIsBookClubCreator(true);
           }
@@ -218,7 +232,7 @@ export default function BookClub({server}: {server: string}) {
   const { 
     isOpen: isOpenMeetingModal, 
     onOpen: onOpenMeetingModal, 
-    onClose: onClosMeetingModal 
+    onClose: onCloseMeetingModal 
   } = useDisclosure()
 
   function openMeetingModal() {
@@ -227,7 +241,7 @@ export default function BookClub({server}: {server: string}) {
 
   function closeMeetingModal() {
     setUpdateError("")
-    onClosMeetingModal()
+    onCloseMeetingModal()
   }
 
   const meetingLocationRef = useRef({} as ReactQuill);
@@ -269,6 +283,71 @@ export default function BookClub({server}: {server: string}) {
     }
     else {
       setUpdateError("An error has occured")
+    }
+  }
+
+  const { 
+    isOpen: isOpenNewBookModal, 
+    onOpen: onOpenNewBookModal, 
+    onClose: onCloseNewBookModal 
+  } = useDisclosure()
+
+  function openNewBookModal() {
+    onOpenNewBookModal()
+  }
+
+  function closeNewBookModal() {
+    setUpdateError("")
+    onCloseNewBookModal()
+  }
+
+  const searchBookRef = useRef({} as HTMLInputElement);
+  const [bookResults,setBookResults] = useState<any[] | null>(null);
+  const [bookResultsLoading,setBookResultsLoading] = useState(false)
+  async function searchBook() {
+    setBookResultsLoading(true)
+    await axios
+      .get("https://openlibrary.org/search.json?q=" + searchBookRef.current.value + "&jscmd=details")
+      .then((response)=>{
+        setBookResults(response.data.docs)
+        setBookResultsLoading(false)
+      })
+      .catch((error)=>{
+        console.log(error)
+      })
+  }
+
+  async function selectBook(e: React.FormEvent) {
+    const bookData = JSON.parse((e.target as HTMLDivElement).dataset.book!);
+    setBookResultsLoading(true)
+    let tokenCookie: string | null = Cookies.get().token;
+    if (tokenCookie) {
+      await axios
+        .post(server + "/api/setbookclubbook",
+          {
+            bookClubId: parseInt(paramsBookClubId!),
+            bookImage: bookData.isbn ? `https://covers.openlibrary.org/b/isbn/${bookData.isbn[0]}-M.jpg?default=false` : "",
+            bookTitle: bookData.title ? bookData.title : "",
+            bookAuthor: bookData.author_name ? bookData.author_name[0] : ""
+          },
+          {
+            headers: {
+              authorization: tokenCookie
+            }
+          }
+        )
+        .then((response)=>{
+          getBookClub()
+          setBookResultsLoading(false)
+          closeNewBookModal()
+        })
+        .catch(({response})=>{
+          console.log(response)
+          setUpdateError(response.data.message)
+        })
+    }
+    else {
+      setUpdateError("Something went wrong")
     }
   }
   
@@ -356,22 +435,101 @@ export default function BookClub({server}: {server: string}) {
                 <Stack flex="1 1 65%" maxW="100%">
                   {memberStatus === 2 || isBookClubCreator ? (
                     <>
-                      <Box className="well">
-                        <Heading as="h4" size="sm">Currently Reading</Heading>
-                      </Box>
+                      <Flex className="well" direction="column" gap={2}>
+                        <Flex align="center" justify="space-between">
+                          <Heading as="h4" size="sm">Currently Reading</Heading>
+                          {isBookClubCreator ? (
+                          <Menu>
+                            <MenuButton 
+                              as={Button}
+                              size="md"
+                              variant="ghost"
+                              rounded="full"
+                              height="25px"
+                            >
+                              <BiDotsHorizontalRounded/>
+                            </MenuButton>
+                            <MenuList>
+                              <MenuItem
+                                // value={comment.id}
+                                onClick={e=>openNewBookModal()}
+                                fontWeight="bold"
+                                icon={<AiOutlinePlus size={20} />}
+                              >
+                                New
+                              </MenuItem>
+                            </MenuList>
+                          </Menu>
+                          ) : null}
+                        </Flex>
+                        <Center 
+                          flexDirection="column" 
+                          gap={1}
+                          p={2}
+                          bg="gray.100"
+                          rounded="md"
+                          _dark={{
+                            bg: "gray.600"
+                          }}
+                        >
+                          {bookClub?.BookClubBook?.length ? (
+                            <>
+                              <Box
+                                maxWidth="150px"
+                              >
+                                <Image
+                                  maxW="100%" 
+                                  w="100%"
+                                  h="auto"
+                                  pt={2} 
+                                  mb={1}
+                                  className="book-image"
+                                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                  src={currentBook?.image}
+                                />
+                              </Box>
+                              <Heading as="h3" size="sm">
+                                {currentBook?.title}
+                              </Heading>
+                              <Text>
+                                {currentBook?.author}
+                              </Text>
+                              {isBookClubCreator ? (
+                                <Button variant="ghost" size="xs">Edit</Button>
+                              ) : null}
+                            </>
+                          ) : null}
+                        </Center>
+                        <Center>
+                          <Link href="#">View discussion</Link>
+                        </Center>
+                      </Flex>
 
                       <Flex className="well" direction="column" gap={2}>
                         <Flex align="center" justify="space-between">
                           <Heading as="h4" size="sm">Next Meeting</Heading>
                           {isBookClubCreator ? (
-                            <Button 
-                              size="sm"
-                              leftIcon={<HiOutlinePencil/>}
-                              variant="ghost"
-                              onClick={openMeetingModal}
-                            >
-                              Edit
-                            </Button>
+                            <Menu>
+                              <MenuButton 
+                                as={Button}
+                                size="md"
+                                variant="ghost"
+                                rounded="full"
+                                height="25px"
+                              >
+                                <BiDotsHorizontalRounded/>
+                              </MenuButton>
+                              <MenuList>
+                                <MenuItem
+                                  // value={comment.id}
+                                  onClick={openMeetingModal}
+                                  fontWeight="bold"
+                                  icon={<HiOutlinePencil size={20} />}
+                                >
+                                  Edit
+                                </MenuItem>
+                              </MenuList>
+                            </Menu>
                           ) : null}
                         </Flex>
                         <Stack>
@@ -382,6 +540,9 @@ export default function BookClub({server}: {server: string}) {
                               p={2}
                               bg="gray.100"
                               rounded="md"
+                              _dark={{
+                                bg: "gray.600"
+                              }}
                               sx={{
                                 '*': {
                                   all: "revert"
@@ -541,6 +702,94 @@ export default function BookClub({server}: {server: string}) {
                 </Flex>
               </ModalFooter>
             </Flex>
+        </ModalContent>
+      </Modal>
+
+      <Modal 
+        isOpen={isOpenNewBookModal} 
+        onClose={closeNewBookModal} 
+        size="xl" 
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent maxH="80vh">
+          <ModalHeader>
+            New Book Club Book
+          </ModalHeader>
+          <ModalCloseButton />
+            <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
+              <Stack gap={2} position="relative">
+                <Flex gap={1} position="sticky" top={0}>
+                  <Input
+                    type="text"
+                    ref={searchBookRef}
+                    bg="white"
+                    onKeyDown={e=>e.key === "Enter" ? searchBook() : null}
+                  />
+                  <Button
+                    onClick={searchBook}
+                  >
+                    Search
+                  </Button>
+                </Flex>
+                {bookResultsLoading ? (
+                  <Center>
+                    <Spinner size="xl"/>
+                  </Center>
+                ) : (
+                  <Flex gap={1} align="center" justify="space-between" flexWrap="wrap">
+                    {bookResults ? bookResults.map((book,i)=>{
+                      return (
+                        <Flex
+                          m={3}
+                          p={2}
+                          maxW="165px"
+                          direction="column"
+                          align="center"
+                          cursor="pointer"
+                          data-book={JSON.stringify(book)}
+                          onClick={e=>selectBook(e)}
+                          rounded="md"
+                          _hover={{
+                            bg: "gray.100"
+                          }}
+                          key={i}
+                        >
+                          <Box
+                            pointerEvents="none"
+                          >
+                            <Image
+                              maxW="100%" 
+                              w="100%"
+                              h="auto"
+                              pt={2} 
+                              mb={1}
+                              className="book-image"
+                              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                              src={book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn[0]}-M.jpg?default=false` : "https://via.placeholder.com/165x215"}
+                            />
+                            <Heading
+                              as="h4"
+                              size="sm"
+                            >
+                              {book.title}
+                            </Heading>
+                            <Text>
+                              {book.author_name ? book.author_name[0] : null}
+                            </Text>
+                          </Box>
+                        </Flex>
+                      )
+                    }) : null}
+                  </Flex>
+                )}
+              </Stack>
+            </ModalBody>
+            <ModalFooter flexDirection="column">
+              <Text color="red">
+                {updateError}
+              </Text>
+            </ModalFooter>
         </ModalContent>
       </Modal>
     </>
