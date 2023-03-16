@@ -148,6 +148,7 @@ export interface BookClubsType {
   next_meeting_end: Date;
   BookClubMembers: BookClubMember[];
   BookClubBook: BookClubBookType[];
+  BookClubBookPoll: BookClubBookPollType;
 }
 
 export interface BookClubMember {
@@ -159,12 +160,20 @@ export interface BookClubMember {
 }
 
 export interface BookClubBookType {
-  id: number;
-  book_club: number;
+  id?: number;
+  book_club?: number;
   author: string;
   image: string;
   title: string;
-  created_on: Date;
+  created_on?: Date;
+}
+
+export interface BookClubBookPollType {
+  id: number;
+  book_club: number;
+  book_one: string;
+  book_two: string;
+  book_three: string;
 }
 
 

@@ -63,6 +63,9 @@ export default function BookClub({server}: {server: string}) {
   dayjs.extend(utc)
 
   const [currentBook,setCurrentBook] = useState<BookClubBookType>();
+  const [pollBookOneReceived,setPollBookOneReceived] = useState<BookClubBookType | null>(null)
+  const [pollBookTwoReceived,setPollBookTwoReceived] = useState<BookClubBookType | null>(null)
+  const [pollBookThreeReceived,setPollBookThreeReceived] = useState<BookClubBookType | null>(null)
   function getBookClub() {
     let tokenCookie: string | null = Cookies.get().token;
     setIsLoading(true);
@@ -82,6 +85,18 @@ export default function BookClub({server}: {server: string}) {
           setBookClub(responseBookClub)
 
           setCurrentBook(responseBookClub.BookClubBook.reverse()[0])
+
+          if(responseBookClub.BookClubBookPoll) {
+            if (responseBookClub.BookClubBookPoll.book_one) {
+              setPollBookOneReceived(JSON.parse(responseBookClub.BookClubBookPoll.book_one))
+            }
+            if (responseBookClub.BookClubBookPoll.book_two) {
+              setPollBookTwoReceived(JSON.parse(responseBookClub.BookClubBookPoll.book_two))
+            }
+            if (responseBookClub.BookClubBookPoll.book_three) {
+              setPollBookThreeReceived(JSON.parse(responseBookClub.BookClubBookPoll.book_three))
+            }
+          }
           
           if (responseBookClub.creator === user.Profile.id) {
             setIsBookClubCreator(true);
@@ -316,6 +331,7 @@ export default function BookClub({server}: {server: string}) {
     await axios
       .get("https://openlibrary.org/search.json?q=" + searchBookRef.current.value + "&jscmd=details")
       .then((response)=>{
+        console.log(response.data.docs)
         setBookResults(response.data.docs)
         setBookResultsLoading(false)
       })
@@ -410,8 +426,63 @@ export default function BookClub({server}: {server: string}) {
   }
 
   function closePollBookModal() {
-    setUpdateError("")
+    setPollBookOne(null)
+    setPollBookTwo(null)
+    setPollBookThree(null)
     onClosePollBookModal()
+  }
+
+  const [pollBookOne,setPollBookOne] = useState<BookClubBookType | null>(null)
+  const [pollBookTwo,setPollBookTwo] = useState<BookClubBookType | null>(null)
+  const [pollBookThree,setPollBookThree] = useState<BookClubBookType | null>(null)
+  async function createPollBooks() {
+    setBookResultsLoading(true)
+    let tokenCookie: string | null = Cookies.get().token;
+    if (tokenCookie) {
+      await axios
+        .post(server + "/api/setpollbooks",
+          {
+            bookClubId: parseInt(paramsBookClubId!),
+            bookOne: pollBookOne ? pollBookOne : "",
+            bookTwo: pollBookTwo ? pollBookTwo : "",
+            bookThree: pollBookThree ? pollBookThree : ""
+          },
+          {
+            headers: {
+              authorization: tokenCookie
+            }
+          }
+        )
+        .then((response)=>{
+          getBookClub()
+          closePollBookModal()
+          toast({
+            description: "New book club book created",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          })
+        })
+        .catch(({response})=>{
+          console.log(response)
+          toast({
+            description: response.data.message,
+            status: "error",
+            duration: 9000,
+            isClosable: true
+          })
+        })
+      setBookResultsLoading(false)
+    }
+    else {
+      setUpdateError("Something went wrong")
+      toast({
+        description: "Something went wrong",
+        status: "error",
+        duration: 9000,
+        isClosable: true
+      })
+    }
   }
   
   return (
@@ -550,18 +621,20 @@ export default function BookClub({server}: {server: string}) {
                                   <Button 
                                     variant="ghost" 
                                     size="xs"
-                                    onClick={e=>openEditCurrentBookModal(currentBook?.id)}
+                                    onClick={e=>openEditCurrentBookModal(currentBook?.id!)}
                                   >
                                     Edit
                                   </Button>
                                 ) : null}
+                                <Button m={2}>
+                                  Discussion
+                                </Button>
                               </>
                             ) : null}
                           </Center>
-                          <Flex justify="space-between">
+                          <Center>
                             <Link href="#">View past books</Link>
-                            <Link href="#">View discussion</Link>
-                          </Flex>
+                          </Center>
                         </>
                         ) : null}
                       </Flex>
@@ -624,13 +697,106 @@ export default function BookClub({server}: {server: string}) {
                             <Button
                               variant="ghost"
                               size="sm"
-                              leftIcon={<AiOutlinePlus size={15} />}
+                              leftIcon={<HiOutlinePencil size={15} />}
                               onClick={openPollBookModal}
                             >
-                              New
+                              Edit
                             </Button>
                           ) : null}
                         </Flex>
+                        {bookClub?.BookClubBookPoll ? (
+                          <Stack>
+                            <Flex justify="space-around" w="100%" flexWrap="nowrap" gap={2}>
+                              {pollBookOneReceived ? (
+                                <Box flex="0 1 150px">
+                                  <Box>
+                                    <Image
+                                      maxW="100%" 
+                                      w="100%"
+                                      h="auto"
+                                      pt={2} 
+                                      mb={1}
+                                      className="book-image"
+                                      onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                      src={pollBookOneReceived.image}
+                                    />
+                                  </Box>
+                                  <Text fontWeight="bold">
+                                    {pollBookOneReceived.title}
+                                  </Text>
+                                  <Text>
+                                    {pollBookOneReceived.author}
+                                  </Text>
+                                  <Button
+                                    size="xs"
+                                    // onClick={e=>setPollBookOne(null)}
+                                  >
+                                    Vote
+                                  </Button>
+                                </Box>
+                              ) : null}
+                              
+                              {pollBookTwoReceived ? (
+                                <Box flex="0 1 150px">
+                                  <Box>
+                                    <Image
+                                      maxW="100%" 
+                                      w="100%"
+                                      h="auto"
+                                      pt={2} 
+                                      mb={1}
+                                      className="book-image"
+                                      onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                      src={pollBookTwoReceived.image}
+                                    />
+                                  </Box>
+                                  <Text fontWeight="bold">
+                                    {pollBookTwoReceived.title}
+                                  </Text>
+                                  <Text>
+                                    {pollBookTwoReceived.author}
+                                  </Text>
+                                  <Button
+                                    size="xs"
+                                    // onClick={e=>setPollBookTwo(null)}
+                                  >
+                                    Vote
+                                  </Button>
+                                </Box>
+                              ) : null}
+                              
+                              {pollBookThreeReceived ? (
+                                <Box flex="0 1 150px">
+                                  <Box>
+                                    <Image
+                                      maxW="100%" 
+                                      w="100%"
+                                      h="auto"
+                                      pt={2} 
+                                      mb={1}
+                                      className="book-image"
+                                      onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                      src={pollBookThreeReceived.image}
+                                    />
+                                  </Box>
+                                  <Text fontWeight="bold">
+                                    {pollBookThreeReceived.title}
+                                  </Text>
+                                  <Text>
+                                    {pollBookThreeReceived.author}
+                                  </Text>
+                                  <Button
+                                    size="xs"
+                                    // onClick={e=>setPollBookThree(null)}
+                                  >
+                                    Vote
+                                  </Button>
+                                </Box>
+                              ) : null}
+                              
+                            </Flex>
+                          </Stack>
+                        ) : null}
                         <Stack>
                         </Stack>
                       </Flex>
@@ -880,12 +1046,12 @@ export default function BookClub({server}: {server: string}) {
         isCentered
       >
         <ModalOverlay />
-        <ModalContent maxH="80vh">
+        <ModalContent maxH="90vh">
           <ModalHeader>
             Next Book Poll
           </ModalHeader>
           <ModalCloseButton />
-            <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
+            <ModalBody minH="150px" h="auto" maxH="80vh" overflow="auto">
               <Stack gap={2} position="relative">
                 <Flex gap={1} position="sticky" top={0}>
                   <Input
@@ -916,11 +1082,37 @@ export default function BookClub({server}: {server: string}) {
                           direction="column"
                           align="center"
                           cursor="pointer"
-                          data-book={JSON.stringify(book)}
-                          onClick={e=>selectBook(e)}
+                          // data-book={JSON.stringify(book)}
+                          onClick={e=>(
+                            pollBookOne === null ? (
+                              setPollBookOne({
+                                image: book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn[0]}-M.jpg?default=false` : "",
+                                title: book.title ? book.title : "",
+                                author: book.author_name ? book.author_name[0] : ""
+                              })
+                                ) : (
+                                  pollBookTwo === null ? (
+                                    setPollBookTwo({
+                                      image: book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn[0]}-M.jpg?default=false` : "",
+                                      title: book.title ? book.title : "",
+                                      author: book.author_name ? book.author_name[0] : ""
+                                    })
+                                      ) : pollBookThree === null ? (
+                                        setPollBookThree({
+                                          image: book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn[0]}-M.jpg?default=false` : "",
+                                          title: book.title ? book.title : "",
+                                          author: book.author_name ? book.author_name[0] : ""
+                                        })
+                                        ) : null)
+                          )}
                           rounded="md"
                           _hover={{
                             bg: "gray.100"
+                          }}
+                          _dark={{
+                            '&:hover': {
+                              bg: "gray.600"
+                            }
                           }}
                           key={i}
                         >
@@ -955,9 +1147,104 @@ export default function BookClub({server}: {server: string}) {
               </Stack>
             </ModalBody>
             <ModalFooter flexDirection="column">
-              <Text color="red">
-                {updateError}
-              </Text>
+              <Flex justify="space-between" w="100%" flexWrap="nowrap" gap={2}>
+                <Box flex="0 1 125px">
+                  {pollBookOne !== null ? (
+                    <>
+                    <Box>
+                      <Image
+                        maxW="100%" 
+                        w="100%"
+                        h="auto"
+                        pt={2} 
+                        mb={1}
+                        className="book-image"
+                        onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                        src={pollBookOne.image}
+                      />
+                    </Box>
+                    <Text fontWeight="bold">
+                      {pollBookOne.title}
+                    </Text>
+                    <Text>
+                      {pollBookOne.author}
+                    </Text>
+                    <Button
+                      size="xs"
+                      onClick={e=>setPollBookOne(null)}
+                    >
+                      Clear
+                    </Button>
+                  </>
+                  ) : null}
+                </Box>
+                <Box flex="0 1 125px">
+                  {pollBookTwo !== null ? (
+                    <>
+                      <Box>
+                        <Image
+                          maxW="100%" 
+                          w="100%"
+                          h="auto"
+                          pt={2} 
+                          mb={1}
+                          className="book-image"
+                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                          src={pollBookTwo.image}
+                        />
+                      </Box>
+                      <Text fontWeight="bold">
+                        {pollBookTwo.title}
+                      </Text>
+                      <Text>
+                        {pollBookTwo.author}
+                      </Text>
+                      <Button
+                        size="xs"
+                        onClick={e=>setPollBookTwo(null)}
+                      >
+                        Clear
+                      </Button>
+                    </>
+                  ) : null}
+                </Box>
+                <Box flex="0 1 125px">
+                  {pollBookThree !== null ? (
+                    <>
+                      <Box>
+                        <Image
+                          maxW="100%" 
+                          w="100%"
+                          h="auto"
+                          pt={2} 
+                          mb={1}
+                          className="book-image"
+                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                          src={pollBookThree.image}
+                        />
+                      </Box>
+                      <Text fontWeight="bold">
+                        {pollBookThree.title}
+                      </Text>
+                      <Text>
+                        {pollBookThree.author}
+                      </Text>
+                      <Button
+                        size="xs"
+                        onClick={e=>setPollBookThree(null)}
+                      >
+                        Clear
+                      </Button>
+                    </>
+                  ) : null}
+                </Box>
+              </Flex>
+              <Button
+                onClick={createPollBooks}
+                mt={3}
+              >
+                Save
+              </Button>
             </ModalFooter>
         </ModalContent>
       </Modal>
