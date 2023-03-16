@@ -287,18 +287,25 @@ export default function BookClub({server}: {server: string}) {
   }
 
   const { 
-    isOpen: isOpenNewBookModal, 
-    onOpen: onOpenNewBookModal, 
-    onClose: onCloseNewBookModal 
+    isOpen: isOpenCurrentBookModal, 
+    onOpen: onOpenCurrentBookModal, 
+    onClose: onCloseCurrentBookModal 
   } = useDisclosure()
 
-  function openNewBookModal() {
-    onOpenNewBookModal()
+  function openNewCurrentBookModal() {
+    onOpenCurrentBookModal()
   }
 
-  function closeNewBookModal() {
+  const [bookClubBook,setBookClubBook] = useState<number | null>(null)
+  function openEditCurrentBookModal(bookClubBookId: number) {
+    setBookClubBook(bookClubBookId)
+    onOpenCurrentBookModal();
+  }
+
+  function closeCurrentBookModal() {
     setUpdateError("")
-    onCloseNewBookModal()
+    setBookClubBook(null)
+    onCloseCurrentBookModal()
   }
 
   const searchBookRef = useRef({} as HTMLInputElement);
@@ -322,7 +329,40 @@ export default function BookClub({server}: {server: string}) {
     setBookResultsLoading(true)
     let tokenCookie: string | null = Cookies.get().token;
     if (tokenCookie) {
-      await axios
+      if (bookClubBook !== null) { //Edit book club
+        await axios
+        .post(server + "/api/updatebookclubbook",
+          {
+            bookClubId: parseInt(paramsBookClubId!),
+            bookClubBookId: bookClubBook,
+            bookImage: bookData.isbn ? `https://covers.openlibrary.org/b/isbn/${bookData.isbn[0]}-M.jpg?default=false` : "",
+            bookTitle: bookData.title ? bookData.title : "",
+            bookAuthor: bookData.author_name ? bookData.author_name[0] : ""
+          },
+          {
+            headers: {
+              authorization: tokenCookie
+            }
+          }
+        )
+        .then((response)=>{
+          getBookClub()
+          setBookResultsLoading(false)
+          closeCurrentBookModal()
+          toast({
+            description: "Book club book updated",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          })
+        })
+        .catch(({response})=>{
+          console.log(response)
+          setUpdateError(response.data.message)
+        })
+      }
+      else if (bookClubBook === null) { //New book club
+        await axios
         .post(server + "/api/setbookclubbook",
           {
             bookClubId: parseInt(paramsBookClubId!),
@@ -339,16 +379,39 @@ export default function BookClub({server}: {server: string}) {
         .then((response)=>{
           getBookClub()
           setBookResultsLoading(false)
-          closeNewBookModal()
+          closeCurrentBookModal()
+          toast({
+            description: "New book club book created",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          })
         })
         .catch(({response})=>{
           console.log(response)
           setUpdateError(response.data.message)
         })
+      }
     }
     else {
       setUpdateError("Something went wrong")
     }
+  }
+
+
+  const { 
+    isOpen: isOpenPollBookModal, 
+    onOpen: onOpenPollBookModal, 
+    onClose: onClosePollBookModal 
+  } = useDisclosure()
+
+  function openPollBookModal() {
+    onOpenPollBookModal()
+  }
+
+  function closePollBookModal() {
+    setUpdateError("")
+    onClosePollBookModal()
   }
   
   return (
@@ -443,7 +506,7 @@ export default function BookClub({server}: {server: string}) {
                             variant="ghost"
                             size="sm"
                             leftIcon={<AiOutlinePlus size={15} />}
-                            onClick={e=>openNewBookModal()}
+                            onClick={e=>openNewCurrentBookModal()}
                           >
                             New
                           </Button>
@@ -484,14 +547,21 @@ export default function BookClub({server}: {server: string}) {
                                   {currentBook?.author}
                                 </Text>
                                 {isBookClubCreator ? (
-                                  <Button variant="ghost" size="xs">Edit</Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="xs"
+                                    onClick={e=>openEditCurrentBookModal(currentBook?.id)}
+                                  >
+                                    Edit
+                                  </Button>
                                 ) : null}
                               </>
                             ) : null}
                           </Center>
-                          <Center>
+                          <Flex justify="space-between">
+                            <Link href="#">View past books</Link>
                             <Link href="#">View discussion</Link>
-                          </Center>
+                          </Flex>
                         </>
                         ) : null}
                       </Flex>
@@ -537,10 +607,32 @@ export default function BookClub({server}: {server: string}) {
                               <Text>-</Text>
                               <Text>{bookClub.next_meeting_end ? dayjs(bookClub.next_meeting_end).local().format('MMM DD, hh:mm a'): null}</Text>
                             </Flex>
+                            <Center>
+                              <Button>
+                                RSVP
+                              </Button>
+                            </Center>
                           </>
                           ) : null}
                         </Stack>
-                        
+                      </Flex>
+
+                      <Flex className="well" direction="column" gap={2}>
+                        <Flex align="center" justify="space-between">
+                          <Heading as="h4" size="sm">Next Book Poll</Heading>
+                          {isBookClubCreator ? (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              leftIcon={<AiOutlinePlus size={15} />}
+                              onClick={openPollBookModal}
+                            >
+                              New
+                            </Button>
+                          ) : null}
+                        </Flex>
+                        <Stack>
+                        </Stack>
                       </Flex>
 
                       <Box className="well">
@@ -688,8 +780,8 @@ export default function BookClub({server}: {server: string}) {
       </Modal>
 
       <Modal 
-        isOpen={isOpenNewBookModal} 
-        onClose={closeNewBookModal} 
+        isOpen={isOpenCurrentBookModal} 
+        onClose={closeCurrentBookModal} 
         size="xl" 
         isCentered
       >
@@ -697,6 +789,100 @@ export default function BookClub({server}: {server: string}) {
         <ModalContent maxH="80vh">
           <ModalHeader>
             New Book Club Book
+          </ModalHeader>
+          <ModalCloseButton />
+            <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
+              <Stack gap={2} position="relative">
+                <Flex gap={1} position="sticky" top={0}>
+                  <Input
+                    type="text"
+                    ref={searchBookRef}
+                    bg="white"
+                    color="black"
+                    onKeyDown={e=>e.key === "Enter" ? searchBook() : null}
+                  />
+                  <Button
+                    onClick={searchBook}
+                  >
+                    Search
+                  </Button>
+                </Flex>
+                {bookResultsLoading ? (
+                  <Center>
+                    <Spinner size="xl"/>
+                  </Center>
+                ) : (
+                  <Flex gap={1} align="center" justify="space-between" flexWrap="wrap">
+                    {bookResults ? bookResults.map((book,i)=>{
+                      return (
+                        <Flex
+                          m={3}
+                          p={2}
+                          maxW="165px"
+                          direction="column"
+                          align="center"
+                          cursor="pointer"
+                          data-book={JSON.stringify(book)}
+                          onClick={e=>selectBook(e)}
+                          rounded="md"
+                          _hover={{
+                            bg: "gray.100"
+                          }}
+                          _dark={{
+                            '&:hover': {
+                              bg: "gray.600"
+                            }
+                          }}
+                          key={i}
+                        >
+                          <Box
+                            pointerEvents="none"
+                          >
+                            <Image
+                              maxW="100%" 
+                              w="100%"
+                              h="auto"
+                              pt={2} 
+                              mb={1}
+                              className="book-image"
+                              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                              src={book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn[0]}-M.jpg?default=false` : "https://via.placeholder.com/165x215"}
+                            />
+                            <Heading
+                              as="h4"
+                              size="sm"
+                            >
+                              {book.title}
+                            </Heading>
+                            <Text>
+                              {book.author_name ? book.author_name[0] : null}
+                            </Text>
+                          </Box>
+                        </Flex>
+                      )
+                    }) : null}
+                  </Flex>
+                )}
+              </Stack>
+            </ModalBody>
+            <ModalFooter flexDirection="column">
+              <Text color="red">
+                {updateError}
+              </Text>
+            </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal 
+        isOpen={isOpenPollBookModal} 
+        onClose={closePollBookModal} 
+        size="xl" 
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent maxH="80vh">
+          <ModalHeader>
+            Next Book Poll
           </ModalHeader>
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
