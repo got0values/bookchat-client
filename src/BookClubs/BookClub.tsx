@@ -358,7 +358,7 @@ export default function BookClub({server}: {server: string}) {
           isLoaded={!isLoading}
         >
           {bookClubError ? (
-            <Heading as="h2" size="2xl" >bookClubError</Heading>
+            <Heading as="h2" size="2xl" >{bookClubError}</Heading>
             ) : (
             bookClub ? (
               <Flex flexWrap="wrap" w="100%" align="start" justify="space-between">
@@ -439,124 +439,106 @@ export default function BookClub({server}: {server: string}) {
                         <Flex align="center" justify="space-between">
                           <Heading as="h4" size="sm">Currently Reading</Heading>
                           {isBookClubCreator ? (
-                          <Menu>
-                            <MenuButton 
-                              as={Button}
-                              size="md"
-                              variant="ghost"
-                              rounded="full"
-                              height="25px"
-                            >
-                              <BiDotsHorizontalRounded/>
-                            </MenuButton>
-                            <MenuList>
-                              <MenuItem
-                                // value={comment.id}
-                                onClick={e=>openNewBookModal()}
-                                fontWeight="bold"
-                                icon={<AiOutlinePlus size={20} />}
-                              >
-                                New
-                              </MenuItem>
-                            </MenuList>
-                          </Menu>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            leftIcon={<AiOutlinePlus size={15} />}
+                            onClick={e=>openNewBookModal()}
+                          >
+                            New
+                          </Button>
                           ) : null}
                         </Flex>
-                        <Center 
-                          flexDirection="column" 
-                          gap={1}
-                          p={2}
-                          bg="gray.100"
-                          rounded="md"
-                          _dark={{
-                            bg: "gray.600"
-                          }}
-                        >
-                          {bookClub?.BookClubBook?.length ? (
-                            <>
-                              <Box
-                                maxWidth="150px"
-                              >
-                                <Image
-                                  maxW="100%" 
-                                  w="100%"
-                                  h="auto"
-                                  pt={2} 
-                                  mb={1}
-                                  className="book-image"
-                                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                  src={currentBook?.image}
-                                />
-                              </Box>
-                              <Heading as="h3" size="sm">
-                                {currentBook?.title}
-                              </Heading>
-                              <Text>
-                                {currentBook?.author}
-                              </Text>
-                              {isBookClubCreator ? (
-                                <Button variant="ghost" size="xs">Edit</Button>
-                              ) : null}
-                            </>
-                          ) : null}
-                        </Center>
-                        <Center>
-                          <Link href="#">View discussion</Link>
-                        </Center>
+                        {currentBook ? (
+                        <>
+                          <Center 
+                            flexDirection="column" 
+                            gap={1}
+                            p={2}
+                            bg="gray.100"
+                            rounded="md"
+                            _dark={{
+                              bg: "gray.600"
+                            }}
+                          >
+                            {bookClub?.BookClubBook?.length ? (
+                              <>
+                                <Box
+                                  maxWidth="150px"
+                                >
+                                  <Image
+                                    maxW="100%" 
+                                    w="100%"
+                                    h="auto"
+                                    pt={2} 
+                                    mb={1}
+                                    className="book-image"
+                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                    src={currentBook?.image}
+                                  />
+                                </Box>
+                                <Heading as="h3" size="sm">
+                                  {currentBook?.title}
+                                </Heading>
+                                <Text>
+                                  {currentBook?.author}
+                                </Text>
+                                {isBookClubCreator ? (
+                                  <Button variant="ghost" size="xs">Edit</Button>
+                                ) : null}
+                              </>
+                            ) : null}
+                          </Center>
+                          <Center>
+                            <Link href="#">View discussion</Link>
+                          </Center>
+                        </>
+                        ) : null}
                       </Flex>
 
                       <Flex className="well" direction="column" gap={2}>
                         <Flex align="center" justify="space-between">
                           <Heading as="h4" size="sm">Next Meeting</Heading>
                           {isBookClubCreator ? (
-                            <Menu>
-                              <MenuButton 
-                                as={Button}
-                                size="md"
-                                variant="ghost"
-                                rounded="full"
-                                height="25px"
-                              >
-                                <BiDotsHorizontalRounded/>
-                              </MenuButton>
-                              <MenuList>
-                                <MenuItem
-                                  // value={comment.id}
-                                  onClick={openMeetingModal}
-                                  fontWeight="bold"
-                                  icon={<HiOutlinePencil size={20} />}
-                                >
-                                  Edit
-                                </MenuItem>
-                              </MenuList>
-                            </Menu>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              leftIcon={<HiOutlinePencil size={15} />}
+                              onClick={openMeetingModal}
+                            >
+                              Edit
+                            </Button>
                           ) : null}
                         </Flex>
                         <Stack>
-                          <Box>
-                          {bookClub.next_meeting_location ? ( 
-                            <Box 
-                              dangerouslySetInnerHTML={{__html: bookClub?.next_meeting_location}}
-                              p={2}
-                              bg="gray.100"
-                              rounded="md"
-                              _dark={{
-                                bg: "gray.600"
-                              }}
-                              sx={{
-                                '*': {
-                                  all: "revert"
-                                }
-                              }}
-                            >
+                          {bookClub.next_meeting_location || bookClub.next_meeting_start || bookClub.next_meeting_end ? (
+                          <>
+                            <Box>
+                            {bookClub.next_meeting_location ? ( 
+                              <Box 
+                                dangerouslySetInnerHTML={{__html: bookClub?.next_meeting_location}}
+                                p={2}
+                                bg="gray.100"
+                                rounded="md"
+                                _dark={{
+                                  bg: "gray.600"
+                                }}
+                                sx={{
+                                  '*': {
+                                    all: "revert"
+                                  }
+                                }}
+                              >
+                              </Box>
+                            ) : null}
                             </Box>
+                            <Flex gap={2} fontWeight="bold" justify="center">
+                              <Text>{bookClub.next_meeting_start ? dayjs(bookClub.next_meeting_start).local().format('MMM DD, hh:mm a') : null}</Text>
+                              <Text>-</Text>
+                              <Text>{bookClub.next_meeting_end ? dayjs(bookClub.next_meeting_end).local().format('MMM DD, hh:mm a'): null}</Text>
+                            </Flex>
+                          </>
                           ) : null}
-                          </Box>
-                          <Flex gap={2} fontWeight="bold" justify="center">
-                            <Text>{bookClub.next_meeting_start ? dayjs(bookClub.next_meeting_start).local().format('MMM DD, hh:mm a') : null}</Text>
-                            <Text>-</Text>
-                            <Text>{bookClub.next_meeting_end ? dayjs(bookClub.next_meeting_end).local().format('MMM DD, hh:mm a'): null}</Text>
-                          </Flex>
                         </Stack>
                         
                       </Flex>
@@ -724,6 +706,7 @@ export default function BookClub({server}: {server: string}) {
                     type="text"
                     ref={searchBookRef}
                     bg="white"
+                    color="black"
                     onKeyDown={e=>e.key === "Enter" ? searchBook() : null}
                   />
                   <Button
