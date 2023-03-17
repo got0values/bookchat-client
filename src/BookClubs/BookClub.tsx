@@ -641,7 +641,7 @@ export default function BookClub({server}: {server: string}) {
                                 </Text>
                                 <Popover isLazy>
                                   <PopoverTrigger>
-                                    <Button size="xs">Description</Button>
+                                    <Button size="sm">Description</Button>
                                   </PopoverTrigger>
                                   <PopoverContent>
                                     <PopoverArrow />
