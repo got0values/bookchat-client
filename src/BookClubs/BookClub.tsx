@@ -433,6 +433,15 @@ export default function BookClub({server}: {server: string}) {
   } = useDisclosure()
 
   function openPollBookModal() {
+    if (pollBookOneReceived) {
+      setPollBookOne(pollBookOneReceived)
+    }
+    if (pollBookTwoReceived) {
+      setPollBookTwo(pollBookTwoReceived)
+    }
+    if (pollBookThreeReceived) {
+      setPollBookThree(pollBookThreeReceived)
+    }
     onOpenPollBookModal()
   }
 
