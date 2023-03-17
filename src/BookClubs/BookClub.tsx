@@ -17,6 +17,7 @@ import {
   Image,
   Center,
   Switch,
+  Divider,
   FormLabel,
   FormErrorMessage,
   Textarea,
@@ -25,6 +26,7 @@ import {
   MenuList,
   MenuItem,
   Popover,
+  Portal,
   PopoverTrigger,
   PopoverContent,
   PopoverArrow,
@@ -637,9 +639,9 @@ export default function BookClub({server}: {server: string}) {
                                 <Text>
                                   {currentBook?.author}
                                 </Text>
-                                <Popover>
+                                <Popover isLazy>
                                   <PopoverTrigger>
-                                    <Button size="xs" m={2}>Description</Button>
+                                    <Button size="xs">Description</Button>
                                   </PopoverTrigger>
                                   <PopoverContent>
                                     <PopoverArrow />
@@ -739,7 +741,13 @@ export default function BookClub({server}: {server: string}) {
                           <Stack>
                             <Flex justify="space-around" w="100%" flexWrap="nowrap" gap={2}>
                               {pollBookOneReceived ? (
-                                <Box flex="0 1 150px">
+                                <Flex
+                                  flexDirection="column" 
+                                  flex="0 1 175px"
+                                  bg="gray.200"
+                                  p={2}
+                                  rounded="md"
+                                >
                                   <Box>
                                     <Image
                                       maxW="100%" 
@@ -758,17 +766,36 @@ export default function BookClub({server}: {server: string}) {
                                   <Text>
                                     {pollBookOneReceived.author}
                                   </Text>
+                                  <Popover isLazy>
+                                    <PopoverTrigger>
+                                      <Button size="xs" variant="ghost" m={1}>Description</Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent>
+                                      <PopoverArrow />
+                                      <PopoverCloseButton />
+                                      <PopoverHeader>{pollBookOneReceived.title}</PopoverHeader>
+                                      <PopoverBody>{pollBookOneReceived.description ? pollBookOneReceived.description : null}</PopoverBody>
+                                    </PopoverContent>
+                                  </Popover>
                                   <Button
                                     size="xs"
+                                    colorScheme="green"
+                                    marginTop="auto"
                                     // onClick={e=>setPollBookOne(null)}
                                   >
                                     Vote
                                   </Button>
-                                </Box>
+                                </Flex>
                               ) : null}
                               
                               {pollBookTwoReceived ? (
-                                <Box flex="0 1 150px">
+                                <Flex
+                                  flexDirection="column" 
+                                  flex="0 1 175px"
+                                  bg="gray.200"
+                                  p={2}
+                                  rounded="md"
+                                >
                                   <Box>
                                     <Image
                                       maxW="100%" 
@@ -787,17 +814,36 @@ export default function BookClub({server}: {server: string}) {
                                   <Text>
                                     {pollBookTwoReceived.author}
                                   </Text>
+                                  <Popover isLazy>
+                                    <PopoverTrigger>
+                                      <Button size="xs" variant="ghost" m={1}>Description</Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent>
+                                      <PopoverArrow />
+                                      <PopoverCloseButton />
+                                      <PopoverHeader>{pollBookTwoReceived.title}</PopoverHeader>
+                                      <PopoverBody>{pollBookTwoReceived.description ? pollBookTwoReceived.description : null}</PopoverBody>
+                                    </PopoverContent>
+                                  </Popover>
                                   <Button
                                     size="xs"
+                                    colorScheme="green"
+                                    marginTop="auto"
                                     // onClick={e=>setPollBookTwo(null)}
                                   >
                                     Vote
                                   </Button>
-                                </Box>
+                                </Flex>
                               ) : null}
                               
                               {pollBookThreeReceived ? (
-                                <Box flex="0 1 150px">
+                                <Flex
+                                  flexDirection="column" 
+                                  flex="0 1 175px"
+                                  bg="gray.200"
+                                  p={2}
+                                  rounded="md"
+                                >
                                   <Box>
                                     <Image
                                       maxW="100%" 
@@ -816,26 +862,26 @@ export default function BookClub({server}: {server: string}) {
                                   <Text>
                                     {pollBookThreeReceived.author}
                                   </Text>
-                                  <Flex align="center" justify="space-between">
-                                    <Popover>
-                                      <PopoverTrigger>
-                                        <Button size="xs" m={2}>Description</Button>
-                                      </PopoverTrigger>
-                                      <PopoverContent>
-                                        <PopoverArrow />
-                                        <PopoverCloseButton />
-                                        <PopoverHeader>{pollBookThreeReceived.title}</PopoverHeader>
-                                        <PopoverBody>{pollBookThreeReceived.description ? pollBookThreeReceived.description : null}</PopoverBody>
-                                      </PopoverContent>
-                                    </Popover>
-                                    <Button
-                                      size="xs"
-                                      // onClick={e=>setPollBookThree(null)}
-                                    >
-                                      Vote
-                                    </Button>
-                                  </Flex>
-                                </Box>
+                                  <Popover isLazy>
+                                    <PopoverTrigger>
+                                      <Button size="xs" variant="ghost" m={1}>Description</Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent>
+                                      <PopoverArrow />
+                                      <PopoverCloseButton />
+                                      <PopoverHeader>{pollBookThreeReceived.title}</PopoverHeader>
+                                      <PopoverBody>{pollBookThreeReceived.description ? pollBookThreeReceived.description : null}</PopoverBody>
+                                    </PopoverContent>
+                                  </Popover>
+                                  <Button
+                                    size="xs"
+                                    colorScheme="green"
+                                    marginTop="auto"
+                                    // onClick={e=>setPollBookThree(null)}
+                                  >
+                                    Vote
+                                  </Button>
+                                </Flex>
                               ) : null}
                               
                             </Flex>
@@ -1063,7 +1109,7 @@ export default function BookClub({server}: {server: string}) {
                             </Text>
                           </Box>
                           <Flex align="center" justify="space-between">
-                            <Popover>
+                            <Popover isLazy>
                               <PopoverTrigger>
                                 <Button size="xs" m={2}>Description</Button>
                               </PopoverTrigger>
@@ -1170,7 +1216,7 @@ export default function BookClub({server}: {server: string}) {
                             </Text>
                           </Box>
                           <Flex align="center" justify="space-between">
-                            <Popover>
+                            <Popover isLazy>
                               <PopoverTrigger>
                                 <Button size="xs" m={2}>Description</Button>
                               </PopoverTrigger>
