@@ -329,10 +329,10 @@ export default function BookClub({server}: {server: string}) {
   async function searchBook() {
     setBookResultsLoading(true)
     await axios
-      .get("https://openlibrary.org/search.json?q=" + searchBookRef.current.value + "&jscmd=details")
+      .get("https://www.googleapis.com/books/v1/volumes?q=" + searchBookRef.current.value)
       .then((response)=>{
-        console.log(response.data.docs)
-        setBookResults(response.data.docs)
+        console.log(response)
+        setBookResults(response.data.items)
         setBookResultsLoading(false)
       })
       .catch((error)=>{
@@ -351,9 +351,9 @@ export default function BookClub({server}: {server: string}) {
           {
             bookClubId: parseInt(paramsBookClubId!),
             bookClubBookId: bookClubBook,
-            bookImage: bookData.isbn ? `https://covers.openlibrary.org/b/isbn/${bookData.isbn[0]}-M.jpg?default=false` : "",
-            bookTitle: bookData.title ? bookData.title : "",
-            bookAuthor: bookData.author_name ? bookData.author_name[0] : ""
+            bookImage: bookData.volumeInfo.imageLinks ? bookData.volumeInfo.imageLinks.smallThumbnail : "",
+            bookTitle: bookData.volumeInfo.title,
+            bookAuthor: bookData.volumeInfo.authors ? bookData.volumeInfo.authors[0] : ""
           },
           {
             headers: {
@@ -382,9 +382,9 @@ export default function BookClub({server}: {server: string}) {
         .post(server + "/api/setbookclubbook",
           {
             bookClubId: parseInt(paramsBookClubId!),
-            bookImage: bookData.isbn ? `https://covers.openlibrary.org/b/isbn/${bookData.isbn[0]}-M.jpg?default=false` : "",
-            bookTitle: bookData.title ? bookData.title : "",
-            bookAuthor: bookData.author_name ? bookData.author_name[0] : ""
+            bookImage: bookData.volumeInfo.imageLinks ? bookData.volumeInfo.imageLinks.smallThumbnail : "",
+            bookTitle: bookData.volumeInfo.title,
+            bookAuthor: bookData.volumeInfo.authors ? bookData.volumeInfo.authors[0] : ""
           },
           {
             headers: {
@@ -1012,16 +1012,17 @@ export default function BookClub({server}: {server: string}) {
                               mb={1}
                               className="book-image"
                               onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                              src={book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn[0]}-M.jpg?default=false` : "https://via.placeholder.com/165x215"}
+                              src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
+                              alt="book image"
                             />
                             <Heading
                               as="h4"
                               size="sm"
                             >
-                              {book.title}
+                              {book.volumeInfo.title}
                             </Heading>
                             <Text>
-                              {book.author_name ? book.author_name[0] : null}
+                              {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
                             </Text>
                           </Box>
                         </Flex>
@@ -1086,22 +1087,22 @@ export default function BookClub({server}: {server: string}) {
                           onClick={e=>(
                             pollBookOne === null ? (
                               setPollBookOne({
-                                image: book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn[0]}-M.jpg?default=false` : "",
-                                title: book.title ? book.title : "",
-                                author: book.author_name ? book.author_name[0] : ""
+                                image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
+                                title: book.volumeInfo.title,
+                                author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : ""
                               })
                                 ) : (
                                   pollBookTwo === null ? (
                                     setPollBookTwo({
-                                      image: book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn[0]}-M.jpg?default=false` : "",
-                                      title: book.title ? book.title : "",
-                                      author: book.author_name ? book.author_name[0] : ""
+                                      image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
+                                      title: book.volumeInfo.title,
+                                      author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : ""
                                     })
                                       ) : pollBookThree === null ? (
                                         setPollBookThree({
-                                          image: book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn[0]}-M.jpg?default=false` : "",
-                                          title: book.title ? book.title : "",
-                                          author: book.author_name ? book.author_name[0] : ""
+                                          image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
+                                          title: book.volumeInfo.title,
+                                          author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : ""
                                         })
                                         ) : null)
                           )}
@@ -1127,16 +1128,16 @@ export default function BookClub({server}: {server: string}) {
                               mb={1}
                               className="book-image"
                               onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                              src={book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn[0]}-M.jpg?default=false` : "https://via.placeholder.com/165x215"}
+                              src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
                             />
                             <Heading
                               as="h4"
                               size="sm"
                             >
-                              {book.title}
+                              {book.volumeInfo.title}
                             </Heading>
                             <Text>
-                              {book.author_name ? book.author_name[0] : null}
+                              {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
                             </Text>
                           </Box>
                         </Flex>
