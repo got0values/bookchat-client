@@ -167,7 +167,7 @@ export interface BookClubBookType {
   title: string;
   description: string;
   link: string;
-  created_on?: Date;
+  created_on?: Date | string;
 }
 
 export interface BookClubBookPollType {

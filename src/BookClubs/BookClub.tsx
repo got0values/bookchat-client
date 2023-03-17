@@ -665,9 +665,43 @@ export default function BookClub({server}: {server: string}) {
                               </>
                             ) : null}
                           </Center>
-                          <Center>
-                            <Link href="#">View past books</Link>
-                          </Center>
+                          {bookClub?.BookClubBook?.length ? (
+                            <Center>
+                              <Popover isLazy>
+                                <PopoverTrigger>
+                                  <Button size="sm" variant="ghost" m={1}>View past books</Button>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                  <PopoverArrow />
+                                  <PopoverCloseButton />
+                                  <PopoverHeader>Past Books</PopoverHeader>
+                                  <PopoverBody>
+                                    {bookClub.BookClubBook.map((bcb,i)=>{
+                                      return (
+                                        <>
+                                          {i !== 0 ? (
+                                            <Divider/>
+                                          ) : null}
+                                          <Flex align="center" columnGap={2} flexWrap="wrap">
+                                            <Text whiteSpace="nowrap">
+                                              {dayjs(bcb.created_on).format("MMM DD, YYYY")}
+                                            </Text>
+                                            {" - "}
+                                            <Text whiteSpace="nowrap" fontWeight="bold">
+                                              {bcb.title}
+                                            </Text>
+                                            <Text whiteSpace="nowrap">
+                                              {bcb.author}
+                                            </Text>
+                                          </Flex>
+                                        </>
+                                      )
+                                    })}
+                                  </PopoverBody>
+                                </PopoverContent>
+                              </Popover>
+                            </Center>
+                          ) : null}
                         </>
                         ) : null}
                       </Flex>
