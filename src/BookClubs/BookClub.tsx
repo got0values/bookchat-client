@@ -607,65 +607,60 @@ export default function BookClub({server}: {server: string}) {
                         </Flex>
                         {currentBook ? (
                         <>
-                          <Center 
-                            flexDirection="column" 
-                            gap={1}
-                            p={2}
+                          <Box
                             bg="gray.100"
+                            p={2}
                             rounded="md"
                             _dark={{
                               bg: "gray.600"
                             }}
                           >
-                            {bookClub?.BookClubBook?.length ? (
-                              <>
-                                <Box
-                                  maxWidth="150px"
-                                >
-                                  <Image
-                                    maxW="100%" 
-                                    w="100%"
-                                    h="auto"
-                                    pt={2} 
-                                    mb={1}
-                                    className="book-image"
-                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                    src={currentBook?.image}
-                                  />
-                                </Box>
-                                <Heading as="h3" size="sm">
+                            <Flex  
+                              gap={5}
+                              flexWrap="wrap"
+                            >
+                              <Box
+                                flex="1 1 200px"
+                                maxW="175px"
+                              >
+                                <Image
+                                  maxW="100%" 
+                                  w="100%"
+                                  h="auto"
+                                  m={1}
+                                  className="book-image"
+                                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                  src={currentBook?.image}
+                                />
+                              </Box>
+                              <Flex direction="column" align="center" justify="center" flex="1 1" minW="250px">
+                                <Heading as="h3" size="md">
                                   {currentBook?.title}
                                 </Heading>
                                 <Text>
                                   {currentBook?.author}
                                 </Text>
-                                <Popover isLazy>
-                                  <PopoverTrigger>
-                                    <Button size="sm">Description</Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent>
-                                    <PopoverArrow />
-                                    <PopoverCloseButton />
-                                    <PopoverHeader>{currentBook.title}</PopoverHeader>
-                                    <PopoverBody>{currentBook?.description ? currentBook.description : null}</PopoverBody>
-                                  </PopoverContent>
-                                </Popover>
-                                {isBookClubCreator ? (
-                                  <Button 
-                                    variant="ghost" 
-                                    size="xs"
-                                    onClick={e=>openEditCurrentBookModal(currentBook?.id!)}
-                                  >
-                                    Edit
-                                  </Button>
-                                ) : null}
-                                <Button m={2}>
-                                  Discussion
+                                <Box maxH="225px" overflow="auto">
+                                  {currentBook?.description ? currentBook.description : null}
+                                </Box>
+                              </Flex>
+                            </Flex>
+                            <Center flexDirection="column">
+                              <Button m={2}>
+                                Discussion
+                              </Button>
+                              {isBookClubCreator ? (
+                                <Button 
+                                  variant="ghost"
+                                  onClick={e=>openEditCurrentBookModal(currentBook?.id!)}
+                                  leftIcon={<HiOutlinePencil size={15} />}
+                                >
+                                  Edit
                                 </Button>
-                              </>
-                            ) : null}
-                          </Center>
-                          {bookClub?.BookClubBook?.length ? (
+                              ) : null}
+                            </Center>
+                          </Box>
+                          {bookClub?.BookClubBook?.length && bookClub?.BookClubBook?.length > 1 ? (
                             <Center>
                               <Popover isLazy>
                                 <PopoverTrigger>
@@ -680,20 +675,22 @@ export default function BookClub({server}: {server: string}) {
                                       return (
                                         <>
                                           {i !== 0 ? (
-                                            <Divider/>
+                                            <>
+                                              {i > 1 ? <Divider/> : null}
+                                              <Flex align="center" columnGap={2} flexWrap="wrap">
+                                                <Text whiteSpace="nowrap">
+                                                  {dayjs(bcb.created_on).format("MMM DD, YYYY")}
+                                                </Text>
+                                                {" - "}
+                                                <Text whiteSpace="nowrap" fontWeight="bold">
+                                                  {bcb.title}
+                                                </Text>
+                                                <Text whiteSpace="nowrap">
+                                                  {bcb.author}
+                                                </Text>
+                                              </Flex>
+                                            </>
                                           ) : null}
-                                          <Flex align="center" columnGap={2} flexWrap="wrap">
-                                            <Text whiteSpace="nowrap">
-                                              {dayjs(bcb.created_on).format("MMM DD, YYYY")}
-                                            </Text>
-                                            {" - "}
-                                            <Text whiteSpace="nowrap" fontWeight="bold">
-                                              {bcb.title}
-                                            </Text>
-                                            <Text whiteSpace="nowrap">
-                                              {bcb.author}
-                                            </Text>
-                                          </Flex>
                                         </>
                                       )
                                     })}
