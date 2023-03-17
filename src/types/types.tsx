@@ -165,6 +165,8 @@ export interface BookClubBookType {
   author: string;
   image: string;
   title: string;
+  description: string;
+  link: string;
   created_on?: Date;
 }
 

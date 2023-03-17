@@ -24,6 +24,13 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverCloseButton,
+  PopoverHeader,
+  PopoverBody,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -353,7 +360,9 @@ export default function BookClub({server}: {server: string}) {
             bookClubBookId: bookClubBook,
             bookImage: bookData.volumeInfo.imageLinks ? bookData.volumeInfo.imageLinks.smallThumbnail : "",
             bookTitle: bookData.volumeInfo.title,
-            bookAuthor: bookData.volumeInfo.authors ? bookData.volumeInfo.authors[0] : ""
+            bookAuthor: bookData.volumeInfo.authors ? bookData.volumeInfo.authors[0] : "",
+            bookDescription: bookData.volumeInfo.description ? bookData.volumeInfo.description : "",
+            bookLink: bookData.volumeInfo.previewLink ? bookData.volumeInfo.previewLink : ""
           },
           {
             headers: {
@@ -384,7 +393,9 @@ export default function BookClub({server}: {server: string}) {
             bookClubId: parseInt(paramsBookClubId!),
             bookImage: bookData.volumeInfo.imageLinks ? bookData.volumeInfo.imageLinks.smallThumbnail : "",
             bookTitle: bookData.volumeInfo.title,
-            bookAuthor: bookData.volumeInfo.authors ? bookData.volumeInfo.authors[0] : ""
+            bookAuthor: bookData.volumeInfo.authors ? bookData.volumeInfo.authors[0] : "",
+            bookDescription: bookData.volumeInfo.description ? bookData.volumeInfo.description : "",
+            bookLink: bookData.volumeInfo.previewLink ? bookData.volumeInfo.previewLink : ""
           },
           {
             headers: {
@@ -617,6 +628,17 @@ export default function BookClub({server}: {server: string}) {
                                 <Text>
                                   {currentBook?.author}
                                 </Text>
+                                <Popover>
+                                  <PopoverTrigger>
+                                    <Button size="xs" m={2}>Description</Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent>
+                                    <PopoverArrow />
+                                    <PopoverCloseButton />
+                                    <PopoverHeader>{currentBook.title}</PopoverHeader>
+                                    <PopoverBody>{currentBook?.description ? currentBook.description : null}</PopoverBody>
+                                  </PopoverContent>
+                                </Popover>
                                 {isBookClubCreator ? (
                                   <Button 
                                     variant="ghost" 
@@ -785,12 +807,25 @@ export default function BookClub({server}: {server: string}) {
                                   <Text>
                                     {pollBookThreeReceived.author}
                                   </Text>
-                                  <Button
-                                    size="xs"
-                                    // onClick={e=>setPollBookThree(null)}
-                                  >
-                                    Vote
-                                  </Button>
+                                  <Flex align="center" justify="space-between">
+                                    <Popover>
+                                      <PopoverTrigger>
+                                        <Button size="xs" m={2}>Description</Button>
+                                      </PopoverTrigger>
+                                      <PopoverContent>
+                                        <PopoverArrow />
+                                        <PopoverCloseButton />
+                                        <PopoverHeader>{pollBookThreeReceived.title}</PopoverHeader>
+                                        <PopoverBody>{pollBookThreeReceived.description ? pollBookThreeReceived.description : null}</PopoverBody>
+                                      </PopoverContent>
+                                    </Popover>
+                                    <Button
+                                      size="xs"
+                                      // onClick={e=>setPollBookThree(null)}
+                                    >
+                                      Vote
+                                    </Button>
+                                  </Flex>
                                 </Box>
                               ) : null}
                               
@@ -959,7 +994,7 @@ export default function BookClub({server}: {server: string}) {
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
               <Stack gap={2} position="relative">
-                <Flex gap={1} position="sticky" top={0}>
+                <Flex gap={1} position="sticky" top={0} zIndex={200}>
                   <Input
                     type="text"
                     ref={searchBookRef}
@@ -987,17 +1022,10 @@ export default function BookClub({server}: {server: string}) {
                           maxW="165px"
                           direction="column"
                           align="center"
-                          cursor="pointer"
-                          data-book={JSON.stringify(book)}
-                          onClick={e=>selectBook(e)}
                           rounded="md"
-                          _hover={{
-                            bg: "gray.100"
-                          }}
+                          bg="gray.100"
                           _dark={{
-                            '&:hover': {
-                              bg: "gray.600"
-                            }
+                            bg: "gray.600"
                           }}
                           key={i}
                         >
@@ -1025,6 +1053,26 @@ export default function BookClub({server}: {server: string}) {
                               {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
                             </Text>
                           </Box>
+                          <Flex align="center" justify="space-between">
+                            <Popover>
+                              <PopoverTrigger>
+                                <Button size="xs" m={2}>Description</Button>
+                              </PopoverTrigger>
+                              <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody>{book.volumeInfo.description}</PopoverBody>
+                              </PopoverContent>
+                            </Popover>
+                            <Button 
+                              size="xs"
+                              data-book={JSON.stringify(book)}
+                              onClick={e=>selectBook(e)}
+                              colorScheme="green"
+                            >
+                              Set
+                            </Button>
+                          </Flex>
                         </Flex>
                       )
                     }) : null}
@@ -1054,7 +1102,7 @@ export default function BookClub({server}: {server: string}) {
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="80vh" overflow="auto">
               <Stack gap={2} position="relative">
-                <Flex gap={1} position="sticky" top={0}>
+                <Flex gap={1} position="sticky" top={0} zIndex={200}>
                   <Input
                     type="text"
                     ref={searchBookRef}
@@ -1082,38 +1130,10 @@ export default function BookClub({server}: {server: string}) {
                           maxW="165px"
                           direction="column"
                           align="center"
-                          cursor="pointer"
-                          // data-book={JSON.stringify(book)}
-                          onClick={e=>(
-                            pollBookOne === null ? (
-                              setPollBookOne({
-                                image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
-                                title: book.volumeInfo.title,
-                                author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : ""
-                              })
-                                ) : (
-                                  pollBookTwo === null ? (
-                                    setPollBookTwo({
-                                      image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
-                                      title: book.volumeInfo.title,
-                                      author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : ""
-                                    })
-                                      ) : pollBookThree === null ? (
-                                        setPollBookThree({
-                                          image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
-                                          title: book.volumeInfo.title,
-                                          author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : ""
-                                        })
-                                        ) : null)
-                          )}
                           rounded="md"
-                          _hover={{
-                            bg: "gray.100"
-                          }}
+                          bg="gray.100"
                           _dark={{
-                            '&:hover': {
-                              bg: "gray.600"
-                            }
+                            bg: "gray.600"
                           }}
                           key={i}
                         >
@@ -1140,6 +1160,52 @@ export default function BookClub({server}: {server: string}) {
                               {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
                             </Text>
                           </Box>
+                          <Flex align="center" justify="space-between">
+                            <Popover>
+                              <PopoverTrigger>
+                                <Button size="xs" m={2}>Description</Button>
+                              </PopoverTrigger>
+                              <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody>{book.volumeInfo.description}</PopoverBody>
+                              </PopoverContent>
+                            </Popover>
+                            <Button 
+                              size="xs"
+                              colorScheme="green"
+                              onClick={e=>(
+                                pollBookOne === null ? (
+                                  setPollBookOne({
+                                    image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
+                                    title: book.volumeInfo.title,
+                                    author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : "",
+                                    description: book.volumeInfo.description ? book.volumeInfo.description : "",
+                                    link: book.volumeInfo.previewLink ? book.volumeInfo.previewLink : ""
+                                  })
+                                    ) : (
+                                      pollBookTwo === null ? (
+                                        setPollBookTwo({
+                                          image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
+                                          title: book.volumeInfo.title,
+                                          author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : "",
+                                          description: book.volumeInfo.description ? book.volumeInfo.description : "",
+                                          link: book.volumeInfo.previewLink ? book.volumeInfo.previewLink : ""
+                                        })
+                                          ) : pollBookThree === null ? (
+                                            setPollBookThree({
+                                              image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
+                                              title: book.volumeInfo.title,
+                                              author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : "",
+                                              description: book.volumeInfo.description ? book.volumeInfo.description : "",
+                                              link: book.volumeInfo.previewLink ? book.volumeInfo.previewLink : ""
+                                            })
+                                            ) : null)
+                              )}
+                            >
+                              Set
+                            </Button>
+                          </Flex>
                         </Flex>
                       )
                     }) : null}
