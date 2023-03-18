@@ -728,19 +728,22 @@ export default function BookClub({server}: {server: string}) {
                             <Box>
                             {bookClub.next_meeting_location ? ( 
                               <Box 
-                                dangerouslySetInnerHTML={{__html: bookClub?.next_meeting_location}}
                                 p={2}
                                 bg="gray.100"
                                 rounded="md"
                                 _dark={{
                                   bg: "gray.600"
                                 }}
-                                sx={{
-                                  '*': {
-                                    all: "revert"
-                                  }
-                                }}
                               >
+                                <ReactQuill 
+                                  theme="snow"
+                                  modules={{
+                                    toolbar: ''
+                                  }}
+                                  readOnly={true}
+                                  defaultValue={bookClub?.next_meeting_location}
+                                  style={{border: 'none'}}
+                                />
                               </Box>
                             ) : null}
                             </Box>
@@ -785,6 +788,9 @@ export default function BookClub({server}: {server: string}) {
                                   bg="gray.200"
                                   p={2}
                                   rounded="md"
+                                  _dark={{
+                                    bg: 'gray.600'
+                                  }}
                                 >
                                   <Box>
                                     <Image
@@ -833,6 +839,9 @@ export default function BookClub({server}: {server: string}) {
                                   bg="gray.200"
                                   p={2}
                                   rounded="md"
+                                  _dark={{
+                                    bg: 'gray.600'
+                                  }}
                                 >
                                   <Box>
                                     <Image
@@ -881,6 +890,9 @@ export default function BookClub({server}: {server: string}) {
                                   bg="gray.200"
                                   p={2}
                                   rounded="md"
+                                  _dark={{
+                                    bg: 'gray.600'
+                                  }}
                                 >
                                   <Box>
                                     <Image
@@ -1025,10 +1037,23 @@ export default function BookClub({server}: {server: string}) {
               <ModalBody>
                 <Stack gap={2}>
                   <Box>
-                    <FormLabel htmlFor="location">Location</FormLabel>
+                    <FormLabel htmlFor="location">Location/About</FormLabel>
                     <ReactQuill 
                       id="location" 
                       theme="snow"
+                      modules={{
+                        toolbar: [
+                          [{ 'header': []}],
+                          ['bold', 'italic', 'underline'],
+                          [{'list': 'ordered'}, {'list': 'bullet'}],
+                          ['link'],
+                          [{'align': []}],
+                          ['clean']
+                        ]
+                      }}
+                      formats={[
+                        'header','bold', 'italic', 'underline','list', 'bullet', 'align','link'
+                      ]}
                       ref={meetingLocationRef}
                       value={bookClub?.next_meeting_location}
                     />
