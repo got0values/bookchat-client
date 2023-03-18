@@ -48,8 +48,9 @@ import {
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { HiOutlinePencil } from 'react-icons/hi';
-import { BiDotsHorizontalRounded } from 'react-icons/bi';
+import { BsCardText } from 'react-icons/bs';
 import { AiOutlinePlus } from 'react-icons/ai';
+import { TbBooks } from 'react-icons/tb';
 import { BookClubGeneralComments } from "../shared/BookClubGeneralComments";
 import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
@@ -651,6 +652,7 @@ export default function BookClub({server}: {server: string}) {
                             <Center flexDirection="column">
                               <Button 
                                 colorScheme="teal"
+                                leftIcon={<BsCardText size={20} />}
                               >
                                 Discussion
                               </Button>
@@ -669,7 +671,14 @@ export default function BookClub({server}: {server: string}) {
                             <Center>
                               <Popover isLazy>
                                 <PopoverTrigger>
-                                  <Button size="sm" variant="ghost" m={1}>View past books</Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost" 
+                                    m={1}
+                                    leftIcon={<TbBooks size={20} />}
+                                  >
+                                    View past books
+                                  </Button>
                                 </PopoverTrigger>
                                 <PopoverContent>
                                   <PopoverArrow />
