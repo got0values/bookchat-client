@@ -538,7 +538,7 @@ export default function BookClub({server}: {server: string}) {
                   </Flex>
                   <Box className="well">
                     <Flex align="center" justify="space-between">
-                      <Heading as="h4" size="sm">Members</Heading>
+                      <Heading as="h4" size="md">Members</Heading>
                       {isBookClubCreator ? null : (
                         memberStatus > 0 ? (
                           memberStatus === 1 ? (
@@ -593,7 +593,7 @@ export default function BookClub({server}: {server: string}) {
                     <>
                       <Flex className="well" direction="column" gap={2}>
                         <Flex align="center" justify="space-between">
-                          <Heading as="h4" size="sm">Currently Reading</Heading>
+                          <Heading as="h4" size="md">Currently Reading</Heading>
                           {isBookClubCreator ? (
                           <Button
                             variant="ghost"
@@ -705,7 +705,7 @@ export default function BookClub({server}: {server: string}) {
 
                       <Flex className="well" direction="column" gap={2}>
                         <Flex align="center" justify="space-between">
-                          <Heading as="h4" size="sm">Next Meeting</Heading>
+                          <Heading as="h4" size="md">Next Meeting</Heading>
                           {isBookClubCreator ? (
                             <Button
                               variant="ghost"
@@ -745,7 +745,9 @@ export default function BookClub({server}: {server: string}) {
                               <Text>{bookClub.next_meeting_end ? dayjs(bookClub.next_meeting_end).local().format('MMM DD, hh:mm a'): null}</Text>
                             </Flex>
                             <Center>
-                              <Button>
+                              <Button
+                                colorScheme="green"
+                              >
                                 RSVP
                               </Button>
                             </Center>
@@ -756,7 +758,7 @@ export default function BookClub({server}: {server: string}) {
 
                       <Flex className="well" direction="column" gap={2}>
                         <Flex align="center" justify="space-between">
-                          <Heading as="h4" size="sm">Next Book Poll</Heading>
+                          <Heading as="h4" size="md">Next Book Poll</Heading>
                           {isBookClubCreator ? (
                             <Button
                               variant="ghost"
@@ -923,7 +925,7 @@ export default function BookClub({server}: {server: string}) {
                       </Flex>
 
                       <Box className="well">
-                        <Heading as="h4" size="sm" mb={2}>General Discussion</Heading>
+                        <Heading as="h4" size="md" mb={2}>General Discussion</Heading>
                         <BookClubGeneralComments 
                           server={server}
                           bookClubId={paramsBookClubId}
