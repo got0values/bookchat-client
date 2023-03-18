@@ -645,8 +645,13 @@ export default function BookClub({server}: {server: string}) {
                                 </Box>
                               </Flex>
                             </Flex>
+                            <Flex justify="center">
+                              <Divider borderColor="gray.400" my={3} w="95%" />
+                            </Flex>
                             <Center flexDirection="column">
-                              <Button m={2}>
+                              <Button 
+                                colorScheme="teal"
+                              >
                                 Discussion
                               </Button>
                               {isBookClubCreator ? (
@@ -746,7 +751,7 @@ export default function BookClub({server}: {server: string}) {
                             </Flex>
                             <Center>
                               <Button
-                                colorScheme="green"
+                                colorScheme="teal"
                               >
                                 RSVP
                               </Button>
@@ -812,7 +817,7 @@ export default function BookClub({server}: {server: string}) {
                                   </Popover>
                                   <Button
                                     size="xs"
-                                    colorScheme="green"
+                                    colorScheme="teal"
                                     marginTop="auto"
                                     // onClick={e=>setPollBookOne(null)}
                                   >
@@ -860,7 +865,7 @@ export default function BookClub({server}: {server: string}) {
                                   </Popover>
                                   <Button
                                     size="xs"
-                                    colorScheme="green"
+                                    colorScheme="teal"
                                     marginTop="auto"
                                     // onClick={e=>setPollBookTwo(null)}
                                   >
@@ -908,7 +913,7 @@ export default function BookClub({server}: {server: string}) {
                                   </Popover>
                                   <Button
                                     size="xs"
-                                    colorScheme="green"
+                                    colorScheme="teal"
                                     marginTop="auto"
                                     // onClick={e=>setPollBookThree(null)}
                                   >
