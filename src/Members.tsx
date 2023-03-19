@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from "@tanstack/react-query";
 import { 
   Box,
   Heading,
   OrderedList,
   ListItem,
-  Center
+  Center,
+  Text,
+  Spinner
 } from "@chakra-ui/react";
 import { ProfileType } from './types/types';
 import Cookies from 'js-cookie';
@@ -16,32 +19,40 @@ interface MembersProps {
 }
 
 export const Members = ({server}: MembersProps) => {
-  const [members,setMembers] = useState<ProfileType[] | []>([]);
 
-  useEffect(()=>{
+  async function getMembers() {
     const tokenCookie = Cookies.get().token;
-    axios
-    .post(server + "/api/getmembers", 
-    {nothing: "nothing"},
-    {headers: {
-      authorization: tokenCookie
-    }})
-    .then((response)=>{
-      console.log(response.data.message)
-      if (response.data.success) {
-        return setMembers(response.data.message)
-      }
-    })
-    .catch(({response})=>{
-      console.error(response)
-    })
-  },[])
+    const message = await axios
+      .post(server + "/api/getmembers", 
+      {nothing: "nothing"},
+      {headers: {
+        authorization: tokenCookie
+      }})
+      .then((response)=>{
+        if (response.data.success) {
+          return response.data
+        }
+      })
+      .catch(({response})=>{
+        console.error(response.data)
+        throw new Error(response.data.message)
+      })
+    return message
+  }
+
+  const { isLoading, isError, data, error } = useQuery({ queryKey: ['memberKey'], queryFn: getMembers });
+  if (isLoading) {
+    return <Center><Spinner size="xl"/></Center>
+  }
+  if (isError) {
+    return <Center><Heading as="h1" size="xl">Error: {(error as Error).message}</Heading></Center>
+  }
 
   return (
     <Box id="main" flexDirection="column">
       <Heading as="h1" size="3xl" mb={5}>Members</Heading>
       <OrderedList>
-        {members?.map((member,i)=>{
+        {data?.message.map((member: ProfileType, i: number)=>{
           return (
             <ListItem key={i} m={5}>
               <Link to={`/profile/${member.username}`}>{member.username}</Link>

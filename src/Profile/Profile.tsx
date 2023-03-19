@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
-import { SetStateAction, Dispatch } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { ProfileProps, HTMLInputEvent, ProfileType } from '../types/types';
 import { 
   Box,
