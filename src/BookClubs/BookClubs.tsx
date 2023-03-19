@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { 
   Box,
   Heading,
   Text,
-  Avatar,
-  AvatarGroup,
+  Spinner,
   Stack,
   HStack,
   Button,
@@ -24,7 +24,6 @@ import {
 } from "@chakra-ui/react";
 import { IoIosAdd } from 'react-icons/io';
 import { MdGroups } from 'react-icons/md';
-import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
 import axios from "axios";
 import { BookClubsType } from "../types/types";
@@ -33,12 +32,6 @@ import { BookClubsType } from "../types/types";
 export default function BookClubs({server}: {server: string}) {
   const toast = useToast();
   const navigate = useNavigate();
-  const {getUser} = useAuth();
-  const [isLoading,setIsLoading] = useState<boolean>(true);
-  const [bookClubsError,setBookClubsError] = useState<string | null>(null);
-  const [bookClubsOwned,setBookClubsOwned] = useState<BookClubsType[] | null>(null);
-  const [bookClubsJoined,setBookClubsJoined] = useState<BookClubsType[] | null>(null);
-  const [bookClubsPublic,setBookClubsPublic] = useState<BookClubsType[] | null>(null);
 
   const { 
     isOpen: isOpenCreateBookClubModal, 
@@ -52,46 +45,29 @@ export default function BookClubs({server}: {server: string}) {
 
   async function getBookClubs() {
     let tokenCookie: string | null = Cookies.get().token;
-    setIsLoading(true)
     if (tokenCookie) {
-      axios
-      .get(server + "/api/getbookclubs",
-        {
-          headers: {
-            'authorization': tokenCookie
+      const bookClubsData = axios
+        .get(server + "/api/getbookclubs",
+          {
+            headers: {
+              'authorization': tokenCookie
+            }
           }
-        }
-      )
-      .then((response)=>{
-        console.log(response.data)
-        if (response.data.success) {
-          setBookClubsOwned(response.data.bookClubsOwned)
-          setBookClubsJoined(response.data.bookClubsJoined)
-          setBookClubsPublic(response.data.bookClubsPublic)
-        }
-        setIsLoading(false);
-      })
-      .catch(({response})=>{
-        console.log(response)
-        if (response.data?.error) {
-          setBookClubsError(response.data.error)
-        }
-      })
+        )
+        .then((response)=>{
+          console.log(response.data)
+          return response.data;
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data.error)
+        })
+      return bookClubsData
     }
     else {
-      setBookClubsError("An error has occured")
-      setIsLoading(false)
+      throw new Error("TC101")
     }
   }
-
-  useEffect(()=>{
-    getBookClubs();
-    return()=>{
-      setIsLoading(false)
-      setBookClubsOwned(null);
-      setBookClubsJoined(null);
-    }
-  },[])
 
   const createBookClubNameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
   const [createBookClubError,setCreateBookClubError] = useState<string>("");
@@ -139,182 +115,186 @@ export default function BookClubs({server}: {server: string}) {
     setCreateBookClubError("");
     onCloseCreateBookClubModal();
   }
+
+  const { isLoading, isError, data, error } = useQuery({ queryKey: ['bookClubsKey'], queryFn: getBookClubs });
+  const bookClubsOwned = data?.bookClubsOwned;
+  const bookClubsJoined = data?.bookClubsJoined;
+  const bookClubsPublic = data?.bookClubsPublic;
+  if (isError) {
+    return <Flex align="center" justify="center" minH="90vh">
+      <Heading as="h1" size="xl">Error: {(error as Error).message}</Heading>
+    </Flex>
+  }
   
   return (
     <Box className="main-content">
       <Skeleton 
         isLoaded={!isLoading}
       >
-        {bookClubsError ? bookClubsError : (
-          <>
-            <Flex flexWrap="wrap" w="100%" align="start" justify="space-between">
+        <Flex flexWrap="wrap" w="100%" align="start" justify="space-between">
 
-              <Stack flex="1 1 30%">
-                <Box className="well">
+          <Stack flex="1 1 30%">
+            <Box className="well">
 
-                </Box>
-              </Stack>
+            </Box>
+          </Stack>
 
-              <Stack flex="1 1 65%">
-                <Box className="well">
-                  <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
-                    <Flex align="center" justify="space-between" gap={2}>
-                      <MdGroups size={30} />
-                      <Heading as="h3" size="md">
-                        My Book Clubs
-                      </Heading>
-                    </Flex>
-                    <Button
-                      variant="ghost"
-                      leftIcon={<IoIosAdd size={25} />}
-                      onClick={createBookClubModalOpen}
-                    >
-                      Create a book club
-                    </Button>
-                  </Flex>
-
-                  <Box>
-                    {bookClubsOwned ? (
-                      bookClubsOwned.map((bookClub, i)=>{
-                        return (
-                          <Link to={`/bookclubs/${bookClub.id}`} key={i}>
-                            <Box 
-                              p={5} 
-                              bg="gray.100" 
-                              m={2} 
-                              rounded="md"
-                              _dark={{
-                                bg: "gray.600"
-                              }}
-                            >
-                              <Heading as="h4" size="sm">
-                                {bookClub.name}
-                              </Heading>
-                              <Text>
-                                  {bookClub.about}
-                              </Text>
-                            </Box>
-                          </Link>
-                        )
-                      })
-                    ) : null}
-                  </Box>
-                </Box>
-
-                <Box className="well">
-                  <Flex align="center" justify="space-between" gap={2} mb={2}>
-                    <Heading as="h3" size="md">
-                      Joined Book Clubs
-                    </Heading>
-                  </Flex>
-
-                  <Box>
-                    {bookClubsJoined && bookClubsJoined.length ? (
-                      bookClubsJoined.map((bookClub, i)=>{
-                        return (
-                          <Link to={`/bookclubs/${bookClub.id}`} key={i}>
-                            <Box 
-                              p={5} 
-                              bg="gray.100" 
-                              m={2} 
-                              rounded="md"
-                              _dark={{
-                                bg: "gray.600"
-                              }}
-                            >
-                              <Heading as="h4" size="sm">
-                                {bookClub.name}
-                              </Heading>
-                              <Text>
-                                  {bookClub.about}
-                              </Text>
-                            </Box>
-                          </Link>
-                        )
-                      })
-                    ) : (
-                      <Text>You are not a member of any book clubs at the moment.</Text>
-                    )}
-                  </Box>
-                </Box>
-
-                <Box className="well">
-                  <Flex align="center" justify="space-between" gap={2} mb={2}>
-                    <Heading as="h3" size="md">
-                      Public Book Clubs
-                    </Heading>
-                  </Flex>
-
-                  <Box>
-                    {bookClubsPublic && bookClubsPublic.length ? (
-                      bookClubsPublic.map((bookClub, i)=>{
-                        return (
-                          <Link to={`/bookclubs/${bookClub.id}`} key={i}>
-                            <Box 
-                              p={5} 
-                              bg="gray.100" 
-                              m={2} 
-                              rounded="md"
-                              _dark={{
-                                bg: "gray.600"
-                              }}
-                            >
-                              <Heading as="h4" size="sm">
-                                {bookClub.name}
-                              </Heading>
-                              <Text>
-                                  {bookClub.about}
-                              </Text>
-                            </Box>
-                          </Link>
-                        )
-                      })
-                    ) : (
-                      <Text>There are no public book clubs at this time.</Text>
-                    )}
-                  </Box>
-                </Box>
-              </Stack>
-
-            </Flex>
-
-            <Modal isOpen={isOpenCreateBookClubModal} onClose={closeCreateBookClubModal} size="xl">
-              <ModalOverlay />
-              <ModalContent>
-                <ModalHeader>
-                  <Heading as="h3" size="lg">
-                    What is your book club name?
+          <Stack flex="1 1 65%">
+            <Box className="well">
+              <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
+                <Flex align="center" justify="space-between" gap={2}>
+                  <MdGroups size={30} />
+                  <Heading as="h3" size="md">
+                    My Book Clubs
                   </Heading>
-                </ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
-                  <Input
-                  type="text"
-                  ref={createBookClubNameRef}
-                  required
-                  />
-                </ModalBody>
-                <ModalFooter>
-                  <HStack>
-                    <Text color="red">
-                      {createBookClubError}
-                    </Text>
-                    <Button 
-                      variant='ghost' 
-                      mr={3}
-                      size="lg"
-                      onClick={createBookClub}
-                    >
-                      Create
-                    </Button>
-                  </HStack>
-                </ModalFooter>
-              </ModalContent>
-            </Modal>
-          </>
-        )}
-        
+                </Flex>
+                <Button
+                  variant="ghost"
+                  leftIcon={<IoIosAdd size={25} />}
+                  onClick={createBookClubModalOpen}
+                >
+                  Create a book club
+                </Button>
+              </Flex>
 
+              <Box>
+                {bookClubsOwned ? (
+                  (bookClubsOwned as BookClubsType[]).map((bookClub, i)=>{
+                    return (
+                      <Link to={`/bookclubs/${bookClub.id}`} key={i}>
+                        <Box 
+                          p={5} 
+                          bg="gray.100" 
+                          m={2} 
+                          rounded="md"
+                          _dark={{
+                            bg: "gray.600"
+                          }}
+                        >
+                          <Heading as="h4" size="sm">
+                            {bookClub.name}
+                          </Heading>
+                          <Text>
+                              {bookClub.about}
+                          </Text>
+                        </Box>
+                      </Link>
+                    )
+                  })
+                ) : null}
+              </Box>
+            </Box>
+
+            <Box className="well">
+              <Flex align="center" justify="space-between" gap={2} mb={2}>
+                <Heading as="h3" size="md">
+                  Joined Book Clubs
+                </Heading>
+              </Flex>
+
+              <Box>
+                {bookClubsJoined && bookClubsJoined.length ? (
+                  (bookClubsJoined as BookClubsType[]).map((bookClub, i)=>{
+                    return (
+                      <Link to={`/bookclubs/${bookClub.id}`} key={i}>
+                        <Box 
+                          p={5} 
+                          bg="gray.100" 
+                          m={2} 
+                          rounded="md"
+                          _dark={{
+                            bg: "gray.600"
+                          }}
+                        >
+                          <Heading as="h4" size="sm">
+                            {bookClub.name}
+                          </Heading>
+                          <Text>
+                              {bookClub.about}
+                          </Text>
+                        </Box>
+                      </Link>
+                    )
+                  })
+                ) : (
+                  <Text>You are not a member of any book clubs at the moment.</Text>
+                )}
+              </Box>
+            </Box>
+
+            <Box className="well">
+              <Flex align="center" justify="space-between" gap={2} mb={2}>
+                <Heading as="h3" size="md">
+                  Public Book Clubs
+                </Heading>
+              </Flex>
+
+              <Box>
+                {bookClubsPublic && bookClubsPublic.length ? (
+                  (bookClubsPublic as BookClubsType[]).map((bookClub, i)=>{
+                    return (
+                      <Link to={`/bookclubs/${bookClub.id}`} key={i}>
+                        <Box 
+                          p={5} 
+                          bg="gray.100" 
+                          m={2} 
+                          rounded="md"
+                          _dark={{
+                            bg: "gray.600"
+                          }}
+                        >
+                          <Heading as="h4" size="sm">
+                            {bookClub.name}
+                          </Heading>
+                          <Text>
+                              {bookClub.about}
+                          </Text>
+                        </Box>
+                      </Link>
+                    )
+                  })
+                ) : (
+                  <Text>There are no public book clubs at this time.</Text>
+                )}
+              </Box>
+            </Box>
+          </Stack>
+
+        </Flex>
+
+        <Modal isOpen={isOpenCreateBookClubModal} onClose={closeCreateBookClubModal} size="xl">
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>
+              <Heading as="h3" size="lg">
+                What is your book club name?
+              </Heading>
+            </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <Input
+              type="text"
+              ref={createBookClubNameRef}
+              required
+              />
+            </ModalBody>
+            <ModalFooter>
+              <HStack>
+                <Text color="red">
+                  {createBookClubError}
+                </Text>
+                <Button 
+                  variant='ghost' 
+                  mr={3}
+                  size="lg"
+                  onClick={createBookClub}
+                >
+                  Create
+                </Button>
+              </HStack>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </Skeleton>
     </Box>
   );

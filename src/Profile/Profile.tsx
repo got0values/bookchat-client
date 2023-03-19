@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { ProfileProps, HTMLInputEvent, ProfileType } from '../types/types';
 import { 
   Box,
@@ -30,6 +30,7 @@ import {
   TagLabel,
   TagCloseButton,
   Skeleton,
+  Spinner,
   useDisclosure
 } from "@chakra-ui/react";
 import collectionToArray from "../utils/collectionToArray";
@@ -42,75 +43,59 @@ import Cookies from "js-cookie";
 import axios from "axios";
 
 const useProfile = ({server}: ProfileProps) => {
-  const { user, setUser } = useAuth();
+  const { user, getUser } = useAuth();
   const { paramsUsername } = useParams<{paramsUsername: string}>();
   const [ profileDataUpdated, setProfileDataUpdated ] = useState(false);
-  const [isLoading,setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   //self, unauthorized (differentLibrary), nonFollower, requesting, follower
   const [ viewer, setViewer ] = useState("nonFollower");
-  const [profileData, setProfileData] = useState<ProfileType | null>(null);
   async function getProfile() {
-    setIsLoading(true);
     const tokenCookie = Cookies.get().token;
     if (tokenCookie) {
-      await axios
-      .post(server + "/api/getprofile", 
-      {
-        profileUsername: paramsUsername
-      },
-      {headers: {
-        Authorization: tokenCookie
-      }}
-      )
-      .then((response)=>{
-        if (response.data.success){
-          console.log(response.data.profileData)
-          const message = response.data.message;
-          const responseProfileData = response.data.profileData
-          switch(message) {
-            case "self":
-              setViewer("self")
-              setProfileData(responseProfileData)
-              break;
-            case "nonFollower":
-              setViewer("nonFollower")
-              setProfileData(responseProfileData)
-              break;
-            case "requesting":
-              setViewer("requesting")
-              setProfileData(responseProfileData)
-              break;
-            case "following":
-              setViewer("following")
-              setProfileData(responseProfileData)
-              break;
-            default:
-              setViewer("nonFollower")
-              setProfileData(responseProfileData)
-              break;
+      const profileData = await axios
+        .post(server + "/api/getprofile", 
+        {
+          profileUsername: paramsUsername
+        },
+        {headers: {
+          Authorization: tokenCookie
+        }}
+        )
+        .then((response)=>{
+          if (response.data.success){
+            const message = response.data.message;
+            const responseProfileData = response.data.profileData
+            switch(message) {
+              case "self":
+                setViewer("self")
+                break;
+              case "nonFollower":
+                setViewer("nonFollower")
+                break;
+              case "requesting":
+                setViewer("requesting")
+                break;
+              case "following":
+                setViewer("following")
+                break;
+              default:
+                setViewer("nonFollower")
+                break;
+            }
+            return responseProfileData;
           }
-          setIsLoading(false);
-        }
       })
       .catch(({response})=>{
         console.log(response)
-        navigate(`/redirectpage?errortype=${response.status ? response.status : ""}`)
+        throw new Error(response.data.message)
       })
+      return profileData;
+    }
+    else {
+      throw new Error("TCP102")
     }
   }
-  useEffect(()=>{
-    let cleanUpBool = true;
-    if (cleanUpBool) {
-      getProfile();
-    }
-    return ()=>{
-      cleanUpBool = false;
-      setProfileDataUpdated(false)
-      setProfileData(null)
-    }
-  },[paramsUsername,profileDataUpdated])
 
   const [profileActionError,setProfileActionError] = useState<string>("")
 
@@ -129,91 +114,108 @@ const useProfile = ({server}: ProfileProps) => {
     setProfileImageFile(newFile)
   }
 
-  function closeProfilePicModal() {
-    onCloseProfilePicModal();
-    setUserProfilePhotoError("")
-  }
+  const profilePhotoMutation = useMutation({
+    mutationFn: async () => {
+      let tokenCookie = Cookies.get().token;
+      const formData = new FormData();
+      formData.append("photo", profileImageFile as Blob)
 
-  const [userProfilePhotoError,setUserProfilePhotoError] = useState<string>("");
-  async function updateUserProfilePhoto() {
-    let tokenCookie = Cookies.get().token;
-    const formData = new FormData();
-    formData.append("photo", profileImageFile as Blob)
-
-    if (tokenCookie) {
-      await axios
-      .post(server + "/api/updateprofilephoto", 
-      formData,
-      {headers: {
-        'authorization': tokenCookie,
-        'content-type': 'multipart/form-data'
-      }}
-      )
-      .then((response)=>{
-        if (response.data.success){
-          setUser(response.data.message)
-          closeProfilePicModal();
-        }
-      })
-      .catch(({response})=>{
-        if (axios.isCancel(response)) {
-          console.log("successfully aborted")
-        }
-        console.log(response)
-        setUserProfilePhotoError(response?.statusText)
-      })
+      if (tokenCookie) {
+        await axios
+          .post(server + "/api/updateprofilephoto", 
+          formData,
+          {headers: {
+            'authorization': tokenCookie,
+            'content-type': 'multipart/form-data'
+          }}
+          )
+          .then((response)=>{
+            if (response.data.success){
+              getUser();
+              closeProfilePicModal();
+            }
+          })
+          .catch(({response})=>{
+            if (axios.isCancel(response)) {
+              console.log("successfully aborted")
+            }
+            console.log(response)
+            throw new Error(response?.data?.message)
+          })
+      }
+      else {
+        throw new Error("Error: TC102")
+      }
     }
+  })
+  function updateUserProfilePhoto() {
+    profilePhotoMutation.mutate();
+  }
+  function closeProfilePicModal() {
+    profilePhotoMutation.reset();
+    onCloseProfilePicModal();
   }
 
-  const [userProfileDataError,setUserProfileDataError] = useState<string>("");
+  const { 
+    isOpen: isOpenProfileDataModal, 
+    onOpen: onOpenProfileDataModal, 
+    onClose: onCloseProfileDataModal 
+  } = useDisclosure()
+
+  function openProfileDataModal() {
+    setProfileInterests(user.Profile.Interests ? (collectionToArray(user.Profile.Interests, "interest")) : [""])
+    onOpenProfileDataModal()
+  }
   const profileUserNameRef = useRef({} as HTMLInputElement);
   const profileAboutRef = useRef({} as HTMLInputElement);
-  async function updateProfileData() {
-    let tokenCookie: string | null = Cookies.get().token;
-    let navigateToNewUsernameOnReponse = false;
-    if (paramsUsername !== profileUserNameRef.current.value) {
-      navigateToNewUsernameOnReponse = true;
-    }
-    if (tokenCookie){
-      await axios
-      .post(server + "/api/updateprofiledata", 
-      {
-        username: profileUserNameRef.current.value,
-        about: profileAboutRef.current.value,
-        interests: profileInterests
-      },
-      {headers: {
-        'authorization': tokenCookie
-      }}
-      )
-      .then((response)=>{
-        if (response.data.success){
-          setUserProfileDataError("")
-          setUser(response.data.message)
-          if (navigateToNewUsernameOnReponse) {
-            const newUsername = response.data.message.Profile.username
-            navigate("/profile/" + newUsername)
-          }
-          else {
-            setProfileDataUpdated(true);
-          }
-          onCloseProfileDataModal();
+  const profileDataMutation = useMutation({
+      mutationFn: async () => {
+        let tokenCookie: string | null = Cookies.get().token;
+        let navigateToNewUsernameOnReponse = false;
+        if (paramsUsername !== profileUserNameRef.current.value) {
+          navigateToNewUsernameOnReponse = true;
         }
-      })
-      .catch(({response})=>{
-        console.log(response)
-        if (response.data) {
-          setUserProfileDataError(response.data.message)
+        if (tokenCookie){
+          await axios
+          .post(server + "/api/updateprofiledata", 
+          {
+            username: profileUserNameRef.current.value,
+            about: profileAboutRef.current.value,
+            interests: profileInterests
+          },
+          {headers: {
+            'authorization': tokenCookie
+          }}
+          )
+          .then((response)=>{
+            if (response.data.success){
+              if (navigateToNewUsernameOnReponse) {
+                const newUsername = response.data.message.Profile.username
+                navigate("/profile/" + newUsername)
+              }
+              else {
+                setProfileDataUpdated(true);
+              }
+              closeProfileDataModal();
+            }
+          })
+          .catch(({response})=>{
+            console.log(response)
+            throw new Error(response.data.message);
+          })
         }
-        else if (response.statusText) {
-          setUserProfileDataError(response?.statusText)
+        else {
+          throw new Error("Please login again");
         }
-      })
+      }
     }
-    else {
-      setUserProfileDataError("Please login again")
-    }
-    tokenCookie = null;
+  )
+  function updateProfileData() {
+    profileDataMutation.mutate();
+  }
+  function closeProfileDataModal() {
+    profileDataMutation.reset();
+    onCloseProfileDataModal()
   }
 
   //User edit modals
@@ -227,18 +229,6 @@ const useProfile = ({server}: ProfileProps) => {
   useLayoutEffect(()=>{
     setUserProfilePhoto(`${user.Profile.profile_photo}?x=${new Date().getTime()}`)
   },[user.Profile])
-
-  const { 
-    isOpen: isOpenProfileDataModal, 
-    onOpen: onOpenProfileDataModal, 
-    onClose: onCloseProfileDataModal 
-  } = useDisclosure()
-
-  function openProfileDataModal() {
-    setUserProfileDataError("")
-    setProfileInterests(user.Profile.Interests ? (collectionToArray(user.Profile.Interests, "interest")) : [""])
-    onOpenProfileDataModal()
-  }
 
   const interestsInputRef = useRef({} as HTMLInputElement);
   const [profileInterests,setProfileInterests] = useState<string[]>([]);
@@ -256,16 +246,29 @@ const useProfile = ({server}: ProfileProps) => {
     })
   }
 
-  return {user,setUser,setProfileDataUpdated,navigate,isLoading,profileData,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,userProfilePhotoError,updateUserProfilePhoto,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,userProfileDataError,updateProfileData};
-  
+  return {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation};
 }
 
 
-
-
 export default function Profile({server}: ProfileProps) {
+  const {user,setProfileDataUpdated,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation} = useProfile({server});
 
-  const {user,setProfileDataUpdated,isLoading,profileData,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,userProfilePhotoError,updateUserProfilePhoto,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,userProfileDataError,updateProfileData} = useProfile({server});
+  
+
+  const { isLoading, isError, data, error } = useQuery({ queryKey: ['profileKey',paramsUsername, profileDataUpdated], queryFn: getProfile });
+  const profileData: ProfileType = data;
+  if (isLoading) {
+    return (
+      <Flex align="center" justify="center" minH="80vh">
+        <Spinner size="xl"/>
+      </Flex>
+    )
+  }
+  if (isError) {
+    return <Flex align="center" justify="center" minH="90vh">
+      <Heading as="h1" size="xl">Error: {(error as Error).message}</Heading>
+    </Flex>
+  }
   
   return (
     <Box className="main-content">
@@ -496,18 +499,22 @@ export default function Profile({server}: ProfileProps) {
                 </ModalBody>
                 <ModalFooter>
                   <HStack>
-                    <Text color="red">
-                      {userProfilePhotoError}
-                    </Text>
-                    <Button variant='ghost' mr={3} onClick={updateUserProfilePhoto}  size="lg">
-                      Save
-                    </Button>
+                    <>
+                      {profilePhotoMutation.error && (
+                        <Text color="red">
+                          {(profilePhotoMutation.error as Error).message}
+                        </Text>
+                      )}
+                      <Button variant='ghost' mr={3} onClick={updateUserProfilePhoto}  size="lg">
+                        Save
+                      </Button>
+                    </>
                   </HStack>
                 </ModalFooter>
               </ModalContent>
             </Modal>
 
-            <Modal isOpen={isOpenProfileDataModal} onClose={onCloseProfileDataModal}>
+            <Modal isOpen={isOpenProfileDataModal} onClose={closeProfileDataModal}>
               <ModalOverlay />
               <ModalContent>
                 <ModalHeader>
@@ -598,12 +605,16 @@ export default function Profile({server}: ProfileProps) {
                 </ModalBody>
                 <ModalFooter>
                   <HStack>
-                    <Text color="red">
-                      {userProfileDataError}
-                    </Text>
+                    <>
+                    {profileDataMutation.error && (
+                      <Text color="red">
+                        {(profileDataMutation.error as Error).message}
+                      </Text>
+                    )}
                     <Button mr={3} onClick={updateProfileData} size="lg">
                       Save
                     </Button>
+                    </>
                   </HStack>
                 </ModalFooter>
               </ModalContent>

@@ -18,7 +18,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   
   async function getUser() {
     const tokenCookie = Cookies.get().token;
-    await axios
+    const data = await axios
     .get(server + "/api/user", {
       headers: {
         authorization: tokenCookie
@@ -40,9 +40,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
           const newLocation = `${librarySubdomain}.${domain}`;
           window.location.href = `${protocol}//${newLocation}/`;
         }
+        return responseData.message;
       }
       else {
         setUser(null);
+        return null;
       }
     })
     .catch(({response})=>{
@@ -53,7 +55,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
         duration: 9000,
         isClosable: true
       })
+      throw new Error(response.message)
     })
+
+    return data;
   }
 
   async function onLogin(token: string) {

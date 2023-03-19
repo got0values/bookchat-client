@@ -686,27 +686,25 @@ export default function BookClub({server}: {server: string}) {
                                   <PopoverHeader>Past Books</PopoverHeader>
                                   <PopoverBody>
                                     {bookClub.BookClubBook.map((bcb,i)=>{
-                                      return (
-                                        <>
-                                          {i !== 0 ? (
-                                            <>
-                                              {i > 1 ? <Divider/> : null}
-                                              <Flex align="center" columnGap={2} flexWrap="wrap">
-                                                <Text whiteSpace="nowrap">
-                                                  {dayjs(bcb.created_on).format("MMM DD, YYYY")}
-                                                </Text>
-                                                {" - "}
-                                                <Text whiteSpace="nowrap" fontWeight="bold">
-                                                  {bcb.title}
-                                                </Text>
-                                                <Text whiteSpace="nowrap">
-                                                  {bcb.author}
-                                                </Text>
-                                              </Flex>
-                                            </>
-                                          ) : null}
-                                        </>
-                                      )
+                                      if (i !== 0) {
+                                        return (
+                                          <Box key={i}>
+                                            {i > 1 ? <Divider/> : null}
+                                            <Flex align="center" columnGap={2} flexWrap="wrap">
+                                              <Text whiteSpace="nowrap">
+                                                {dayjs(bcb.created_on).format("MMM DD, YYYY")}
+                                              </Text>
+                                              {" - "}
+                                              <Text whiteSpace="nowrap" fontWeight="bold">
+                                                {bcb.title}
+                                              </Text>
+                                              <Text whiteSpace="nowrap">
+                                                {bcb.author}
+                                              </Text>
+                                            </Flex>
+                                          </Box>
+                                        )
+                                      }
                                     })}
                                   </PopoverBody>
                                 </PopoverContent>
