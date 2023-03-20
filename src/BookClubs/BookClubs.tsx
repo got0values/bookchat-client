@@ -20,7 +20,8 @@ import {
   ModalBody,
   ModalCloseButton,
   useToast,
-  useDisclosure
+  useDisclosure,
+  Avatar
 } from "@chakra-ui/react";
 import { IoIosAdd } from 'react-icons/io';
 import { MdGroups } from 'react-icons/md';
@@ -196,24 +197,42 @@ export default function BookClubs({server}: {server: string}) {
                 {bookClubsJoined && bookClubsJoined.length ? (
                   (bookClubsJoined as BookClubsType[]).map((bookClub, i)=>{
                     return (
-                      <Link to={`/bookclubs/${bookClub.id}`} key={i}>
-                        <Box 
-                          p={5} 
-                          bg="gray.100" 
-                          m={2} 
-                          rounded="md"
-                          _dark={{
-                            bg: "gray.600"
-                          }}
-                        >
-                          <Heading as="h4" size="sm">
-                            {bookClub.name}
-                          </Heading>
-                          <Text>
-                              {bookClub.about}
-                          </Text>
-                        </Box>
-                      </Link>
+                      <Box 
+                        p={5} 
+                        bg="gray.100" 
+                        m={2} 
+                        rounded="md"
+                        _dark={{
+                          bg: "gray.600"
+                        }}
+                        _hover={{
+                          bg: "gray.200"
+                        }}
+                        key={i}
+                      >
+                        <Flex align="center" justify="space-between">
+                          <Link to={`/bookclubs/${bookClub.id}`}>
+                            <Heading as="h4" size="sm">
+                              {bookClub.name}
+                            </Heading>
+                          </Link>
+                          <Flex align="center" gap={1}>
+                            <Avatar
+                              onClick={e=>navigate(`/profile/${bookClub.Profile.username}`)} 
+                              size="xs"
+                              cursor="pointer"
+                              src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
+                              border="2px solid gray"
+                            />
+                            <Link to={`/profile/${bookClub.Profile.username}`}>
+                              @{bookClub.Profile.username}
+                            </Link>
+                          </Flex>
+                        </Flex>
+                        <Text>
+                            {bookClub.about}
+                        </Text>
+                      </Box>
                     )
                   })
                 ) : (
@@ -233,24 +252,42 @@ export default function BookClubs({server}: {server: string}) {
                 {bookClubsPublic && bookClubsPublic.length ? (
                   (bookClubsPublic as BookClubsType[]).map((bookClub, i)=>{
                     return (
-                      <Link to={`/bookclubs/${bookClub.id}`} key={i}>
-                        <Box 
-                          p={5} 
-                          bg="gray.100" 
-                          m={2} 
-                          rounded="md"
-                          _dark={{
-                            bg: "gray.600"
-                          }}
-                        >
-                          <Heading as="h4" size="sm">
-                            {bookClub.name}
-                          </Heading>
-                          <Text>
-                              {bookClub.about}
-                          </Text>
-                        </Box>
-                      </Link>
+                      <Box 
+                        p={5} 
+                        bg="gray.100"
+                        m={2} 
+                        rounded="md"
+                        _dark={{
+                          bg: "gray.600"
+                        }}
+                        _hover={{
+                          bg: "gray.200"
+                        }}
+                        key={i}
+                      >
+                        <Flex align="center" justify="space-between">
+                          <Link to={`/bookclubs/${bookClub.id}`}>
+                            <Heading as="h4" size="sm">
+                              {bookClub.name}
+                            </Heading>
+                          </Link>
+                          <Flex align="center" gap={1}>
+                            <Avatar
+                              onClick={e=>navigate(`/profile/${bookClub.Profile.username}`)} 
+                              size="xs"
+                              cursor="pointer"
+                              src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
+                              border="2px solid gray"
+                            />
+                            <Link to={`/profile/${bookClub.Profile.username}`}>
+                              @{bookClub.Profile.username}
+                            </Link>
+                          </Flex>
+                        </Flex>
+                        <Text>
+                          {bookClub.about}
+                        </Text>
+                      </Box>
                     )
                   })
                 ) : (
