@@ -178,16 +178,6 @@ export default function BookClub({server}: {server: string}) {
             }
           }
         )
-        .then((response)=>{
-          console.log(response)
-          if (response.data.success) {
-            getBookClub();
-            closeEditModal();
-          }
-          else {
-            throw new Error(response.data.message)
-          }
-        })
         .catch(({response})=>{
           console.log(response)
           if (response.data?.message) {
@@ -198,6 +188,17 @@ export default function BookClub({server}: {server: string}) {
       else {
         throw new Error("An error has occured")
       }
+    },
+    onSuccess: () => {
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+      // queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+      toast({
+        description: "Book club updated",
+        status: "success",
+        duration: 9000,
+        isClosable: true
+      })
+      closeEditModal()
     }
   })
   function updateBookClub(e: React.FormEvent) {
@@ -219,16 +220,14 @@ export default function BookClub({server}: {server: string}) {
             }
           }
         )
-        .then((response)=>{
-          if (response.data.success) {
-            getBookClub();
-          }
-        })
         .catch(({response})=>{
           console.log(response)
           throw new Error(response.data?.message)
         })
       }
+    },
+    onSuccess: () => {
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
     }
   })
   function joinBookClub(e: React.FormEvent) {
@@ -250,82 +249,17 @@ export default function BookClub({server}: {server: string}) {
             }
           }
         )
-        .then((response)=>{
-          if (response.data.success) {
-            getBookClub();
-            // window.location.reload();
-          }
-        })
         .catch(({response})=>{
           console.log(response)
           throw new Error(response.data?.message)
         })
-    }}
+    }},
+    onSuccess: () => {
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+    }
   })
   function unJoinBookClub(e: React.FormEvent) {
     unJoinBookClubMutation.mutate(e);
-  }
-
-  const { 
-    isOpen: isOpenMeetingModal, 
-    onOpen: onOpenMeetingModal, 
-    onClose: onCloseMeetingModal 
-  } = useDisclosure()
-
-  function openMeetingModal() {
-    onOpenMeetingModal()
-  }
-
-  function closeMeetingModal() {
-    onCloseMeetingModal()
-    updateBookClubMeetingMutation.reset();
-  }
-
-  const meetingLocationRef = useRef({} as ReactQuill);
-  const meetingStartRef = useRef({} as HTMLInputElement);
-  const meetingEndRef = useRef({} as HTMLInputElement);
-  const updateBookClubMeetingMutation = useMutation({
-    mutationFn: async (e: React.FormEvent) => {
-      e.preventDefault();
-      let tokenCookie: string | null = Cookies.get().token;
-      if (tokenCookie) {
-        await axios
-          .put(server + "/api/updatebookclubmeeting",
-            {
-              bookClubId: bookClub?.id,
-              bookClubMeetingLocation: meetingLocationRef.current.value,
-              bookClubMeetingStart: dayjs(meetingStartRef.current.value).utc(),
-              bookClubMeetingEnd: dayjs(meetingEndRef.current.value).utc()
-            },
-            {
-              headers: {
-                authorization: tokenCookie
-              }
-            }
-          )
-          .then((response)=>{
-            if (response.data.success) {
-              getBookClub()
-              closeMeetingModal();
-            }
-            else {
-              throw new Error(response.data.message)
-            }
-          })
-          .catch(({response})=>{
-            console.log(response)
-            if (response.data?.message) {
-              throw new Error(response.data?.message)
-            }
-          })
-      }
-      else {
-        throw new Error("An error has occured")
-      }
-    }
-  })
-  function updateBookClubMeeting(e: React.FormEvent) {
-    updateBookClubMeetingMutation.mutate(e)
   }
 
   const { 
@@ -397,6 +331,7 @@ export default function BookClub({server}: {server: string}) {
             .then((response)=>{
               setBookResultsLoading(false)
               closeCurrentBookModal()
+              queryClient.resetQueries({queryKey: ['bookClubKey']})
               toast({
                 description: "Book club book updated",
                 status: "success",
@@ -427,9 +362,9 @@ export default function BookClub({server}: {server: string}) {
             }
           )
           .then((response)=>{
-            getBookClub()
             setBookResultsLoading(false)
             closeCurrentBookModal()
+            queryClient.resetQueries({queryKey: ['bookClubKey']})
             toast({
               description: "New book club book created",
               status: "success",
@@ -450,6 +385,70 @@ export default function BookClub({server}: {server: string}) {
   })
   function selectBook(e: React.FormEvent) {
     selectBookMutation.mutate(e);
+  }
+
+  const { 
+    isOpen: isOpenMeetingModal, 
+    onOpen: onOpenMeetingModal, 
+    onClose: onCloseMeetingModal 
+  } = useDisclosure()
+
+  function openMeetingModal() {
+    onOpenMeetingModal()
+  }
+
+  function closeMeetingModal() {
+    onCloseMeetingModal()
+    updateBookClubMeetingMutation.reset();
+  }
+
+  const meetingLocationRef = useRef({} as ReactQuill);
+  const meetingStartRef = useRef({} as HTMLInputElement);
+  const meetingEndRef = useRef({} as HTMLInputElement);
+  const updateBookClubMeetingMutation = useMutation({
+    mutationFn: async (e: React.FormEvent) => {
+      e.preventDefault();
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .put(server + "/api/updatebookclubmeeting",
+            {
+              bookClubId: bookClub?.id,
+              bookClubMeetingLocation: meetingLocationRef.current.value,
+              bookClubMeetingStart: dayjs(meetingStartRef.current.value).utc(),
+              bookClubMeetingEnd: dayjs(meetingEndRef.current.value).utc()
+            },
+            {
+              headers: {
+                authorization: tokenCookie
+              }
+            }
+          )
+          .catch(({response})=>{
+            console.log(response)
+            if (response.data?.message) {
+              throw new Error(response.data?.message)
+            }
+          })
+      }
+      else {
+        throw new Error("An error has occured")
+      }
+    },
+    onSuccess: () => {
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+      // queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+      toast({
+        description: "Book club meeting updated",
+        status: "success",
+        duration: 9000,
+        isClosable: true
+      })
+      closeMeetingModal()
+    }
+  })
+  function updateBookClubMeeting(e: React.FormEvent) {
+    updateBookClubMeetingMutation.mutate(e)
   }
 
   const { 
@@ -501,16 +500,6 @@ export default function BookClub({server}: {server: string}) {
               }
             }
           )
-          .then((response)=>{
-            getBookClub()
-            closePollBookModal()
-            toast({
-              description: "New book club book created",
-              status: "success",
-              duration: 9000,
-              isClosable: true
-            })
-          })
           .catch(({response})=>{
             console.log(response)
             toast({
@@ -531,6 +520,16 @@ export default function BookClub({server}: {server: string}) {
         })
         throw new Error("Something went wrong")
       }
+    },
+    onSuccess: () => {
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+      toast({
+        description: "Book club poll updated",
+        status: "success",
+        duration: 9000,
+        isClosable: true
+      })
+      closePollBookModal()
     }
   })
   function createPollBooks() {
