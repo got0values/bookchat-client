@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, ReactHTMLElement } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BookClubMember, BookClubsType, BookClubBookType } from "../types/types";
+import { BookClubMember, BookClubsType, BookClubBookType, BookClubRsvpType } from "../types/types";
 import { 
   Box,
   Heading,
@@ -84,13 +84,10 @@ export default function BookClub({server}: {server: string}) {
           if (response.data.success) {
             let responseBookClub = response.data.message
             const currentBook1 = responseBookClub.BookClubBook.reverse()[0]
+
             let pollBookOneRcvd;
             let pollBookTwoRcvd;
             let pollBookThreeRcvd;
-            let isBookClubCreator = false;
-            //non-member: 0, requesting: 1, member: 2
-            let memberStatus = 0;
-
             if(responseBookClub.BookClubBookPoll) {
               if (responseBookClub.BookClubBookPoll.book_one) {
                 pollBookOneRcvd = JSON.parse(responseBookClub.BookClubBookPoll.book_one)
@@ -103,18 +100,31 @@ export default function BookClub({server}: {server: string}) {
               }
             }
             
+            let isBookClubCreator = false;
             if (responseBookClub.creator === user.Profile.id) {
               isBookClubCreator = true;
             }
             else {
               isBookClubCreator = false;
             }
+
+            //non-member: 0, requesting: 1, member: 2
+            let memberStatus = 0;
             if (responseBookClub.BookClubMembers.filter((member: BookClubMember)=>member.Profile.id === user.Profile?.id).length) {
               memberStatus = responseBookClub.BookClubMembers.filter((member: BookClubMember)=>member.Profile.id === user.Profile?.id)[0].status
             }
             else {
               memberStatus = 0;
             }
+
+            let rsvpStatus = 0;
+            if (responseBookClub.BookClubMeetingRsvp.filter((rsvp: BookClubRsvpType)=>rsvp.profile_id === user.Profile?.id).length) {
+              rsvpStatus = 1;
+            }
+            else {
+              rsvpStatus = 0;
+            }
+
             return {
               bookClub:  responseBookClub,
               currentBook: currentBook1,
@@ -122,7 +132,8 @@ export default function BookClub({server}: {server: string}) {
               pollBookTwoReceived: pollBookTwoRcvd,
               pollBookThreeReceived: pollBookThreeRcvd,
               isBookClubCreator: isBookClubCreator,
-              memberStatus: memberStatus
+              memberStatus: memberStatus,
+              rsvpStatus: rsvpStatus
             }
           }
         })
@@ -486,6 +497,86 @@ export default function BookClub({server}: {server: string}) {
     updateBookClubMeetingMutation.mutate(e)
   }
 
+  const rsvpCallbackMutation = useMutation({
+    mutationFn: async () => {
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .post(server + "/api/rsvpbookclub",
+            {
+              bookClubId: parseInt(paramsBookClubId!)
+            },
+            {
+              headers: {
+                authorization: tokenCookie
+              }
+            }
+          )
+          .catch(({response})=>{
+            console.log(response)
+            throw new Error(response.data.message)
+          })
+      }
+      else {
+        throw new Error("Something went wrong")
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+      getBookClub();
+      toast({
+        description: "Successfully RSVP'd",
+        status: "success",
+        duration: 9000,
+        isClosable: true
+      })
+    }
+  })
+  function rsvpCallback() {
+    rsvpCallbackMutation.mutate();
+  }
+
+  const unRsvpCallbackMutation = useMutation({
+    mutationFn: async () => {
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .delete(server + "/api/unrsvpbookclub",
+            {
+              headers: {
+                authorization: tokenCookie
+              },
+              data: {
+                bookClubId: parseInt(paramsBookClubId!)
+              }
+            }
+          )
+          .catch(({response})=>{
+            console.log(response)
+            throw new Error(response.data.message)
+          })
+      }
+      else {
+        throw new Error("Something went wrong")
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+      getBookClub();
+      toast({
+        description: "Successfully Un-RSVP'd",
+        status: "success",
+        duration: 9000,
+        isClosable: true
+      })
+    }
+  })
+  function unRsvpCallback() {
+    unRsvpCallbackMutation.mutate();
+  }
+
   const { 
     isOpen: isOpenPollBookModal, 
     onOpen: onOpenPollBookModal, 
@@ -585,6 +676,7 @@ export default function BookClub({server}: {server: string}) {
   const pollBookThreeReceived = bookClubData?.pollBookThreeReceived;
   const isBookClubCreator = bookClubData?.isBookClubCreator;
   const memberStatus: number | undefined = bookClubData?.memberStatus;
+  const rsvpStatus: number | undefined = bookClubData?.rsvpStatus;
   if (bookClubQuery.isLoading) {
     return (
       <Flex align="center" justify="center" minH="80vh">
@@ -881,12 +973,34 @@ export default function BookClub({server}: {server: string}) {
                             <Text>-</Text>
                             <Text>{bookClub.next_meeting_end ? dayjs(bookClub.next_meeting_end).local().format('MMM DD, hh:mm a'): null}</Text>
                           </Flex>
-                          <Center>
-                            <Button
-                              colorScheme="teal"
-                            >
-                              RSVP
-                            </Button>
+                          <Center flexDirection="column">
+                            <>
+                              {rsvpCallbackMutation.error && (
+                                  <Text color="red">{(rsvpCallbackMutation.error as Error).message}</Text>
+                                )
+                              }
+                              {unRsvpCallbackMutation.error && (
+                                  <Text color="red">{(unRsvpCallbackMutation.error as Error).message}</Text>
+                                )
+                              }
+                              {!rsvpStatus ? (
+                                <Button
+                                  colorScheme="teal"
+                                  disabled={rsvpCallbackMutation.isLoading}
+                                  onClick={rsvpCallback}
+                                >
+                                  RSVP
+                                </Button>
+                              ) : (
+                                <Button
+                                  colorScheme="red"
+                                  disabled={rsvpCallbackMutation.isLoading}
+                                  onClick={unRsvpCallback}
+                                >
+                                  Un-RSVP
+                                </Button>
+                              )}
+                            </>
                           </Center>
                         </>
                         ) : null}

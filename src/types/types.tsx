@@ -178,6 +178,13 @@ export interface BookClubBookPollType {
   book_three: string;
 }
 
+export interface BookClubRsvpType {
+  id: number;
+  book_club_id: number;
+  profile_id: number;
+  created_on: Date | string;
+}
+
 
 //Dashboard
 export interface DashboardProps {
