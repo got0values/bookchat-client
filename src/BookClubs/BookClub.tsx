@@ -190,8 +190,9 @@ export default function BookClub({server}: {server: string}) {
       }
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
       queryClient.resetQueries({queryKey: ['bookClubKey']})
-      // queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+      getBookClub();
       toast({
         description: "Book club updated",
         status: "success",
@@ -284,7 +285,9 @@ export default function BookClub({server}: {server: string}) {
         })
     }},
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
       queryClient.resetQueries({queryKey: ['bookClubKey']})
+      getBookClub();
     }
   })
   function removeMember(memberProfileId: number) {
@@ -360,7 +363,9 @@ export default function BookClub({server}: {server: string}) {
             .then((response)=>{
               setBookResultsLoading(false)
               closeCurrentBookModal()
+              queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
               queryClient.resetQueries({queryKey: ['bookClubKey']})
+              getBookClub();
               toast({
                 description: "Book club book updated",
                 status: "success",
@@ -465,8 +470,9 @@ export default function BookClub({server}: {server: string}) {
       }
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
       queryClient.resetQueries({queryKey: ['bookClubKey']})
-      // queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+      getBookClub();
       toast({
         description: "Book club meeting updated",
         status: "success",
@@ -551,7 +557,9 @@ export default function BookClub({server}: {server: string}) {
       }
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
       queryClient.resetQueries({queryKey: ['bookClubKey']})
+      getBookClub();
       toast({
         description: "Book club poll updated",
         status: "success",
