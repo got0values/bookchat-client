@@ -262,6 +262,35 @@ export default function BookClub({server}: {server: string}) {
     unJoinBookClubMutation.mutate(e);
   }
 
+  const removeMemberMutation = useMutation({
+    mutationFn: async (memberProfileId: number) => {
+    let tokenCookie: string | null = Cookies.get().token;
+    if (tokenCookie) {
+      await axios
+        .delete(server + "/api/removemember",
+          {
+            headers: {
+              authorization: tokenCookie
+            },
+            data: {
+              bookClubId: parseInt(paramsBookClubId!),
+              memberProfileId
+            }
+          }
+        )
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data?.message)
+        })
+    }},
+    onSuccess: () => {
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+    }
+  })
+  function removeMember(memberProfileId: number) {
+    removeMemberMutation.mutate(memberProfileId);
+  }
+
   const { 
     isOpen: isOpenCurrentBookModal, 
     onOpen: onOpenCurrentBookModal, 
@@ -570,7 +599,7 @@ export default function BookClub({server}: {server: string}) {
           {bookClub ? (
             <Flex flexWrap="wrap" w="100%" align="start" justify="space-between">
               <Stack flex="1 1 30%" top="0">
-                <Flex className="well" direction="column" align="center" gap={3}>
+                <Flex className="well" direction="column" align="center" gap={2}>
                   <Heading as="h4" size="md">{bookClub.name}</Heading>
                   <Text>{bookClub.about}</Text>
                   <Text fontStyle="italic">
@@ -587,7 +616,7 @@ export default function BookClub({server}: {server: string}) {
                     </Flex>
                   ): null}
                 </Flex>
-                <Box className="well">
+                <Flex className="well" direction="column" gap={2}>
                   <Flex align="center" justify="space-between">
                     <Heading as="h4" size="md">Members</Heading>
                     {isBookClubCreator ? null : (
@@ -642,19 +671,35 @@ export default function BookClub({server}: {server: string}) {
                     {bookClub.BookClubMembers.length ? bookClub.BookClubMembers.map((member,i)=>{
                       return (
                         member.status === 2 ? (
-                          <Flex key={i} align="center" justify="space-between">
-                            <Text>
-                              {member.Profile.username}
-                            </Text>
+                          <Flex 
+                            key={i} 
+                            align="center" 
+                            justify="space-between"
+                          >
+                            <Link 
+                              href={`/profile/${member.Profile.username}`}
+                              _hover={{
+                                textDecoration: "none",
+                                color: "teal"
+                              }}
+                            >
+                              @{member.Profile.username}
+                            </Link>
                             {isBookClubCreator ? (
-                              <Button size="xs" variant="ghost">Remove</Button>
+                              <Button 
+                                size="xs" 
+                                variant="ghost"
+                                onClick={e=>removeMember(member.Profile.id)}
+                              >
+                                Remove
+                              </Button>
                             ) : null}
                           </Flex>
                         ) : null
                       )
                     }) : null}
                   </Box>
-                </Box>
+                </Flex>
               </Stack>
 
               <Stack flex="1 1 65%" maxW="100%">
