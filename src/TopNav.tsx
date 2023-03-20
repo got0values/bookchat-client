@@ -1,5 +1,6 @@
 import { ReactNode, useState, useLayoutEffect, useEffect, SetStateAction } from 'react';
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { TopNavProps, UserNotificationsType } from './types/types';
 import { useAuth } from './hooks/useAuth';
 import {
@@ -68,48 +69,52 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
   const { user, getUser } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
-  const [userNotifications,setUserNotifications] = useState<UserNotificationsType>({
-    followRequests: [],
-    bookClubRequests: []
-  })
-  const [totalRequests,setTotalRequests] = useState<number>(0);
-
-  function resetNotifications() {
-    setUserNotifications({
-      followRequests: [],
-      bookClubRequests: []
-    })
-    setTotalRequests(0)
-  }
 
   function getNotifications() {
-    resetNotifications();
-    //check if any follow requests
-    if (user.Profile.Following_Following_following_profile_idToProfile?.length) {
-      let followers = user.Profile.Following_Following_following_profile_idToProfile;
-      for (let i = 0; i < followers.length; i++) {
-        if(followers[i].status === "requesting") {
-          setUserNotifications((prev)=>({...prev, followRequests: [...prev.followRequests as any[], followers[i]] }))
+    // resetNotifications();
+    let userNotifications: UserNotificationsType = {
+      followRequests: [],
+      bookClubRequests: []
+    }
+    let totalRequests = 0;
+    try {
+      //check if any follow requests
+      if (user.Profile.Following_Following_following_profile_idToProfile?.length) {
+        let followers = user.Profile.Following_Following_following_profile_idToProfile;
+        for (let i = 0; i < followers.length; i++) {
+          if(followers[i].status === "requesting") {
+            userNotifications = {
+              ...userNotifications, 
+              followRequests: [...userNotifications.followRequests as any[], followers[i]] }
+          }
         }
       }
-    }
-    if (user.Profile.BookClubMembers_BookClubMembers_book_club_creatorToProfile?.length) {
-      let bookClubMembers = user.Profile.BookClubMembers_BookClubMembers_book_club_creatorToProfile;
-      for (let i = 0; i < bookClubMembers.length; i++) {
-        if(bookClubMembers[i].status === 1) {
-          setUserNotifications((prev)=>({...prev, bookClubRequests: [...prev.bookClubRequests as any[], bookClubMembers[i]] }))
+      if (user.Profile.BookClubMembers_BookClubMembers_book_club_creatorToProfile?.length) {
+        let bookClubMembers = user.Profile.BookClubMembers_BookClubMembers_book_club_creatorToProfile;
+        for (let i = 0; i < bookClubMembers.length; i++) {
+          if(bookClubMembers[i].status === 1) {
+            userNotifications = {
+              ...userNotifications, 
+              bookClubRequests: [...userNotifications.bookClubRequests as any[], bookClubMembers[i]] 
+            }
+          }
         }
       }
+      totalRequests = userNotifications.followRequests.length + userNotifications.bookClubRequests.length;
+      return {
+        userNotifications,
+        totalRequests
+      };
+    } catch(error) {
+      toast({
+        description: "An error has occurred",
+        status: "error",
+        duration: 9000,
+        isClosable: true
+      })
+      throw new Error((error as Error).message)
     }
-    setTotalRequests(prev=>userNotifications.followRequests.length + userNotifications.bookClubRequests.length)
   }
-
-  useEffect(()=>{
-    getNotifications()
-    return(()=>{
-      resetNotifications();
-    })
-  },[getUser])
 
   const [profilePhoto,setProfilePhoto] = useState<string | null>(null);
   useLayoutEffect(()=>{
@@ -123,126 +128,155 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
     onClose: onCloseNotificationsModal 
   } = useDisclosure()
 
-  async function acceptFollowRequest(requestId: number) {
-    const tokenCookie = Cookies.get().token;
-    await axios
-    .post(server + "/api/acceptfollowrequest",
-    {followId: requestId},
-    {headers: {
-      'authorization': tokenCookie
-    }})
-    .then((response)=>{
-      if (response.data.success) {
-        getUser()
-      }
-    })
-    .then((r)=>{
-      window.location.reload()
-    })
-    .catch(({response})=>{
-      console.log(response)
-      toast({
-        description: "An error has occurred",
-        status: "error",
-        duration: 9000,
-        isClosable: true
-      })
-    })
-  }
-
-  async function rejectFollowRequest(requestId: number) {
-    const tokenCookie = Cookies.get().token;
-    await axios
-    .delete(server + "/api/rejectfollowrequest",
-    {
-      headers: {
+  const acceptFollowRequestMutation = useMutation({
+    mutationFn: async (requestId: number) => {
+      const tokenCookie = Cookies.get().token;
+      await axios
+      .post(server + "/api/acceptfollowrequest",
+      {followId: requestId},
+      {headers: {
         'authorization': tokenCookie
-      },
-      data: {
-        followId: requestId
-      }
-    })
-    .then((response)=>{
-      if (response.data.success) {
-        getUser()
-      }
-    })
-    .then((r)=>{
-      window.location.reload()
-    })
-    .catch(({response})=>{
-      console.log(response)
-      toast({
-        description: "An error has occurred",
-        status: "error",
-        duration: 9000,
-        isClosable: true
+      }})
+      .then((response)=>{
+        if (response.data.success) {
+          getUser()
+        }
       })
-    })
+      .then((r)=>{
+        window.location.reload()
+      })
+      .catch(({response})=>{
+        console.log(response)
+        toast({
+          description: "An error has occurred",
+          status: "error",
+          duration: 9000,
+          isClosable: true
+        })
+        throw new Error(response.data?.message)
+      })
+    }
+  })
+  function acceptFollowRequest(requestId: number) {
+    acceptFollowRequestMutation.mutate(requestId);
   }
 
-  async function acceptBookClubRequest(requestId: number) {
-    const tokenCookie = Cookies.get().token;
-    await axios
-    .put(server + "/api/acceptbookclubrequest",
-    {memberRequestId: requestId},
-    {headers: {
-      'authorization': tokenCookie
-    }})
-    .then((response)=>{
-      if (response.data.success) {
-        getUser()
-      }
-    })
-    .then((r)=>{
-      window.location.reload()
-    })
-    .catch(({response})=>{
-      console.log(response)
-      toast({
-        description: "An error has occurred",
-        status: "error",
-        duration: 9000,
-        isClosable: true
+  const rejectFollowRequestMutation = useMutation({
+    mutationFn: async (requestId: number) => {
+      const tokenCookie = Cookies.get().token;
+      await axios
+      .delete(server + "/api/rejectfollowrequest",
+      {
+        headers: {
+          'authorization': tokenCookie
+        },
+        data: {
+          followId: requestId
+        }
       })
-    })
+      .then((response)=>{
+        if (response.data.success) {
+          getUser()
+        }
+      })
+      .then((r)=>{
+        window.location.reload()
+      })
+      .catch(({response})=>{
+        console.log(response)
+        toast({
+          description: "An error has occurred",
+          status: "error",
+          duration: 9000,
+          isClosable: true
+        })
+        throw new Error(response.data?.message)
+      })
+    }
+  })
+  function rejectFollowRequest(requestId: number) {
+    rejectFollowRequestMutation.mutate(requestId);
   }
 
-  async function rejectBookClubRequest(requestId: number) {
-    const tokenCookie = Cookies.get().token;
-    await axios
-    .delete(server + "/api/rejectbookclubrequest",
-    {headers: {
-      'authorization': tokenCookie,
-    },
-    data: {
-      memberRequestId: requestId
-      }
-    })
-    .then((response)=>{
-      if (response.data.success) {
-        getUser()
-      }
-    })
-    .then((r)=>{
-      window.location.reload()
-    })
-    .catch(({response})=>{
-      console.log(response)
-      toast({
-        description: "An error has occurred",
-        status: "error",
-        duration: 9000,
-        isClosable: true
+  const acceptBookClubRequestMutation = useMutation({
+    mutationFn: async (requestId: number) => {
+      const tokenCookie = Cookies.get().token;
+      await axios
+      .put(server + "/api/acceptbookclubrequest",
+      {memberRequestId: requestId},
+      {headers: {
+        'authorization': tokenCookie
+      }})
+      .then((response)=>{
+        if (response.data.success) {
+          getUser()
+        }
       })
-    })
+      .then((r)=>{
+        window.location.reload()
+      })
+      .catch(({response})=>{
+        console.log(response)
+        toast({
+          description: "An error has occurred",
+          status: "error",
+          duration: 9000,
+          isClosable: true
+        })
+        throw new Error(response.data?.message)
+      })
+    }
+  })
+  function acceptBookClubRequest(requestId: number) {
+    acceptBookClubRequestMutation.mutate(requestId);
   }
 
-  return { isOpen, onOpen, onClose, colorMode, navigate, user, userNotifications, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, totalRequests, acceptBookClubRequest, rejectBookClubRequest };
+  const rejectBookClubRequestMutation = useMutation({
+    mutationFn: async (requestId: number) => {
+      const tokenCookie = Cookies.get().token;
+      await axios
+        .delete(server + "/api/rejectbookclubrequest",
+        {headers: {
+          'authorization': tokenCookie,
+        },
+        data: {
+          memberRequestId: requestId
+          }
+        })
+        .then((response)=>{
+          if (response.data.success) {
+            getUser()
+          }
+        })
+        .then((r)=>{
+          window.location.reload()
+        })
+        .catch(({response})=>{
+          console.log(response)
+          toast({
+            description: "An error has occurred",
+            status: "error",
+            duration: 9000,
+            isClosable: true
+          })
+          throw new Error(response.data?.message)
+        })
+    }
+  })
+  function rejectBookClubRequest(requestId: number) {
+    rejectBookClubRequestMutation.mutate(requestId);
+  }
+
+  return { isOpen, onOpen, onClose, colorMode, navigate, user, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, acceptBookClubRequest, rejectBookClubRequest, getNotifications };
 }
 
 export default function TopNav({server,onLogout}: TopNavProps) {
-  const { isOpen, onOpen, onClose, colorMode, navigate, user, userNotifications, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, totalRequests, acceptBookClubRequest, rejectBookClubRequest } = useTopNav({server,onLogout});
+  const { isOpen, onOpen, onClose, colorMode, navigate, user, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, acceptBookClubRequest, rejectBookClubRequest, getNotifications } = useTopNav({server,onLogout});
+
+  const notificationQuery = useQuery({ queryKey: ['notificationKey'], queryFn: getNotifications });
+  const notificationData = notificationQuery.data;
+  const userNotifications = notificationData?.userNotifications;
+  const totalRequests: number = notificationData?.totalRequests as number;
 
   return (
     <>

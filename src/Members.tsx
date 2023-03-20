@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from "@tanstack/react-query";
 import { 
@@ -22,7 +21,7 @@ export const Members = ({server}: MembersProps) => {
 
   async function getMembers() {
     const tokenCookie = Cookies.get().token;
-    const message = await axios
+    const membersData = await axios
       .post(server + "/api/getmembers", 
       {nothing: "nothing"},
       {headers: {
@@ -35,12 +34,13 @@ export const Members = ({server}: MembersProps) => {
       })
       .catch(({response})=>{
         console.error(response.data)
-        throw new Error(response.data.message)
+        throw new Error(response.data)
       })
-    return message
+    return membersData
   }
 
   const { isLoading, isError, data, error } = useQuery({ queryKey: ['memberKey'], queryFn: getMembers });
+  const members = data?.message;
   if (isLoading) {
     return <Center><Spinner size="xl"/></Center>
   }
@@ -52,7 +52,7 @@ export const Members = ({server}: MembersProps) => {
     <Box id="main" flexDirection="column">
       <Heading as="h1" size="3xl" mb={5}>Members</Heading>
       <OrderedList>
-        {data?.message.map((member: ProfileType, i: number)=>{
+        {members?.map((member: ProfileType, i: number)=>{
           return (
             <ListItem key={i} m={5}>
               <Link to={`/profile/${member.username}`}>{member.username}</Link>

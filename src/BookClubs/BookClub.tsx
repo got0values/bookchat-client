@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, ReactHTMLElement } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { BookClubMember, BookClubsType, BookClubBookType } from "../types/types";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { BookClubMember, BookClubsType, BookClubBookType, BookClubRsvpType } from "../types/types";
 import { 
   Box,
   Heading,
@@ -62,87 +63,92 @@ import utc from "dayjs/plugin/utc";
 export default function BookClub({server}: {server: string}) {
   const toast = useToast();
   const navigate = useNavigate();
+  const queryClient = useQueryClient()
   const { paramsBookClubId } = useParams();
   const { user } = useAuth();
-  const [bookClubError,setBookClubError] = useState<string | null>(null);
-  const [bookClub,setBookClub] = useState<BookClubsType | null>(null);
-  const [isBookClubCreator,setIsBookClubCreator] = useState<boolean>(false);
-  //non-member: 0, requesting: 1, member: 2
-  const [memberStatus,setMemberStatus] = useState<number>(0);
-  const [isLoading,setIsLoading] = useState<boolean>(true);
   dayjs.extend(utc)
 
-  const [currentBook,setCurrentBook] = useState<BookClubBookType>();
-  const [pollBookOneReceived,setPollBookOneReceived] = useState<BookClubBookType | null>(null)
-  const [pollBookTwoReceived,setPollBookTwoReceived] = useState<BookClubBookType | null>(null)
-  const [pollBookThreeReceived,setPollBookThreeReceived] = useState<BookClubBookType | null>(null)
-  function getBookClub() {
+  async function getBookClub() {
     let tokenCookie: string | null = Cookies.get().token;
-    setIsLoading(true);
     if (tokenCookie) {
-      axios
-      .get(server + "/api/getbookclub?bookclubid=" + paramsBookClubId,
-        {
-          headers: {
-            authorization: tokenCookie
+      const bookClub = await axios
+        .get(server + "/api/getbookclub?bookclubid=" + paramsBookClubId,
+          {
+            headers: {
+              authorization: tokenCookie
+            }
           }
-        }
-      )
-      .then((response)=>{
-        console.log(response)
-        if (response.data.success) {
-          const responseBookClub = response.data.message
-          setBookClub(responseBookClub)
+        )
+        .then((response)=>{
+          console.log(response)
+          if (response.data.success) {
+            let responseBookClub = response.data.message
+            const currentBook1 = responseBookClub.BookClubBook.reverse()[0]
 
-          setCurrentBook(responseBookClub.BookClubBook.reverse()[0])
+            let pollBookOneRcvd;
+            let pollBookTwoRcvd;
+            let pollBookThreeRcvd;
+            if(responseBookClub.BookClubBookPoll) {
+              if (responseBookClub.BookClubBookPoll.book_one) {
+                pollBookOneRcvd = JSON.parse(responseBookClub.BookClubBookPoll.book_one)
+              }
+              if (responseBookClub.BookClubBookPoll.book_two) {
+                pollBookTwoRcvd = JSON.parse(responseBookClub.BookClubBookPoll.book_two)
+              }
+              if (responseBookClub.BookClubBookPoll.book_three) {
+                pollBookThreeRcvd = JSON.parse(responseBookClub.BookClubBookPoll.book_three)
+              }
+            }
+            
+            let isBookClubCreator = false;
+            if (responseBookClub.creator === user.Profile.id) {
+              isBookClubCreator = true;
+            }
+            else {
+              isBookClubCreator = false;
+            }
 
-          if(responseBookClub.BookClubBookPoll) {
-            if (responseBookClub.BookClubBookPoll.book_one) {
-              setPollBookOneReceived(JSON.parse(responseBookClub.BookClubBookPoll.book_one))
+            //non-member: 0, requesting: 1, member: 2
+            let memberStatus = 0;
+            if (responseBookClub.BookClubMembers.filter((member: BookClubMember)=>member.Profile.id === user.Profile?.id).length) {
+              memberStatus = responseBookClub.BookClubMembers.filter((member: BookClubMember)=>member.Profile.id === user.Profile?.id)[0].status
             }
-            if (responseBookClub.BookClubBookPoll.book_two) {
-              setPollBookTwoReceived(JSON.parse(responseBookClub.BookClubBookPoll.book_two))
+            else {
+              memberStatus = 0;
             }
-            if (responseBookClub.BookClubBookPoll.book_three) {
-              setPollBookThreeReceived(JSON.parse(responseBookClub.BookClubBookPoll.book_three))
+
+            let rsvpStatus = 0;
+            if (responseBookClub.BookClubMeetingRsvp.filter((rsvp: BookClubRsvpType)=>rsvp.profile_id === user.Profile?.id).length) {
+              rsvpStatus = 1;
+            }
+            else {
+              rsvpStatus = 0;
+            }
+
+            return {
+              bookClub:  responseBookClub,
+              currentBook: currentBook1,
+              pollBookOneReceived: pollBookOneRcvd,
+              pollBookTwoReceived: pollBookTwoRcvd,
+              pollBookThreeReceived: pollBookThreeRcvd,
+              isBookClubCreator: isBookClubCreator,
+              memberStatus: memberStatus,
+              rsvpStatus: rsvpStatus
             }
           }
-          
-          if (responseBookClub.creator === user.Profile.id) {
-            setIsBookClubCreator(true);
+        })
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data?.message) {
+            throw new Error(response.data?.message)
           }
-          else {
-            setIsBookClubCreator(false);
-          }
-          if (responseBookClub.BookClubMembers.filter((member: BookClubMember)=>member.Profile.id === user.Profile?.id).length) {
-            setMemberStatus(responseBookClub.BookClubMembers.filter((member: BookClubMember)=>member.Profile.id === user.Profile?.id)[0].status)
-          }
-          else {
-            setMemberStatus(0)
-          }
-          setIsLoading(false);
-        }
-      })
-      .catch(({response})=>{
-        console.log(response)
-        if (response.data?.message) {
-          setBookClubError(response.data?.message)
-        }
-      })
-      setIsLoading(false);
+        })
+      return bookClub;
     }
     else {
-      setBookClubError("An error has occured")
+      throw new Error("An error has occured")
     }
   }
-
-  useEffect(()=>{
-    getBookClub()
-    
-    return ()=>{
-      setBookClub(null)
-    }
-  },[])
 
   const { 
     isOpen: isOpenEditModal, 
@@ -155,160 +161,148 @@ export default function BookClub({server}: {server: string}) {
   }
 
   function closeEditModal() {
-    setUpdateError("")
+    updateBookClubMutation.reset();
     onClosEditModal()
   }
 
   const [switchVisibility,setSwitchVisibility] = useState(false);
-  const [updateError,setUpdateError] = useState<string>("");
+  // const [updateError,throw new Error] = useState<string>("");
   const idRef = useRef<HTMLInputElement>({} as HTMLInputElement);
   const nameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
   const aboutRef = useRef<HTMLTextAreaElement>({} as HTMLTextAreaElement);
-  async function updateBookClub(e: React.FormEvent) {
-    e.preventDefault();
-    let tokenCookie: string | null = Cookies.get().token;
-    if (tokenCookie) {
-      axios
-      .put(server + "/api/updatebookclub",
-        {
-          bookClubId: parseInt(idRef.current.value),
-          bookClubName: nameRef.current.value,
-          bookClubAbout: aboutRef.current.value,
-          bookClubVisibility: switchVisibility === true ? 1 : 0
-        },
-        {
-          headers: {
-            authorization: tokenCookie
-          }
-        }
-      )
-      .then((response)=>{
-        console.log(response)
-        if (response.data.success) {
-          getBookClub();
-          closeEditModal();
-        }
-        else {
-          setUpdateError(response.data.message)
-        }
-      })
-      .catch(({response})=>{
-        console.log(response)
-        if (response.data?.message) {
-          setUpdateError(response.data?.message)
-        }
-      })
-    }
-    else {
-      setUpdateError("An error has occured")
-    }
-  }
-
-  function joinBookClub(e: React.FormEvent) {
-    let tokenCookie: string | null = Cookies.get().token;
-    if (tokenCookie) {
-      axios
-      .post(server + "/api/joinbookclub",
-        {
-          bookClubId: parseInt((e.target as HTMLButtonElement).value)
-        },
-        {
-          headers: {
-            authorization: tokenCookie
-          }
-        }
-      )
-      .then((response)=>{
-        if (response.data.success) {
-          getBookClub();
-        }
-      })
-      .catch(({response})=>{
-        console.log(response)
-      })
-    }
-  }
-
-  function unJoinBookClub(e: React.FormEvent) {
-    let tokenCookie: string | null = Cookies.get().token;
-    if (tokenCookie) {
-      axios
-      .delete(server + "/api/unjoinbookclub",
-        {
-          headers: {
-            authorization: tokenCookie
+  const updateBookClubMutation = useMutation({
+    mutationFn: async (e: React.FormEvent) => {
+      e.preventDefault();
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        axios
+        .put(server + "/api/updatebookclub",
+          {
+            bookClubId: parseInt(idRef.current.value),
+            bookClubName: nameRef.current.value,
+            bookClubAbout: aboutRef.current.value,
+            bookClubVisibility: switchVisibility === true ? 1 : 0
           },
-          data: {
-            bookClubId: parseInt((e.target as HTMLButtonElement).value)
+          {
+            headers: {
+              authorization: tokenCookie
+            }
           }
-        }
-      )
-      .then((response)=>{
-        if (response.data.success) {
-          getBookClub();
-        }
+        )
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data?.message) {
+            throw new Error(response.data?.message)
+          }
+        })
+      }
+      else {
+        throw new Error("An error has occured")
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+      getBookClub();
+      toast({
+        description: "Book club updated",
+        status: "success",
+        duration: 9000,
+        isClosable: true
       })
-      .catch(({response})=>{
-        console.log(response)
-      })
+      closeEditModal()
     }
+  })
+  function updateBookClub(e: React.FormEvent) {
+    updateBookClubMutation.mutate(e);
   }
 
-  const { 
-    isOpen: isOpenMeetingModal, 
-    onOpen: onOpenMeetingModal, 
-    onClose: onCloseMeetingModal 
-  } = useDisclosure()
-
-  function openMeetingModal() {
-    onOpenMeetingModal()
+  const joinBookClubMutation = useMutation({
+    mutationFn: async (e: React.FormEvent) => {
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+        .post(server + "/api/joinbookclub",
+          {
+            bookClubId: parseInt((e.target as HTMLButtonElement).value)
+          },
+          {
+            headers: {
+              authorization: tokenCookie
+            }
+          }
+        )
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data?.message)
+        })
+      }
+    },
+    onSuccess: () => {
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+    }
+  })
+  function joinBookClub(e: React.FormEvent) {
+    joinBookClubMutation.mutate(e)
   }
 
-  function closeMeetingModal() {
-    setUpdateError("")
-    onCloseMeetingModal()
-  }
-
-  const meetingLocationRef = useRef({} as ReactQuill);
-  const meetingStartRef = useRef({} as HTMLInputElement);
-  const meetingEndRef = useRef({} as HTMLInputElement);
-  function updateBookClubMeeting(e: React.FormEvent) {
-    e.preventDefault();
+  const unJoinBookClubMutation = useMutation({
+    mutationFn: async (e: React.FormEvent) => {
     let tokenCookie: string | null = Cookies.get().token;
     if (tokenCookie) {
-      axios
-      .put(server + "/api/updatebookclubmeeting",
-        {
-          bookClubId: bookClub?.id,
-          bookClubMeetingLocation: meetingLocationRef.current.value,
-          bookClubMeetingStart: dayjs(meetingStartRef.current.value).utc(),
-          bookClubMeetingEnd: dayjs(meetingEndRef.current.value).utc()
-        },
-        {
-          headers: {
-            authorization: tokenCookie
+      await axios
+        .delete(server + "/api/unjoinbookclub",
+          {
+            headers: {
+              authorization: tokenCookie
+            },
+            data: {
+              bookClubId: parseInt((e.target as HTMLButtonElement).value)
+            }
           }
-        }
-      )
-      .then((response)=>{
-        if (response.data.success) {
-          getBookClub();
-          closeMeetingModal();
-        }
-        else {
-          setUpdateError(response.data.message)
-        }
-      })
-      .catch(({response})=>{
-        console.log(response)
-        if (response.data?.message) {
-          setUpdateError(response.data?.message)
-        }
-      })
+        )
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data?.message)
+        })
+    }},
+    onSuccess: () => {
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
     }
-    else {
-      setUpdateError("An error has occured")
+  })
+  function unJoinBookClub(e: React.FormEvent) {
+    unJoinBookClubMutation.mutate(e);
+  }
+
+  const removeMemberMutation = useMutation({
+    mutationFn: async (memberProfileId: number) => {
+    let tokenCookie: string | null = Cookies.get().token;
+    if (tokenCookie) {
+      await axios
+        .delete(server + "/api/removemember",
+          {
+            headers: {
+              authorization: tokenCookie
+            },
+            data: {
+              bookClubId: parseInt(paramsBookClubId!),
+              memberProfileId
+            }
+          }
+        )
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data?.message)
+        })
+    }},
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+      getBookClub();
     }
+  })
+  function removeMember(memberProfileId: number) {
+    removeMemberMutation.mutate(memberProfileId);
   }
 
   const { 
@@ -328,9 +322,9 @@ export default function BookClub({server}: {server: string}) {
   }
 
   function closeCurrentBookModal() {
-    setUpdateError("")
     setBookClubBook(null)
     onCloseCurrentBookModal()
+    selectBookMutation.reset()
   }
 
   const searchBookRef = useRef({} as HTMLInputElement);
@@ -350,84 +344,279 @@ export default function BookClub({server}: {server: string}) {
       })
   }
 
-  async function selectBook(e: React.FormEvent) {
-    const bookData = JSON.parse((e.target as HTMLDivElement).dataset.book!);
-    setBookResultsLoading(true)
-    let tokenCookie: string | null = Cookies.get().token;
-    if (tokenCookie) {
-      if (bookClubBook !== null) { //Edit book club
-        await axios
-        .post(server + "/api/updatebookclubbook",
-          {
-            bookClubId: parseInt(paramsBookClubId!),
-            bookClubBookId: bookClubBook,
-            bookImage: bookData.volumeInfo.imageLinks ? bookData.volumeInfo.imageLinks.smallThumbnail : "",
-            bookTitle: bookData.volumeInfo.title,
-            bookAuthor: bookData.volumeInfo.authors ? bookData.volumeInfo.authors[0] : "",
-            bookDescription: bookData.volumeInfo.description ? bookData.volumeInfo.description : "",
-            bookLink: bookData.volumeInfo.previewLink ? bookData.volumeInfo.previewLink : ""
-          },
-          {
-            headers: {
-              authorization: tokenCookie
+  const selectBookMutation = useMutation({
+    mutationFn: async (e: React.FormEvent) => {
+      const bookData = JSON.parse((e.target as HTMLDivElement).dataset.book!);
+      setBookResultsLoading(true)
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        if (bookClubBook !== null) { //Edit book club
+          await axios
+            .post(server + "/api/updatebookclubbook",
+              {
+                bookClubId: parseInt(paramsBookClubId!),
+                bookClubBookId: bookClubBook,
+                bookImage: bookData.volumeInfo.imageLinks ? bookData.volumeInfo.imageLinks.smallThumbnail : "",
+                bookTitle: bookData.volumeInfo.title,
+                bookAuthor: bookData.volumeInfo.authors ? bookData.volumeInfo.authors[0] : "",
+                bookDescription: bookData.volumeInfo.description ? bookData.volumeInfo.description : "",
+                bookLink: bookData.volumeInfo.previewLink ? bookData.volumeInfo.previewLink : ""
+              },
+              {
+                headers: {
+                  authorization: tokenCookie
+                }
+              }
+            )
+            .then((response)=>{
+              getBookClub()
+            })
+            .then((response)=>{
+              setBookResultsLoading(false)
+              closeCurrentBookModal()
+              queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+              queryClient.resetQueries({queryKey: ['bookClubKey']})
+              getBookClub();
+              toast({
+                description: "Book club book updated",
+                status: "success",
+                duration: 9000,
+                isClosable: true
+              })
+            })
+            .catch(({response})=>{
+              console.log(response)
+              throw new Error(response.data.message)
+            })
+        }
+        else if (bookClubBook === null) { //New book club
+          await axios
+          .post(server + "/api/setbookclubbook",
+            {
+              bookClubId: parseInt(paramsBookClubId!),
+              bookImage: bookData.volumeInfo.imageLinks ? bookData.volumeInfo.imageLinks.smallThumbnail : "",
+              bookTitle: bookData.volumeInfo.title,
+              bookAuthor: bookData.volumeInfo.authors ? bookData.volumeInfo.authors[0] : "",
+              bookDescription: bookData.volumeInfo.description ? bookData.volumeInfo.description : "",
+              bookLink: bookData.volumeInfo.previewLink ? bookData.volumeInfo.previewLink : ""
+            },
+            {
+              headers: {
+                authorization: tokenCookie
+              }
             }
-          }
-        )
-        .then((response)=>{
-          getBookClub()
-          setBookResultsLoading(false)
-          closeCurrentBookModal()
-          toast({
-            description: "Book club book updated",
-            status: "success",
-            duration: 9000,
-            isClosable: true
+          )
+          .then((response)=>{
+            setBookResultsLoading(false)
+            closeCurrentBookModal()
+            queryClient.resetQueries({queryKey: ['bookClubKey']})
+            toast({
+              description: "New book club book created",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
           })
-        })
-        .catch(({response})=>{
-          console.log(response)
-          setUpdateError(response.data.message)
-        })
+          .catch(({response})=>{
+            console.log(response)
+            throw new Error(response.data.message)
+          })
+        }
       }
-      else if (bookClubBook === null) { //New book club
-        await axios
-        .post(server + "/api/setbookclubbook",
-          {
-            bookClubId: parseInt(paramsBookClubId!),
-            bookImage: bookData.volumeInfo.imageLinks ? bookData.volumeInfo.imageLinks.smallThumbnail : "",
-            bookTitle: bookData.volumeInfo.title,
-            bookAuthor: bookData.volumeInfo.authors ? bookData.volumeInfo.authors[0] : "",
-            bookDescription: bookData.volumeInfo.description ? bookData.volumeInfo.description : "",
-            bookLink: bookData.volumeInfo.previewLink ? bookData.volumeInfo.previewLink : ""
-          },
-          {
-            headers: {
-              authorization: tokenCookie
-            }
-          }
-        )
-        .then((response)=>{
-          getBookClub()
-          setBookResultsLoading(false)
-          closeCurrentBookModal()
-          toast({
-            description: "New book club book created",
-            status: "success",
-            duration: 9000,
-            isClosable: true
-          })
-        })
-        .catch(({response})=>{
-          console.log(response)
-          setUpdateError(response.data.message)
-        })
+      else {
+        throw new Error("Something went wrong")
       }
     }
-    else {
-      setUpdateError("Something went wrong")
-    }
+  })
+  function selectBook(e: React.FormEvent) {
+    selectBookMutation.mutate(e);
   }
 
+  const { 
+    isOpen: isOpenMeetingModal, 
+    onOpen: onOpenMeetingModal, 
+    onClose: onCloseMeetingModal 
+  } = useDisclosure()
+
+  function openMeetingModal() {
+    onOpenMeetingModal()
+  }
+
+  function closeMeetingModal() {
+    onCloseMeetingModal()
+    updateBookClubMeetingMutation.reset();
+    clearRsvpsCallbackMutation.reset();
+  }
+
+  const meetingLocationRef = useRef({} as ReactQuill);
+  const meetingStartRef = useRef({} as HTMLInputElement);
+  const meetingEndRef = useRef({} as HTMLInputElement);
+  const updateBookClubMeetingMutation = useMutation({
+    mutationFn: async (e: React.FormEvent) => {
+      e.preventDefault();
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .put(server + "/api/updatebookclubmeeting",
+            {
+              bookClubId: bookClub?.id,
+              bookClubMeetingLocation: meetingLocationRef.current.value,
+              bookClubMeetingStart: dayjs(meetingStartRef.current.value).utc(),
+              bookClubMeetingEnd: dayjs(meetingEndRef.current.value).utc()
+            },
+            {
+              headers: {
+                authorization: tokenCookie
+              }
+            }
+          )
+          .catch(({response})=>{
+            console.log(response)
+            if (response.data?.message) {
+              throw new Error(response.data?.message)
+            }
+          })
+      }
+      else {
+        throw new Error("An error has occured")
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+      getBookClub();
+      toast({
+        description: "Book club meeting updated",
+        status: "success",
+        duration: 9000,
+        isClosable: true
+      })
+      closeMeetingModal()
+    }
+  })
+  function updateBookClubMeeting(e: React.FormEvent) {
+    updateBookClubMeetingMutation.mutate(e)
+  }
+
+  const rsvpCallbackMutation = useMutation({
+    mutationFn: async () => {
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .post(server + "/api/rsvpbookclub",
+            {
+              bookClubId: parseInt(paramsBookClubId!)
+            },
+            {
+              headers: {
+                authorization: tokenCookie
+              }
+            }
+          )
+          .catch(({response})=>{
+            console.log(response)
+            throw new Error(response.data.message)
+          })
+      }
+      else {
+        throw new Error("Something went wrong")
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+      getBookClub();
+      toast({
+        description: "Successfully RSVP'd",
+        status: "success",
+        duration: 9000,
+        isClosable: true
+      })
+    }
+  })
+  function rsvpCallback() {
+    rsvpCallbackMutation.mutate();
+  }
+
+  const unRsvpCallbackMutation = useMutation({
+    mutationFn: async () => {
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .delete(server + "/api/unrsvpbookclub",
+            {
+              headers: {
+                authorization: tokenCookie
+              },
+              data: {
+                bookClubId: parseInt(paramsBookClubId!)
+              }
+            }
+          )
+          .catch(({response})=>{
+            console.log(response)
+            throw new Error(response.data.message)
+          })
+      }
+      else {
+        throw new Error("Something went wrong")
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+      getBookClub();
+      toast({
+        description: "Successfully Un-RSVP'd",
+        status: "success",
+        duration: 9000,
+        isClosable: true
+      })
+    }
+  })
+  function unRsvpCallback() {
+    unRsvpCallbackMutation.mutate();
+  }
+
+  const clearRsvpsCallbackMutation = useMutation({
+    mutationFn: async () => {
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .delete(server + "/api/clearbookclubrsvps",
+            {
+              headers: {
+                authorization: tokenCookie
+              },
+              data: {
+                bookClubId: parseInt(paramsBookClubId!)
+              }
+            }
+          )
+          .catch(({response})=>{
+            console.log(response)
+            throw new Error(response.data.message)
+          })
+      }
+      else {
+        throw new Error("Something went wrong")
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+      getBookClub();
+      toast({
+        description: "RSVP's successfully cleared",
+        status: "success",
+        duration: 9000,
+        isClosable: true
+      })
+    }
+  })
+  function clearRsvpsCallback() {
+    clearRsvpsCallbackMutation.mutate();
+  }
 
   const { 
     isOpen: isOpenPollBookModal, 
@@ -452,96 +641,128 @@ export default function BookClub({server}: {server: string}) {
     setPollBookOne(null)
     setPollBookTwo(null)
     setPollBookThree(null)
+    createPollBooksMutation.reset();
     onClosePollBookModal()
   }
 
   const [pollBookOne,setPollBookOne] = useState<BookClubBookType | null>(null)
   const [pollBookTwo,setPollBookTwo] = useState<BookClubBookType | null>(null)
   const [pollBookThree,setPollBookThree] = useState<BookClubBookType | null>(null)
-  async function createPollBooks() {
-    setBookResultsLoading(true)
-    let tokenCookie: string | null = Cookies.get().token;
-    if (tokenCookie) {
-      await axios
-        .post(server + "/api/setpollbooks",
-          {
-            bookClubId: parseInt(paramsBookClubId!),
-            bookOne: pollBookOne ? pollBookOne : "",
-            bookTwo: pollBookTwo ? pollBookTwo : "",
-            bookThree: pollBookThree ? pollBookThree : ""
-          },
-          {
-            headers: {
-              authorization: tokenCookie
+  const createPollBooksMutation = useMutation({
+    mutationFn: async () => {
+      setBookResultsLoading(true)
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .post(server + "/api/setpollbooks",
+            {
+              bookClubId: parseInt(paramsBookClubId!),
+              bookOne: pollBookOne ? pollBookOne : "",
+              bookTwo: pollBookTwo ? pollBookTwo : "",
+              bookThree: pollBookThree ? pollBookThree : ""
+            },
+            {
+              headers: {
+                authorization: tokenCookie
+              }
             }
-          }
-        )
-        .then((response)=>{
-          getBookClub()
-          closePollBookModal()
-          toast({
-            description: "New book club book created",
-            status: "success",
-            duration: 9000,
-            isClosable: true
+          )
+          .catch(({response})=>{
+            console.log(response)
+            toast({
+              description: response.data.message,
+              status: "error",
+              duration: 9000,
+              isClosable: true
+            })
           })
+        setBookResultsLoading(false)
+      }
+      else {
+        toast({
+          description: "Something went wrong",
+          status: "error",
+          duration: 9000,
+          isClosable: true
         })
-        .catch(({response})=>{
-          console.log(response)
-          toast({
-            description: response.data.message,
-            status: "error",
-            duration: 9000,
-            isClosable: true
-          })
-        })
-      setBookResultsLoading(false)
-    }
-    else {
-      setUpdateError("Something went wrong")
+        throw new Error("Something went wrong")
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+      getBookClub();
       toast({
-        description: "Something went wrong",
-        status: "error",
+        description: "Book club poll updated",
+        status: "success",
         duration: 9000,
         isClosable: true
       })
+      closePollBookModal()
     }
+  })
+  function createPollBooks() {
+    createPollBooksMutation.mutate();
+  }
+
+  const bookClubQuery = useQuery({ 
+    queryKey: ['bookClubKey'], 
+    queryFn: getBookClub
+  });
+  const bookClubData = bookClubQuery.data;
+  const bookClub: BookClubsType = bookClubData?.bookClub;
+  const currentBook = bookClubData?.currentBook;
+  const pollBookOneReceived = bookClubData?.pollBookOneReceived;
+  const pollBookTwoReceived = bookClubData?.pollBookTwoReceived;
+  const pollBookThreeReceived = bookClubData?.pollBookThreeReceived;
+  const isBookClubCreator = bookClubData?.isBookClubCreator;
+  const memberStatus: number | undefined = bookClubData?.memberStatus;
+  const rsvpStatus: number | undefined = bookClubData?.rsvpStatus;
+  if (bookClubQuery.isLoading) {
+    return (
+      <Flex align="center" justify="center" minH="80vh">
+        <Spinner size="xl"/>
+      </Flex>
+    )
+  }
+  if (bookClubQuery.isError) {
+    return <Flex align="center" justify="center" minH="80vh">
+      <Heading as="h1" size="xl">Error: {(bookClubQuery.error as Error).message}</Heading>
+    </Flex>
   }
   
   return (
     <>
       <Box className="main-content">
         <Skeleton 
-          isLoaded={!isLoading}
+          isLoaded={!bookClubQuery.isLoading}
         >
-          {bookClubError ? (
-            <Heading as="h2" size="2xl" >{bookClubError}</Heading>
-            ) : (
-            bookClub ? (
-              <Flex flexWrap="wrap" w="100%" align="start" justify="space-between">
-                <Stack flex="1 1 30%" top="0">
-                  <Flex className="well" direction="column" align="center" gap={3}>
-                    <Heading as="h4" size="md">{bookClub.name}</Heading>
-                    <Text>{bookClub.about}</Text>
-                    <Text fontStyle="italic">
-                      {bookClub.visibility === 0 ? "private (friends only)" : "public"}
-                    </Text>
-                    {isBookClubCreator ? (
-                      <Flex>
-                        <Button
-                          onClick={openEditModal}
-                          leftIcon={<HiOutlinePencil/>}
-                        >
-                          Edit
-                        </Button>
-                      </Flex>
-                    ): null}
-                  </Flex>
-                  <Box className="well">
-                    <Flex align="center" justify="space-between">
-                      <Heading as="h4" size="md">Members</Heading>
-                      {isBookClubCreator ? null : (
-                        memberStatus > 0 ? (
+          {bookClub ? (
+            <Flex flexWrap="wrap" w="100%" align="start" justify="space-between">
+              <Stack flex="1 1 30%" top="0">
+                <Flex className="well" direction="column" align="center" gap={2}>
+                  <Heading as="h4" size="md">{bookClub.name}</Heading>
+                  <Text>{bookClub.about}</Text>
+                  <Text fontStyle="italic">
+                    {bookClub.visibility === 0 ? "private (friends only)" : "public"}
+                  </Text>
+                  {isBookClubCreator ? (
+                    <Flex>
+                      <Button
+                        onClick={openEditModal}
+                        leftIcon={<HiOutlinePencil/>}
+                      >
+                        Edit
+                      </Button>
+                    </Flex>
+                  ): null}
+                </Flex>
+                <Flex className="well" direction="column" gap={2}>
+                  <Flex align="center" justify="space-between">
+                    <Heading as="h4" size="md">Members</Heading>
+                    {isBookClubCreator ? null : (
+                      memberStatus && memberStatus > 0 ? (
+                        !unJoinBookClubMutation.error ? (
                           memberStatus === 1 ? (
                             <Button 
                               size="xs"
@@ -560,420 +781,481 @@ export default function BookClub({server}: {server: string}) {
                             </Button>
                           ) : null
                         ) : (
-                        <Button 
-                          size="xs"
-                          value={bookClub.id}
-                          onClick={e=>joinBookClub(e)}
-                        >
-                          Join
-                        </Button>
+                          <Button 
+                            size="xs"
+                            colorScheme="red"
+                          >
+                            {(unJoinBookClubMutation.error as Error).message}
+                          </Button>
                         )
-                      )}
-                    </Flex>
-                    <Box>
-                      {bookClub.BookClubMembers.length ? bookClub.BookClubMembers.map((member,i)=>{
-                        return (
-                          member.status === 2 ? (
-                            <Flex key={i} align="center" justify="space-between">
-                              <Text>
-                                {member.Profile.username}
-                              </Text>
-                              {isBookClubCreator ? (
-                                <Button size="xs" variant="ghost">Remove</Button>
-                              ) : null}
-                            </Flex>
-                          ) : null
+                      ) : (
+                      !joinBookClubMutation.error ? (
+                      <Button 
+                        size="xs"
+                        value={bookClub.id}
+                        onClick={e=>joinBookClub(e)}
+                      >
+                        Join
+                      </Button>
+                        ) : (
+                          <Button 
+                            size="xs"
+                            colorScheme="red"
+                          >
+                            {(joinBookClubMutation.error as Error).message}
+                          </Button>
                         )
-                      }) : null}
-                    </Box>
+                      )
+                    )}
+                  </Flex>
+                  <Box>
+                    {bookClub.BookClubMembers.length ? bookClub.BookClubMembers.map((member,i)=>{
+                      return (
+                        member.status === 2 ? (
+                          <Flex 
+                            key={i} 
+                            align="center" 
+                            justify="space-between"
+                          >
+                            <Link 
+                              href={`/profile/${member.Profile.username}`}
+                              _hover={{
+                                textDecoration: "none",
+                                color: "teal"
+                              }}
+                            >
+                              @{member.Profile.username}
+                            </Link>
+                            {isBookClubCreator ? (
+                              <Button 
+                                size="xs" 
+                                variant="ghost"
+                                color="red"
+                                onClick={e=>removeMember(member.Profile.id)}
+                              >
+                                Remove
+                              </Button>
+                            ) : null}
+                          </Flex>
+                        ) : null
+                      )
+                    }) : null}
                   </Box>
-                </Stack>
+                </Flex>
+              </Stack>
 
-                <Stack flex="1 1 65%" maxW="100%">
-                  {memberStatus === 2 || isBookClubCreator ? (
-                    <>
-                      <Flex className="well" direction="column" gap={2}>
-                        <Flex align="center" justify="space-between">
-                          <Heading as="h4" size="md">Currently Reading</Heading>
-                          {isBookClubCreator ? (
+              <Stack flex="1 1 65%" maxW="100%">
+                {memberStatus === 2 || isBookClubCreator ? (
+                  <>
+                    <Flex className="well" direction="column" gap={2}>
+                      <Flex align="center" justify="space-between">
+                        <Heading as="h4" size="md">Currently Reading</Heading>
+                        {isBookClubCreator ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          leftIcon={<AiOutlinePlus size={15} />}
+                          onClick={e=>openNewCurrentBookModal()}
+                        >
+                          New
+                        </Button>
+                        ) : null}
+                      </Flex>
+                      {currentBook ? (
+                      <>
+                        <Box
+                          bg="gray.100"
+                          p={2}
+                          rounded="md"
+                          _dark={{
+                            bg: "gray.600"
+                          }}
+                        >
+                          <Flex  
+                            gap={5}
+                            flexWrap="wrap"
+                          >
+                            <Box
+                              flex="1 1 200px"
+                              maxW="175px"
+                            >
+                              <Image
+                                maxW="100%" 
+                                w="100%"
+                                h="auto"
+                                m={1}
+                                className="book-image"
+                                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                src={currentBook?.image}
+                              />
+                            </Box>
+                            <Flex direction="column" align="center" justify="center" flex="1 1" minW="250px">
+                              <Heading as="h3" size="md">
+                                {currentBook?.title}
+                              </Heading>
+                              <Text>
+                                {currentBook?.author}
+                              </Text>
+                              <Box maxH="225px" overflow="auto">
+                                {currentBook?.description ? currentBook.description : null}
+                              </Box>
+                            </Flex>
+                          </Flex>
+                          <Flex justify="center">
+                            <Divider borderColor="gray.400" my={3} w="95%" />
+                          </Flex>
+                          <Center flexDirection="column">
+                            <Button 
+                              colorScheme="teal"
+                              leftIcon={<BsCardText size={20} />}
+                            >
+                              Discussion
+                            </Button>
+                            {isBookClubCreator ? (
+                              <Button 
+                                variant="ghost"
+                                onClick={e=>openEditCurrentBookModal(currentBook?.id!)}
+                                leftIcon={<HiOutlinePencil size={15} />}
+                              >
+                                Edit
+                              </Button>
+                            ) : null}
+                          </Center>
+                        </Box>
+                        {bookClub?.BookClubBook?.length && bookClub?.BookClubBook?.length > 1 ? (
+                          <Center>
+                            <Popover isLazy>
+                              <PopoverTrigger>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost" 
+                                  m={1}
+                                  leftIcon={<TbBooks size={20} />}
+                                >
+                                  View past books
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverHeader>Past Books</PopoverHeader>
+                                <PopoverBody>
+                                  {bookClub.BookClubBook.map((bcb,i)=>{
+                                    if (i !== 0) {
+                                      return (
+                                        <Box key={i}>
+                                          {i > 1 ? <Divider/> : null}
+                                          <Flex align="center" columnGap={2} flexWrap="wrap">
+                                            <Text whiteSpace="nowrap">
+                                              {dayjs(bcb.created_on).format("MMM DD, YYYY")}
+                                            </Text>
+                                            {" - "}
+                                            <Text whiteSpace="nowrap" fontWeight="bold">
+                                              {bcb.title}
+                                            </Text>
+                                            <Text whiteSpace="nowrap">
+                                              {bcb.author}
+                                            </Text>
+                                          </Flex>
+                                        </Box>
+                                      )
+                                    }
+                                  })}
+                                </PopoverBody>
+                              </PopoverContent>
+                            </Popover>
+                          </Center>
+                        ) : null}
+                      </>
+                      ) : null}
+                    </Flex>
+
+                    <Flex className="well" direction="column" gap={2}>
+                      <Flex align="center" justify="space-between">
+                        <Heading as="h4" size="md">Next Meeting</Heading>
+                        {isBookClubCreator ? (
                           <Button
                             variant="ghost"
                             size="sm"
-                            leftIcon={<AiOutlinePlus size={15} />}
-                            onClick={e=>openNewCurrentBookModal()}
+                            leftIcon={<HiOutlinePencil size={15} />}
+                            onClick={openMeetingModal}
                           >
-                            New
+                            Edit
                           </Button>
-                          ) : null}
-                        </Flex>
-                        {currentBook ? (
+                        ) : null}
+                      </Flex>
+                      <Stack>
+                        {bookClub.next_meeting_location || bookClub.next_meeting_start || bookClub.next_meeting_end ? (
                         <>
-                          <Box
-                            bg="gray.100"
-                            p={2}
-                            rounded="md"
-                            _dark={{
-                              bg: "gray.600"
-                            }}
-                          >
-                            <Flex  
-                              gap={5}
-                              flexWrap="wrap"
+                          {bookClub.next_meeting_location || bookClub.next_meeting_start || bookClub.next_meeting_end ? (
+                            <Box
+                              bg="gray.100"
+                              rounded="md"
+                              _dark={{
+                                bg: "gray.600"
+                              }}
                             >
-                              <Box
-                                flex="1 1 200px"
-                                maxW="175px"
-                              >
-                                <Image
-                                  maxW="100%" 
-                                  w="100%"
-                                  h="auto"
-                                  m={1}
-                                  className="book-image"
-                                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                  src={currentBook?.image}
-                                />
-                              </Box>
-                              <Flex direction="column" align="center" justify="center" flex="1 1" minW="250px">
-                                <Heading as="h3" size="md">
-                                  {currentBook?.title}
-                                </Heading>
-                                <Text>
-                                  {currentBook?.author}
-                                </Text>
-                                <Box maxH="225px" overflow="auto">
-                                  {currentBook?.description ? currentBook.description : null}
-                                </Box>
-                              </Flex>
-                            </Flex>
-                            <Flex justify="center">
-                              <Divider borderColor="gray.400" my={3} w="95%" />
-                            </Flex>
-                            <Center flexDirection="column">
-                              <Button 
-                                colorScheme="teal"
-                                leftIcon={<BsCardText size={20} />}
-                              >
-                                Discussion
-                              </Button>
-                              {isBookClubCreator ? (
-                                <Button 
-                                  variant="ghost"
-                                  onClick={e=>openEditCurrentBookModal(currentBook?.id!)}
-                                  leftIcon={<HiOutlinePencil size={15} />}
+                              {bookClub.next_meeting_location ? ( 
+                                <Box 
+                                  p={2}
                                 >
-                                  Edit
-                                </Button>
+                                  <ReactQuill 
+                                    theme="snow"
+                                    modules={{
+                                      toolbar: ''
+                                    }}
+                                    readOnly={true}
+                                    defaultValue={bookClub.next_meeting_location}
+                                    style={{border: 'none'}}
+                                  />
+                                </Box>
                               ) : null}
-                            </Center>
-                          </Box>
-                          {bookClub?.BookClubBook?.length && bookClub?.BookClubBook?.length > 1 ? (
-                            <Center>
-                              <Popover isLazy>
-                                <PopoverTrigger>
-                                  <Button 
-                                    size="sm" 
-                                    variant="ghost" 
-                                    m={1}
-                                    leftIcon={<TbBooks size={20} />}
-                                  >
-                                    View past books
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                  <PopoverArrow />
-                                  <PopoverCloseButton />
-                                  <PopoverHeader>Past Books</PopoverHeader>
-                                  <PopoverBody>
-                                    {bookClub.BookClubBook.map((bcb,i)=>{
-                                      return (
-                                        <>
-                                          {i !== 0 ? (
-                                            <>
-                                              {i > 1 ? <Divider/> : null}
-                                              <Flex align="center" columnGap={2} flexWrap="wrap">
-                                                <Text whiteSpace="nowrap">
-                                                  {dayjs(bcb.created_on).format("MMM DD, YYYY")}
-                                                </Text>
-                                                {" - "}
-                                                <Text whiteSpace="nowrap" fontWeight="bold">
-                                                  {bcb.title}
-                                                </Text>
-                                                <Text whiteSpace="nowrap">
-                                                  {bcb.author}
-                                                </Text>
-                                              </Flex>
-                                            </>
-                                          ) : null}
-                                        </>
-                                      )
-                                    })}
-                                  </PopoverBody>
-                                </PopoverContent>
-                              </Popover>
-                            </Center>
+                              <Flex 
+                                gap={2} 
+                                fontWeight="bold" 
+                                justify="center"
+                                p={2}
+                              >
+                                <Text>{bookClub.next_meeting_start ? dayjs(bookClub.next_meeting_start).local().format('MMM DD, hh:mm a') : null}</Text>
+                                <Text>-</Text>
+                                <Text>{bookClub.next_meeting_end ? dayjs(bookClub.next_meeting_end).local().format('MMM DD, hh:mm a'): null}</Text>
+                              </Flex>
+                            </Box>
                           ) : null}
+                          <Center flexDirection="column">
+                            <>
+                              {rsvpCallbackMutation.error && (
+                                  <Text color="red">{(rsvpCallbackMutation.error as Error).message}</Text>
+                                )
+                              }
+                              {unRsvpCallbackMutation.error && (
+                                  <Text color="red">{(unRsvpCallbackMutation.error as Error).message}</Text>
+                                )
+                              }
+                              {!rsvpStatus ? (
+                                <Button
+                                  colorScheme="teal"
+                                  disabled={rsvpCallbackMutation.isLoading}
+                                  onClick={rsvpCallback}
+                                >
+                                  RSVP
+                                </Button>
+                              ) : (
+                                <Button
+                                  colorScheme="red"
+                                  disabled={rsvpCallbackMutation.isLoading}
+                                  onClick={unRsvpCallback}
+                                >
+                                  Un-RSVP
+                                </Button>
+                              )}
+                            </>
+                          </Center>
                         </>
                         ) : null}
-                      </Flex>
+                      </Stack>
+                    </Flex>
 
-                      <Flex className="well" direction="column" gap={2}>
-                        <Flex align="center" justify="space-between">
-                          <Heading as="h4" size="md">Next Meeting</Heading>
-                          {isBookClubCreator ? (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              leftIcon={<HiOutlinePencil size={15} />}
-                              onClick={openMeetingModal}
-                            >
-                              Edit
-                            </Button>
-                          ) : null}
-                        </Flex>
+                    <Flex className="well" direction="column" gap={2}>
+                      <Flex align="center" justify="space-between">
+                        <Heading as="h4" size="md">Next Book Poll</Heading>
+                        {isBookClubCreator ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            leftIcon={<HiOutlinePencil size={15} />}
+                            onClick={openPollBookModal}
+                          >
+                            Edit
+                          </Button>
+                        ) : null}
+                      </Flex>
+                      {bookClub?.BookClubBookPoll ? (
                         <Stack>
-                          {bookClub.next_meeting_location || bookClub.next_meeting_start || bookClub.next_meeting_end ? (
-                          <>
-                            <Box>
-                            {bookClub.next_meeting_location ? ( 
-                              <Box 
+                          <Flex justify="space-around" w="100%" flexWrap="nowrap" gap={2}>
+                            {pollBookOneReceived ? (
+                              <Flex
+                                flexDirection="column" 
+                                flex="0 1 175px"
+                                bg="gray.200"
                                 p={2}
-                                bg="gray.100"
                                 rounded="md"
                                 _dark={{
-                                  bg: "gray.600"
+                                  bg: 'gray.600'
                                 }}
                               >
-                                <ReactQuill 
-                                  theme="snow"
-                                  modules={{
-                                    toolbar: ''
-                                  }}
-                                  readOnly={true}
-                                  defaultValue={bookClub?.next_meeting_location}
-                                  style={{border: 'none'}}
-                                />
-                              </Box>
+                                <Box>
+                                  <Image
+                                    maxW="100%" 
+                                    w="100%"
+                                    h="auto"
+                                    pt={2} 
+                                    mb={1}
+                                    className="book-image"
+                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                    src={pollBookOneReceived.image}
+                                  />
+                                </Box>
+                                <Text fontWeight="bold">
+                                  {pollBookOneReceived.title}
+                                </Text>
+                                <Text>
+                                  {pollBookOneReceived.author}
+                                </Text>
+                                <Popover isLazy>
+                                  <PopoverTrigger>
+                                    <Button size="xs" variant="ghost" m={1}>Description</Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent>
+                                    <PopoverArrow />
+                                    <PopoverCloseButton />
+                                    <PopoverHeader>{pollBookOneReceived.title}</PopoverHeader>
+                                    <PopoverBody>{pollBookOneReceived.description ? pollBookOneReceived.description : null}</PopoverBody>
+                                  </PopoverContent>
+                                </Popover>
+                                <Button
+                                  size="xs"
+                                  colorScheme="teal"
+                                  marginTop="auto"
+                                  // onClick={e=>setPollBookOne(null)}
+                                >
+                                  Vote
+                                </Button>
+                              </Flex>
                             ) : null}
-                            </Box>
-                            <Flex gap={2} fontWeight="bold" justify="center">
-                              <Text>{bookClub.next_meeting_start ? dayjs(bookClub.next_meeting_start).local().format('MMM DD, hh:mm a') : null}</Text>
-                              <Text>-</Text>
-                              <Text>{bookClub.next_meeting_end ? dayjs(bookClub.next_meeting_end).local().format('MMM DD, hh:mm a'): null}</Text>
-                            </Flex>
-                            <Center>
-                              <Button
-                                colorScheme="teal"
+                            
+                            {pollBookTwoReceived ? (
+                              <Flex
+                                flexDirection="column" 
+                                flex="0 1 175px"
+                                bg="gray.200"
+                                p={2}
+                                rounded="md"
+                                _dark={{
+                                  bg: 'gray.600'
+                                }}
                               >
-                                RSVP
-                              </Button>
-                            </Center>
-                          </>
-                          ) : null}
+                                <Box>
+                                  <Image
+                                    maxW="100%" 
+                                    w="100%"
+                                    h="auto"
+                                    pt={2} 
+                                    mb={1}
+                                    className="book-image"
+                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                    src={pollBookTwoReceived.image}
+                                  />
+                                </Box>
+                                <Text fontWeight="bold">
+                                  {pollBookTwoReceived.title}
+                                </Text>
+                                <Text>
+                                  {pollBookTwoReceived.author}
+                                </Text>
+                                <Popover isLazy>
+                                  <PopoverTrigger>
+                                    <Button size="xs" variant="ghost" m={1}>Description</Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent>
+                                    <PopoverArrow />
+                                    <PopoverCloseButton />
+                                    <PopoverHeader>{pollBookTwoReceived.title}</PopoverHeader>
+                                    <PopoverBody>{pollBookTwoReceived.description ? pollBookTwoReceived.description : null}</PopoverBody>
+                                  </PopoverContent>
+                                </Popover>
+                                <Button
+                                  size="xs"
+                                  colorScheme="teal"
+                                  marginTop="auto"
+                                  // onClick={e=>setPollBookTwo(null)}
+                                >
+                                  Vote
+                                </Button>
+                              </Flex>
+                            ) : null}
+                            
+                            {pollBookThreeReceived ? (
+                              <Flex
+                                flexDirection="column" 
+                                flex="0 1 175px"
+                                bg="gray.200"
+                                p={2}
+                                rounded="md"
+                                _dark={{
+                                  bg: 'gray.600'
+                                }}
+                              >
+                                <Box>
+                                  <Image
+                                    maxW="100%" 
+                                    w="100%"
+                                    h="auto"
+                                    pt={2} 
+                                    mb={1}
+                                    className="book-image"
+                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                    src={pollBookThreeReceived.image}
+                                  />
+                                </Box>
+                                <Text fontWeight="bold">
+                                  {pollBookThreeReceived.title}
+                                </Text>
+                                <Text>
+                                  {pollBookThreeReceived.author}
+                                </Text>
+                                <Popover isLazy>
+                                  <PopoverTrigger>
+                                    <Button size="xs" variant="ghost" m={1}>Description</Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent>
+                                    <PopoverArrow />
+                                    <PopoverCloseButton />
+                                    <PopoverHeader>{pollBookThreeReceived.title}</PopoverHeader>
+                                    <PopoverBody>{pollBookThreeReceived.description ? pollBookThreeReceived.description : null}</PopoverBody>
+                                  </PopoverContent>
+                                </Popover>
+                                <Button
+                                  size="xs"
+                                  colorScheme="teal"
+                                  marginTop="auto"
+                                  // onClick={e=>setPollBookThree(null)}
+                                >
+                                  Vote
+                                </Button>
+                              </Flex>
+                            ) : null}
+                            
+                          </Flex>
                         </Stack>
-                      </Flex>
+                      ) : null}
+                      <Stack>
+                      </Stack>
+                    </Flex>
 
-                      <Flex className="well" direction="column" gap={2}>
-                        <Flex align="center" justify="space-between">
-                          <Heading as="h4" size="md">Next Book Poll</Heading>
-                          {isBookClubCreator ? (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              leftIcon={<HiOutlinePencil size={15} />}
-                              onClick={openPollBookModal}
-                            >
-                              Edit
-                            </Button>
-                          ) : null}
-                        </Flex>
-                        {bookClub?.BookClubBookPoll ? (
-                          <Stack>
-                            <Flex justify="space-around" w="100%" flexWrap="nowrap" gap={2}>
-                              {pollBookOneReceived ? (
-                                <Flex
-                                  flexDirection="column" 
-                                  flex="0 1 175px"
-                                  bg="gray.200"
-                                  p={2}
-                                  rounded="md"
-                                  _dark={{
-                                    bg: 'gray.600'
-                                  }}
-                                >
-                                  <Box>
-                                    <Image
-                                      maxW="100%" 
-                                      w="100%"
-                                      h="auto"
-                                      pt={2} 
-                                      mb={1}
-                                      className="book-image"
-                                      onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                      src={pollBookOneReceived.image}
-                                    />
-                                  </Box>
-                                  <Text fontWeight="bold">
-                                    {pollBookOneReceived.title}
-                                  </Text>
-                                  <Text>
-                                    {pollBookOneReceived.author}
-                                  </Text>
-                                  <Popover isLazy>
-                                    <PopoverTrigger>
-                                      <Button size="xs" variant="ghost" m={1}>Description</Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent>
-                                      <PopoverArrow />
-                                      <PopoverCloseButton />
-                                      <PopoverHeader>{pollBookOneReceived.title}</PopoverHeader>
-                                      <PopoverBody>{pollBookOneReceived.description ? pollBookOneReceived.description : null}</PopoverBody>
-                                    </PopoverContent>
-                                  </Popover>
-                                  <Button
-                                    size="xs"
-                                    colorScheme="teal"
-                                    marginTop="auto"
-                                    // onClick={e=>setPollBookOne(null)}
-                                  >
-                                    Vote
-                                  </Button>
-                                </Flex>
-                              ) : null}
-                              
-                              {pollBookTwoReceived ? (
-                                <Flex
-                                  flexDirection="column" 
-                                  flex="0 1 175px"
-                                  bg="gray.200"
-                                  p={2}
-                                  rounded="md"
-                                  _dark={{
-                                    bg: 'gray.600'
-                                  }}
-                                >
-                                  <Box>
-                                    <Image
-                                      maxW="100%" 
-                                      w="100%"
-                                      h="auto"
-                                      pt={2} 
-                                      mb={1}
-                                      className="book-image"
-                                      onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                      src={pollBookTwoReceived.image}
-                                    />
-                                  </Box>
-                                  <Text fontWeight="bold">
-                                    {pollBookTwoReceived.title}
-                                  </Text>
-                                  <Text>
-                                    {pollBookTwoReceived.author}
-                                  </Text>
-                                  <Popover isLazy>
-                                    <PopoverTrigger>
-                                      <Button size="xs" variant="ghost" m={1}>Description</Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent>
-                                      <PopoverArrow />
-                                      <PopoverCloseButton />
-                                      <PopoverHeader>{pollBookTwoReceived.title}</PopoverHeader>
-                                      <PopoverBody>{pollBookTwoReceived.description ? pollBookTwoReceived.description : null}</PopoverBody>
-                                    </PopoverContent>
-                                  </Popover>
-                                  <Button
-                                    size="xs"
-                                    colorScheme="teal"
-                                    marginTop="auto"
-                                    // onClick={e=>setPollBookTwo(null)}
-                                  >
-                                    Vote
-                                  </Button>
-                                </Flex>
-                              ) : null}
-                              
-                              {pollBookThreeReceived ? (
-                                <Flex
-                                  flexDirection="column" 
-                                  flex="0 1 175px"
-                                  bg="gray.200"
-                                  p={2}
-                                  rounded="md"
-                                  _dark={{
-                                    bg: 'gray.600'
-                                  }}
-                                >
-                                  <Box>
-                                    <Image
-                                      maxW="100%" 
-                                      w="100%"
-                                      h="auto"
-                                      pt={2} 
-                                      mb={1}
-                                      className="book-image"
-                                      onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                      src={pollBookThreeReceived.image}
-                                    />
-                                  </Box>
-                                  <Text fontWeight="bold">
-                                    {pollBookThreeReceived.title}
-                                  </Text>
-                                  <Text>
-                                    {pollBookThreeReceived.author}
-                                  </Text>
-                                  <Popover isLazy>
-                                    <PopoverTrigger>
-                                      <Button size="xs" variant="ghost" m={1}>Description</Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent>
-                                      <PopoverArrow />
-                                      <PopoverCloseButton />
-                                      <PopoverHeader>{pollBookThreeReceived.title}</PopoverHeader>
-                                      <PopoverBody>{pollBookThreeReceived.description ? pollBookThreeReceived.description : null}</PopoverBody>
-                                    </PopoverContent>
-                                  </Popover>
-                                  <Button
-                                    size="xs"
-                                    colorScheme="teal"
-                                    marginTop="auto"
-                                    // onClick={e=>setPollBookThree(null)}
-                                  >
-                                    Vote
-                                  </Button>
-                                </Flex>
-                              ) : null}
-                              
-                            </Flex>
-                          </Stack>
-                        ) : null}
-                        <Stack>
-                        </Stack>
-                      </Flex>
-
-                      <Box className="well">
-                        <Heading as="h4" size="md" mb={2}>General Discussion</Heading>
-                        <BookClubGeneralComments 
-                          server={server}
-                          bookClubId={paramsBookClubId}
-                          subdomain={window.location.host.split(".")[0]}
-                          uri={window.location.pathname}
-                          isBookClubCreator={isBookClubCreator}
-                        />
-                      </Box>
-                    </>
-                  ) : (
-                    <Box className="well" textAlign="center">
-                      <Heading as="h2" size="md">
-                        Please join to see book club content
-                      </Heading>
+                    <Box className="well">
+                      <Heading as="h4" size="md" mb={2}>General Discussion</Heading>
+                      <BookClubGeneralComments 
+                        server={server}
+                        bookClubId={paramsBookClubId}
+                        subdomain={window.location.host.split(".")[0]}
+                        uri={window.location.pathname}
+                        isBookClubCreator={isBookClubCreator}
+                      />
                     </Box>
-                  )}
-                  
-                </Stack>
+                  </>
+                ) : (
+                  <Box className="well" textAlign="center">
+                    <Heading as="h2" size="md">
+                      Please join to see book club content
+                    </Heading>
+                  </Box>
+                )}
+                
+              </Stack>
 
-              </Flex>
-            ) : null
-          )}
+            </Flex>
+          ) : null}
         </Skeleton>
       </Box>
       
@@ -1018,18 +1300,21 @@ export default function BookClub({server}: {server: string}) {
                 </Flex>
               </ModalBody>
               <ModalFooter flexDirection="column">
-                <Text color="red">
-                  {updateError}
-                </Text>
-                <Flex align="center" justify="flex-end">
-                  <Button 
-                    type="submit"
-                    mr={3}
-                    size="md"
-                  >
-                    Update
-                  </Button>
-                </Flex>
+                <>
+                  {updateBookClubMutation.error && (
+                      <Text color="red">{(updateBookClubMutation.error as Error).message}</Text>
+                    )
+                  }
+                  <Flex align="center" justify="flex-end">
+                    <Button 
+                      type="submit"
+                      mr={3}
+                      size="md"
+                    >
+                      Update
+                    </Button>
+                  </Flex>
+                </>
               </ModalFooter>
             </Flex>
         </ModalContent>
@@ -1090,18 +1375,32 @@ export default function BookClub({server}: {server: string}) {
                 </Stack>
                 </ModalBody>
               <ModalFooter flexDirection="column">
-                <Text color="red">
-                  {updateError}
-                </Text>
-                <Flex align="center" justify="flex-end">
-                  <Button 
-                    type="submit"
-                    mr={3}
-                    size="md"
-                  >
-                    Update
-                  </Button>
-                </Flex>
+                <>
+                  {updateBookClubMeetingMutation.error && (
+                      <Text color="red">{(updateBookClubMeetingMutation.error as Error).message}</Text>
+                    )
+                  }
+                  {clearRsvpsCallbackMutation.error && (
+                      <Text color="red">{(clearRsvpsCallbackMutation.error as Error).message}</Text>
+                    )
+                  }
+                  <Flex align="center" justify="flex-end" gap={2}>
+                    <Button 
+                      type="submit"
+                      size="md"
+                    >
+                      Update
+                    </Button>
+                    <Button 
+                      type="button"
+                      size="md"
+                      colorScheme="red"
+                      onClick={clearRsvpsCallback}
+                    >
+                      Clear RSVP's
+                    </Button>
+                  </Flex>
+                </>
               </ModalFooter>
             </Flex>
         </ModalContent>
@@ -1208,9 +1507,12 @@ export default function BookClub({server}: {server: string}) {
               </Stack>
             </ModalBody>
             <ModalFooter flexDirection="column">
-              <Text color="red">
-                {updateError}
-              </Text>
+            <> 
+              {selectBookMutation.error && (
+                  <Text color="red">{(selectBookMutation.error as Error).message}</Text>
+                )
+              }
+            </>
             </ModalFooter>
         </ModalContent>
       </Modal>

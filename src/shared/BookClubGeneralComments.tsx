@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, MouseEvent, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { BookClubGeneralCommentsType, BookClubGeneralReply } from "../types/types";
 import dayjs from "dayjs";
 import { 
@@ -12,6 +13,7 @@ import {
   Stack,
   HStack,
   Flex,
+  Spinner,
   Skeleton,
   Textarea,
   Divider,
@@ -40,113 +42,110 @@ import axios from "axios";
 export const BookClubGeneralComments = (props: any) => {
   const {server,bookClubId,subdomain,uri,isBookClubCreator} = props;
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const toast = useToast();
   const {user} = useAuth();
   
-  const [commentsError,setCommentsError] = useState("");
-  const [commentsIsLoading,setCommentsIsLoading] = useState(false);
-  const [comments,setComments] = useState<BookClubGeneralCommentsType[]>([] as BookClubGeneralCommentsType[]);
   function getComments() {
     let tokenCookie: string | null = Cookies.get().token;
-    setCommentsIsLoading(true);
     if (tokenCookie) {
-      axios
-      .get(server + "/api/bookclubgeneralcomments?bookclubid=" + bookClubId,
-        {
-          headers: {
-            authorization: tokenCookie
+      const commentsData = axios
+        .get(server + "/api/bookclubgeneralcomments?bookclubid=" + bookClubId,
+          {
+            headers: {
+              authorization: tokenCookie
+            }
           }
-        }
-      )
-      .then((response)=>{
-        if (response.data.success) {
-          setCommentsError("")
-          setComments(response.data.comments)
-          setCommentsIsLoading(false);
-        }
-      })
-      .catch(({response})=>{
-        console.log(response)
-        if (response.data?.message) {
-          setCommentsError(response.data?.message)
-        }
-      })
-      setCommentsIsLoading(false);
+        )
+        .then((response)=>{
+          if (response.data.success) {
+            return response.data.comments
+          }
+        })
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data?.message) {
+            throw new Error(response.data?.message)
+          }
+        })
+      return commentsData
     }
     else {
-      setCommentsError("An error has occured")
+      throw new Error("An error has occured")
     }
   }
-
-  useEffect(()=>{
-    getComments()
-    return ()=>{
-      setComments([])
-    }
-  },[])
 
   const commentRef = useRef<HTMLInputElement>({} as HTMLInputElement);
-  const [postIsLoading,setPostIsLoading] = useState(false);
-  async function postComment(e: React.FormEvent) {
-    e.preventDefault();
-    let tokenCookie: string | null = Cookies.get().token;
-    if (tokenCookie) {
-      setPostIsLoading(true)
-      let comment = commentRef.current.value;
+  const postCommentMutation = useMutation({
+    mutationFn: async (e: React.FormEvent) => {
+      e.preventDefault();
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        let comment = commentRef.current.value;
+        await axios
+        .post(server + "/api/bookclubgeneralcomment",
+        {
+          bookClubId,
+          subdomain,
+          uri,
+          comment
+        },
+        {headers: {
+          'authorization': tokenCookie
+        }})
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data?.message)
+        })
+      }
+      else {
+        throw new Error("Error: TKBC")
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubGeneralCommentsKey'] })
+      queryClient.resetQueries({queryKey: ['bookClubGeneralCommentsKey']})
+      getComments()
+      commentRef.current.value = "";
+    }
+  })
+  function postComment(e: React.FormEvent) {
+    postCommentMutation.mutate(e);
+  }
+
+  const deleteCommentMutation = useMutation({
+    mutationFn: async (e: MouseEvent<HTMLButtonElement>) => {
+      const tokenCookie = Cookies.get().token;
+      const commentId = (e.target as HTMLButtonElement).value;
       await axios
-      .post(server + "/api/bookclubgeneralcomment",
+      .delete(server + "/api/bookclubgeneralcomment",
       {
-        bookClubId,
-        subdomain,
-        uri,
-        comment
-      },
-      {headers: {
-        'authorization': tokenCookie
-      }})
-      .then((response)=>{
-        getComments()
-        commentRef.current.value = "";
-        setPostIsLoading(false)
+        headers: {
+          'authorization': tokenCookie
+        },
+        data: {
+          commentId: parseInt(commentId)
+        }
       })
       .catch(({response})=>{
         console.log(response)
-        setCommentsError(response.data?.message)
+        toast({
+          description: "An error has occurred",
+          status: "error",
+          duration: 9000,
+          isClosable: true
+        })
+        throw new Error(response.data?.message)
       })
-      setPostIsLoading(false)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubGeneralCommentsKey'] })
+      queryClient.resetQueries({queryKey: ['bookClubGeneralCommentsKey']})
+      getComments()
     }
-    else {
-      setCommentsError("Error: TKBC")
-    }
-  }
-
-  async function deleteComment(e: MouseEvent<HTMLButtonElement>) {
-    const tokenCookie = Cookies.get().token;
-    const commentId = (e.target as HTMLButtonElement).value;
-    await axios
-    .delete(server + "/api/bookclubgeneralcomment",
-    {
-      headers: {
-        'authorization': tokenCookie
-      },
-      data: {
-        commentId: parseInt(commentId)
-      }
-    })
-    .then((response)=>{
-      if (response.data.success) {
-        getComments()
-      }
-    })
-    .catch(({response})=>{
-      console.log(response)
-      toast({
-        description: "An error has occurred",
-        status: "error",
-        duration: 9000,
-        isClosable: true
-      })
-    })
+  })
+  function deleteComment(e: MouseEvent<HTMLButtonElement>) {
+    deleteCommentMutation.mutate(e);
   }
 
   const { 
@@ -158,46 +157,71 @@ export const BookClubGeneralComments = (props: any) => {
   function openReplyModal(e: MouseEvent<HTMLButtonElement>) {
     const commentId = (e.target as HTMLButtonElement).value;
     setCommentReplyData(comments.filter((comment)=>comment.id === parseInt(commentId))[0])
-    console.log(comments.filter((comment)=>comment.id === parseInt(commentId))[0])
     onOpenReplyModal()
   }
 
   const [replyError,setReplyError] = useState("");
   const replyBoxRef = useRef({} as HTMLInputElement);
-  async function replyComment(e: React.FormEvent) {
-    e.preventDefault();
-    let tokenCookie: string | null = Cookies.get().token;
-    if (tokenCookie) {
-      let replyText = replyBoxRef.current.value;
-      const commentReplyId = parseInt((commentReplyData as BookClubGeneralCommentsType).id as string)
-      await axios
-      .post(server + "/api/bookclubgeneralreply",
-      {
-        replyText,
-        commentId: commentReplyId
-      },
-      {headers: {
-        'authorization': tokenCookie
-      }})
-      .then((response)=>{
-        getComments()
-        closeReplyModal();
-      })
-      .catch(({response})=>{
-        console.log(response)
-        setReplyError(response.data?.message)
-      })
+  const replyCommentMutation = useMutation({
+    mutationFn: async (e: React.FormEvent) => {
+      e.preventDefault();
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        let replyText = replyBoxRef.current.value;
+        const commentReplyId = parseInt((commentReplyData as BookClubGeneralCommentsType).id as string)
+        await axios
+        .post(server + "/api/bookclubgeneralreply",
+        {
+          replyText,
+          commentId: commentReplyId
+        },
+        {headers: {
+          'authorization': tokenCookie
+        }})
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data?.message)
+        })
+      }
+      else {
+        throw new Error("Error: TKBCR")
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubGeneralCommentsKey'] })
+      queryClient.resetQueries({queryKey: ['bookClubGeneralCommentsKey']})
+      getComments()
+      closeReplyModal()
     }
-    else {
-      setReplyError("Error: TKBCR")
-    }
+  })
+  function replyComment(e: React.FormEvent) {
+    replyCommentMutation.mutate(e);
   }
 
   function closeReplyModal() {
     setCommentReplyData(null);
     setReplyError("");
     replyBoxRef.current.value = "";
+    replyCommentMutation.reset();
     onClosReplyModal();
+  }
+
+  const bookClubGeneralCommentsQuery = useQuery({ 
+    queryKey: ['bookClubGeneralCommentsKey'], 
+    queryFn: getComments
+  });
+  const comments: BookClubGeneralCommentsType[] = bookClubGeneralCommentsQuery.data;
+  if (bookClubGeneralCommentsQuery.isLoading) {
+    return (
+      <Flex align="center" justify="center" minH="100%">
+        <Spinner size="xl"/>
+      </Flex>
+    )
+  }
+  if (bookClubGeneralCommentsQuery.isError) {
+    return <Flex align="center" justify="center" minH="80vh">
+      <Heading as="h1" size="xl">Error: {(bookClubGeneralCommentsQuery.error as Error).message}</Heading>
+    </Flex>
   }
     
   return (
@@ -206,14 +230,14 @@ export const BookClubGeneralComments = (props: any) => {
         direction="column" 
         gap={2}
       >
-        {commentsIsLoading ? (
-          "Loading"
-        ): (
-          <Flex 
-            direction="column"
-            gap={2}
-          >
-            <Text color="tomato">{commentsError}</Text>
+        <Flex 
+          direction="column"
+          gap={2}
+        >
+          <>
+            {postCommentMutation.error && (
+              <Text color="tomato">{(postCommentMutation.error as Error).message}</Text>
+            )}
             <Flex
               as="form" 
               onSubmit={e=>postComment(e)}
@@ -225,15 +249,12 @@ export const BookClubGeneralComments = (props: any) => {
                 type="text"
                 ref={commentRef}
               />
-              {postIsLoading ? (
-                <></>
-              ) : (
-                <Button
-                  type="submit"
-                >
-                  Post
-                </Button>
-              )}
+              <Button
+                type="submit"
+                disabled={postCommentMutation.isLoading}
+              >
+                Post
+              </Button>
             </Flex>
             <Flex direction="column">
               {comments ? comments.slice(0).reverse().map((comment,i) => {
@@ -255,7 +276,7 @@ export const BookClubGeneralComments = (props: any) => {
                         onClick={e=>navigate(`/profile/${comment.Profile.username}`)} 
                         size="md"
                         cursor="pointer"
-                        src={comment.Profile.profile_photo}
+                        src={`${comment.Profile.profile_photo}?x=${new Date().getTime()}`}
                         border="2px solid gray"
                       />
                       <Box flex="1">
@@ -408,8 +429,8 @@ export const BookClubGeneralComments = (props: any) => {
                 )
               }): null}
             </Flex>
-          </Flex>
-        )}
+          </>
+        </Flex>
       </Flex>
 
       <Modal isOpen={isOpenReplyModal} onClose={closeReplyModal} size="lg" isCentered>

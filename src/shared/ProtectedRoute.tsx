@@ -1,15 +1,34 @@
 import { useEffect } from 'react';
+import { useQuery } from "@tanstack/react-query";
+import { 
+  Flex,
+  Heading,
+  Spinner
+} from "@chakra-ui/react";
 import { ProtectedRouteProps } from '../types/types';
 import { Navigate } from "react-router-dom";
 import { useAuth } from '../hooks/useAuth';
 
 export const ProtectedRoute = ({children}: ProtectedRouteProps) => {
-  const { user, getUser } = useAuth();
-  console.log("FROM user VARIABLE:", user)
+  const { getUser } = useAuth();
 
-  useEffect(()=>{
-    getUser();
-  },[])
+  const { isLoading, isError, data, error } = useQuery({ queryKey: ['protectedKey'], queryFn: getUser });
+  const user = data;
+  console.log("FROM user VARIABLE:", user)
+  if (isLoading) {
+    return (
+      <Flex align="center" justify="center" minH="100vh">
+        <Spinner size="xl"/>
+      </Flex>
+    )
+  }
+  if (isError) {
+    return (
+      <Flex align="center" justify="center" minH="100vh">
+        <Heading as="h1" size="xl">Error: {(error as Error).message}</Heading>
+      </Flex>
+    )
+  }
 
   if (!user) {
     return (
@@ -17,6 +36,7 @@ export const ProtectedRoute = ({children}: ProtectedRouteProps) => {
     )
   }
   else {
+    
     return children;
   }
 }
