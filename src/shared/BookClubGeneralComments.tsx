@@ -255,7 +255,7 @@ export const BookClubGeneralComments = (props: any) => {
                         onClick={e=>navigate(`/profile/${comment.Profile.username}`)} 
                         size="md"
                         cursor="pointer"
-                        src={comment.Profile.profile_photo}
+                        src={`${comment.Profile.profile_photo}?x=${new Date().getTime()}`}
                         border="2px solid gray"
                       />
                       <Box flex="1">
