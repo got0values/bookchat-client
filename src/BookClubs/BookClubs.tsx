@@ -210,7 +210,7 @@ export default function BookClubs({server}: {server: string}) {
                         }}
                         key={i}
                       >
-                        <Flex align="center" justify="space-between">
+                        <Flex align="center" justify="space-between" wrap="wrap">
                           <Link to={`/bookclubs/${bookClub.id}`}>
                             <Heading as="h4" size="sm">
                               {bookClub.name}
@@ -265,7 +265,7 @@ export default function BookClubs({server}: {server: string}) {
                         }}
                         key={i}
                       >
-                        <Flex align="center" justify="space-between">
+                        <Flex align="center" justify="space-between" wrap="wrap">
                           <Link to={`/bookclubs/${bookClub.id}`}>
                             <Heading as="h4" size="sm">
                               {bookClub.name}
