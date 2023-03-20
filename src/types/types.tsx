@@ -177,6 +177,14 @@ export interface BookClubBookPollType {
   book_one: string;
   book_two: string;
   book_three: string;
+  BookClubBookPollVote: BookClubBookPollVoteType[];
+}
+
+export interface BookClubBookPollVoteType {
+  id: number;
+  book_club_poll_id: number;
+  book: number;
+  profile_id: number;
 }
 
 export interface BookClubRsvpType {

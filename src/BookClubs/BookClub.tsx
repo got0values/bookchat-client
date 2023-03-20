@@ -645,6 +645,101 @@ export default function BookClub({server}: {server: string}) {
     onClosePollBookModal()
   }
 
+  const pollIdRef = useRef<HTMLInputElement>({} as HTMLInputElement)
+  const pollVoteMutation = useMutation({
+    mutationFn: async (bookNumber: number) => {
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .post(server + "/api/bookclubpollvote",
+            {
+              pollId: parseInt(pollIdRef.current.value),
+              book: bookNumber
+            },
+            {
+              headers: {
+                authorization: tokenCookie
+              }
+            }
+          )
+          .catch(({response})=>{
+            console.log(response)
+            toast({
+              description: response.data?.message,
+              status: "error",
+              duration: 9000,
+              isClosable: true
+            })
+            throw new Error(response.data.message)
+          })
+      }
+      else {
+        throw new Error("Something went wrong")
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+      getBookClub();
+      toast({
+        description: "Successfully voted",
+        status: "success",
+        duration: 9000,
+        isClosable: true
+      })
+    }
+  })
+  function pollVote(bookNumber: number) {
+    pollVoteMutation.mutate(bookNumber);
+  }
+
+  const unPollVoteMutation = useMutation({
+    mutationFn: async (bookNumber: number) => {
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .delete(server + "/api/bookclubpollunvote",
+            {
+              headers: {
+                authorization: tokenCookie
+              },
+              data: {
+                pollId: parseInt(pollIdRef.current.value),
+                book: bookNumber
+              }
+            }
+          )
+          .catch(({response})=>{
+            console.log(response)
+            toast({
+              description: response.data?.message,
+              status: "error",
+              duration: 9000,
+              isClosable: true
+            })
+            throw new Error(response.data.message)
+          })
+      }
+      else {
+        throw new Error("Something went wrong")
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+      getBookClub();
+      toast({
+        description: "Successfully un-voted",
+        status: "success",
+        duration: 9000,
+        isClosable: true
+      })
+    }
+  })
+  function unPollVote(bookNumber: number) {
+    unPollVoteMutation.mutate(bookNumber);
+  }
+
   const [pollBookOne,setPollBookOne] = useState<BookClubBookType | null>(null)
   const [pollBookTwo,setPollBookTwo] = useState<BookClubBookType | null>(null)
   const [pollBookThree,setPollBookThree] = useState<BookClubBookType | null>(null)
@@ -1072,6 +1167,11 @@ export default function BookClub({server}: {server: string}) {
                       </Flex>
                       {bookClub?.BookClubBookPoll ? (
                         <Stack>
+                          <Input 
+                            type="hidden" 
+                            ref={pollIdRef}
+                            value={bookClub?.BookClubBookPoll.id}
+                          />
                           <Flex justify="space-around" w="100%" flexWrap="nowrap" gap={2}>
                             {pollBookOneReceived ? (
                               <Flex
@@ -1113,14 +1213,34 @@ export default function BookClub({server}: {server: string}) {
                                     <PopoverBody>{pollBookOneReceived.description ? pollBookOneReceived.description : null}</PopoverBody>
                                   </PopoverContent>
                                 </Popover>
-                                <Button
-                                  size="xs"
-                                  colorScheme="teal"
-                                  marginTop="auto"
-                                  // onClick={e=>setPollBookOne(null)}
-                                >
-                                  Vote
-                                </Button>
+
+                                {bookClub.BookClubBookPoll?.BookClubBookPollVote
+                                .filter((pollVote)=>pollVote.profile_id === user.Profile.id).length ? (
+
+                                  bookClub.BookClubBookPoll?.BookClubBookPollVote
+                                  .filter((pollVote)=>pollVote.book === 1 && pollVote.profile_id === user.Profile.id).length ? (
+                                    <Button
+                                      size="xs"
+                                      colorScheme="red"
+                                      marginTop="auto"
+                                      onClick={e=>unPollVote(1)}
+                                    >
+                                      Un-Vote
+                                    </Button>
+                                  ) : (
+                                    null
+                                  )
+                                ) : (
+                                  <Button
+                                    size="xs"
+                                    colorScheme="teal"
+                                    marginTop="auto"
+                                    onClick={e=>pollVote(1)}
+                                  >
+                                    Vote
+                                  </Button>
+                                )}
+
                               </Flex>
                             ) : null}
                             
@@ -1164,14 +1284,32 @@ export default function BookClub({server}: {server: string}) {
                                     <PopoverBody>{pollBookTwoReceived.description ? pollBookTwoReceived.description : null}</PopoverBody>
                                   </PopoverContent>
                                 </Popover>
-                                <Button
-                                  size="xs"
-                                  colorScheme="teal"
-                                  marginTop="auto"
-                                  // onClick={e=>setPollBookTwo(null)}
-                                >
-                                  Vote
-                                </Button>
+                                {bookClub.BookClubBookPoll?.BookClubBookPollVote
+                                .filter((pollVote)=>pollVote.profile_id === user.Profile.id).length ? (
+                                  
+                                  bookClub.BookClubBookPoll?.BookClubBookPollVote
+                                  .filter((pollVote)=>pollVote.book === 2 && pollVote.profile_id === user.Profile.id).length ? (
+                                    <Button
+                                      size="xs"
+                                      colorScheme="red"
+                                      marginTop="auto"
+                                      onClick={e=>unPollVote(2)}
+                                    >
+                                      Un-Vote
+                                    </Button>
+                                  ) : (
+                                    null
+                                  )
+                                ) : (
+                                  <Button
+                                    size="xs"
+                                    colorScheme="teal"
+                                    marginTop="auto"
+                                    onClick={e=>pollVote(2)}
+                                  >
+                                    Vote
+                                  </Button>
+                                )}
                               </Flex>
                             ) : null}
                             
@@ -1215,14 +1353,32 @@ export default function BookClub({server}: {server: string}) {
                                     <PopoverBody>{pollBookThreeReceived.description ? pollBookThreeReceived.description : null}</PopoverBody>
                                   </PopoverContent>
                                 </Popover>
-                                <Button
-                                  size="xs"
-                                  colorScheme="teal"
-                                  marginTop="auto"
-                                  // onClick={e=>setPollBookThree(null)}
-                                >
-                                  Vote
-                                </Button>
+                                {bookClub.BookClubBookPoll?.BookClubBookPollVote
+                                .filter((pollVote)=>pollVote.profile_id === user.Profile.id).length ? (
+                                  
+                                  bookClub.BookClubBookPoll?.BookClubBookPollVote
+                                  .filter((pollVote)=>pollVote.book === 3 && pollVote.profile_id === user.Profile.id).length ? (
+                                    <Button
+                                      size="xs"
+                                      colorScheme="red"
+                                      marginTop="auto"
+                                      onClick={e=>unPollVote(3)}
+                                    >
+                                      Un-Vote
+                                    </Button>
+                                  ) : (
+                                    null
+                                  )
+                                ) : (
+                                  <Button
+                                    size="xs"
+                                    colorScheme="teal"
+                                    marginTop="auto"
+                                    onClick={e=>pollVote(3)}
+                                  >
+                                    Vote
+                                  </Button>
+                                )}
                               </Flex>
                             ) : null}
                             
