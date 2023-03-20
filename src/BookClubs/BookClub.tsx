@@ -445,6 +445,7 @@ export default function BookClub({server}: {server: string}) {
   function closeMeetingModal() {
     onCloseMeetingModal()
     updateBookClubMeetingMutation.reset();
+    clearRsvpsCallbackMutation.reset();
   }
 
   const meetingLocationRef = useRef({} as ReactQuill);
@@ -575,6 +576,46 @@ export default function BookClub({server}: {server: string}) {
   })
   function unRsvpCallback() {
     unRsvpCallbackMutation.mutate();
+  }
+
+  const clearRsvpsCallbackMutation = useMutation({
+    mutationFn: async () => {
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .delete(server + "/api/clearbookclubrsvps",
+            {
+              headers: {
+                authorization: tokenCookie
+              },
+              data: {
+                bookClubId: parseInt(paramsBookClubId!)
+              }
+            }
+          )
+          .catch(({response})=>{
+            console.log(response)
+            throw new Error(response.data.message)
+          })
+      }
+      else {
+        throw new Error("Something went wrong")
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+      getBookClub();
+      toast({
+        description: "RSVP's successfully cleared",
+        status: "success",
+        duration: 9000,
+        isClosable: true
+      })
+    }
+  })
+  function clearRsvpsCallback() {
+    clearRsvpsCallbackMutation.mutate();
   }
 
   const { 
@@ -946,33 +987,41 @@ export default function BookClub({server}: {server: string}) {
                       <Stack>
                         {bookClub.next_meeting_location || bookClub.next_meeting_start || bookClub.next_meeting_end ? (
                         <>
-                          <Box>
-                          {bookClub.next_meeting_location ? ( 
-                            <Box 
-                              p={2}
+                          {bookClub.next_meeting_location || bookClub.next_meeting_start || bookClub.next_meeting_end ? (
+                            <Box
                               bg="gray.100"
                               rounded="md"
                               _dark={{
                                 bg: "gray.600"
                               }}
                             >
-                              <ReactQuill 
-                                theme="snow"
-                                modules={{
-                                  toolbar: ''
-                                }}
-                                readOnly={true}
-                                defaultValue={bookClub.next_meeting_location}
-                                style={{border: 'none'}}
-                              />
+                              {bookClub.next_meeting_location ? ( 
+                                <Box 
+                                  p={2}
+                                >
+                                  <ReactQuill 
+                                    theme="snow"
+                                    modules={{
+                                      toolbar: ''
+                                    }}
+                                    readOnly={true}
+                                    defaultValue={bookClub.next_meeting_location}
+                                    style={{border: 'none'}}
+                                  />
+                                </Box>
+                              ) : null}
+                              <Flex 
+                                gap={2} 
+                                fontWeight="bold" 
+                                justify="center"
+                                p={2}
+                              >
+                                <Text>{bookClub.next_meeting_start ? dayjs(bookClub.next_meeting_start).local().format('MMM DD, hh:mm a') : null}</Text>
+                                <Text>-</Text>
+                                <Text>{bookClub.next_meeting_end ? dayjs(bookClub.next_meeting_end).local().format('MMM DD, hh:mm a'): null}</Text>
+                              </Flex>
                             </Box>
                           ) : null}
-                          </Box>
-                          <Flex gap={2} fontWeight="bold" justify="center">
-                            <Text>{bookClub.next_meeting_start ? dayjs(bookClub.next_meeting_start).local().format('MMM DD, hh:mm a') : null}</Text>
-                            <Text>-</Text>
-                            <Text>{bookClub.next_meeting_end ? dayjs(bookClub.next_meeting_end).local().format('MMM DD, hh:mm a'): null}</Text>
-                          </Flex>
                           <Center flexDirection="column">
                             <>
                               {rsvpCallbackMutation.error && (
@@ -1331,13 +1380,24 @@ export default function BookClub({server}: {server: string}) {
                       <Text color="red">{(updateBookClubMeetingMutation.error as Error).message}</Text>
                     )
                   }
-                  <Flex align="center" justify="flex-end">
+                  {clearRsvpsCallbackMutation.error && (
+                      <Text color="red">{(clearRsvpsCallbackMutation.error as Error).message}</Text>
+                    )
+                  }
+                  <Flex align="center" justify="flex-end" gap={2}>
                     <Button 
                       type="submit"
-                      mr={3}
                       size="md"
                     >
                       Update
+                    </Button>
+                    <Button 
+                      type="button"
+                      size="md"
+                      colorScheme="red"
+                      onClick={clearRsvpsCallback}
+                    >
+                      Clear RSVP's
                     </Button>
                   </Flex>
                 </>
