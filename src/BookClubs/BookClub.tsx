@@ -689,6 +689,7 @@ export default function BookClub({server}: {server: string}) {
                               <Button 
                                 size="xs" 
                                 variant="ghost"
+                                color="red"
                                 onClick={e=>removeMember(member.Profile.id)}
                               >
                                 Remove
