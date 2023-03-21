@@ -162,24 +162,24 @@ export default function BookClubs({server}: {server: string}) {
                 {bookClubsOwned ? (
                   (bookClubsOwned as BookClubsType[]).map((bookClub, i)=>{
                     return (
-                      <Link to={`/bookclubs/${bookClub.id}`} key={i}>
-                        <Box 
-                          p={5} 
-                          bg="gray.100" 
-                          m={2} 
-                          rounded="md"
-                          _dark={{
-                            bg: "gray.600"
-                          }}
-                        >
+                      <Box 
+                        p={5} 
+                        bg="gray.100" 
+                        m={2} 
+                        rounded="md"
+                        _dark={{
+                          bg: "gray.600"
+                        }}
+                      >
+                          <Link to={`/bookclubs/${bookClub.id}`} key={i}>
                           <Heading as="h4" size="sm">
                             {bookClub.name}
                           </Heading>
-                          <Text>
-                              {bookClub.about}
-                          </Text>
-                        </Box>
-                      </Link>
+                        </Link>
+                        <Text>
+                            {bookClub.about}
+                        </Text>
+                      </Box>
                     )
                   })
                 ) : null}

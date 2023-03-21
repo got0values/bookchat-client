@@ -1185,6 +1185,7 @@ export default function BookClub({server}: {server: string}) {
                                 }}
                               >
                                 <Box>
+                                  <Heading as="h5" size="sm" textAlign="center">1</Heading>
                                   <Image
                                     maxW="100%" 
                                     w="100%"
@@ -1256,6 +1257,7 @@ export default function BookClub({server}: {server: string}) {
                                 }}
                               >
                                 <Box>
+                                  <Heading as="h5" size="sm" textAlign="center">2</Heading>
                                   <Image
                                     maxW="100%" 
                                     w="100%"
@@ -1325,6 +1327,7 @@ export default function BookClub({server}: {server: string}) {
                                 }}
                               >
                                 <Box>
+                                  <Heading as="h5" size="sm" textAlign="center">3</Heading>
                                   <Image
                                     maxW="100%" 
                                     w="100%"
