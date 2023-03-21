@@ -1810,7 +1810,7 @@ export default function BookClub({server}: {server: string}) {
                       <Heading as="h5" size="sm" textAlign="center">1</Heading>
                       <Image
                         maxW="100%" 
-                        w="80%"
+                        w="100%"
                         h="auto"
                         pt={2} 
                         mb={1}
@@ -1841,7 +1841,7 @@ export default function BookClub({server}: {server: string}) {
                         <Heading as="h5" size="sm" textAlign="center">2</Heading>
                         <Image
                           maxW="100%" 
-                          w="80%"
+                          w="100%"
                           h="auto"
                           pt={2} 
                           mb={1}
@@ -1872,7 +1872,7 @@ export default function BookClub({server}: {server: string}) {
                         <Heading as="h5" size="sm" textAlign="center">3</Heading>
                         <Image
                           maxW="100%" 
-                          w="80%"
+                          w="100%"
                           h="auto"
                           pt={2} 
                           mb={1}
@@ -1897,12 +1897,21 @@ export default function BookClub({server}: {server: string}) {
                   ) : null}
                 </Box>
               </Flex>
-              <Button
-                onClick={createPollBooks}
-                mt={3}
-              >
-                Save
-              </Button>
+              <Flex align="center" justify="flex-end" gap={2} mt={3}>
+                <Button
+                  onClick={createPollBooks}
+                >
+                  Save
+                </Button>
+                <Button 
+                  type="button"
+                  size="md"
+                  colorScheme="red"
+                  onClick={clearRsvpsCallback}
+                >
+                  Reset Votes
+                </Button>
+              </Flex>
             </ModalFooter>
         </ModalContent>
       </Modal>
