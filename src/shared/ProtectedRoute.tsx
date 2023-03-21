@@ -15,12 +15,6 @@ export const ProtectedRoute = ({children}: ProtectedRouteProps) => {
   const user = data;
   console.log("FROM user VARIABLE:", user)
 
-  if (!user) {
-    return (
-      <Navigate to="./login" replace/>
-    )
-  }
-
   if (isLoading) {
     return (
       <Flex align="center" justify="center" minH="100vh">
@@ -33,6 +27,12 @@ export const ProtectedRoute = ({children}: ProtectedRouteProps) => {
       <Flex align="center" justify="center" minH="100vh">
         <Heading as="h1" size="xl">Error: {(error as Error).message}</Heading>
       </Flex>
+    )
+  }
+
+  if (!user) {
+    return (
+      <Navigate to="./login" replace/>
     )
   }
   

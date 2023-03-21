@@ -170,8 +170,9 @@ export default function BookClubs({server}: {server: string}) {
                         _dark={{
                           bg: "gray.600"
                         }}
+                        key={i}
                       >
-                          <Link to={`/bookclubs/${bookClub.id}`} key={i}>
+                        <Link to={`/bookclubs/${bookClub.id}`}>
                           <Heading as="h4" size="sm">
                             {bookClub.name}
                           </Heading>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { LoginFormProps } from "./types/types";
 import { 
   FormControl, 
@@ -29,33 +30,37 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  useEffect(()=>{
-    if (user) {
-      navigate("/");
-    }
-  },[])
-
   const subdomain = window.location.hostname.split(".")[0];
   const {libraryFromSubdomain} = getLibraryFromSubdomain({subdomain,server});
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  useEffect(()=>{
+    if (user) {
+      navigate("/")
+    }
+  },[user])
 
-    await axios
-    .post(server + "/api/login", { 
-      email: email, 
-      password: password 
-    })
-    .then((response)=>{
-      if (response.data.success) {
-        onLogin(response.data.token);
-      }
-    })
-    .catch(({response})=>{
-      console.log(response?.data)
-      setError(response?.data?.message)
-    })
-  };
+  const handleSubmitMutation = useMutation({
+    mutationFn: async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      await axios
+      .post(server + "/api/login", { 
+        email: email, 
+        password: password 
+      })
+      .then((response)=>{
+        if (response.data.success) {
+          onLogin(response.data.token);
+        }
+      })
+      .catch(({response})=>{
+        console.log(response?.data)
+        setError(response?.data?.message)
+      })
+    }
+  });
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    handleSubmitMutation.mutate(e);
+  }
 
   return (
     <Flex
