@@ -46,13 +46,6 @@ import {
   useToast,
   Input
 } from "@chakra-ui/react";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { HiOutlinePencil } from 'react-icons/hi';
