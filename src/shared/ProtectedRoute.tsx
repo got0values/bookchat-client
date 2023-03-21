@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { 
   Flex,
@@ -15,6 +14,13 @@ export const ProtectedRoute = ({children}: ProtectedRouteProps) => {
   const { isLoading, isError, data, error } = useQuery({ queryKey: ['protectedKey'], queryFn: getUser });
   const user = data;
   console.log("FROM user VARIABLE:", user)
+
+  if (!user) {
+    return (
+      <Navigate to="./login" replace/>
+    )
+  }
+
   if (isLoading) {
     return (
       <Flex align="center" justify="center" minH="100vh">
@@ -29,14 +35,8 @@ export const ProtectedRoute = ({children}: ProtectedRouteProps) => {
       </Flex>
     )
   }
-
-  if (!user) {
-    return (
-      <Navigate to="./login" replace/>
-    )
-  }
+  
   else {
-    
     return children;
   }
 }
