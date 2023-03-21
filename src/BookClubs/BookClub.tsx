@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, ReactHTMLElement } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BookClubMember, BookClubsType, BookClubBookType, BookClubRsvpType } from "../types/types";
+import { BookClubMember, BookClubsType, BookClubBookType, BookClubRsvpType, BookClubBookPollVoteType } from "../types/types";
 import { 
   Box,
   Heading,
@@ -46,6 +46,13 @@ import {
   useToast,
   Input
 } from "@chakra-ui/react";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { HiOutlinePencil } from 'react-icons/hi';
@@ -86,17 +93,23 @@ export default function BookClub({server}: {server: string}) {
             const currentBook1 = responseBookClub.BookClubBook.reverse()[0]
 
             let pollBookOneRcvd;
+            let pollVotesBookOne;
             let pollBookTwoRcvd;
+            let pollVotesBookTwo;
             let pollBookThreeRcvd;
+            let pollVotesBookThree;
             if(responseBookClub.BookClubBookPoll) {
               if (responseBookClub.BookClubBookPoll.book_one) {
                 pollBookOneRcvd = JSON.parse(responseBookClub.BookClubBookPoll.book_one)
+                pollVotesBookOne = responseBookClub.BookClubBookPoll.BookClubBookPollVote.filter((vote: BookClubBookPollVoteType)=>vote.book===1).length
               }
               if (responseBookClub.BookClubBookPoll.book_two) {
                 pollBookTwoRcvd = JSON.parse(responseBookClub.BookClubBookPoll.book_two)
+                pollVotesBookTwo = responseBookClub.BookClubBookPoll.BookClubBookPollVote.filter((vote: BookClubBookPollVoteType)=>vote.book===2).length
               }
               if (responseBookClub.BookClubBookPoll.book_three) {
                 pollBookThreeRcvd = JSON.parse(responseBookClub.BookClubBookPoll.book_three)
+                pollVotesBookThree = responseBookClub.BookClubBookPoll.BookClubBookPollVote.filter((vote: BookClubBookPollVoteType)=>vote.book===3).length
               }
             }
             
@@ -133,7 +146,10 @@ export default function BookClub({server}: {server: string}) {
               pollBookThreeReceived: pollBookThreeRcvd,
               isBookClubCreator: isBookClubCreator,
               memberStatus: memberStatus,
-              rsvpStatus: rsvpStatus
+              rsvpStatus: rsvpStatus,
+              pollVotesBookOne,
+              pollVotesBookTwo,
+              pollVotesBookThree
             }
           }
         })
@@ -642,6 +658,7 @@ export default function BookClub({server}: {server: string}) {
     setPollBookTwo(null)
     setPollBookThree(null)
     createPollBooksMutation.reset();
+    clearPollVotesMutation.reset();
     onClosePollBookModal()
   }
 
@@ -800,6 +817,52 @@ export default function BookClub({server}: {server: string}) {
     createPollBooksMutation.mutate();
   }
 
+  const clearPollVotesMutation = useMutation({
+    mutationFn: async () => {
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .delete(server + "/api/clearbookclubpollvotes",
+            {
+              headers: {
+                authorization: tokenCookie
+              },
+              data: {
+                pollId: parseInt(pollIdRef.current.value)
+              }
+            }
+          )
+          .catch(({response})=>{
+            console.log(response)
+            toast({
+              description: response.data?.message,
+              status: "error",
+              duration: 9000,
+              isClosable: true
+            })
+            throw new Error(response.data.message)
+          })
+      }
+      else {
+        throw new Error("Something went wrong")
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+      queryClient.resetQueries({queryKey: ['bookClubKey']})
+      getBookClub();
+      toast({
+        description: "Successfully reset poll votes",
+        status: "success",
+        duration: 9000,
+        isClosable: true
+      })
+    }
+  })
+  function clearPollVotes() {
+    clearPollVotesMutation.mutate();
+  }
+
   const bookClubQuery = useQuery({ 
     queryKey: ['bookClubKey'], 
     queryFn: getBookClub
@@ -813,6 +876,9 @@ export default function BookClub({server}: {server: string}) {
   const isBookClubCreator = bookClubData?.isBookClubCreator;
   const memberStatus: number | undefined = bookClubData?.memberStatus;
   const rsvpStatus: number | undefined = bookClubData?.rsvpStatus;
+  const pollVotesBookOne: number | undefined = bookClubData?.pollVotesBookOne;
+  const pollVotesBookTwo: number | undefined = bookClubData?.pollVotesBookTwo;
+  const pollVotesBookThree: number | undefined = bookClubData?.pollVotesBookThree;
   if (bookClubQuery.isLoading) {
     return (
       <Flex align="center" justify="center" minH="80vh">
@@ -1241,7 +1307,7 @@ export default function BookClub({server}: {server: string}) {
                                     Vote
                                   </Button>
                                 )}
-
+                                <Text textAlign="center" pt={2} mt="auto">Votes: {pollVotesBookOne}</Text>
                               </Flex>
                             ) : null}
                             
@@ -1312,6 +1378,7 @@ export default function BookClub({server}: {server: string}) {
                                     Vote
                                   </Button>
                                 )}
+                                <Text textAlign="center" pt={2} mt="auto">Votes: {pollVotesBookTwo}</Text>
                               </Flex>
                             ) : null}
                             
@@ -1382,6 +1449,7 @@ export default function BookClub({server}: {server: string}) {
                                     Vote
                                   </Button>
                                 )}
+                                <Text textAlign="center" pt={2} mt="auto">Votes: {pollVotesBookThree}</Text>
                               </Flex>
                             ) : null}
                             
@@ -1897,6 +1965,12 @@ export default function BookClub({server}: {server: string}) {
                   ) : null}
                 </Box>
               </Flex>
+              <Divider mt={3} />
+              <>
+                {clearPollVotesMutation.error && (
+                  <Text color="red">{(clearPollVotesMutation.error as Error).message}</Text>
+                )}
+              </>
               <Flex align="center" justify="flex-end" gap={2} mt={3}>
                 <Button
                   onClick={createPollBooks}
@@ -1907,7 +1981,7 @@ export default function BookClub({server}: {server: string}) {
                   type="button"
                   size="md"
                   colorScheme="red"
-                  onClick={clearRsvpsCallback}
+                  onClick={clearPollVotes}
                 >
                   Reset Votes
                 </Button>
