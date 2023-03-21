@@ -1613,18 +1613,18 @@ export default function BookClub({server}: {server: string}) {
                   }
                   <Flex align="center" justify="flex-end" gap={2}>
                     <Button 
-                      type="submit"
-                      size="md"
-                    >
-                      Update
-                    </Button>
-                    <Button 
                       type="button"
                       size="md"
                       colorScheme="red"
                       onClick={clearRsvpsCallback}
                     >
                       Clear RSVP's
+                    </Button>
+                    <Button 
+                      type="submit"
+                      size="md"
+                    >
+                      Update
                     </Button>
                   </Flex>
                 </>
@@ -1972,11 +1972,6 @@ export default function BookClub({server}: {server: string}) {
                 )}
               </>
               <Flex align="center" justify="flex-end" gap={2} mt={3}>
-                <Button
-                  onClick={createPollBooks}
-                >
-                  Save
-                </Button>
                 <Button 
                   type="button"
                   size="md"
@@ -1984,6 +1979,11 @@ export default function BookClub({server}: {server: string}) {
                   onClick={clearPollVotes}
                 >
                   Reset Votes
+                </Button>
+                <Button
+                  onClick={createPollBooks}
+                >
+                  Save
                 </Button>
               </Flex>
             </ModalFooter>
