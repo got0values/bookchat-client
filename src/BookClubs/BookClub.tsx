@@ -1807,9 +1807,10 @@ export default function BookClub({server}: {server: string}) {
                   {pollBookOne !== null ? (
                     <>
                     <Box>
+                      <Heading as="h5" size="sm" textAlign="center">1</Heading>
                       <Image
                         maxW="100%" 
-                        w="100%"
+                        w="80%"
                         h="auto"
                         pt={2} 
                         mb={1}
@@ -1837,9 +1838,10 @@ export default function BookClub({server}: {server: string}) {
                   {pollBookTwo !== null ? (
                     <>
                       <Box>
+                        <Heading as="h5" size="sm" textAlign="center">2</Heading>
                         <Image
                           maxW="100%" 
-                          w="100%"
+                          w="80%"
                           h="auto"
                           pt={2} 
                           mb={1}
@@ -1867,9 +1869,10 @@ export default function BookClub({server}: {server: string}) {
                   {pollBookThree !== null ? (
                     <>
                       <Box>
+                        <Heading as="h5" size="sm" textAlign="center">3</Heading>
                         <Image
                           maxW="100%" 
-                          w="100%"
+                          w="80%"
                           h="auto"
                           pt={2} 
                           mb={1}
