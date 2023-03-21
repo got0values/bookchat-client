@@ -21,7 +21,10 @@ import {
   ModalCloseButton,
   useToast,
   useDisclosure,
-  Avatar
+  Avatar,
+  Radio,
+  RadioGroup,
+  HTMLChakraComponents
 } from "@chakra-ui/react";
 import { IoIosAdd } from 'react-icons/io';
 import { MdGroups } from 'react-icons/md';
@@ -116,6 +119,9 @@ export default function BookClubs({server}: {server: string}) {
     setCreateBookClubError("");
     onCloseCreateBookClubModal();
   }
+
+  const [friendsBookClubsValue,setFriendsBookClubsValue] = useState("all");
+  const [publicBookClubsValue,setPublicBookClubsValue] = useState("all");
 
   const { isLoading, isError, data, error } = useQuery({ queryKey: ['bookClubsKey'], queryFn: getBookClubs });
   const bookClubsOwned = data?.bookClubsOwned;
@@ -245,11 +251,56 @@ export default function BookClubs({server}: {server: string}) {
             <Box className="well">
               <Flex align="center" justify="space-between" gap={2} mb={2}>
                 <Heading as="h3" size="md">
+                  Friend's Book Clubs
+                </Heading>
+              </Flex>
+              <Box>
+              <Flex justify="center">
+                <RadioGroup onChange={e=>setFriendsBookClubsValue(prev=>e)} value={friendsBookClubsValue}>
+                  <Stack direction='row'>
+                    <Radio value='all'>All</Radio>
+                    <Radio value='1-4'>1st-4th</Radio>
+                    <Radio value='5-8'>5th-8th</Radio>
+                    <Radio value='9-12'>9th-12th</Radio>
+                    <Radio value='adult'>Adult</Radio>
+                  </Stack>
+                </RadioGroup>
+              </Flex>
+                <Box 
+                  p={5} 
+                  bg="gray.100"
+                  m={2} 
+                  rounded="md"
+                  _dark={{
+                    bg: "gray.600"
+                  }}
+                  _hover={{
+                    bg: "gray.200"
+                  }}
+                >
+                </Box>
+              </Box>
+            </Box>
+
+            <Box className="well">
+              <Flex align="center" justify="space-between" gap={2} mb={2}>
+                <Heading as="h3" size="md">
                   Public Book Clubs
                 </Heading>
               </Flex>
 
               <Box>
+                <Flex justify="center">
+                  <RadioGroup onChange={e=>setPublicBookClubsValue(prev=>e)} value={publicBookClubsValue}>
+                    <Stack direction='row'>
+                      <Radio value='all'>All</Radio>
+                      <Radio value='1-4'>1st-4th</Radio>
+                      <Radio value='5-8'>5th-8th</Radio>
+                      <Radio value='9-12'>9th-12th</Radio>
+                      <Radio value='adult'>Adult</Radio>
+                    </Stack>
+                  </RadioGroup>
+                </Flex>
                 {bookClubsPublic && bookClubsPublic.length ? (
                   (bookClubsPublic as BookClubsType[]).map((bookClub, i)=>{
                     return (
