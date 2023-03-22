@@ -914,7 +914,7 @@ export default function BookClub({server}: {server: string}) {
                 <Flex className="well" direction="column" gap={2}>
                   <Flex align="center" justify="space-between">
                     <Heading as="h4" size="md">
-                      Members ({bookClub.BookClubMembers.length})
+                      Members ({bookClub.BookClubMembers.length + 1})
                     </Heading>
                     {isBookClubCreator ? null : (
                       memberStatus && memberStatus > 0 ? (
@@ -965,6 +965,18 @@ export default function BookClub({server}: {server: string}) {
                     )}
                   </Flex>
                   <Box>
+                    <Link
+                      href={`/profile/${bookClub.Profile.username}`}
+                      _hover={{
+                        textDecoration: "none",
+                        color: "teal"
+                      }}
+                    >
+                      @{bookClub.Profile.username}
+                      <Text as="span" fontSize="sm" fontStyle="italic">
+                        {" "}admin
+                      </Text>
+                    </Link>
                     {bookClub.BookClubMembers.length ? bookClub.BookClubMembers.map((member,i)=>{
                       return (
                         member.status === 2 ? (

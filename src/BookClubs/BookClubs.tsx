@@ -27,7 +27,7 @@ import {
   HTMLChakraComponents
 } from "@chakra-ui/react";
 import { IoIosAdd } from 'react-icons/io';
-import { MdGroups } from 'react-icons/md';
+import { FaBookReader } from 'react-icons/fa';
 import Cookies from "js-cookie";
 import axios from "axios";
 import { BookClubsType } from "../types/types";
@@ -143,7 +143,7 @@ export default function BookClubs({server}: {server: string}) {
             <Box className="well">
               <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
                 <Flex align="center" justify="space-between" gap={2}>
-                  <MdGroups size={30} />
+                  <FaBookReader size={25} />
                   <Heading as="h3" size="md">
                     My Book Clubs
                   </Heading>
@@ -189,7 +189,7 @@ export default function BookClubs({server}: {server: string}) {
             <Box className="well">
               <Flex align="center" justify="space-between" gap={2} mb={2}>
                 <Heading as="h3" size="md">
-                  Joined Book Clubs
+                  Joined
                 </Heading>
               </Flex>
 
@@ -244,7 +244,7 @@ export default function BookClubs({server}: {server: string}) {
             <Box className="well">
               <Flex align="center" justify="space-between" gap={2} mb={2}>
                 <Heading as="h3" size="md">
-                  Friend's Book Clubs
+                  Friend's
                 </Heading>
               </Flex>
               <Box>
@@ -307,7 +307,7 @@ export default function BookClubs({server}: {server: string}) {
             <Box className="well">
               <Flex align="center" justify="space-between" gap={2} mb={2}>
                 <Heading as="h3" size="md">
-                  Public Book Clubs
+                  Public
                 </Heading>
               </Flex>
 
