@@ -6,6 +6,7 @@ import {
   Box,
   Heading,
   Text,
+  Checkbox,
   Avatar,
   AvatarGroup,
   Button,
@@ -44,7 +45,8 @@ import {
   Spinner,
   useDisclosure,
   useToast,
-  Input
+  Input,
+  ChakraComponent
 } from "@chakra-ui/react";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -133,6 +135,7 @@ export default function BookClub({server}: {server: string}) {
 
             return {
               bookClub:  responseBookClub,
+              groups: responseBookClub.groups,
               currentBook: currentBook1,
               pollBookOneReceived: pollBookOneRcvd,
               pollBookTwoReceived: pollBookTwoRcvd,
@@ -166,6 +169,14 @@ export default function BookClub({server}: {server: string}) {
   } = useDisclosure()
 
   function openEditModal() {
+    setTimeout(()=>{
+      const groupChecks = document.querySelectorAll(".group-check > input[type='checkbox']")
+      groupChecks.forEach((gc)=>{
+        if ((gc as HTMLInputElement).checked) {
+          bookClubAgeGroups.push((gc as HTMLInputElement).value)
+        }
+      })
+    },500)
     onOpenEditModal()
   }
 
@@ -176,7 +187,6 @@ export default function BookClub({server}: {server: string}) {
   }
 
   const [switchVisibility,setSwitchVisibility] = useState(false);
-  // const [updateError,throw new Error] = useState<string>("");
   const idRef = useRef<HTMLInputElement>({} as HTMLInputElement);
   const nameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
   const aboutRef = useRef<HTMLTextAreaElement>({} as HTMLTextAreaElement);
@@ -191,6 +201,7 @@ export default function BookClub({server}: {server: string}) {
             bookClubId: parseInt(idRef.current.value),
             bookClubName: nameRef.current.value,
             bookClubAbout: aboutRef.current.value,
+            bookClubGroups: bookClubAgeGroups,
             bookClubVisibility: switchVisibility === true ? 1 : 0
           },
           {
@@ -225,6 +236,19 @@ export default function BookClub({server}: {server: string}) {
   })
   function updateBookClub(e: React.FormEvent) {
     updateBookClubMutation.mutate(e);
+  }
+
+  const [bookClubAgeGroups,setBookClubAgeGroups] = useState([] as string[]);
+  function handleGroupCheckbox(e: React.ChangeEvent<HTMLInputElement>) {
+    const isChecked = bookClubAgeGroups.includes(e.target.value)
+    if (!isChecked) {
+      bookClubAgeGroups.push(e.target.value)
+    }
+    else {
+      let index = bookClubAgeGroups?.indexOf(e.target.value)
+      bookClubAgeGroups.splice(index,1)
+    }
+    setBookClubAgeGroups(prev=>bookClubAgeGroups)
   }
 
   const deleteBookClubMutation = useMutation({
@@ -926,6 +950,7 @@ export default function BookClub({server}: {server: string}) {
   const pollVotesBookOne: number | undefined = bookClubData?.pollVotesBookOne;
   const pollVotesBookTwo: number | undefined = bookClubData?.pollVotesBookTwo;
   const pollVotesBookThree: number | undefined = bookClubData?.pollVotesBookThree;
+  const bookClubGroups: string[] = bookClubData?.groups ? JSON.parse(bookClubData.groups) : [];
   if (bookClubQuery.isLoading) {
     return (
       <Flex align="center" justify="center" minH="80vh">
@@ -951,6 +976,26 @@ export default function BookClub({server}: {server: string}) {
                 <Flex className="well" direction="column" align="center" gap={2}>
                   <Heading as="h4" size="md">{bookClub.name}</Heading>
                   <Text>{bookClub.about}</Text>
+                  <Flex align="center" justify="center" gap={1}>
+                    {bookClubGroups && bookClubGroups.length ? (
+                      bookClubGroups.map((group,i)=>{
+                        return (
+                          <>
+                            {i > 0 ? "·" : null}
+                            <Text>
+                              {group == "0" ? "1st-4th" : (
+                                group == "1" ? "5th-8th" : (
+                                  group == "2" ? "9th-12th" : (
+                                    group == "3" ? "Adult" : null
+                                  )
+                                )
+                              )}
+                            </Text>
+                          </>
+                        )
+                      })
+                    ) : "All age groups"}
+                  </Flex>
                   <Text fontStyle="italic">
                     {bookClub.visibility === 0 ? "private (friends only)" : "public"}
                   </Text>
@@ -1547,7 +1592,7 @@ export default function BookClub({server}: {server: string}) {
         </Skeleton>
       </Box>
       
-      <Modal isOpen={isOpenEditModal} onClose={closeEditModal} size="lg" isCentered>
+      <Modal isOpen={isOpenEditModal} onClose={closeEditModal} size="xl" isCentered>
         <ModalOverlay />
         <ModalContent maxH="80vh">
           <ModalHeader>
@@ -1562,7 +1607,7 @@ export default function BookClub({server}: {server: string}) {
                   ref={idRef}
                 />
                 <Box mb={2}>
-                  <FormLabel htmlFor="name">Name</FormLabel>
+                  <FormLabel htmlFor="name" mb={0}>Name</FormLabel>
                   <Input
                     type="text"
                     id="name"
@@ -1572,12 +1617,53 @@ export default function BookClub({server}: {server: string}) {
                   />
                   <FormErrorMessage>Name is required</FormErrorMessage>
                 </Box>
-                <FormLabel htmlFor="about">About</FormLabel>
+                <FormLabel htmlFor="about" mb={0}>About</FormLabel>
                 <Textarea
                   ref={aboutRef}
                   id="about"
                   defaultValue={bookClub?.about}
                 />
+                <Stack 
+                  spacing={3} 
+                  justify="center"
+                  direction='row' 
+                  flexWrap="wrap" 
+                  rowGap={2}
+                  my={3}
+                >
+                  <Checkbox
+                    value={0}
+                    onChange={e=>handleGroupCheckbox(e)}
+                    defaultChecked={bookClubGroups.includes("0")}
+                    className="group-check"
+                  >
+                    1st - 4th grade
+                  </Checkbox>
+                  <Checkbox
+                    value={1}
+                    onChange={e=>handleGroupCheckbox(e)}
+                    defaultChecked={bookClubGroups.includes("1")}
+                    className="group-check"
+                  >
+                    5th - 8th grade
+                  </Checkbox>
+                  <Checkbox
+                    value={2}
+                    onChange={e=>handleGroupCheckbox(e)}
+                    defaultChecked={bookClubGroups.includes("2")}
+                    className="group-check"
+                  >
+                    9th - 12th grade
+                  </Checkbox>
+                  <Checkbox
+                    value={3}
+                    onChange={e=>handleGroupCheckbox(e)}
+                    defaultChecked={bookClubGroups.includes("3")}
+                    className="group-check"
+                  >
+                    Adult
+                  </Checkbox>
+                </Stack>
                 <Flex direction="column" align="center" justify="center" mt={2}>
                   <Text>{switchVisibility === true ? "public" : "private (friends only)"}</Text>
                   <Switch 
