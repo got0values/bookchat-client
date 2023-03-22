@@ -127,6 +127,7 @@ export default function BookClubs({server}: {server: string}) {
   const bookClubsOwned = data?.bookClubsOwned;
   const bookClubsJoined = data?.bookClubsJoined;
   const bookClubsPublic = data?.bookClubsPublic;
+  const bookClubsFriends = data?.bookClubsFriends;
   if (isError) {
     return <Flex align="center" justify="center" minH="90vh">
       <Heading as="h1" size="xl">Error: {(error as Error).message}</Heading>
@@ -138,14 +139,6 @@ export default function BookClubs({server}: {server: string}) {
       <Skeleton 
         isLoaded={!isLoading}
       >
-        <Flex flexWrap="wrap" w="100%" align="start" justify="space-between">
-
-          <Stack flex="1 1 30%">
-            <Box className="well">
-
-            </Box>
-          </Stack>
-
           <Stack flex="1 1 65%">
             <Box className="well">
               <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
@@ -266,19 +259,48 @@ export default function BookClubs({server}: {server: string}) {
                   </Stack>
                 </RadioGroup>
               </Flex>
-                <Box 
-                  p={5} 
-                  bg="gray.100"
-                  m={2} 
-                  rounded="md"
-                  _dark={{
-                    bg: "gray.600"
-                  }}
-                  _hover={{
-                    bg: "gray.200"
-                  }}
-                >
-                </Box>
+                {bookClubsFriends && bookClubsFriends.length? (
+                  (bookClubsFriends as BookClubsType[]).map((bookClub,i)=>{
+                    return (
+                      <Box 
+                        p={5} 
+                        bg="gray.100"
+                        m={2} 
+                        rounded="md"
+                        _dark={{
+                          bg: "gray.600"
+                        }}
+                        _hover={{
+                          bg: "gray.200"
+                        }}
+                        key={i}
+                      >
+                        <Flex align="center" justify="space-between" wrap="wrap">
+                          <Link to={`/bookclubs/${bookClub.id}`}>
+                            <Heading as="h4" size="sm">
+                              {bookClub.name}
+                            </Heading>
+                          </Link>
+                          <Flex align="center" gap={1}>
+                            <Avatar
+                              onClick={e=>navigate(`/profile/${bookClub.Profile.username}`)} 
+                              size="xs"
+                              cursor="pointer"
+                              src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
+                              border="2px solid gray"
+                            />
+                            <Link to={`/profile/${bookClub.Profile.username}`}>
+                              @{bookClub.Profile.username}
+                            </Link>
+                          </Flex>
+                        </Flex>
+                        <Text>
+                          {bookClub.about}
+                        </Text>
+                      </Box>
+                    )
+                  })
+                ) : null}
               </Box>
             </Box>
 
@@ -348,8 +370,6 @@ export default function BookClubs({server}: {server: string}) {
               </Box>
             </Box>
           </Stack>
-
-        </Flex>
 
         <Modal isOpen={isOpenCreateBookClubModal} onClose={closeCreateBookClubModal} size="xl">
           <ModalOverlay />

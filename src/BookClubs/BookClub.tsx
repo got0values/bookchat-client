@@ -1256,10 +1256,10 @@ export default function BookClub({server}: {server: string}) {
                                     src={pollBookOneReceived.image}
                                   />
                                 </Box>
-                                <Text fontWeight="bold">
+                                <Text fontSize="sm" fontWeight="bold">
                                   {pollBookOneReceived.title}
                                 </Text>
-                                <Text>
+                                <Text fontSize="sm">
                                   {pollBookOneReceived.author}
                                 </Text>
                                 <Popover isLazy>
@@ -1328,10 +1328,10 @@ export default function BookClub({server}: {server: string}) {
                                     src={pollBookTwoReceived.image}
                                   />
                                 </Box>
-                                <Text fontWeight="bold">
+                                <Text fontSize="sm" fontWeight="bold">
                                   {pollBookTwoReceived.title}
                                 </Text>
-                                <Text>
+                                <Text fontSize="sm">
                                   {pollBookTwoReceived.author}
                                 </Text>
                                 <Popover isLazy>
@@ -1399,10 +1399,10 @@ export default function BookClub({server}: {server: string}) {
                                     src={pollBookThreeReceived.image}
                                   />
                                 </Box>
-                                <Text fontWeight="bold">
+                                <Text fontSize="sm" fontWeight="bold">
                                   {pollBookThreeReceived.title}
                                 </Text>
-                                <Text>
+                                <Text fontSize="sm">
                                   {pollBookThreeReceived.author}
                                 </Text>
                                 <Popover isLazy>
@@ -1744,12 +1744,12 @@ export default function BookClub({server}: {server: string}) {
         isCentered
       >
         <ModalOverlay />
-        <ModalContent maxH="90vh">
+        <ModalContent maxH="100vh">
           <ModalHeader>
             Next Book Poll
           </ModalHeader>
           <ModalCloseButton />
-            <ModalBody minH="150px" h="auto" maxH="80vh" overflow="auto">
+            <ModalBody minH="250px" h="auto" maxH="95vh" overflow="auto">
               <Stack gap={2} position="relative">
                 <Flex gap={1} position="sticky" top={0} zIndex={200}>
                   <Input
@@ -1862,12 +1862,12 @@ export default function BookClub({server}: {server: string}) {
                 )}
               </Stack>
             </ModalBody>
-            <ModalFooter flexDirection="column">
+            <ModalFooter flexDirection="column" borderTop="1px solid gray">
               <Flex justify="space-between" w="100%" flexWrap="nowrap" gap={2}>
                 <Box flex="0 1 125px">
                   {pollBookOne !== null ? (
-                    <>
-                    <Box>
+                  <>
+                    <Box maxW="100px">
                       <Heading as="h5" size="sm" textAlign="center">1</Heading>
                       <Image
                         maxW="100%" 
@@ -1880,10 +1880,10 @@ export default function BookClub({server}: {server: string}) {
                         src={pollBookOne.image}
                       />
                     </Box>
-                    <Text fontWeight="bold">
+                    <Text fontSize="sm" fontWeight="bold">
                       {pollBookOne.title}
                     </Text>
-                    <Text>
+                    <Text fontSize="sm">
                       {pollBookOne.author}
                     </Text>
                     <Button
@@ -1898,7 +1898,7 @@ export default function BookClub({server}: {server: string}) {
                 <Box flex="0 1 125px">
                   {pollBookTwo !== null ? (
                     <>
-                      <Box>
+                      <Box maxW="100px">
                         <Heading as="h5" size="sm" textAlign="center">2</Heading>
                         <Image
                           maxW="100%" 
@@ -1911,10 +1911,10 @@ export default function BookClub({server}: {server: string}) {
                           src={pollBookTwo.image}
                         />
                       </Box>
-                      <Text fontWeight="bold">
+                      <Text fontSize="sm" fontWeight="bold">
                         {pollBookTwo.title}
                       </Text>
-                      <Text>
+                      <Text fontSize="sm">
                         {pollBookTwo.author}
                       </Text>
                       <Button
@@ -1929,7 +1929,7 @@ export default function BookClub({server}: {server: string}) {
                 <Box flex="0 1 125px">
                   {pollBookThree !== null ? (
                     <>
-                      <Box>
+                      <Box maxW="100px">
                         <Heading as="h5" size="sm" textAlign="center">3</Heading>
                         <Image
                           maxW="100%" 
@@ -1942,10 +1942,10 @@ export default function BookClub({server}: {server: string}) {
                           src={pollBookThree.image}
                         />
                       </Box>
-                      <Text fontWeight="bold">
+                      <Text fontSize="sm" fontWeight="bold">
                         {pollBookThree.title}
                       </Text>
-                      <Text>
+                      <Text fontSize="sm">
                         {pollBookThree.author}
                       </Text>
                       <Button
