@@ -171,6 +171,7 @@ export default function BookClub({server}: {server: string}) {
 
   function closeEditModal() {
     updateBookClubMutation.reset();
+    deleteBookClubMutation.reset();
     onClosEditModal()
   }
 
@@ -198,6 +199,18 @@ export default function BookClub({server}: {server: string}) {
             }
           }
         )
+        .then((response)=>{
+          queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+          queryClient.resetQueries({queryKey: ['bookClubKey']})
+          getBookClub();
+          toast({
+            description: "Book club updated",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          })
+          closeEditModal()
+        })
         .catch(({response})=>{
           console.log(response)
           if (response.data?.message) {
@@ -208,22 +221,61 @@ export default function BookClub({server}: {server: string}) {
       else {
         throw new Error("An error has occured")
       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
-      queryClient.resetQueries({queryKey: ['bookClubKey']})
-      getBookClub();
-      toast({
-        description: "Book club updated",
-        status: "success",
-        duration: 9000,
-        isClosable: true
-      })
-      closeEditModal()
     }
   })
   function updateBookClub(e: React.FormEvent) {
     updateBookClubMutation.mutate(e);
+  }
+
+  const deleteBookClubMutation = useMutation({
+    mutationFn: async (e: React.FormEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      if (confirm("Are you sure you would like to delete this book club. This be undone.")) {
+        let tokenCookie: string | null = Cookies.get().token;
+        if (tokenCookie) {
+          axios
+          .delete(server + "/api/deletebookclub",
+            {
+              headers: {
+                authorization: tokenCookie
+              },
+              data: {
+                bookClubId: parseInt(idRef.current.value)
+              }
+            }
+          )
+          .then((response)=>{
+            queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+            queryClient.resetQueries({queryKey: ['bookClubKey']})
+            getBookClub();
+            toast({
+              description: "Successfully delete book club",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+            closeEditModal()
+            navigate("/bookclubs")
+          })
+          .catch(({response})=>{
+            console.log(response)
+            if (response.data?.message) {
+              throw new Error(response.data?.message)
+            }
+          })
+        }
+        else {
+          throw new Error("An error has occured")
+        }
+      }
+      else {
+        return;
+      }
+    }
+  })
+  function deleteBookClub(e: React.FormEvent) {
+    deleteBookClubMutation.mutate(e);
   }
 
   const joinBookClubMutation = useMutation({
@@ -1539,11 +1591,25 @@ export default function BookClub({server}: {server: string}) {
                       <Text color="red">{(updateBookClubMutation.error as Error).message}</Text>
                     )
                   }
-                  <Flex align="center" justify="flex-end">
+                  {deleteBookClubMutation.error && (
+                      <Text color="red">{(deleteBookClubMutation.error as Error).message}</Text>
+                    )
+                  }
+                  <Flex align="center" justify="space-between" w="100%">
+                    <Button 
+                      type="button"
+                      mr={3}
+                      size="md"
+                      colorScheme="red"
+                      onClick={e=>deleteBookClub(e)}
+                    >
+                      Delete
+                    </Button>
                     <Button 
                       type="submit"
                       mr={3}
                       size="md"
+                      colorScheme="teal"
                     >
                       Update
                     </Button>
@@ -1618,7 +1684,7 @@ export default function BookClub({server}: {server: string}) {
                       <Text color="red">{(clearRsvpsCallbackMutation.error as Error).message}</Text>
                     )
                   }
-                  <Flex align="center" justify="flex-end" gap={2}>
+                  <Flex align="center" justify="space-between" w="100%">
                     <Button 
                       type="button"
                       size="md"
@@ -1630,6 +1696,7 @@ export default function BookClub({server}: {server: string}) {
                     <Button 
                       type="submit"
                       size="md"
+                      colorScheme="teal"
                     >
                       Update
                     </Button>
@@ -1978,7 +2045,7 @@ export default function BookClub({server}: {server: string}) {
                   <Text color="red">{(clearPollVotesMutation.error as Error).message}</Text>
                 )}
               </>
-              <Flex align="center" justify="flex-end" gap={2} mt={3}>
+              <Flex align="center" justify="space-between" w="100%" mt={3}>
                 <Button 
                   type="button"
                   size="md"
@@ -1989,6 +2056,7 @@ export default function BookClub({server}: {server: string}) {
                 </Button>
                 <Button
                   onClick={createPollBooks}
+                  colorScheme="teal"
                 >
                   Save
                 </Button>
