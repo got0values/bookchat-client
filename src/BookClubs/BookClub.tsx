@@ -913,7 +913,9 @@ export default function BookClub({server}: {server: string}) {
                 </Flex>
                 <Flex className="well" direction="column" gap={2}>
                   <Flex align="center" justify="space-between">
-                    <Heading as="h4" size="md">Members</Heading>
+                    <Heading as="h4" size="md">
+                      Members ({bookClub.BookClubMembers.length})
+                    </Heading>
                     {isBookClubCreator ? null : (
                       memberStatus && memberStatus > 0 ? (
                         !unJoinBookClubMutation.error ? (
