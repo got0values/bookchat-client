@@ -293,14 +293,15 @@ export default function BookClub({server}: {server: string}) {
             }
           }
         )
+        .then((response)=>{
+          queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+          queryClient.resetQueries({queryKey: ['bookClubKey']})
+        })
         .catch(({response})=>{
           console.log(response)
           throw new Error(response.data?.message)
         })
       }
-    },
-    onSuccess: () => {
-      queryClient.resetQueries({queryKey: ['bookClubKey']})
     }
   })
   function joinBookClub(e: React.FormEvent) {
@@ -322,14 +323,15 @@ export default function BookClub({server}: {server: string}) {
             }
           }
         )
+        .then((response)=>{
+          queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+          queryClient.resetQueries({queryKey: ['bookClubKey']})
+        })
         .catch(({response})=>{
           console.log(response)
           throw new Error(response.data?.message)
         })
-    }},
-    onSuccess: () => {
-      queryClient.resetQueries({queryKey: ['bookClubKey']})
-    }
+    }}
   })
   function unJoinBookClub(e: React.FormEvent) {
     unJoinBookClubMutation.mutate(e);
@@ -351,16 +353,16 @@ export default function BookClub({server}: {server: string}) {
             }
           }
         )
+        .then((response)=>{
+          queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+          queryClient.resetQueries({queryKey: ['bookClubKey']})
+          getBookClub();
+        })
         .catch(({response})=>{
           console.log(response)
           throw new Error(response.data?.message)
         })
-    }},
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
-      queryClient.resetQueries({queryKey: ['bookClubKey']})
-      getBookClub();
-    }
+    }}
   })
   function removeMember(memberProfileId: number) {
     removeMemberMutation.mutate(memberProfileId);
@@ -531,6 +533,18 @@ export default function BookClub({server}: {server: string}) {
               }
             }
           )
+          .then((response)=>{
+            queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+            queryClient.resetQueries({queryKey: ['bookClubKey']})
+            getBookClub();
+            toast({
+              description: "Book club meeting updated",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+            closeMeetingModal()
+          })
           .catch(({response})=>{
             console.log(response)
             if (response.data?.message) {
@@ -541,18 +555,6 @@ export default function BookClub({server}: {server: string}) {
       else {
         throw new Error("An error has occured")
       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
-      queryClient.resetQueries({queryKey: ['bookClubKey']})
-      getBookClub();
-      toast({
-        description: "Book club meeting updated",
-        status: "success",
-        duration: 9000,
-        isClosable: true
-      })
-      closeMeetingModal()
     }
   })
   function updateBookClubMeeting(e: React.FormEvent) {
@@ -574,6 +576,17 @@ export default function BookClub({server}: {server: string}) {
               }
             }
           )
+          .then((response)=>{
+            queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+            queryClient.resetQueries({queryKey: ['bookClubKey']})
+            getBookClub();
+            toast({
+              description: "Successfully RSVP'd",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+          })
           .catch(({response})=>{
             console.log(response)
             throw new Error(response.data.message)
@@ -582,17 +595,6 @@ export default function BookClub({server}: {server: string}) {
       else {
         throw new Error("Something went wrong")
       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
-      queryClient.resetQueries({queryKey: ['bookClubKey']})
-      getBookClub();
-      toast({
-        description: "Successfully RSVP'd",
-        status: "success",
-        duration: 9000,
-        isClosable: true
-      })
     }
   })
   function rsvpCallback() {
@@ -614,6 +616,17 @@ export default function BookClub({server}: {server: string}) {
               }
             }
           )
+          .then((response)=>{
+            queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+            queryClient.resetQueries({queryKey: ['bookClubKey']})
+            getBookClub();
+            toast({
+              description: "Successfully Un-RSVP'd",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+          })
           .catch(({response})=>{
             console.log(response)
             throw new Error(response.data.message)
@@ -622,17 +635,6 @@ export default function BookClub({server}: {server: string}) {
       else {
         throw new Error("Something went wrong")
       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
-      queryClient.resetQueries({queryKey: ['bookClubKey']})
-      getBookClub();
-      toast({
-        description: "Successfully Un-RSVP'd",
-        status: "success",
-        duration: 9000,
-        isClosable: true
-      })
     }
   })
   function unRsvpCallback() {
@@ -654,6 +656,17 @@ export default function BookClub({server}: {server: string}) {
               }
             }
           )
+          .then((response)=>{
+            queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+            queryClient.resetQueries({queryKey: ['bookClubKey']})
+            getBookClub();
+            toast({
+              description: "RSVP's successfully cleared",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+          })
           .catch(({response})=>{
             console.log(response)
             throw new Error(response.data.message)
@@ -662,17 +675,6 @@ export default function BookClub({server}: {server: string}) {
       else {
         throw new Error("Something went wrong")
       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
-      queryClient.resetQueries({queryKey: ['bookClubKey']})
-      getBookClub();
-      toast({
-        description: "RSVP's successfully cleared",
-        status: "success",
-        duration: 9000,
-        isClosable: true
-      })
     }
   })
   function clearRsvpsCallback() {
@@ -724,6 +726,17 @@ export default function BookClub({server}: {server: string}) {
               }
             }
           )
+          .then((response)=>{
+            queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+            queryClient.resetQueries({queryKey: ['bookClubKey']})
+            getBookClub();
+            toast({
+              description: "Successfully voted",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+          })
           .catch(({response})=>{
             console.log(response)
             toast({
@@ -738,17 +751,6 @@ export default function BookClub({server}: {server: string}) {
       else {
         throw new Error("Something went wrong")
       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
-      queryClient.resetQueries({queryKey: ['bookClubKey']})
-      getBookClub();
-      toast({
-        description: "Successfully voted",
-        status: "success",
-        duration: 9000,
-        isClosable: true
-      })
     }
   })
   function pollVote(bookNumber: number) {
@@ -771,6 +773,17 @@ export default function BookClub({server}: {server: string}) {
               }
             }
           )
+          .then((response)=>{
+            queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+            queryClient.resetQueries({queryKey: ['bookClubKey']})
+            getBookClub();
+            toast({
+              description: "Successfully un-voted",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+          })
           .catch(({response})=>{
             console.log(response)
             toast({
@@ -785,17 +798,6 @@ export default function BookClub({server}: {server: string}) {
       else {
         throw new Error("Something went wrong")
       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
-      queryClient.resetQueries({queryKey: ['bookClubKey']})
-      getBookClub();
-      toast({
-        description: "Successfully un-voted",
-        status: "success",
-        duration: 9000,
-        isClosable: true
-      })
     }
   })
   function unPollVote(bookNumber: number) {
@@ -824,6 +826,18 @@ export default function BookClub({server}: {server: string}) {
               }
             }
           )
+          .then((response)=>{
+            queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
+            queryClient.resetQueries({queryKey: ['bookClubKey']})
+            getBookClub();
+            toast({
+              description: "Book club poll updated",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+            closePollBookModal()
+          })
           .catch(({response})=>{
             console.log(response)
             toast({
@@ -844,18 +858,6 @@ export default function BookClub({server}: {server: string}) {
         })
         throw new Error("Something went wrong")
       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookClubKey'] })
-      queryClient.resetQueries({queryKey: ['bookClubKey']})
-      getBookClub();
-      toast({
-        description: "Book club poll updated",
-        status: "success",
-        duration: 9000,
-        isClosable: true
-      })
-      closePollBookModal()
     }
   })
   function createPollBooks() {
