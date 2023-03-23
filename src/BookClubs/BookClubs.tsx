@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { 
   Box,
+  Tag,
   Heading,
   Text,
   Spinner,
@@ -28,6 +29,7 @@ import {
 } from "@chakra-ui/react";
 import { IoIosAdd } from 'react-icons/io';
 import { FaBookReader } from 'react-icons/fa';
+import { BsDot } from 'react-icons/bs';
 import Cookies from "js-cookie";
 import axios from "axios";
 import { BookClubsType } from "../types/types";
@@ -210,7 +212,12 @@ export default function BookClubs({server}: {server: string}) {
                         }}
                         key={i}
                       >
-                        <Flex align="center" justify="space-between" wrap="wrap">
+                        <Flex
+                          align="center" 
+                          justify="space-between" 
+                          wrap="wrap"
+                          rowGap={2}
+                        >
                           <Link to={`/bookclubs/${bookClub.id}`}>
                             <Heading as="h4" size="sm">
                               {bookClub.name}
@@ -250,7 +257,7 @@ export default function BookClubs({server}: {server: string}) {
               <Box>
               <Flex justify="center">
                 <RadioGroup onChange={e=>setFriendsBookClubsValue(prev=>e)} value={friendsBookClubsValue}>
-                  <Stack direction='row'>
+                  <Stack direction='row' flexWrap="wrap" justify="center">
                     <Radio value='all'>All</Radio>
                     <Radio value='1-4'>1st-4th</Radio>
                     <Radio value='5-8'>5th-8th</Radio>
@@ -275,7 +282,12 @@ export default function BookClubs({server}: {server: string}) {
                         }}
                         key={i}
                       >
-                        <Flex align="center" justify="space-between" wrap="wrap">
+                        <Flex 
+                          align="center" 
+                          justify="space-between" 
+                          wrap="wrap"
+                          rowGap={2}
+                        >
                           <Link to={`/bookclubs/${bookClub.id}`}>
                             <Heading as="h4" size="sm">
                               {bookClub.name}
@@ -294,9 +306,53 @@ export default function BookClubs({server}: {server: string}) {
                             </Link>
                           </Flex>
                         </Flex>
-                        <Text>
-                          {bookClub.about}
-                        </Text>
+                        <Flex align="center" justify="space-between" flexWrap="wrap">
+                          <Text>
+                            {bookClub.about}
+                          </Text>
+                          <Flex align="center" flexWrap="wrap">
+                            {JSON.parse(bookClub.groups).length ? (
+                              JSON.parse(bookClub.groups).map((group: string)=>{
+                                return (
+                                  <Flex 
+                                    align="center" 
+                                    my={1} 
+                                    key={i}
+                                  >
+                                    {i > 0 ? <BsDot/> : null}
+                                    <Tag 
+                                      colorScheme={group == "0" ? "teal" : (
+                                          group == "1" ? "green" : (
+                                            group == "2" ? "blue" : (
+                                              group == "3" ? "purple" : "red"
+                                            )
+                                          )
+                                        )}
+                                      size="sm"
+                                      fontWeight="bold"
+                                    >
+                                      {group == "0" ? "1st-4th" : (
+                                        group == "1" ? "5th-8th" : (
+                                          group == "2" ? "9th-12th" : (
+                                            group == "3" ? "Adult" : null
+                                          )
+                                        )
+                                      )}
+                                    </Tag>
+                                  </Flex>
+                                )
+                              })
+                            ) : (
+                              <Tag
+                                colorScheme="yellow"
+                                size="sm"
+                                fontWeight="bold"
+                              >
+                                All groups
+                              </Tag>
+                            )}
+                          </Flex>
+                        </Flex>
                       </Box>
                     )
                   })
@@ -312,9 +368,9 @@ export default function BookClubs({server}: {server: string}) {
               </Flex>
 
               <Box>
-                <Flex justify="center">
+                <Flex justify="center" flexWrap="wrap">
                   <RadioGroup onChange={e=>setPublicBookClubsValue(prev=>e)} value={publicBookClubsValue}>
-                    <Stack direction='row'>
+                    <Stack direction='row' flexWrap="wrap" justify="center">
                       <Radio value='all'>All</Radio>
                       <Radio value='1-4'>1st-4th</Radio>
                       <Radio value='5-8'>5th-8th</Radio>
@@ -339,7 +395,12 @@ export default function BookClubs({server}: {server: string}) {
                         }}
                         key={i}
                       >
-                        <Flex align="center" justify="space-between" wrap="wrap">
+                        <Flex
+                          align="center" 
+                          justify="space-between" 
+                          wrap="wrap"
+                          rowGap={2}
+                        >
                           <Link to={`/bookclubs/${bookClub.id}`}>
                             <Heading as="h4" size="sm">
                               {bookClub.name}
@@ -358,9 +419,53 @@ export default function BookClubs({server}: {server: string}) {
                             </Link>
                           </Flex>
                         </Flex>
-                        <Text>
-                          {bookClub.about}
-                        </Text>
+                        <Flex align="center" justify="space-between" flexWrap="wrap">
+                          <Text>
+                            {bookClub.about}
+                          </Text>
+                          <Flex align="center" flexWrap="wrap">
+                            {JSON.parse(bookClub.groups).length ? (
+                              JSON.parse(bookClub.groups).map((group: string, i: number)=>{
+                                return (
+                                  <Flex 
+                                    align="center" 
+                                    my={1}
+                                    key={i}
+                                  >
+                                    {i > 0 ? <BsDot/> : null}
+                                    <Tag 
+                                      colorScheme={group == "0" ? "teal" : (
+                                          group == "1" ? "green" : (
+                                            group == "2" ? "blue" : (
+                                              group == "3" ? "purple" : "red"
+                                            )
+                                          )
+                                        )}
+                                      size="sm"
+                                      fontWeight="bold"
+                                    >
+                                      {group == "0" ? "1st-4th" : (
+                                        group == "1" ? "5th-8th" : (
+                                          group == "2" ? "9th-12th" : (
+                                            group == "3" ? "Adult" : null
+                                          )
+                                        )
+                                      )}
+                                    </Tag>
+                                  </Flex>
+                                )
+                              })
+                            ) : (
+                              <Tag
+                                colorScheme="yellow"
+                                size="sm"
+                                fontWeight="bold"
+                              >
+                                All groups
+                              </Tag>
+                            )}
+                          </Flex>
+                        </Flex>
                       </Box>
                     )
                   })

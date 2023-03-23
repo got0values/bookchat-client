@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { BookClubMember, BookClubsType, BookClubBookType, BookClubRsvpType, BookClubBookPollVoteType } from "../types/types";
 import { 
   Box,
+  Tag,
   Heading,
   Text,
   Checkbox,
@@ -51,7 +52,7 @@ import {
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { HiOutlinePencil } from 'react-icons/hi';
-import { BsCardText } from 'react-icons/bs';
+import { BsCardText, BsDot } from 'react-icons/bs';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { TbBooks } from 'react-icons/tb';
 import { BookClubGeneralComments } from "../shared/BookClubGeneralComments";
@@ -176,13 +177,14 @@ export default function BookClub({server}: {server: string}) {
           bookClubAgeGroups.push((gc as HTMLInputElement).value)
         }
       })
-    },500)
+    },100)
     onOpenEditModal()
   }
 
   function closeEditModal() {
     updateBookClubMutation.reset();
     deleteBookClubMutation.reset();
+    setBookClubAgeGroups([])
     onClosEditModal()
   }
 
@@ -242,12 +244,19 @@ export default function BookClub({server}: {server: string}) {
   function handleGroupCheckbox(e: React.ChangeEvent<HTMLInputElement>) {
     const isChecked = bookClubAgeGroups.includes(e.target.value)
     if (!isChecked) {
+      console.log("not checked")
       bookClubAgeGroups.push(e.target.value)
     }
-    else {
-      let index = bookClubAgeGroups?.indexOf(e.target.value)
-      bookClubAgeGroups.splice(index,1)
+    else if (bookClubAgeGroups) {
+      // let index = bookClubAgeGroups.indexOf(e.target.value)
+      // bookClubAgeGroups.splice(index,1)
+      bookClubAgeGroups.forEach((group,index)=>{
+        if (group === e.target.value) {
+          bookClubAgeGroups.splice(index,1)
+        }
+      })
     }
+    console.log(bookClubAgeGroups)
     setBookClubAgeGroups(prev=>bookClubAgeGroups)
   }
 
@@ -976,13 +985,23 @@ export default function BookClub({server}: {server: string}) {
                 <Flex className="well" direction="column" align="center" gap={2}>
                   <Heading as="h4" size="md">{bookClub.name}</Heading>
                   <Text>{bookClub.about}</Text>
-                  <Flex align="center" justify="center" gap={1}>
+                  <Flex align="center" justify="center" flexWrap="wrap" gap={1}>
                     {bookClubGroups && bookClubGroups.length ? (
                       bookClubGroups.map((group,i)=>{
                         return (
-                          <React.Fragment key={i}>
-                            {i > 0 ? "·" : null}
-                            <Text>
+                          <Flex align="center" key={i}>
+                            {i > 0 ? <BsDot/> : null}
+                            <Tag 
+                              colorScheme={group == "0" ? "teal" : (
+                                  group == "1" ? "green" : (
+                                    group == "2" ? "blue" : (
+                                      group == "3" ? "purple" : "red"
+                                    )
+                                  )
+                                )}
+                              size="sm"
+                              fontWeight="bold"
+                            >
                               {group == "0" ? "1st-4th" : (
                                 group == "1" ? "5th-8th" : (
                                   group == "2" ? "9th-12th" : (
@@ -990,11 +1009,19 @@ export default function BookClub({server}: {server: string}) {
                                   )
                                 )
                               )}
-                            </Text>
-                          </React.Fragment>
+                            </Tag>
+                          </Flex>
                         )
                       })
-                    ) : "All age groups"}
+                    ) : (
+                      <Tag
+                        colorScheme="yellow"
+                        size="sm"
+                        fontWeight="bold"
+                      >
+                        All groups
+                      </Tag>
+                    )}
                   </Flex>
                   <Text fontStyle="italic">
                     {bookClub.visibility === 0 ? "private (friends only)" : "public"}
