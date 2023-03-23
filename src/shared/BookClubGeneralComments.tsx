@@ -45,6 +45,8 @@ export const BookClubGeneralComments = (props: any) => {
   const queryClient = useQueryClient();
   const toast = useToast();
   const {user} = useAuth();
+
+  const [increment,setIncrement] = useState(5);
   
   function getComments() {
     let tokenCookie: string | null = Cookies.get().token;
@@ -256,179 +258,198 @@ export const BookClubGeneralComments = (props: any) => {
                 Post
               </Button>
             </Flex>
+            
             <Flex direction="column">
-              {comments ? comments.slice(0).reverse().map((comment,i) => {
-                return (
-                  <Box 
-                    key={i}
-                    my={1}
-                    p={2}
-                    bg="gray.100"
-                    rounded="md"
-                    _dark={{
-                      bg: "gray.600"
-                    }}
-                  >
-                    <HStack 
-                      align="flex-start" 
-                    >
-                      <Avatar
-                        onClick={e=>navigate(`/profile/${comment.Profile.username}`)} 
-                        size="md"
-                        cursor="pointer"
-                        src={`${comment.Profile.profile_photo}?x=${new Date().getTime()}`}
-                        border="2px solid gray"
-                      />
-                      <Box flex="1">
-                        <Flex align="flex-start" justify="space-between">
-                          <Flex columnGap={2} align="center" flexWrap="wrap">
-                            <Text as="span" fontWeight="bold">
-                              {comment.Profile.User.first_name} {comment.Profile.User.last_name}
-                            </Text>
-                            <Flex align="center" gap={1}>
-                              <Text as="span" fontSize="sm">@{comment.Profile.username}</Text>
-                              ·
-                              <Text fontSize="sm" title={new Date(comment.datetime).toLocaleDateString()}>
-                                {dayjs(comment.datetime).format('MMM D')}
-                              </Text>
-                            </Flex>
-                          </Flex>
-
-                          <Menu>
-                            <MenuButton 
-                              as={Button}
+              {comments ? (
+                comments.slice(0).reverse().map((comment,i) => {
+                  return (
+                    i >= increment ? (
+                        null
+                      ) : (
+                      (
+                        <Box 
+                          key={i}
+                          my={1}
+                          p={2}
+                          bg="gray.100"
+                          rounded="md"
+                          _dark={{
+                            bg: "gray.600"
+                          }}
+                        >
+                          <HStack 
+                            align="flex-start" 
+                          >
+                            <Avatar
+                              onClick={e=>navigate(`/profile/${comment.Profile.username}`)} 
                               size="md"
-                              variant="ghost"
-                              rounded="full"
-                              height="25px"
-                            >
-                              <BiDotsHorizontalRounded/>
-                            </MenuButton>
-                            <MenuList>
-                            {comment.Profile.id === user.Profile.id || isBookClubCreator ? (
-                              <>
-                                <MenuItem
-                                  color="tomato"
-                                  value={comment.id}
-                                  onClick={e=>deleteComment(e)}
-                                  fontWeight="bold"
-                                  icon={<BiTrash size={20} />}
-                                >
-                                  Delete
-                                </MenuItem>
-                              </>
-                            ): null}
-                            <MenuItem 
-                              value={comment.id}
-                              onClick={e=>openReplyModal(e)}
-                              fontWeight="bold"
-                              icon={<BsReplyFill size={20} />}
-                            >
-                              Reply
-                            </MenuItem>
-                            </MenuList>
-                          </Menu>
-
-                        </Flex>
-                        <Text>
-                          {comment.comment}
-                        </Text>
-                      </Box>
-                    </HStack>
-                    {comment.BookClubGeneralReply.length ? ( <Divider my={3} /> ) : null}
-                    {comment.BookClubGeneralReply.length ? (
-                      comment.BookClubGeneralReply.reverse().map((reply,i)=>{
-                      return (
-                        <Fragment key={i}>
-                          {i === 0 ? (
-                            <HStack 
-                              align="flex-start"
-                              p={2}
-                              rounded="md"
-                              _hover={{
-                                bg: "gray.300"
-                              }}
-                              _dark={{
-                                '&:hover': {
-                                  bg: "gray.500"
-                                }
-                              }}
-                            >
-                              <Box pe={2}>
-                                <Avatar
-                                  onClick={e=>navigate(`/profile/${reply.Profile.username}`)} 
-                                  size="sm"
-                                  cursor="pointer"
-                                  src={reply.Profile.profile_photo}
-                                  border="1px solid gray"
-                                />
-                              </Box>
-                              <Box flex="1">
-                                <Flex align="flex-start" justify="space-between">
-                                  <Flex columnGap={2} align="center" flexWrap="wrap">
-                                    <Text as="span" fontWeight="bold">
-                                      {reply.Profile.User.first_name} {reply.Profile.User.last_name}
+                              cursor="pointer"
+                              src={`${comment.Profile.profile_photo}?x=${new Date().getTime()}`}
+                              border="2px solid gray"
+                            />
+                            <Box flex="1">
+                              <Flex align="flex-start" justify="space-between">
+                                <Flex columnGap={2} align="center" flexWrap="wrap">
+                                  <Text as="span" fontWeight="bold">
+                                    {comment.Profile.User.first_name} {comment.Profile.User.last_name}
+                                  </Text>
+                                  <Flex align="center" gap={1}>
+                                    <Text as="span" fontSize="sm">@{comment.Profile.username}</Text>
+                                    ·
+                                    <Text fontSize="sm" title={new Date(comment.datetime).toLocaleDateString()}>
+                                      {dayjs(comment.datetime).format('MMM D')}
                                     </Text>
-                                    <Flex align="center" gap={1}>
-                                      <Text as="span" fontSize="sm">@{reply.Profile.username}</Text>
-                                      ·
-                                      <Text fontSize="sm" title={new Date(reply.datetime).toLocaleDateString()}>
-                                        {dayjs(reply.datetime).format('MMM D')}
-                                      </Text>
-                                    </Flex>
                                   </Flex>
-                                  {reply.Profile.id === user.Profile.id || isBookClubCreator ? (
-                                    <Menu>
-                                      <MenuButton 
-                                        as={Button}
-                                        size="md"
-                                        variant="ghost"
-                                        rounded="full"
-                                        height="25px"
-                                      >
-                                        <BiDotsHorizontalRounded/>
-                                      </MenuButton>
-                                      <MenuList>
-                                        <MenuItem
-                                          color="tomato"
-                                          value={comment.id}
-                                          onClick={e=>deleteComment(e)}
-                                          fontWeight="bold"
-                                          icon={<BiTrash size={20} />}
-                                        >
-                                          Delete
-                                        </MenuItem>
-                                      </MenuList>
-                                    </Menu>
-                                  ): null}
                                 </Flex>
-                                <Text>
-                                  {reply.reply}
-                                </Text>
-                              </Box>
-                            </HStack>
-                          ) : (
-                            i === 1 ? (
-                              <Flex justify="center">
-                                <Button
-                                  size="xs"
-                                  color="navy"
-                                  variant="ghost"
-                                  value={reply.comment_id}
-                                  onClick={e=>openReplyModal(e)}
-                                >
-                                  View more({comment.BookClubGeneralReply.length})
-                                </Button>
+
+                                <Menu>
+                                  <MenuButton 
+                                    as={Button}
+                                    size="md"
+                                    variant="ghost"
+                                    rounded="full"
+                                    height="25px"
+                                  >
+                                    <BiDotsHorizontalRounded/>
+                                  </MenuButton>
+                                  <MenuList>
+                                  {comment.Profile.id === user.Profile.id || isBookClubCreator ? (
+                                    <>
+                                      <MenuItem
+                                        color="tomato"
+                                        value={comment.id}
+                                        onClick={e=>deleteComment(e)}
+                                        fontWeight="bold"
+                                        icon={<BiTrash size={20} />}
+                                      >
+                                        Delete
+                                      </MenuItem>
+                                    </>
+                                  ): null}
+                                  <MenuItem 
+                                    value={comment.id}
+                                    onClick={e=>openReplyModal(e)}
+                                    fontWeight="bold"
+                                    icon={<BsReplyFill size={20} />}
+                                  >
+                                    Reply
+                                  </MenuItem>
+                                  </MenuList>
+                                </Menu>
+
                               </Flex>
-                            ) : null
-                          )}
-                        </Fragment>
+                              <Text>
+                                {comment.comment}
+                              </Text>
+                            </Box>
+                          </HStack>
+                          {comment.BookClubGeneralReply.length ? ( <Divider my={3} /> ) : null}
+                          {comment.BookClubGeneralReply.length ? (
+                            comment.BookClubGeneralReply.reverse().map((reply,i)=>{
+                            return (
+                              <Fragment key={i}>
+                                {i === 0 ? (
+                                  <HStack 
+                                    align="flex-start"
+                                    p={2}
+                                    rounded="md"
+                                    _hover={{
+                                      bg: "gray.300"
+                                    }}
+                                    _dark={{
+                                      '&:hover': {
+                                        bg: "gray.500"
+                                      }
+                                    }}
+                                  >
+                                    <Box pe={2}>
+                                      <Avatar
+                                        onClick={e=>navigate(`/profile/${reply.Profile.username}`)} 
+                                        size="sm"
+                                        cursor="pointer"
+                                        src={reply.Profile.profile_photo}
+                                        border="1px solid gray"
+                                      />
+                                    </Box>
+                                    <Box flex="1">
+                                      <Flex align="flex-start" justify="space-between">
+                                        <Flex columnGap={2} align="center" flexWrap="wrap">
+                                          <Text as="span" fontWeight="bold">
+                                            {reply.Profile.User.first_name} {reply.Profile.User.last_name}
+                                          </Text>
+                                          <Flex align="center" gap={1}>
+                                            <Text as="span" fontSize="sm">@{reply.Profile.username}</Text>
+                                            ·
+                                            <Text fontSize="sm" title={new Date(reply.datetime).toLocaleDateString()}>
+                                              {dayjs(reply.datetime).format('MMM D')}
+                                            </Text>
+                                          </Flex>
+                                        </Flex>
+                                        {reply.Profile.id === user.Profile.id || isBookClubCreator ? (
+                                          <Menu>
+                                            <MenuButton 
+                                              as={Button}
+                                              size="md"
+                                              variant="ghost"
+                                              rounded="full"
+                                              height="25px"
+                                            >
+                                              <BiDotsHorizontalRounded/>
+                                            </MenuButton>
+                                            <MenuList>
+                                              <MenuItem
+                                                color="tomato"
+                                                value={comment.id}
+                                                onClick={e=>deleteComment(e)}
+                                                fontWeight="bold"
+                                                icon={<BiTrash size={20} />}
+                                              >
+                                                Delete
+                                              </MenuItem>
+                                            </MenuList>
+                                          </Menu>
+                                        ): null}
+                                      </Flex>
+                                      <Text>
+                                        {reply.reply}
+                                      </Text>
+                                    </Box>
+                                  </HStack>
+                                ) : (
+                                  i === 1 ? (
+                                    <Flex justify="center">
+                                      <Button
+                                        size="xs"
+                                        color="navy"
+                                        variant="ghost"
+                                        value={reply.comment_id}
+                                        onClick={e=>openReplyModal(e)}
+                                      >
+                                        View more({comment.BookClubGeneralReply.length})
+                                      </Button>
+                                    </Flex>
+                                  ) : null
+                                )}
+                              </Fragment>
+                            )
+                          })) : null}
+                        </Box>
                       )
-                    })) : null}
-                  </Box>
-                )
-              }): null}
+                    )
+                  )
+                })
+              ): null}
             </Flex>
+            {comments?.length > increment ? (
+              <Button
+                size="xs"
+                width="auto"
+                variant="ghost"
+                onClick={e=>setIncrement(prev=>prev + 5)}
+              >
+                ...
+              </Button>
+              ) : null}
           </>
         </Flex>
       </Flex>
