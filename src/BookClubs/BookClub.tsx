@@ -980,7 +980,7 @@ export default function BookClub({server}: {server: string}) {
                     {bookClubGroups && bookClubGroups.length ? (
                       bookClubGroups.map((group,i)=>{
                         return (
-                          <>
+                          <React.Fragment key={i}>
                             {i > 0 ? "·" : null}
                             <Text>
                               {group == "0" ? "1st-4th" : (
@@ -991,7 +991,7 @@ export default function BookClub({server}: {server: string}) {
                                 )
                               )}
                             </Text>
-                          </>
+                          </React.Fragment>
                         )
                       })
                     ) : "All age groups"}
@@ -1013,7 +1013,11 @@ export default function BookClub({server}: {server: string}) {
                 <Flex className="well" direction="column" gap={2}>
                   <Flex align="center" justify="space-between">
                     <Heading as="h4" size="md">
-                      Members ({bookClub.BookClubMembers.length + 1})
+                      Members ({
+                        bookClub.BookClubMembers
+                        .filter((bcm)=>bcm.status === 2)
+                        .length + 1
+                      })
                     </Heading>
                     {isBookClubCreator ? null : (
                       memberStatus && memberStatus > 0 ? (
