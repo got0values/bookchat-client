@@ -7,6 +7,7 @@ import {
   Heading,
   Text,
   Spinner,
+  Fade,
   Stack,
   HStack,
   Button,
@@ -47,32 +48,6 @@ export default function BookClubs({server}: {server: string}) {
 
   function createBookClubModalOpen() {
     onOpenCreateBookClubModal();
-  }
-
-  async function getBookClubs() {
-    let tokenCookie: string | null = Cookies.get().token;
-    if (tokenCookie) {
-      const bookClubsData = axios
-        .get(server + "/api/getbookclubs",
-          {
-            headers: {
-              'authorization': tokenCookie
-            }
-          }
-        )
-        .then((response)=>{
-          console.log(response.data)
-          return response.data;
-        })
-        .catch(({response})=>{
-          console.log(response)
-          throw new Error(response.data.error)
-        })
-      return bookClubsData
-    }
-    else {
-      throw new Error("TC101")
-    }
   }
 
   const createBookClubNameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
@@ -120,16 +95,57 @@ export default function BookClubs({server}: {server: string}) {
   function closeCreateBookClubModal() {
     setCreateBookClubError("");
     onCloseCreateBookClubModal();
+  }  
+
+  const [bookClubsOwned,setBookClubsOwned] = useState([])
+  const [bookClubsJoined,setBookClubsJoined] = useState([])
+  const [bookClubsFriends,setBookClubsFriends] = useState([])
+  const [bookClubsPublic,setBookClubsPublic] = useState([])
+  const { isLoading, isError, data, error } = useQuery({ 
+    queryKey: ['bookClubsKey'], 
+    queryFn: async ()=>{
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        const bookClubsData = axios
+          .get(server + "/api/getbookclubs",
+            {
+              headers: {
+                'authorization': tokenCookie
+              }
+            }
+          )
+          .then((response)=>{
+            console.log(response.data)
+            const {data} = response;
+            setBookClubsOwned(data.bookClubsOwned)
+            setBookClubsJoined(data.bookClubsJoined)
+            setBookClubsFriends(data.bookClubsFriends)
+            setBookClubsPublic(data.bookClubsPublic)
+            return response.data;
+          })
+          .catch(({response})=>{
+            console.log(response)
+            throw new Error(response.data.error)
+          })
+        return bookClubsData
+      }
+      else {
+        throw new Error("TC101")
+      }
+    }
+  });
+  const allBookClubsFriends = data?.bookClubsFriends;
+  const allBookClubsPublic = data?.bookClubsPublic;
+
+  function updateBookClubsFriends(e: React.HTMLInputTypeAttribute) {
+    setBookClubsFriends(allBookClubsFriends);
+    setBookClubsFriends(prev=>prev.filter((bcf: BookClubsType)=>bcf.groups.includes(e)))
   }
-
-  const [friendsBookClubsValue,setFriendsBookClubsValue] = useState("all");
-  const [publicBookClubsValue,setPublicBookClubsValue] = useState("all");
-
-  const { isLoading, isError, data, error } = useQuery({ queryKey: ['bookClubsKey'], queryFn: getBookClubs });
-  const bookClubsOwned = data?.bookClubsOwned;
-  const bookClubsJoined = data?.bookClubsJoined;
-  const bookClubsPublic = data?.bookClubsPublic;
-  const bookClubsFriends = data?.bookClubsFriends;
+  function updateBookClubsPublic(e: React.HTMLInputTypeAttribute) {
+    setBookClubsPublic(allBookClubsPublic)
+    setBookClubsPublic(prev=>prev.filter((bcp: BookClubsType)=>bcp.groups.includes(e)))
+  }
+  
   if (isError) {
     return <Flex align="center" justify="center" minH="90vh">
       <Heading as="h1" size="xl">Error: {(error as Error).message}</Heading>
@@ -256,104 +272,105 @@ export default function BookClubs({server}: {server: string}) {
               </Flex>
               <Box>
               <Flex justify="center">
-                <RadioGroup onChange={e=>setFriendsBookClubsValue(prev=>e)} value={friendsBookClubsValue}>
+                <RadioGroup onChange={e=>updateBookClubsFriends(e)}>
                   <Stack direction='row' flexWrap="wrap" justify="center">
-                    <Radio value='all'>All</Radio>
-                    <Radio value='1-4'>1st-4th</Radio>
-                    <Radio value='5-8'>5th-8th</Radio>
-                    <Radio value='9-12'>9th-12th</Radio>
-                    <Radio value='adult'>Adult</Radio>
+                    <Radio value=''>All</Radio>
+                    <Radio value='0'>1st-4th</Radio>
+                    <Radio value='1'>5th-8th</Radio>
+                    <Radio value='2'>9th-12th</Radio>
+                    <Radio value='3'>Adult</Radio>
                   </Stack>
                 </RadioGroup>
               </Flex>
                 {bookClubsFriends && bookClubsFriends.length? (
                   (bookClubsFriends as BookClubsType[]).map((bookClub,i)=>{
                     return (
-                      <Box 
-                        p={5} 
-                        bg="gray.100"
-                        m={2} 
-                        rounded="md"
-                        _dark={{
-                          bg: "gray.600"
-                        }}
-                        _hover={{
-                          bg: "gray.200"
-                        }}
-                        key={i}
-                      >
-                        <Flex 
-                          align="center" 
-                          justify="space-between" 
-                          wrap="wrap"
-                          rowGap={2}
+                      <Fade in={true} key={i}>
+                        <Box 
+                          p={5} 
+                          bg="gray.100"
+                          m={2} 
+                          rounded="md"
+                          _dark={{
+                            bg: "gray.600"
+                          }}
+                          _hover={{
+                            bg: "gray.200"
+                          }}
                         >
-                          <Link to={`/bookclubs/${bookClub.id}`}>
-                            <Heading as="h4" size="sm">
-                              {bookClub.name}
-                            </Heading>
-                          </Link>
-                          <Flex align="center" gap={1}>
-                            <Avatar
-                              onClick={e=>navigate(`/profile/${bookClub.Profile.username}`)} 
-                              size="xs"
-                              cursor="pointer"
-                              src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
-                              border="2px solid gray"
-                            />
-                            <Link to={`/profile/${bookClub.Profile.username}`}>
-                              @{bookClub.Profile.username}
+                          <Flex 
+                            align="center" 
+                            justify="space-between" 
+                            wrap="wrap"
+                            rowGap={2}
+                          >
+                            <Link to={`/bookclubs/${bookClub.id}`}>
+                              <Heading as="h4" size="sm">
+                                {bookClub.name}
+                              </Heading>
                             </Link>
+                            <Flex align="center" gap={1}>
+                              <Avatar
+                                onClick={e=>navigate(`/profile/${bookClub.Profile.username}`)} 
+                                size="xs"
+                                cursor="pointer"
+                                src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
+                                border="2px solid gray"
+                              />
+                              <Link to={`/profile/${bookClub.Profile.username}`}>
+                                @{bookClub.Profile.username}
+                              </Link>
+                            </Flex>
                           </Flex>
-                        </Flex>
-                        <Flex align="center" justify="space-between" flexWrap="wrap">
-                          <Text>
-                            {bookClub.about}
-                          </Text>
-                          <Flex align="center" flexWrap="wrap">
-                            {JSON.parse(bookClub.groups).length ? (
-                              JSON.parse(bookClub.groups).map((group: string)=>{
-                                return (
-                                  <Flex 
-                                    align="center" 
-                                    my={1} 
-                                    key={i}
-                                  >
-                                    {i > 0 ? <BsDot/> : null}
-                                    <Tag 
-                                      colorScheme={group == "0" ? "teal" : (
-                                          group == "1" ? "green" : (
-                                            group == "2" ? "blue" : (
-                                              group == "3" ? "purple" : "red"
+                          <Flex align="center" justify="space-between" flexWrap="wrap">
+                            <Text>
+                              {bookClub.about}
+                            </Text>
+                            <Flex align="center" flexWrap="wrap">
+                              {JSON.parse(bookClub.groups).length ? (
+                                JSON.parse(bookClub.groups).map((group: string,i: number)=>{
+                                  return (
+                                    <Flex 
+                                      align="center" 
+                                      my={1} 
+                                      key={i}
+                                    >
+                                      {i > 0 ? <BsDot/> : null}
+                                      <Tag 
+                                        colorScheme={group == "0" ? "teal" : (
+                                            group == "1" ? "green" : (
+                                              group == "2" ? "blue" : (
+                                                group == "3" ? "purple" : "red"
+                                              )
+                                            )
+                                          )}
+                                        size="sm"
+                                        fontWeight="bold"
+                                      >
+                                        {group == "0" ? "1st-4th" : (
+                                          group == "1" ? "5th-8th" : (
+                                            group == "2" ? "9th-12th" : (
+                                              group == "3" ? "Adult" : null
                                             )
                                           )
                                         )}
-                                      size="sm"
-                                      fontWeight="bold"
-                                    >
-                                      {group == "0" ? "1st-4th" : (
-                                        group == "1" ? "5th-8th" : (
-                                          group == "2" ? "9th-12th" : (
-                                            group == "3" ? "Adult" : null
-                                          )
-                                        )
-                                      )}
-                                    </Tag>
-                                  </Flex>
-                                )
-                              })
-                            ) : (
-                              <Tag
-                                colorScheme="yellow"
-                                size="sm"
-                                fontWeight="bold"
-                              >
-                                All groups
-                              </Tag>
-                            )}
+                                      </Tag>
+                                    </Flex>
+                                  )
+                                })
+                              ) : (
+                                <Tag
+                                  colorScheme="yellow"
+                                  size="sm"
+                                  fontWeight="bold"
+                                >
+                                  All groups
+                                </Tag>
+                              )}
+                            </Flex>
                           </Flex>
-                        </Flex>
-                      </Box>
+                        </Box>
+                      </Fade>
                     )
                   })
                 ) : null}
@@ -369,104 +386,128 @@ export default function BookClubs({server}: {server: string}) {
 
               <Box>
                 <Flex justify="center" flexWrap="wrap">
-                  <RadioGroup onChange={e=>setPublicBookClubsValue(prev=>e)} value={publicBookClubsValue}>
+                  <RadioGroup 
+                    onChange={e=>updateBookClubsPublic(e)}
+                  >
                     <Stack direction='row' flexWrap="wrap" justify="center">
-                      <Radio value='all'>All</Radio>
-                      <Radio value='1-4'>1st-4th</Radio>
-                      <Radio value='5-8'>5th-8th</Radio>
-                      <Radio value='9-12'>9th-12th</Radio>
-                      <Radio value='adult'>Adult</Radio>
+                      <Radio 
+                        value=''
+                      >
+                        All
+                      </Radio>
+                      <Radio 
+                        value='0'
+                      >
+                        1st-4th
+                      </Radio>
+                      <Radio 
+                        value='1'
+                      >
+                        5th-8th
+                      </Radio>
+                      <Radio 
+                        value='2'
+                      >
+                        9th-12th
+                      </Radio>
+                      <Radio 
+                        value='3'
+                      >
+                        Adult
+                      </Radio>
                     </Stack>
                   </RadioGroup>
                 </Flex>
                 {bookClubsPublic && bookClubsPublic.length ? (
                   (bookClubsPublic as BookClubsType[]).map((bookClub, i)=>{
                     return (
-                      <Box 
-                        p={5} 
-                        bg="gray.100"
-                        m={2} 
-                        rounded="md"
-                        _dark={{
-                          bg: "gray.600"
-                        }}
-                        _hover={{
-                          bg: "gray.200"
-                        }}
-                        key={i}
-                      >
-                        <Flex
-                          align="center" 
-                          justify="space-between" 
-                          wrap="wrap"
-                          rowGap={2}
+                      <Fade in={true} key={i}>
+                        <Box 
+                          p={5} 
+                          bg="gray.100"
+                          m={2} 
+                          rounded="md"
+                          _dark={{
+                            bg: "gray.600"
+                          }}
+                          _hover={{
+                            bg: "gray.200"
+                          }}
+                          key={i}
                         >
-                          <Link to={`/bookclubs/${bookClub.id}`}>
-                            <Heading as="h4" size="sm">
-                              {bookClub.name}
-                            </Heading>
-                          </Link>
-                          <Flex align="center" gap={1}>
-                            <Avatar
-                              onClick={e=>navigate(`/profile/${bookClub.Profile.username}`)} 
-                              size="xs"
-                              cursor="pointer"
-                              src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
-                              border="2px solid gray"
-                            />
-                            <Link to={`/profile/${bookClub.Profile.username}`}>
-                              @{bookClub.Profile.username}
+                          <Flex
+                            align="center" 
+                            justify="space-between" 
+                            wrap="wrap"
+                            rowGap={2}
+                          >
+                            <Link to={`/bookclubs/${bookClub.id}`}>
+                              <Heading as="h4" size="sm">
+                                {bookClub.name}
+                              </Heading>
                             </Link>
+                            <Flex align="center" gap={1}>
+                              <Avatar
+                                onClick={e=>navigate(`/profile/${bookClub.Profile.username}`)} 
+                                size="xs"
+                                cursor="pointer"
+                                src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
+                                border="2px solid gray"
+                              />
+                              <Link to={`/profile/${bookClub.Profile.username}`}>
+                                @{bookClub.Profile.username}
+                              </Link>
+                            </Flex>
                           </Flex>
-                        </Flex>
-                        <Flex align="center" justify="space-between" flexWrap="wrap">
-                          <Text>
-                            {bookClub.about}
-                          </Text>
-                          <Flex align="center" flexWrap="wrap">
-                            {JSON.parse(bookClub.groups).length ? (
-                              JSON.parse(bookClub.groups).map((group: string, i: number)=>{
-                                return (
-                                  <Flex 
-                                    align="center" 
-                                    my={1}
-                                    key={i}
-                                  >
-                                    {i > 0 ? <BsDot/> : null}
-                                    <Tag 
-                                      colorScheme={group == "0" ? "teal" : (
-                                          group == "1" ? "green" : (
-                                            group == "2" ? "blue" : (
-                                              group == "3" ? "purple" : "red"
+                          <Flex align="center" justify="space-between" flexWrap="wrap">
+                            <Text>
+                              {bookClub.about}
+                            </Text>
+                            <Flex align="center" flexWrap="wrap">
+                              {JSON.parse(bookClub.groups).length ? (
+                                JSON.parse(bookClub.groups).map((group: string, i: number)=>{
+                                  return (
+                                    <Flex 
+                                      align="center" 
+                                      my={1}
+                                      key={i}
+                                    >
+                                      {i > 0 ? <BsDot/> : null}
+                                      <Tag 
+                                        colorScheme={group == "0" ? "teal" : (
+                                            group == "1" ? "green" : (
+                                              group == "2" ? "blue" : (
+                                                group == "3" ? "purple" : "red"
+                                              )
+                                            )
+                                          )}
+                                        size="sm"
+                                        fontWeight="bold"
+                                      >
+                                        {group == "0" ? "1st-4th" : (
+                                          group == "1" ? "5th-8th" : (
+                                            group == "2" ? "9th-12th" : (
+                                              group == "3" ? "Adult" : null
                                             )
                                           )
                                         )}
-                                      size="sm"
-                                      fontWeight="bold"
-                                    >
-                                      {group == "0" ? "1st-4th" : (
-                                        group == "1" ? "5th-8th" : (
-                                          group == "2" ? "9th-12th" : (
-                                            group == "3" ? "Adult" : null
-                                          )
-                                        )
-                                      )}
-                                    </Tag>
-                                  </Flex>
-                                )
-                              })
-                            ) : (
-                              <Tag
-                                colorScheme="yellow"
-                                size="sm"
-                                fontWeight="bold"
-                              >
-                                All groups
-                              </Tag>
-                            )}
+                                      </Tag>
+                                    </Flex>
+                                  )
+                                })
+                              ) : (
+                                <Tag
+                                  colorScheme="yellow"
+                                  size="sm"
+                                  fontWeight="bold"
+                                >
+                                  All groups
+                                </Tag>
+                              )}
+                            </Flex>
                           </Flex>
-                        </Flex>
-                      </Box>
+                        </Box>
+                      </Fade>
                     )
                   })
                 ) : (
