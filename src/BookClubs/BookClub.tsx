@@ -47,6 +47,10 @@ import {
   useDisclosure,
   useToast,
   Input,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
   ChakraComponent
 } from "@chakra-ui/react";
 import ReactQuill from 'react-quill';
@@ -55,6 +59,7 @@ import { HiOutlinePencil } from 'react-icons/hi';
 import { BsCardText, BsDot } from 'react-icons/bs';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { TbBooks } from 'react-icons/tb';
+import { MdChevronRight } from 'react-icons/md';
 import { BookClubGeneralComments } from "../shared/BookClubGeneralComments";
 import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
@@ -976,6 +981,18 @@ export default function BookClub({server}: {server: string}) {
   return (
     <>
       <Box className="main-content">
+        <Breadcrumb 
+          spacing='8px' 
+          separator={<MdChevronRight color='gray.500' />}
+          m=".5rem"
+        >
+          <BreadcrumbItem>
+            <BreadcrumbLink href='/bookclubs'>Book Clubs</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbItem isCurrentPage>
+            <BreadcrumbLink href='#'>Book Club</BreadcrumbLink>
+          </BreadcrumbItem>
+        </Breadcrumb>
         <Skeleton 
           isLoaded={!bookClubQuery.isLoading}
         >

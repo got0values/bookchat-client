@@ -13,9 +13,14 @@ import {
   Flex,
   Skeleton,
   Textarea,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
   useToast
 } from "@chakra-ui/react";
 import { BookClubGeneralComments } from "../shared/BookClubGeneralComments";
+import { MdChevronRight } from 'react-icons/md';
 import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -35,44 +40,37 @@ export default function BookClub({server}: {server: string}) {
   
   return (
     <Box className="main-content">
-      <Skeleton 
-        isLoaded={!isLoading}
+      <Breadcrumb 
+        spacing='8px' 
+        separator={<MdChevronRight color='gray.500' />}
+        m=".5rem"
       >
-        {bookClubBookError ? (
-          <Heading as="h2" size="2xl" >bookClubError</Heading>
-          ) : (
-          <Flex flexWrap="wrap" w="100%" align="start" justify="space-between">
-            <Stack flex="1 1 30%" top="0">
-              {isBookClubCreator ? (
-                <Box className="well">
-                  <Heading as="h4" size="sm">Admin</Heading>
-                </Box>
-              ): null}
+        <BreadcrumbItem>
+          <BreadcrumbLink href='/bookclubs'>Book Clubs</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem>
+          <BreadcrumbLink href='#'>Book Club</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem isCurrentPage>
+          <BreadcrumbLink href='#'>Discussion</BreadcrumbLink>
+        </BreadcrumbItem>
+      </Breadcrumb>
+      <Skeleton 
+        isLoaded={true}
+      >
+        <Stack flex="1 1 65%" maxW="100%">
+          <Box className="well">
+            <Heading as="h4" size="sm">Book</Heading>
+          </Box>
 
-              <Box className="well">
-                <Heading as="h4" size="sm">About</Heading>
-              </Box>
+          <Box className="well">
+            <Heading as="h4" size="sm">Topic/Question</Heading>
+          </Box>
 
-              <Box className="well">
-                <Heading as="h4" size="sm">Members</Heading>
-              </Box>
-            </Stack>
-
-            <Stack flex="1 1 65%" maxW="100%">
-              <Box className="well">
-                <Heading as="h4" size="sm">Currently Reading</Heading>
-              </Box>
-
-              <Box className="well">
-                <Heading as="h4" size="sm">Next Meeting</Heading>
-              </Box>
-
-              <Box className="well">
-                <Heading as="h4" size="sm" mb={2}>Book Discussion</Heading>
-              </Box>
-            </Stack>
-          </Flex>
-        )}
+          <Box className="well">
+            <Heading as="h4" size="sm" mb={2}>Book Discussion</Heading>
+          </Box>
+        </Stack>
       </Skeleton>
     </Box>
   );
