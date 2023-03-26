@@ -1,27 +1,24 @@
 import React, { useState, useEffect, useRef, MouseEvent, Fragment } from "react";
+// import dataEmoji from '@emoji-mart/data'
+import Picker from '@emoji-mart/react';
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BookClubGeneralCommentsType, BookClubGeneralReply } from "../types/types";
+import { BookClubGeneralCommentsType } from "../types/types";
 import dayjs from "dayjs";
 import { 
   Box,
   Heading,
   Text,
   Avatar,
-  AvatarGroup,
   Button,
-  Stack,
   HStack,
   Flex,
   Spinner,
-  Skeleton,
-  Textarea,
   Divider,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
-  MenuDivider,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -31,10 +28,18 @@ import {
   ModalCloseButton,
   useDisclosure,
   useToast,
-  Input
+  Input,
+  InputGroup,
+  InputRightElement,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Portal,
+  useColorMode,
+  ColorModeContextType
 } from "@chakra-ui/react";
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
-import { BsReplyFill } from 'react-icons/bs';
+import { BsReplyFill, BsEmojiSmile } from 'react-icons/bs';
 import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -45,6 +50,7 @@ export const BookClubGeneralComments = (props: any) => {
   const queryClient = useQueryClient();
   const toast = useToast();
   const {user} = useAuth();
+  const {colorMode} = useColorMode();
 
   const [increment,setIncrement] = useState(5);
   
@@ -208,6 +214,15 @@ export const BookClubGeneralComments = (props: any) => {
     onClosReplyModal();
   }
 
+  function pickEmoji(e: {unified: string}) {
+    let unifiedSplit = e.unified.split("-");
+    let unifiedArray: any[] = []
+    unifiedSplit.forEach((us)=>unifiedArray.push("0x" + us))
+    const unifiedString = String.fromCodePoint(...unifiedArray);
+    commentRef.current.value += unifiedString;
+    // commentRef.current.value += e.native;
+  }
+
   const bookClubGeneralCommentsQuery = useQuery({ 
     queryKey: ['bookClubGeneralCommentsKey'], 
     queryFn: getComments
@@ -247,10 +262,33 @@ export const BookClubGeneralComments = (props: any) => {
               justify="space-between"
               gap={1}
             >
-              <Input
-                type="text"
-                ref={commentRef}
-              />
+              <InputGroup>
+                <Input
+                  type="text"
+                  ref={commentRef}
+                />
+                <InputRightElement display={["none","none","inline-flex"]}>
+                  <Popover>
+                    <PopoverTrigger>
+                      <Button variant="ghost" p={0}>
+                        <BsEmojiSmile size={15}/>
+                      </Button>
+                    </PopoverTrigger>
+                    <Portal>
+                      <PopoverContent>
+                        <Box 
+                          as={Picker} 
+                          set="twitter"
+                          // data={openMojiData}
+                          previewPosition="none"
+                          theme={colorMode === 'dark' ? 'dark' : 'light'}
+                          onEmojiSelect={(e: any)=>pickEmoji(e)} 
+                        />
+                      </PopoverContent>
+                    </Portal>
+                  </Popover>
+                </InputRightElement>
+              </InputGroup>
               <Button
                 type="submit"
                 disabled={postCommentMutation.isLoading}
