@@ -55,6 +55,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
         duration: 9000,
         isClosable: true
       })
+      navigate("/login")
       throw new Error(response.message)
     })
 
