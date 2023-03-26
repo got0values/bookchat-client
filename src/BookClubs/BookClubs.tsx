@@ -26,6 +26,7 @@ import {
   Avatar,
   Radio,
   RadioGroup,
+  Divider,
   HTMLChakraComponents
 } from "@chakra-ui/react";
 import { IoIosAdd } from 'react-icons/io';
@@ -137,11 +138,9 @@ export default function BookClubs({server}: {server: string}) {
   const allBookClubsFriends = data?.bookClubsFriends;
   const allBookClubsPublic = data?.bookClubsPublic;
 
-  function updateBookClubsFriends(e: React.HTMLInputTypeAttribute) {
+  function filterBookClubsByGroup(e: React.HTMLInputTypeAttribute) {
     setBookClubsFriends(allBookClubsFriends);
     setBookClubsFriends(prev=>prev.filter((bcf: BookClubsType)=>bcf.groups.includes(e)))
-  }
-  function updateBookClubsPublic(e: React.HTMLInputTypeAttribute) {
     setBookClubsPublic(allBookClubsPublic)
     setBookClubsPublic(prev=>prev.filter((bcp: BookClubsType)=>bcp.groups.includes(e)))
   }
@@ -264,6 +263,44 @@ export default function BookClubs({server}: {server: string}) {
               </Box>
             </Box>
 
+            <Divider/>
+
+            <Box className="well">
+              <Flex justify="center" flexWrap="wrap">
+                <RadioGroup 
+                  onChange={e=>filterBookClubsByGroup(e)}
+                >
+                  <Stack direction='row' flexWrap="wrap" justify="center">
+                    <Radio 
+                      value=''
+                    >
+                      All
+                    </Radio>
+                    <Radio 
+                      value='0'
+                    >
+                      1st-4th
+                    </Radio>
+                    <Radio 
+                      value='1'
+                    >
+                      5th-8th
+                    </Radio>
+                    <Radio 
+                      value='2'
+                    >
+                      9th-12th
+                    </Radio>
+                    <Radio 
+                      value='3'
+                    >
+                      Adult
+                    </Radio>
+                  </Stack>
+                </RadioGroup>
+              </Flex>
+            </Box>
+
             <Box className="well">
               <Flex align="center" justify="space-between" gap={2} mb={2}>
                 <Heading as="h3" size="md">
@@ -271,17 +308,6 @@ export default function BookClubs({server}: {server: string}) {
                 </Heading>
               </Flex>
               <Box>
-              <Flex justify="center">
-                <RadioGroup onChange={e=>updateBookClubsFriends(e)}>
-                  <Stack direction='row' flexWrap="wrap" justify="center">
-                    <Radio value=''>All</Radio>
-                    <Radio value='0'>1st-4th</Radio>
-                    <Radio value='1'>5th-8th</Radio>
-                    <Radio value='2'>9th-12th</Radio>
-                    <Radio value='3'>Adult</Radio>
-                  </Stack>
-                </RadioGroup>
-              </Flex>
                 {bookClubsFriends && bookClubsFriends.length? (
                   (bookClubsFriends as BookClubsType[]).map((bookClub,i)=>{
                     return (
@@ -385,39 +411,6 @@ export default function BookClubs({server}: {server: string}) {
               </Flex>
 
               <Box>
-                <Flex justify="center" flexWrap="wrap">
-                  <RadioGroup 
-                    onChange={e=>updateBookClubsPublic(e)}
-                  >
-                    <Stack direction='row' flexWrap="wrap" justify="center">
-                      <Radio 
-                        value=''
-                      >
-                        All
-                      </Radio>
-                      <Radio 
-                        value='0'
-                      >
-                        1st-4th
-                      </Radio>
-                      <Radio 
-                        value='1'
-                      >
-                        5th-8th
-                      </Radio>
-                      <Radio 
-                        value='2'
-                      >
-                        9th-12th
-                      </Radio>
-                      <Radio 
-                        value='3'
-                      >
-                        Adult
-                      </Radio>
-                    </Stack>
-                  </RadioGroup>
-                </Flex>
                 {bookClubsPublic && bookClubsPublic.length ? (
                   (bookClubsPublic as BookClubsType[]).map((bookClub, i)=>{
                     return (
