@@ -987,7 +987,7 @@ export default function BookClub({server}: {server: string}) {
                   <Text>{bookClub.about}</Text>
                   <Flex align="center" justify="center" flexWrap="wrap" gap={1}>
                     {bookClubGroups && bookClubGroups.length ? (
-                      bookClubGroups.map((group,i)=>{
+                      bookClubGroups.sort().map((group,i)=>{
                         return (
                           <Flex align="center" key={i}>
                             {i > 0 ? <BsDot/> : null}
