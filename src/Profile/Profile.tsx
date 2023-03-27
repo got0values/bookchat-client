@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ProfileProps, HTMLInputEvent, ProfileType } from '../types/types';
 import { 
   Box,
@@ -47,6 +47,7 @@ const useProfile = ({server}: ProfileProps) => {
   const { paramsUsername } = useParams<{paramsUsername: string}>();
   const [ profileDataUpdated, setProfileDataUpdated ] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   //self, unauthorized (differentLibrary), nonFollower, requesting, follower
   const [ viewer, setViewer ] = useState("nonFollower");
@@ -129,12 +130,6 @@ const useProfile = ({server}: ProfileProps) => {
             'content-type': 'multipart/form-data'
           }}
           )
-          .then((response)=>{
-            if (response.data.success){
-              getUser();
-              closeProfilePicModal();
-            }
-          })
           .catch(({response})=>{
             if (axios.isCancel(response)) {
               console.log("successfully aborted")
@@ -146,6 +141,14 @@ const useProfile = ({server}: ProfileProps) => {
       else {
         throw new Error("Error: TC102")
       }
+      return getProfile();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['profileKey'] })
+      queryClient.resetQueries({queryKey: ['profileKey']})
+      queryClient.setQueryData(["profileKey"],data)
+      getUser();
+      closeProfileDataModal();
     }
   })
   function updateUserProfilePhoto() {
@@ -169,47 +172,52 @@ const useProfile = ({server}: ProfileProps) => {
   const profileUserNameRef = useRef({} as HTMLInputElement);
   const profileAboutRef = useRef({} as HTMLInputElement);
   const profileDataMutation = useMutation({
-      mutationFn: async () => {
-        let tokenCookie: string | null = Cookies.get().token;
-        let navigateToNewUsernameOnReponse = false;
-        if (paramsUsername !== profileUserNameRef.current.value) {
-          navigateToNewUsernameOnReponse = true;
-        }
-        if (tokenCookie){
-          await axios
-          .post(server + "/api/updateprofiledata", 
-          {
-            username: profileUserNameRef.current.value,
-            about: profileAboutRef.current.value,
-            interests: profileInterests
-          },
-          {headers: {
-            'authorization': tokenCookie
-          }}
-          )
-          .then((response)=>{
-            if (response.data.success){
-              if (navigateToNewUsernameOnReponse) {
-                const newUsername = response.data.message.Profile.username
-                navigate("/profile/" + newUsername)
-              }
-              else {
-                setProfileDataUpdated(true);
-              }
-              closeProfileDataModal();
-            }
-          })
-          .catch(({response})=>{
-            console.log(response)
-            throw new Error(response.data.message);
-          })
-        }
-        else {
-          throw new Error("Please login again");
-        }
+    mutationFn: async () => {
+      let tokenCookie: string | null = Cookies.get().token;
+      let navigateToNewUsernameOnReponse = false;
+      if (paramsUsername !== profileUserNameRef.current.value) {
+        navigateToNewUsernameOnReponse = true;
       }
+      if (tokenCookie){
+        await axios
+        .post(server + "/api/updateprofiledata", 
+        {
+          username: profileUserNameRef.current.value,
+          about: profileAboutRef.current.value,
+          interests: profileInterests
+        },
+        {headers: {
+          'authorization': tokenCookie
+        }}
+        )
+        .then((response)=>{
+          if (response.data.success){
+            if (navigateToNewUsernameOnReponse) {
+              const newUsername = response.data.message.Profile.username
+              navigate("/profile/" + newUsername)
+            }
+            else {
+              setProfileDataUpdated(true);
+            }
+            closeProfileDataModal();
+          }
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data.message);
+        })
+      }
+      else {
+        throw new Error("Please login again");
+      }
+      return getProfile()
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['profileKey'] })
+      queryClient.resetQueries({queryKey: ['profileKey']})
+      queryClient.setQueryData(["profileKey"],data)
     }
-  )
+  })
   function updateProfileData() {
     profileDataMutation.mutate();
   }

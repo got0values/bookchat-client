@@ -109,11 +109,14 @@ export const BookClubGeneralComments = (props: any) => {
       else {
         throw new Error("Error: TKBC")
       }
+      const newCommentsData = getComments();
+      return newCommentsData;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookClubGeneralCommentsKey'] })
-      queryClient.resetQueries({queryKey: ['bookClubGeneralCommentsKey']})
-      getComments()
+    onSuccess: (data,variables) => {
+      // queryClient.invalidateQueries({ queryKey: ['bookClubGeneralCommentsKey'] })
+      // queryClient.resetQueries({queryKey: ['bookClubGeneralCommentsKey']})
+      // getComments()
+      queryClient.setQueryData(["bookClubGeneralCommentsKey"],data)
       commentRef.current.value = "";
     }
   })
@@ -145,11 +148,13 @@ export const BookClubGeneralComments = (props: any) => {
         })
         throw new Error(response.data?.message)
       })
+      return getComments();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookClubGeneralCommentsKey'] })
-      queryClient.resetQueries({queryKey: ['bookClubGeneralCommentsKey']})
-      getComments()
+    onSuccess: (data,variables) => {
+      // queryClient.invalidateQueries({ queryKey: ['bookClubGeneralCommentsKey'] })
+      // queryClient.resetQueries({queryKey: ['bookClubGeneralCommentsKey']})
+      // getComments()
+      queryClient.setQueryData(["bookClubGeneralCommentsKey"],data)
     }
   })
   function deleteComment(e: MouseEvent<HTMLButtonElement>) {
@@ -194,11 +199,13 @@ export const BookClubGeneralComments = (props: any) => {
       else {
         throw new Error("Error: TKBCR")
       }
+      return getComments()
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookClubGeneralCommentsKey'] })
-      queryClient.resetQueries({queryKey: ['bookClubGeneralCommentsKey']})
-      getComments()
+    onSuccess: (data,variables) => {
+      // queryClient.invalidateQueries({ queryKey: ['bookClubGeneralCommentsKey'] })
+      // queryClient.resetQueries({queryKey: ['bookClubGeneralCommentsKey']})
+      // getComments()
+      queryClient.setQueryData(["bookClubGeneralCommentsKey"],data)
       closeReplyModal()
     }
   })
@@ -298,7 +305,7 @@ export const BookClubGeneralComments = (props: any) => {
             </Flex>
             
             <Flex direction="column">
-              {comments ? (
+              {comments && comments.length ? (
                 comments.slice(0).reverse().map((comment,i) => {
                   return (
                     i >= increment ? (
