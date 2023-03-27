@@ -8,14 +8,10 @@ import {
   Heading,
   Text,
   Checkbox,
-  Avatar,
-  AvatarGroup,
   Button,
   Stack,
-  HStack,
   Flex,
   Skeleton,
-  FormControl,
   Link,
   Image,
   Center,
@@ -24,12 +20,7 @@ import {
   FormLabel,
   FormErrorMessage,
   Textarea,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
   Popover,
-  Portal,
   PopoverTrigger,
   PopoverContent,
   PopoverArrow,
@@ -49,9 +40,7 @@ import {
   Input,
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-  ChakraComponent
+  BreadcrumbLink
 } from "@chakra-ui/react";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -1223,6 +1212,7 @@ export default function BookClub({server}: {server: string}) {
                             <Button 
                               colorScheme="teal"
                               leftIcon={<BsCardText size={20} />}
+                              onClick={e=>navigate(`${currentBook?.id}`)}
                             >
                               Discussion
                             </Button>
@@ -1314,14 +1304,19 @@ export default function BookClub({server}: {server: string}) {
                                 <Box 
                                   p={2}
                                 >
-                                  <ReactQuill 
+                                  <Box 
+                                    as={ReactQuill} 
                                     theme="snow"
                                     modules={{
                                       toolbar: ''
                                     }}
                                     readOnly={true}
                                     defaultValue={bookClub.next_meeting_location}
-                                    style={{border: 'none'}}
+                                    sx={{
+                                      '.ql-container': {
+                                        borderRadius: '5px'
+                                      }
+                                    }}
                                   />
                                 </Box>
                               ) : null}

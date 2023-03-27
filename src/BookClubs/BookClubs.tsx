@@ -152,7 +152,7 @@ export default function BookClubs({server}: {server: string}) {
   }
   
   return (
-    <Box className="main-content">
+    <Box className="main-content-smaller">
       <Skeleton 
         isLoaded={!isLoading}
       >

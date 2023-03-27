@@ -31,6 +31,11 @@ const config = {
         px: "20px",
         maxW: '1000px'
       },
+      '.main-content-smaller': {
+        w: "100%",
+        px: "20px",
+        maxW: '700px'
+      },
       '.well': {
         bg: 'white',
         p: 4,

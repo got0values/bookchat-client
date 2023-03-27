@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { BookClubGeneralCommentsType } from "../types/types";
 import { BookClubBookType } from '../types/types';
 import { 
@@ -17,61 +18,201 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbSeparator,
+  Divider,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
   useToast
 } from "@chakra-ui/react";
 import { BookClubGeneralComments } from "../shared/BookClubGeneralComments";
+import ReactQuill from 'react-quill';
 import { MdChevronRight } from 'react-icons/md';
+import { HiOutlinePencil } from 'react-icons/hi';
 import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
 import axios from "axios";
 
 
 export default function BookClub({server}: {server: string}) {
-  const toast = useToast();
-  const navigate = useNavigate();
   const { paramsBookClubBookId } = useParams();
   const { user } = useAuth();
-  const [bookClubBookError,setBookClubBookError] = useState<string | null>(null);
-  const [bookClubBook,setBookClubBook] = useState<BookClubBookType | null>(null);
-  const [isBookClubCreator,setIsBookClubCreator] = useState<boolean>(false);
-  const [isLoading,setIsLoading] = useState<boolean>(true);
 
-  
+  async function getBookClubBook() {
+    let tokenCookie: string | null = Cookies.get().token;
+    if (tokenCookie) {
+      const bookClubBook = await axios
+        .get(server + "/api/bookclubdiscussion?bookclubbookid=" + paramsBookClubBookId,
+          {
+            headers: {
+              authorization: tokenCookie
+            }
+          }
+        )
+        .then((response)=>{
+          console.log(response.data)
+          return response.data.message;
+        })
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data?.message) {
+            throw new Error(response.data?.message)
+          }
+        })
+      return bookClubBook;
+    }
+    else {
+      throw new Error("An error has occurred")
+    }
+  }
+
+  const { 
+    isOpen: isOpenEditQuestionModal, 
+    onOpen: onOpenEditQuestionModal, 
+    onClose: onClosEditQuestionModal 
+  } = useDisclosure()
+  function openEditQuestionModal() {
+    onOpenEditQuestionModal()
+  }
+  function closeEditQuestionModal() {
+    onClosEditQuestionModal()
+  }
+  const questionRef = useRef({} as ReactQuill)
+
+  const bookClubBookQuery = useQuery({ 
+    queryKey: ['bookClubBookKey'], 
+    queryFn: getBookClubBook
+  });
+  const bookClubBook: BookClubBookType = bookClubBookQuery.data;
+  const isCreator: boolean = bookClubBook?.BookClubs!.creator === user.Profile.id ? true : false;
+
+  if (bookClubBookQuery.isError) {
+    return (
+      <Flex align="center" justify="center" minH="90vh">
+        <Heading as="h1" size="xl">Error: {(bookClubBookQuery.error as Error).message}</Heading>
+      </Flex>
+    )
+  }
   
   return (
-    <Box className="main-content">
-      <Breadcrumb 
-        spacing='8px' 
-        separator={<MdChevronRight color='gray.500' />}
-        m=".5rem"
-      >
-        <BreadcrumbItem>
-          <BreadcrumbLink href='/bookclubs'>Book Clubs</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbItem>
-          <BreadcrumbLink href='#'>Book Club</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbItem isCurrentPage>
-          <BreadcrumbLink href='#'>Discussion</BreadcrumbLink>
-        </BreadcrumbItem>
-      </Breadcrumb>
-      <Skeleton 
-        isLoaded={true}
-      >
-        <Stack flex="1 1 65%" maxW="100%">
-          <Box className="well">
-            <Heading as="h4" size="sm">Book</Heading>
-          </Box>
+    <>
+      <Box className="main-content-smaller">
+        <Breadcrumb 
+          spacing='8px' 
+          separator={<MdChevronRight color='gray.500' />}
+          m=".5rem"
+        >
+          <BreadcrumbItem>
+            <BreadcrumbLink href='/bookclubs'>Book Clubs</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbItem>
+            <BreadcrumbLink href={`/bookclubs/${bookClubBook?.book_club}`}>Book Club</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbItem isCurrentPage>
+            <BreadcrumbLink href='#'>Discussion</BreadcrumbLink>
+          </BreadcrumbItem>
+        </Breadcrumb>
+        <Skeleton 
+          isLoaded={!bookClubBookQuery.isLoading}
+        >
+          <Stack flex="1 1 65%" maxW="100%">
+            <Box className="well">
 
-          <Box className="well">
-            <Heading as="h4" size="sm">Topic/Question</Heading>
-          </Box>
+              <Box>
+                <Flex 
+                  w="100%"
+                  direction="column"
+                  align="center" 
+                  justify="center"
+                >
+                  <Text fontWeight="bold" >{bookClubBook?.title}</Text>
+                  {bookClubBook?.author}
+                </Flex>
+              </Box>
 
-          <Box className="well">
-            <Heading as="h4" size="sm" mb={2}>Book Discussion</Heading>
-          </Box>
-        </Stack>
-      </Skeleton>
-    </Box>
+              <Divider my={2} />
+
+              <Flex direction="column" gap={2}>
+                <Flex align="center" justify="space-between">
+                  <Heading as="h4" size="sm">Topic/Question</Heading>
+                  {isCreator ? (
+                    <Button 
+                      variant="ghost"
+                      onClick={e=>openEditQuestionModal()}
+                      leftIcon={<HiOutlinePencil size={15} />}
+                    >
+                      Edit
+                    </Button>
+                  ) : null}
+                </Flex>
+                <Box>
+                  <Box 
+                    as={ReactQuill} 
+                    theme="snow"
+                    modules={{
+                      toolbar: ''
+                    }}
+                    readOnly={true}
+                    // defaultValue={bookClub.next_meeting_location}
+                    border="none"
+                    sx={{
+                      '.ql-container': {
+                        borderRadius: '5px'
+                      }
+                    }}
+                  />
+                </Box>
+              </Flex>
+
+            </Box>
+
+            <Box className="well">
+              <Heading as="h4" size="sm" mb={2}>Discussion</Heading>
+            </Box>
+          </Stack>
+        </Skeleton>
+      </Box>
+      <Modal isOpen={isOpenEditQuestionModal} onClose={closeEditQuestionModal} size="xl" isCentered>
+        <ModalOverlay />
+        <ModalContent maxH="80vh">
+          <ModalHeader>
+            Topic/Questions
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Box>
+              <ReactQuill 
+                id="location" 
+                theme="snow"
+                modules={{
+                  toolbar: [
+                    [{ 'header': []}],
+                    ['bold', 'italic', 'underline'],
+                    [{'list': 'ordered'}, {'list': 'bullet'}],
+                    ['link'],
+                    [{'align': []}],
+                    ['clean']
+                  ]
+                }}
+                formats={[
+                  'header','bold', 'italic', 'underline','list', 'bullet', 'align','link'
+                ]}
+                ref={questionRef}
+                // value={bookClub?.next_meeting_location}
+              />
+            </Box>
+          </ModalBody>
+          <ModalFooter>
+            <Button>
+              Update
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
