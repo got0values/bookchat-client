@@ -41,6 +41,8 @@ import axios from "axios";
 export default function BookClub({server}: {server: string}) {
   const { paramsBookClubBookId } = useParams();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const toast = useToast();
 
   async function getBookClubBook() {
     let tokenCookie: string | null = Cookies.get().token;
@@ -81,7 +83,44 @@ export default function BookClub({server}: {server: string}) {
   function closeEditQuestionModal() {
     onClosEditQuestionModal()
   }
-  const questionRef = useRef({} as ReactQuill)
+  const topicRef = useRef({} as ReactQuill)
+  const updateTopicMutation = useMutation({
+    mutationFn: async ()=>{
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+        .post(server + "/api/updatebookclubbooktopic",
+          {
+            topic: topicRef.current.value,
+            bookClubBookId: parseInt(paramsBookClubBookId!)
+          },
+          {
+            headers: {
+              authorization: tokenCookie
+            }
+          }
+        )
+      }
+      else {
+        throw new Error("An error has occurred")
+      }
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['bookClubBookKey'] })
+      queryClient.resetQueries({queryKey: ['bookClubBookKey']})
+      queryClient.setQueryData(["bookClubBookKey"],data)
+      toast({
+        description: "Book club topic updated",
+        status: "success",
+        duration: 9000,
+        isClosable: true
+      })
+      closeEditQuestionModal()
+    }
+  })
+  function updateTopic() {
+    updateTopicMutation.mutate();
+  }
 
   const bookClubBookQuery = useQuery({ 
     queryKey: ['bookClubBookKey'], 
@@ -89,6 +128,7 @@ export default function BookClub({server}: {server: string}) {
   });
   const bookClubBook: BookClubBookType = bookClubBookQuery.data;
   const isCreator: boolean = bookClubBook?.BookClubs!.creator === user.Profile.id ? true : false;
+  const topic = bookClubBook?.topic;
 
   if (bookClubBookQuery.isError) {
     return (
@@ -157,7 +197,7 @@ export default function BookClub({server}: {server: string}) {
                       toolbar: ''
                     }}
                     readOnly={true}
-                    // defaultValue={bookClub.next_meeting_location}
+                    defaultValue={topic}
                     border="none"
                     sx={{
                       '.ql-container': {
@@ -201,13 +241,15 @@ export default function BookClub({server}: {server: string}) {
                 formats={[
                   'header','bold', 'italic', 'underline','list', 'bullet', 'align','link'
                 ]}
-                ref={questionRef}
-                // value={bookClub?.next_meeting_location}
+                ref={topicRef}
+                value={topic}
               />
             </Box>
           </ModalBody>
           <ModalFooter>
-            <Button>
+            <Button
+              onClick={e=>updateTopic()}
+            >
               Update
             </Button>
           </ModalFooter>

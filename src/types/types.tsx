@@ -170,6 +170,7 @@ export interface BookClubBookType {
   description: string;
   link: string;
   created_on?: Date | string;
+  topic?: string;
   BookClubs?: BookClubsType;
 }
 
