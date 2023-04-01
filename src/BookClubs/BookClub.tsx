@@ -1622,10 +1622,12 @@ export default function BookClub({server}: {server: string}) {
                       <Heading as="h4" size="md" mb={2}>General Discussion</Heading>
                       <BookClubGeneralComments 
                         server={server}
-                        bookClubId={paramsBookClubId}
+                        bookClubId={paramsBookClubId!}
+                        bookClubBookId={null}
                         subdomain={window.location.host.split(".")[0]}
                         uri={window.location.pathname}
-                        isBookClubCreator={isBookClubCreator}
+                        isBookClubCreator={isBookClubCreator!}
+                        type="bookClub"
                       />
                     </Box>
                   </>

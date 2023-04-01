@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef, MouseEvent, Fragment } from "react"
 import Picker from '@emoji-mart/react';
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BookClubGeneralCommentsType } from "../types/types";
+import { BookClubGeneralCommentsType, BookClubGeneralCommentsProps } from "../types/types";
 import dayjs from "dayjs";
 import { 
   Box,
@@ -44,8 +44,9 @@ import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
 import axios from "axios";
 
-export const BookClubGeneralComments = (props: any) => {
-  const {server,bookClubId,subdomain,uri,isBookClubCreator} = props;
+export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => {
+  const {server,bookClubId,bookClubBookId,subdomain,uri,isBookClubCreator,type} = props;
+  const typeId = bookClubId ? bookClubId : bookClubBookId;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -58,7 +59,7 @@ export const BookClubGeneralComments = (props: any) => {
     let tokenCookie: string | null = Cookies.get().token;
     if (tokenCookie) {
       const commentsData = axios
-        .get(server + "/api/bookclubgeneralcomments?bookclubid=" + bookClubId,
+        .get(`${server}/api/bookclubgeneralcomments?typeId=${typeId}&type=${type}`,
           {
             headers: {
               authorization: tokenCookie
@@ -93,7 +94,8 @@ export const BookClubGeneralComments = (props: any) => {
         await axios
         .post(server + "/api/bookclubgeneralcomment",
         {
-          bookClubId,
+          typeId,
+          type,
           subdomain,
           uri,
           comment

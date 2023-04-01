@@ -218,6 +218,16 @@ export interface BookClubGeneralCommentsType {
   BookClubGeneralReply: BookClubGeneralReply[];
 }
 
+export interface BookClubGeneralCommentsProps {
+  server: string;
+  bookClubId: string | null;
+  bookClubBookId: string | null
+  subdomain: string;
+  uri: string;
+  type: string;
+  isBookClubCreator: boolean;
+}
+
 export interface BookClubGeneralReply {
   id: number;
   comment_id: number;

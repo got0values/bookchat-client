@@ -189,7 +189,7 @@ export default function BookClub({server}: {server: string}) {
                     </Button>
                   ) : null}
                 </Flex>
-                <Box>
+                <Box boxShadow="md">
                   <Box 
                     as={ReactQuill} 
                     theme="snow"
@@ -212,6 +212,15 @@ export default function BookClub({server}: {server: string}) {
 
             <Box className="well">
               <Heading as="h4" size="sm" mb={2}>Discussion</Heading>
+              <BookClubGeneralComments
+                server={server}
+                bookClubId={null}
+                bookClubBookId={paramsBookClubBookId!}
+                subdomain={window.location.host.split(".")[0]}
+                uri={window.location.pathname}
+                isBookClubCreator={isCreator}
+                type="bookClubBook"
+              />
             </Box>
           </Stack>
         </Skeleton>
