@@ -64,6 +64,7 @@ export interface ProfileType {
   about?: string;
   Interests?: Interests[];
   User: User;
+  BookClubs: BookClubsType[];
   Following_Following_self_profile_idToProfile?: Following_Following_self_profile_idToProfile[];
   Following_Following_following_profile_idToProfile?: Following_Following_following_profile_idToProfile[];
   BookClubMembers_BookClubMembers_book_club_creatorToProfile: BookClubMember[];

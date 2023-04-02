@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ProfileProps, HTMLInputEvent, ProfileType } from '../types/types';
 import { 
@@ -31,6 +31,16 @@ import {
   TagCloseButton,
   Skeleton,
   Spinner,
+  UnorderedList,
+  ListItem,
+  Popover,
+  PopoverTrigger,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
+  PopoverHeader,
+  PopoverFooter,
   useDisclosure
 } from "@chakra-ui/react";
 import collectionToArray from "../utils/collectionToArray";
@@ -254,17 +264,47 @@ const useProfile = ({server}: ProfileProps) => {
     })
   }
 
-  return {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation};
+  const { 
+    isOpen: isOpenReadingModal, 
+    onOpen: onOpenReadingModal, 
+    onClose: onCloseReadingModal 
+  } = useDisclosure()
+
+  function closeReadingModal() {
+    setBookResults(null)
+    onCloseReadingModal();
+  }
+
+  const whatImReadingRef = useRef({} as HTMLInputElement);
+  const [bookResults,setBookResults] = useState<any[] | null>(null);
+  const [bookResultsLoading,setBookResultsLoading] = useState(false)
+  async function searchBook() {
+    setBookResultsLoading(true)
+    await axios
+      .get("https://www.googleapis.com/books/v1/volumes?q=" + whatImReadingRef.current.value)
+      .then((response)=>{
+        console.log(response)
+        setBookResults(response.data.items)
+        setBookResultsLoading(false)
+        onOpenReadingModal();
+      })
+      .catch((error)=>{
+        console.log(error)
+      })
+  }
+
+  return {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal};
 }
 
 
 export default function Profile({server}: ProfileProps) {
-  const {user,setProfileDataUpdated,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation} = useProfile({server});
+  const {user,setProfileDataUpdated,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal} = useProfile({server});
 
   
 
   const { isLoading, isError, data, error } = useQuery({ queryKey: ['profileKey',paramsUsername, profileDataUpdated], queryFn: getProfile });
   const profileData: ProfileType = data;
+  console.log(profileData)
   if (isLoading) {
     return (
       <Flex align="center" justify="center" minH="80vh">
@@ -300,7 +340,7 @@ export default function Profile({server}: ProfileProps) {
                   src={viewer === "self" ? (userProfilePhoto ? userProfilePhoto : "") : profileData.profile_photo ? profileData.profile_photo : ""}
                   border="2px solid gray"
                 />
-                <Heading fontSize={'3xl'} fontFamily={'body'}>
+                <Heading fontSize={'3xl'}>
                   {`${profileData.User?.first_name} ${profileData.User?.last_name}`}
                 </Heading>
                 <Text fontWeight={600} color={'gray.500'} mb={4}>
@@ -425,29 +465,56 @@ export default function Profile({server}: ProfileProps) {
               </Center>
 
               <Box className="well">
-                <Heading as="h2" size="md">My Book Clubs</Heading>
+                <Heading as="h2" size="md">{profileData?.User.first_name}'s Book Clubs</Heading>
+                <UnorderedList my={1}>
+                  {profileData.BookClubs.length ? profileData.BookClubs.map((bookClub,i)=>{
+                    return (
+                      <ListItem key={i}>
+                        <Link
+                          to={`/bookclubs/${bookClub.id}`}
+                        >
+                          {bookClub.name}
+                        </Link>
+                      </ListItem>
+                    )
+                  }) : (
+                    <i>No book clubs yet</i>
+                  )}
+                </UnorderedList>
               </Box>
             </Stack>
 
             <Stack flex="1 1 65%">
 
               <Box className="well">
-                <Heading as="h3" size="md" mb={2}>
-                  What I'm Reading
-                </Heading>
-                <Flex gap={2} align="center">
-                  <Input 
-                    type="text" 
-                    placeholder="What i'm reading"
-                    borderRadius="25px" 
-                    border="transparent"
-                    bg="gray.100" 
-                    _dark={{
-                      bg: "gray.500"
-                    }}
-                  />
-                  <Button>Submit</Button>
-                </Flex>
+                {viewer === "self" ? (
+                  <>
+                    <Heading as="h3" size="md" mb={2}>
+                      What I'm Reading
+                    </Heading>
+                    <Flex gap={2} align="center">
+                      <Input 
+                        type="text" 
+                        placeholder="What i'm reading"
+                        borderRadius="25px" 
+                        border="transparent"
+                        bg="gray.100" 
+                        _dark={{
+                          bg: "gray.500"
+                        }}
+                        ref={whatImReadingRef}
+                        onKeyDown={e=>e.key === 'Enter' ? searchBook() : null}
+                      />
+                      <Button onClick={searchBook}>Search</Button>
+                    </Flex>
+                  </>
+                ) : (
+                  <>
+                    <Heading as="h3" size="md" mb={2}>
+                      Currently Reading
+                    </Heading>
+                  </>
+                )}
               </Box>
 
               <Flex className="well" gap={2} align="center">
@@ -625,6 +692,102 @@ export default function Profile({server}: ProfileProps) {
                     </>
                   </HStack>
                 </ModalFooter>
+              </ModalContent>
+            </Modal>
+
+            <Modal 
+              isOpen={isOpenReadingModal} 
+              onClose={closeReadingModal}
+              isCentered
+            >
+              <ModalOverlay />
+              <ModalContent maxH="80vh">
+                <ModalHeader>
+                  New Book Club Book
+                </ModalHeader>
+                <ModalCloseButton />
+                  <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
+                    <Stack gap={2} position="relative">
+                      {bookResultsLoading ? (
+                        <Center>
+                          <Spinner size="xl"/>
+                        </Center>
+                      ) : (
+                        <Flex gap={1} align="center" justify="space-between" flexWrap="wrap">
+                          {bookResults ? bookResults.map((book,i)=>{
+                            return (
+                              <Flex
+                                m={3}
+                                p={2}
+                                maxW="165px"
+                                direction="column"
+                                align="center"
+                                rounded="md"
+                                bg="gray.100"
+                                _dark={{
+                                  bg: "gray.600"
+                                }}
+                                key={i}
+                              >
+                                <Box
+                                  pointerEvents="none"
+                                >
+                                  <Image
+                                    maxW="100%" 
+                                    w="100%"
+                                    h="auto"
+                                    pt={2} 
+                                    mb={1}
+                                    className="book-image"
+                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                    src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
+                                    alt="book image"
+                                  />
+                                  <Heading
+                                    as="h4"
+                                    size="sm"
+                                  >
+                                    {book.volumeInfo.title}
+                                  </Heading>
+                                  <Text>
+                                    {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
+                                  </Text>
+                                </Box>
+                                <Flex align="center" justify="space-between">
+                                  <Popover isLazy>
+                                    <PopoverTrigger>
+                                      <Button size="xs" m={2}>Description</Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent>
+                                      <PopoverArrow />
+                                      <PopoverCloseButton />
+                                      <PopoverBody>{book.volumeInfo.description}</PopoverBody>
+                                    </PopoverContent>
+                                  </Popover>
+                                  <Button 
+                                    size="xs"
+                                    data-book={JSON.stringify(book)}
+                                    // onClick={e=>selectBook(e)}
+                                    colorScheme="green"
+                                  >
+                                    Set
+                                  </Button>
+                                </Flex>
+                              </Flex>
+                            )
+                          }) : null}
+                        </Flex>
+                      )}
+                    </Stack>
+                  </ModalBody>
+                  <ModalFooter flexDirection="column">
+                  <> 
+                    {/* {selectBookMutation.error && (
+                        <Text color="red">{(selectBookMutation.error as Error).message}</Text>
+                      )
+                    } */}
+                  </>
+                  </ModalFooter>
               </ModalContent>
             </Modal>
           </>
