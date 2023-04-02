@@ -203,7 +203,11 @@ export interface DashboardProps {
   server: string;
 }
 
-
+//Search
+export interface SearchData {
+  profiles: ProfileType[];
+  bookClubs: BookClubsType[];
+}
 
 //Comments
 export interface BookClubGeneralCommentsType {

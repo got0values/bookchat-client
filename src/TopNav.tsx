@@ -1,5 +1,6 @@
-import { ReactNode, useState, useLayoutEffect, useEffect, SetStateAction } from 'react';
+import { ReactNode, useState, useLayoutEffect, useRef } from 'react';
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
+import { SearchData } from './types/types';
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { TopNavProps, UserNotificationsType } from './types/types';
 import { useAuth } from './hooks/useAuth';
@@ -267,11 +268,50 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
     rejectBookClubRequestMutation.mutate(requestId);
   }
 
-  return { isOpen, onOpen, onClose, colorMode, navigate, user, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, acceptBookClubRequest, rejectBookClubRequest, getNotifications };
+  const { 
+    isOpen: isOpenSearchModal, 
+    onOpen: onOpenSearchModal, 
+    onClose: onCloseSearchModal 
+  } = useDisclosure()
+
+  function closeSearchModal() {
+    setSearchData({} as SearchData)
+    onCloseSearchModal()
+  }
+
+  const navSearchRef = useRef({} as HTMLInputElement);
+  const [searchData,setSearchData] = useState({} as SearchData);
+  const navSearchMutation = useMutation({
+    mutationFn: async () => {
+      console.log(navSearchRef.current.value)
+      const tokenCookie = Cookies.get().token;
+      await axios
+        .get(`${server}/api/search?searchterm=${navSearchRef.current.value}`,
+          {
+            headers: {
+              'authorization': tokenCookie
+            }
+          }
+        )
+        .then((response)=>{
+          setSearchData(response.data.message)
+          onOpenSearchModal();
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data.message)
+        })
+    }
+  })
+  function navSearch() {
+    navSearchMutation.mutate();
+  }
+
+  return { isOpen, onOpen, onClose, colorMode, navigate, user, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, acceptBookClubRequest, rejectBookClubRequest, getNotifications, navSearchRef, navSearch, isOpenSearchModal, closeSearchModal, searchData };
 }
 
 export default function TopNav({server,onLogout}: TopNavProps) {
-  const { isOpen, onOpen, onClose, colorMode, navigate, user, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, acceptBookClubRequest, rejectBookClubRequest, getNotifications } = useTopNav({server,onLogout});
+  const { isOpen, onOpen, onClose, colorMode, navigate, user, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, acceptBookClubRequest, rejectBookClubRequest, getNotifications, navSearchRef, navSearch, isOpenSearchModal, closeSearchModal, searchData } = useTopNav({server,onLogout});
 
   const notificationQuery = useQuery({ queryKey: ['notificationKey'], queryFn: getNotifications });
   const notificationData = notificationQuery.data;
@@ -333,6 +373,8 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                 _dark={{
                   bg: "gray.600"
                 }}
+                ref={navSearchRef}
+                onKeyUp={e=>e.key === 'Enter' ? navSearch() : null}
               />
               <InputRightElement
                 pointerEvents="none"
@@ -622,6 +664,72 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                 Close
               </Button>
             </ModalFooter>
+          </ModalContent>
+        </Modal>
+
+        <Modal isOpen={isOpenSearchModal} onClose={closeSearchModal}>
+          <ModalOverlay/>
+          <ModalContent>
+          <ModalHeader>
+            <Heading as="h2" size="lg">Search Results</Heading>
+          </ModalHeader>
+          <ModalCloseButton/>
+          <ModalBody>
+            <Box my={2}>
+            <Heading as="h3" size="md">Users</Heading>
+              {searchData && searchData.profiles?.length > 0 ? (
+                searchData?.profiles.map((profile, i)=>{
+                  return (
+                    <Box
+                      key={i}
+                      my={1}
+                    >
+                      <Link 
+                        to={`/profile/${profile.username}`}
+                        onClick={closeSearchModal}
+                      >
+                        <HStack>
+                          <Avatar 
+                            size="xs"
+                          />
+                          <Text>
+                            @{profile.username}
+                          </Text>
+                          <Text>
+                            {profile.User.first_name + " " + profile.User.last_name}
+                          </Text>
+                        </HStack>
+                      </Link>
+                    </Box>
+                  )
+                })
+              ) : (
+                <i>No users based on the search term</i>
+              )}
+            </Box>
+            <Box my={2}>
+              <Heading as="h3" size="md">Book Clubs</Heading>
+              {searchData && searchData.bookClubs?.length > 0 ? (
+                searchData.bookClubs.map((bookClub,i)=>{
+                  return (
+                    <Box
+                      key={i}
+                      my={1}
+                    >
+                      <Link 
+                        to={`/bookclubs/${bookClub.id}`}
+                        onClick={closeSearchModal}
+                      >
+                        <Text>{bookClub.name}</Text>
+                      </Link>
+                    </Box>
+                  )
+                })
+              ) : (
+                <i>No book clubs based on the search term</i>
+              )}
+            </Box>
+          </ModalBody>
           </ModalContent>
         </Modal>
 
