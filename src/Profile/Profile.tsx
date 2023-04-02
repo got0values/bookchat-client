@@ -41,6 +41,7 @@ import {
   PopoverArrow,
   PopoverHeader,
   PopoverFooter,
+  CloseButton,
   useDisclosure
 } from "@chakra-ui/react";
 import collectionToArray from "../utils/collectionToArray";
@@ -49,6 +50,8 @@ import { MdEdit } from 'react-icons/md';
 import { BsPlusLg } from 'react-icons/bs';
 import { useAuth } from '../hooks/useAuth';
 import { FollowProfileButton, CancelRequestButton, UnFollowProfileButton } from "./profileButtons";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
 import axios from "axios";
 
@@ -58,6 +61,7 @@ const useProfile = ({server}: ProfileProps) => {
   const [ profileDataUpdated, setProfileDataUpdated ] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  dayjs.extend(utc)
 
   //self, unauthorized (differentLibrary), nonFollower, requesting, follower
   const [ viewer, setViewer ] = useState("nonFollower");
@@ -293,12 +297,60 @@ const useProfile = ({server}: ProfileProps) => {
       })
   }
 
-  return {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal};
+  const [selectedBook,setSelectedBook] = useState<any | null>(null);
+  function selectBook(e: React.FormEvent) {
+    setSelectedBook(JSON.parse((e.target as HTMLDivElement).dataset.book!))
+    whatImReadingRef.current.value = "";
+    closeReadingModal();
+  }
+
+  const postCurrentlyReadingMutation = useMutation({
+    mutationFn: async (e: React.FormEvent)=>{
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+        .post(server + "/api/currentlyreading",
+        {
+          image: (e.target as HTMLDivElement).dataset.image,
+          title: (e.target as HTMLDivElement).dataset.title,
+          author: (e.target as HTMLDivElement).dataset.author,
+          description: (e.target as HTMLDivElement).dataset.description
+        },
+        {
+          headers: {
+            'authorization': tokenCookie
+          }
+        }
+        )
+        .then((response)=>{
+          setSelectedBook(null)
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.message)
+        })
+      }
+      else {
+        throw new Error("Please login again")
+      }
+      return getProfile();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['profileKey'] })
+      queryClient.resetQueries({queryKey: ['profileKey']})
+      queryClient.setQueryData(["profileKey"],data)
+    }
+  })
+  function postCurrentlyReading(e: React.FormEvent) {
+    postCurrentlyReadingMutation.mutate(e);
+  }
+
+  return {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading};
 }
 
 
 export default function Profile({server}: ProfileProps) {
-  const {user,setProfileDataUpdated,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal} = useProfile({server});
+  const {user,setProfileDataUpdated,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading} = useProfile({server});
 
   
 
@@ -507,21 +559,218 @@ export default function Profile({server}: ProfileProps) {
                       />
                       <Button onClick={searchBook}>Search</Button>
                     </Flex>
+                    {selectedBook ? (
+                      <Flex 
+                        my={2}
+                        p={2}
+                        rounded="md"
+                        bg="gray.200"
+                        _dark={{
+                          bg: 'gray.600'
+                        }}
+                        position="relative"
+                      >
+                        <CloseButton
+                          position="absolute"
+                          top="0"
+                          right="0"
+                          onClick={e=>setSelectedBook(null)}
+                        />
+                        <Image 
+                          src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
+                          maxH="125px"
+                        />
+                        <Box 
+                          mx={2}
+                        >
+                          <Heading as="h5" size="sm" me={3}>
+                            {selectedBook.volumeInfo.title}
+                          </Heading>
+                          <Text>
+                            {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
+                          </Text>
+                          <Text
+                            noOfLines={2}
+                          >
+                            {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
+                          </Text>
+                          <Flex justify="flex-end">
+                            <Button 
+                              size="sm"
+                              data-image={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
+                              data-title={selectedBook.volumeInfo.title}
+                              data-author={selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
+                              data-description={selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
+                              onClick={e=>postCurrentlyReading(e)}
+                            >
+                              Post
+                            </Button>
+                          </Flex>
+                        </Box>
+                      </Flex>
+                    ) : null}
+
+                    {profileData?.CurrentlyReading?.length ? (
+                      <Flex 
+                        my={2}
+                        p={2}
+                        rounded="md"
+                        bg="gray.200"
+                        _dark={{
+                          bg: 'gray.600'
+                        }}
+                        position="relative"
+                      >
+                        <Image 
+                          src={
+                            profileData
+                            .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                            .image
+                          }
+                          maxH="125px"
+                        />
+                        <Box mx={2}>
+                          <Text>
+                            {
+                              dayjs(profileData
+                                .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                .created_on).local().format('MMM DD, hh:mm a')
+                            }
+                          </Text>
+                          <Heading as="h5" size="sm" me={3}>
+                            {
+                              profileData
+                              .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                              .title
+                            }
+                          </Heading>
+                          <Text>
+                            {
+                            
+                            profileData
+                            .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                            .author
+                            }
+                          </Text>
+                          <Text
+                            noOfLines={2}
+                          >
+                            {
+                              profileData
+                              .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                              .description
+                            }
+                          </Text>
+                        </Box>
+                      </Flex>
+                    ) : null}
                   </>
                 ) : (
                   <>
                     <Heading as="h3" size="md" mb={2}>
                       Currently Reading
                     </Heading>
+                    {profileData?.CurrentlyReading?.length ? (
+                      <Flex 
+                        my={2}
+                        p={2}
+                        rounded="md"
+                        bg="gray.200"
+                        _dark={{
+                          bg: 'gray.600'
+                        }}
+                        position="relative"
+                      >
+                        <Image 
+                          src={
+                            profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].image
+                          }
+                          maxH="125px"
+                        />
+                        <Box mx={2}>
+                          <Text>
+                            {
+                              dayjs(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                .created_on)
+                                .local()
+                                .format('MMM DD, hh:mm a')
+                            }
+                          </Text>
+                          <Heading as="h5" size="sm" me={3}>
+                            {
+                              profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                              .title
+                            }
+                          </Heading>
+                          <Text>
+                            {
+                              profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                              .author
+                            }
+                          </Text>
+                          <Text
+                            noOfLines={2}
+                          >
+                            {
+                              profileData
+                              .CurrentlyReading[0]
+                              .description
+                            }
+                          </Text>
+                        </Box>
+                      </Flex>
+                    ) : null}
                   </>
                 )}
               </Box>
 
-              <Flex className="well" gap={2} align="center">
+              <Box 
+                className="well" 
+              >
                 <Heading as="h3" size="md" mb={2}>
                   Books I've Read
                 </Heading>
-              </Flex>
+                <>
+                  {profileData?.CurrentlyReading?.length ? (
+                    profileData.CurrentlyReading.map((readBook,i)=>{
+                      return (
+                        i !== profileData.CurrentlyReading.length - 1 ? (
+                          <Flex 
+                            my={2}
+                            p={2}
+                            rounded="md"
+                            bg="gray.200"
+                            _dark={{
+                              bg: 'gray.600'
+                            }}
+                            position="relative"
+                            key={i}
+                          >
+                            <Image 
+                              src={readBook.image}
+                              maxH="125px"
+                            />
+                            <Box mx={2}>
+                              <Text>
+                                {dayjs(readBook.created_on).local().format('MMM DD, hh:mm a')}
+                              </Text>
+                              <Heading as="h5" size="sm" me={3}>
+                                {readBook.title}
+                              </Heading>
+                              <Text>{readBook.author}</Text>
+                              <Text
+                                noOfLines={2}
+                              >
+                                {readBook.description}
+                              </Text>
+                            </Box>
+                          </Flex>
+                        ) : null
+                      )
+                    }).reverse()
+                  ) : null}
+                </>
+              </Box>
 
             </Stack>
 
@@ -767,7 +1016,7 @@ export default function Profile({server}: ProfileProps) {
                                   <Button 
                                     size="xs"
                                     data-book={JSON.stringify(book)}
-                                    // onClick={e=>selectBook(e)}
+                                    onClick={e=>selectBook(e)}
                                     colorScheme="green"
                                   >
                                     Set
