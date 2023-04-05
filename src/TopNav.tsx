@@ -351,7 +351,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                     bg: "gray.400"
                   }}
                 />
-                {user && user.role === "admin" && user.Library.version === "free" ? (
+                {user && user.role === "admin" ? (
                 <Badge
                   colorScheme="green"
                   position="absolute"
@@ -361,7 +361,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                   backgroundColor="green"
                   color="white"
                 >
-                  FREE
+                  ADMIN
                 </Badge>
                 ) : null}
               </Link>
