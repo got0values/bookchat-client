@@ -45,20 +45,23 @@ import { MdClose, MdLogout } from 'react-icons/md';
 import { BsFillMoonFill, BsFillSunFill } from 'react-icons/bs';
 import { FiSettings, FiMail } from 'react-icons/fi';
 import { RxDotFilled } from 'react-icons/rx';
-import { AiOutlineBell } from 'react-icons/ai';
+import { AiOutlineBell, AiFillHome } from 'react-icons/ai';
 import { BiMessageDetail } from 'react-icons/bi';
 import { FaSearch } from 'react-icons/fa';
 import logoIcon from './assets/community-book-club-logo-logo-only.png';
 import logoIconWhite from './assets/community-book-club-logo-logo-only-white.png';
 import Cookies from "js-cookie";
 import axios from "axios";
+import { ReactJSXElement } from '@emotion/react/types/jsx-namespace';
 
 interface LinkItemProps {
   name: string;
   linkTo: string;
+  icon?: ReactJSXElement;
 }
 
 const LinkItems: Array<LinkItemProps> = [
+  { name: 'Home', linkTo: "/", icon: <AiFillHome size="20"/>},
   { name: 'Book Clubs', linkTo: "/bookclubs" },
   { name: 'Reading Clubs', linkTo: "/" },
   { name: 'Members', linkTo: "/members" }
@@ -401,7 +404,11 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                   color: useColorModeValue("black","white")
                 }}
               >
-                {linkItem.name}
+                <Flex align="center" gap={2}>
+                  {linkItem.icon ? (
+                    linkItem.icon
+                  ): linkItem.name}
+                </Flex>
               </Box>
             ))}
           </HStack>

@@ -65,7 +65,7 @@ export interface ProfileType {
   Interests?: Interests[];
   User: User;
   BookClubs: BookClubsType[];
-  CurrentlyReading: BookClubBookType[];
+  CurrentlyReading: CurrentlyReading[];
   Following_Following_self_profile_idToProfile?: Following_Following_self_profile_idToProfile[];
   Following_Following_following_profile_idToProfile?: Following_Following_following_profile_idToProfile[];
   BookClubMembers_BookClubMembers_book_club_creatorToProfile: BookClubMember[];
@@ -80,7 +80,7 @@ export interface Following_Following_self_profile_idToProfile {
   self_profile_id: number;
   following_profile_id: number;
   status: string;
-  Profile_Following_following_profile_idToProfile?: ProfileType;
+  Profile_Following_following_profile_idToProfile: ProfileType;
 }
 
 export interface Following_Following_following_profile_idToProfile {
@@ -241,4 +241,17 @@ export interface BookClubGeneralReply {
   profile_id: number;
   reply: string;
   datetime: string;
+}
+
+//Currently Reading
+export interface CurrentlyReading {
+  id: number;
+  profile: number;
+  image: string;
+  title: string;
+  author: string;
+  description: string;
+  link: string;
+  created_on: Date;
+  Profile: ProfileType;
 }
