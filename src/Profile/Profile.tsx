@@ -354,7 +354,10 @@ export default function Profile({server}: ProfileProps) {
 
   
 
-  const { isLoading, isError, data, error } = useQuery({ queryKey: ['profileKey',paramsUsername, profileDataUpdated], queryFn: getProfile });
+  const { isLoading, isError, data, error } = useQuery({ 
+    queryKey: ['profileKey',paramsUsername, profileDataUpdated], 
+    queryFn: getProfile 
+  });
   const profileData: ProfileType = data;
   console.log(profileData)
   if (isLoading) {

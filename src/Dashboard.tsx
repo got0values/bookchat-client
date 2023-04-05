@@ -11,7 +11,8 @@ import {
   Image,
   HStack,
   Avatar,
-  Button
+  Button,
+  Skeleton,
 } from "@chakra-ui/react";
 import { useAuth } from './hooks/useAuth';
 import Cookies from "js-cookie";
@@ -23,38 +24,79 @@ import axios from "axios";
 export default function Dashboard({server}: DashboardProps) {
   dayjs.extend(utc);
   const navigate = useNavigate();
-  const { user } = useAuth();
-  
-  const {data,isLoading,isError,error} = useQuery({
-    queryKey: ["dashboardKey"],
-    queryFn: async ()=>{
-      const tokenCookie = Cookies.get().token
-      if (tokenCookie) {
-        const dash = await axios
-          .get(server + "/api/dashboard",
-          {
-            headers: {
-              Authorization: tokenCookie
-            }
+  const { user, getUser } = useAuth();
+  const queryClient = useQueryClient();
+
+  async function getDashboard() {
+    const tokenCookie = Cookies.get().token
+    if (tokenCookie) {
+      const dash = await axios
+        .get(server + "/api/dashboard",
+        {
+          headers: {
+            Authorization: tokenCookie
           }
+        }
+        )
+        .then((response)=>{
+          getUser();
+          return response.data.message
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.message)
+        })
+      return dash;
+    }
+    else {
+      throw new Error("An error occurred")
+    }
+  }
+
+  const deleteReadingMutation = useMutation({
+    mutationFn: async (readingId: number)=>{
+      const tokenCookie = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .delete(server + "/api/currentlyreading",
+            {
+              headers: {
+                Authorization: tokenCookie
+              },
+              data: {
+                readingId
+              }
+            }
           )
           .then((response)=>{
-            console.log(response.data)
-            return response.data.message
+            getUser();
           })
           .catch(({response})=>{
             console.log(response)
             throw new Error(response.message)
           })
-        return dash;
+          console.log(getDashboard())
+          return getDashboard();
       }
       else {
         throw new Error("An error occurred")
       }
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ["dashboardKey"] })
+      queryClient.resetQueries({queryKey: ["dashboardKey"]})
+      queryClient.setQueryData(["dashboardKey"],data)
     }
   })
-  const currentlyReading = data?.currentlyReading;
-  let followingCurrentlyReading = data?.followingProfiles.map((following: Following_Following_self_profile_idToProfile)=>{
+  function deleteReading(readingId: number) {
+    deleteReadingMutation.mutate(readingId)
+  }
+  
+  const dashboard = useQuery({
+    queryKey: ["dashboardKey"],
+    queryFn: getDashboard
+  })
+  let followingCurrentlyReading = dashboard?.data?.followingProfiles.map((following: Following_Following_self_profile_idToProfile)=>{
     return following.Profile_Following_following_profile_idToProfile.CurrentlyReading;
   })
   followingCurrentlyReading = followingCurrentlyReading?.flat()
@@ -66,15 +108,15 @@ export default function Dashboard({server}: DashboardProps) {
     return (new Date(a.created_on) as any) - (new Date(b.created_on) as any);
   }).reverse()
 
-  if (isLoading) {
+  if (dashboard.isLoading) {
     return (
       <Flex align="center" justify="center" minH="80vh">
         <Spinner size="xl"/>
       </Flex>
     )
   }
-  if (isError) {
-    console.log(error)
+  if (dashboard.isError) {
+    console.log(dashboard.error)
     return (
       <div>
         Error!
@@ -83,8 +125,8 @@ export default function Dashboard({server}: DashboardProps) {
   }
 
   return (
-    <Box className="main-content">
-      <Box>
+    <Box className="main-content-smaller">
+      <Skeleton isLoaded={!dashboard.isLoading}>
         {followingCurrentlyReadingSorted.map((reading: CurrentlyReading,i: number)=>{
             return (
               <Box
@@ -142,6 +184,8 @@ export default function Dashboard({server}: DashboardProps) {
                     <Button
                       colorScheme="red"
                       size="xs"
+                      onClick={e=>deleteReading(reading.id)}
+                      disabled={deleteReadingMutation.isLoading}
                     >
                       Delete
                     </Button>
@@ -151,7 +195,7 @@ export default function Dashboard({server}: DashboardProps) {
             )
           })
         }
-      </Box>
+      </Skeleton>
     </Box>
   );
 };
