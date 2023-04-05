@@ -2,16 +2,13 @@ import { extendTheme } from '@chakra-ui/react'
 import '@fontsource/raleway/400.css'
 import '@fontsource/open-sans/700.css'
 import '@fontsource/inter/700.css'
-import '@fontsource/noto-color-emoji/400.css'
-import 'openmoji/font/openmoji.css'
-// import 'openmoji/font/OpenMoji-Color.ttf'
 
 const config = {
   initialColorMode: 'light',
   useSystemColorMode: false,
   fonts: {
     heading: 'Inter, Open Sans, sans-serif',
-    body: 'Roboto, Raleway, sans-serif, OpenMojiColor, Noto Color Emoji'
+    body: 'Roboto, Raleway, sans-serif'
   },
   styles: {
     global: {
