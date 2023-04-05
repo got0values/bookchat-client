@@ -245,9 +245,12 @@ export default function BookClubs({server}: {server: string}) {
                               cursor="pointer"
                               src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
                               border="2px solid gray"
+                              title={`@${bookClub.Profile.username}`}
                             />
-                            <Link to={`/profile/${bookClub.Profile.username}`}>
-                              @{bookClub.Profile.username}
+                            <Link to={`/profile/${bookClub.Profile.username}`} title={`@${bookClub.Profile.username}`}>
+                              <Text fontWeight="bold">
+                                {bookClub.Profile.User.first_name + " " + bookClub.Profile.User.last_name}
+                              </Text>
                             </Link>
                           </Flex>
                         </Flex>
@@ -342,9 +345,12 @@ export default function BookClubs({server}: {server: string}) {
                                 cursor="pointer"
                                 src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
                                 border="2px solid gray"
+                                title={`@${bookClub.Profile.username}`}
                               />
-                              <Link to={`/profile/${bookClub.Profile.username}`}>
-                                @{bookClub.Profile.username}
+                              <Link to={`/profile/${bookClub.Profile.username}`} title={`@${bookClub.Profile.username}`}>
+                                <Text fontWeight="bold">
+                                  {bookClub.Profile.User.first_name + " " + bookClub.Profile.User.last_name}
+                                </Text>
                               </Link>
                             </Flex>
                           </Flex>
@@ -361,7 +367,6 @@ export default function BookClubs({server}: {server: string}) {
                                       my={1} 
                                       key={i}
                                     >
-                                      {i > 0 ? <BsDot/> : null}
                                       <Tag 
                                         colorScheme={group == "0" ? "teal" : (
                                             group == "1" ? "green" : (
@@ -372,6 +377,7 @@ export default function BookClubs({server}: {server: string}) {
                                           )}
                                         size="sm"
                                         fontWeight="bold"
+                                        marginLeft={i > 0 ? 1 : 0}
                                       >
                                         {group == "0" ? "1st-4th" : (
                                           group == "1" ? "5th-8th" : (
@@ -446,9 +452,12 @@ export default function BookClubs({server}: {server: string}) {
                                 cursor="pointer"
                                 src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
                                 border="2px solid gray"
+                                title={`@${bookClub.Profile.username}`}
                               />
-                              <Link to={`/profile/${bookClub.Profile.username}`}>
-                                @{bookClub.Profile.username}
+                              <Link to={`/profile/${bookClub.Profile.username}`} title={`@${bookClub.Profile.username}`}>
+                                <Text fontWeight="bold">
+                                  {bookClub.Profile.User.first_name + " " + bookClub.Profile.User.last_name}
+                                </Text>
                               </Link>
                             </Flex>
                           </Flex>
