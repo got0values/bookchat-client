@@ -252,6 +252,7 @@ export interface CurrentlyReading {
   author: string;
   description: string;
   link: string;
+  hidden: boolean;
   created_on: Date;
   Profile: ProfileType;
 }
