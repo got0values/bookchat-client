@@ -41,6 +41,10 @@ import {
   PopoverArrow,
   PopoverHeader,
   PopoverFooter,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
   CloseButton,
   useDisclosure
 } from "@chakra-ui/react";
@@ -48,6 +52,7 @@ import collectionToArray from "../utils/collectionToArray";
 import { FiFile } from 'react-icons/fi';
 import { MdEdit } from 'react-icons/md';
 import { BsPlusLg } from 'react-icons/bs';
+import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
 import { useAuth } from '../hooks/useAuth';
 import { FollowProfileButton, CancelRequestButton, UnFollowProfileButton } from "./profileButtons";
 import dayjs from "dayjs";
@@ -677,13 +682,34 @@ export default function Profile({server}: ProfileProps) {
                               }
                             </Text>
                             {viewer === "self" ? (
-                              <Button
-                                size="xs"
-                                onClick={e=>deleteReading(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
-                                colorScheme="red"
-                              >
-                                Delete
-                              </Button>
+                              <Menu>
+                                <MenuButton 
+                                  as={Button}
+                                  size="md"
+                                  variant="ghost"
+                                  rounded="full"
+                                  height="25px"
+                                >
+                                  <BiDotsHorizontalRounded/>
+                                </MenuButton>
+                                <MenuList>
+                                  <MenuItem
+                                    // onClick={e=>deleteReading(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
+                                    fontWeight="bold"
+                                    // icon={<BiTrash size={20} />}
+                                  >
+                                    Hide
+                                  </MenuItem>
+                                  <MenuItem
+                                    color="tomato"
+                                    onClick={e=>deleteReading(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
+                                    fontWeight="bold"
+                                    icon={<BiTrash size={20} />}
+                                  >
+                                    Delete
+                                  </MenuItem>
+                                </MenuList>
+                              </Menu>
                             ): null}
                           </Flex>
                           <Heading as="h5" size="sm" me={3}>
@@ -813,13 +839,34 @@ export default function Profile({server}: ProfileProps) {
                                     {dayjs(readBook.created_on).local().format('MMM DD, hh:mm a')}
                                   </Text>
                                   {viewer === "self" ? (
-                                    <Button
-                                      size="xs"
-                                      onClick={e=>deleteReading(readBook.id)}
-                                      colorScheme="red"
-                                    >
-                                      Delete
-                                    </Button>
+                                    <Menu>
+                                      <MenuButton 
+                                        as={Button}
+                                        size="md"
+                                        variant="ghost"
+                                        rounded="full"
+                                        height="25px"
+                                      >
+                                        <BiDotsHorizontalRounded/>
+                                      </MenuButton>
+                                      <MenuList>
+                                        <MenuItem
+                                          // onClick={e=>deleteReading(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
+                                          fontWeight="bold"
+                                          // icon={<BiTrash size={20} />}
+                                        >
+                                          Hide
+                                        </MenuItem>
+                                        <MenuItem
+                                          color="tomato"
+                                          onClick={e=>deleteReading(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
+                                          fontWeight="bold"
+                                          icon={<BiTrash size={20} />}
+                                        >
+                                          Delete
+                                        </MenuItem>
+                                      </MenuList>
+                                    </Menu>
                                   ): null}
                                 </Flex>
                                 <Heading as="h5" size="sm" me={3}>
