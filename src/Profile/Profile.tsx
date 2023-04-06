@@ -345,12 +345,47 @@ const useProfile = ({server}: ProfileProps) => {
     postCurrentlyReadingMutation.mutate(e);
   }
 
-  return {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading};
+  const deleteReadingMutation = useMutation({
+    mutationFn: async (readingId: number)=>{
+      const tokenCookie = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .delete(server + "/api/currentlyreading",
+            {
+              headers: {
+                Authorization: tokenCookie
+              },
+              data: {
+                readingId
+              }
+            }
+          )
+          .catch(({response})=>{
+            console.log(response)
+            throw new Error(response.message)
+          })
+          return getProfile();
+      }
+      else {
+        throw new Error("An error occurred")
+      }
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ["profileKey"] })
+      queryClient.resetQueries({queryKey: ["profileKey"]})
+      queryClient.setQueryData(["profileKey"],data)
+    }
+  })
+  function deleteReading(readingId: number) {
+    deleteReadingMutation.mutate(readingId)
+  }
+
+  return {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading};
 }
 
 
 export default function Profile({server}: ProfileProps) {
-  const {user,setProfileDataUpdated,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading} = useProfile({server});
+  const {user,setProfileDataUpdated,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading} = useProfile({server});
 
   
 
@@ -633,13 +668,24 @@ export default function Profile({server}: ProfileProps) {
                           maxH="125px"
                         />
                         <Box mx={2}>
-                          <Text>
-                            {
-                              dayjs(profileData
-                                .CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                .created_on).local().format('MMM DD, hh:mm a')
-                            }
-                          </Text>
+                          <Flex justify="space-between">
+                            <Text>
+                              {
+                                dayjs(profileData
+                                  .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                  .created_on).local().format('MMM DD, hh:mm a')
+                              }
+                            </Text>
+                            {viewer === "self" ? (
+                              <Button
+                                size="xs"
+                                onClick={e=>deleteReading(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
+                                colorScheme="red"
+                              >
+                                Delete
+                              </Button>
+                            ): null}
+                          </Flex>
                           <Heading as="h5" size="sm" me={3}>
                             {
                               profileData
@@ -761,10 +807,21 @@ export default function Profile({server}: ProfileProps) {
                                 src={readBook.image}
                                 maxH="125px"
                               />
-                              <Box mx={2}>
-                                <Text>
-                                  {dayjs(readBook.created_on).local().format('MMM DD, hh:mm a')}
-                                </Text>
+                              <Box mx={2} w="100%">
+                                <Flex justify="space-between">
+                                  <Text>
+                                    {dayjs(readBook.created_on).local().format('MMM DD, hh:mm a')}
+                                  </Text>
+                                  {viewer === "self" ? (
+                                    <Button
+                                      size="xs"
+                                      onClick={e=>deleteReading(readBook.id)}
+                                      colorScheme="red"
+                                    >
+                                      Delete
+                                    </Button>
+                                  ): null}
+                                </Flex>
                                 <Heading as="h5" size="sm" me={3}>
                                   {readBook.title}
                                 </Heading>
