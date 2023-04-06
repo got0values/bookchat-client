@@ -268,7 +268,7 @@ export default function BookClubs({server}: {server: string}) {
 
             <Divider/>
 
-            <Box className="well">
+            <Box>
               <Flex justify="center" flexWrap="wrap">
                 <RadioGroup 
                   onChange={e=>filterBookClubsByGroup(e)}

@@ -52,7 +52,7 @@ import collectionToArray from "../utils/collectionToArray";
 import { FiFile } from 'react-icons/fi';
 import { MdEdit } from 'react-icons/md';
 import { BsPlusLg } from 'react-icons/bs';
-import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
+import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
 import { useAuth } from '../hooks/useAuth';
 import { FollowProfileButton, CancelRequestButton, UnFollowProfileButton } from "./profileButtons";
 import dayjs from "dayjs";
@@ -696,7 +696,7 @@ export default function Profile({server}: ProfileProps) {
                                   <MenuItem
                                     // onClick={e=>deleteReading(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
                                     fontWeight="bold"
-                                    // icon={<BiTrash size={20} />}
+                                    icon={<BiHide size={20} />}
                                   >
                                     Hide
                                   </MenuItem>
@@ -853,7 +853,7 @@ export default function Profile({server}: ProfileProps) {
                                         <MenuItem
                                           // onClick={e=>deleteReading(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
                                           fontWeight="bold"
-                                          // icon={<BiTrash size={20} />}
+                                          icon={<BiHide size={20} />}
                                         >
                                           Hide
                                         </MenuItem>
