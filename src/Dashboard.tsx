@@ -68,9 +68,6 @@ export default function Dashboard({server}: DashboardProps) {
               }
             }
           )
-          .then((response)=>{
-            getUser();
-          })
           .catch(({response})=>{
             console.log(response)
             throw new Error(response.message)
