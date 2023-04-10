@@ -53,6 +53,7 @@ import { FiFile } from 'react-icons/fi';
 import { MdEdit } from 'react-icons/md';
 import { BsPlusLg } from 'react-icons/bs';
 import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
+import { BsReplyFill } from 'react-icons/bs';
 import { useAuth } from '../hooks/useAuth';
 import { FollowProfileButton, CancelRequestButton, UnFollowProfileButton } from "./profileButtons";
 import dayjs from "dayjs";
@@ -723,7 +724,6 @@ export default function Profile({server}: ProfileProps) {
                                 {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? <i>hidden</i> : ""}
                               </Text>
                               <Box>
-                                {viewer === "self" ? (
                                   <Menu>
                                     <MenuButton 
                                       as={Button}
@@ -735,26 +735,37 @@ export default function Profile({server}: ProfileProps) {
                                       <BiDotsHorizontalRounded/>
                                     </MenuButton>
                                     <MenuList>
-                                      <MenuItem
-                                        data-readingid={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}
-                                        data-hide={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? false : true}
-                                        onClick={e=>hideReading(e as any)}
+                                      <MenuItem 
+                                        // value={comment.id}
+                                        // onClick={e=>openReplyModal(e)}
                                         fontWeight="bold"
-                                        icon={<BiHide size={20} />}
+                                        icon={<BsReplyFill size={20} />}
                                       >
-                                        {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? "Unhide" : "Hide"}
+                                        Comment
                                       </MenuItem>
-                                      <MenuItem
-                                        color="tomato"
-                                        onClick={e=>deleteReading(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
-                                        fontWeight="bold"
-                                        icon={<BiTrash size={20} />}
-                                      >
-                                        Delete
-                                      </MenuItem>
+                                      {viewer === "self" ? (
+                                      <>
+                                        <MenuItem
+                                          data-readingid={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}
+                                          data-hide={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? false : true}
+                                          onClick={e=>hideReading(e as any)}
+                                          fontWeight="bold"
+                                          icon={<BiHide size={20} />}
+                                        >
+                                          {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? "Unhide" : "Hide"}
+                                        </MenuItem>
+                                        <MenuItem
+                                          color="tomato"
+                                          onClick={e=>deleteReading(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
+                                          fontWeight="bold"
+                                          icon={<BiTrash size={20} />}
+                                        >
+                                          Delete
+                                        </MenuItem>
+                                      </>
+                                      ): null}
                                     </MenuList>
                                   </Menu>
-                                ): null}
                               </Box>
                             </HStack>
                           </Flex>
