@@ -189,23 +189,25 @@ export default function BookClub({server}: {server: string}) {
                     </Button>
                   ) : null}
                 </Flex>
-                <Box boxShadow="md">
-                  <Box 
-                    as={ReactQuill} 
-                    theme="snow"
-                    modules={{
-                      toolbar: ''
-                    }}
-                    readOnly={true}
-                    defaultValue={topic}
-                    border="none"
-                    sx={{
-                      '.ql-container': {
-                        borderRadius: '5px'
-                      }
-                    }}
-                  />
-                </Box>
+                {topic && topic !== "<p><br></p>" ? (
+                  <Box boxShadow="md">
+                    <Box 
+                      as={ReactQuill} 
+                      theme="snow"
+                      modules={{
+                        toolbar: ''
+                      }}
+                      readOnly={true}
+                      defaultValue={topic}
+                      border="none"
+                      sx={{
+                        '.ql-container': {
+                          borderRadius: '5px'
+                        }
+                      }}
+                    />
+                  </Box>
+                ): null}
               </Flex>
 
             </Box>
