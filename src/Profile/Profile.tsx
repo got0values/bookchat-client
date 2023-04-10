@@ -789,61 +789,65 @@ export default function Profile({server}: ProfileProps) {
                 ) : (
                   <>
                   {viewer === "following" ? (
-                    <>
-                      <Heading as="h3" size="md" mb={2}>
-                        Currently Reading
-                      </Heading>
-                      {profileData?.CurrentlyReading?.length ? (
-                        <Flex 
-                          my={2}
-                          p={2}
-                          rounded="md"
-                          bg="gray.200"
-                          _dark={{
-                            bg: 'gray.600'
-                          }}
-                          position="relative"
-                        >
-                          <Image 
-                            src={
-                              profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].image
-                            }
-                            maxH="125px"
-                          />
-                          <Box mx={2}>
-                            <Text>
-                              {
-                                dayjs(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                  .created_on)
-                                  .local()
-                                  .format('MMM DD, hh:mm a')
+                    profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? (
+                      null
+                    ) : (
+                      <>
+                        <Heading as="h3" size="md" mb={2}>
+                          Currently Reading
+                        </Heading>
+                        {profileData?.CurrentlyReading?.length ? (
+                          <Flex 
+                            my={2}
+                            p={2}
+                            rounded="md"
+                            bg="gray.200"
+                            _dark={{
+                              bg: 'gray.600'
+                            }}
+                            position="relative"
+                          >
+                            <Image 
+                              src={
+                                profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].image
                               }
-                            </Text>
-                            <Heading as="h5" size="sm" me={3}>
-                              {
-                                profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                .title
-                              }
-                            </Heading>
-                            <Text>
-                              {
-                                profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                .author
-                              }
-                            </Text>
-                            <Text
-                              noOfLines={2}
-                            >
-                              {
-                                profileData
-                                .CurrentlyReading[0]
-                                .description
-                              }
-                            </Text>
-                          </Box>
-                        </Flex>
-                      ) : null}
-                    </>
+                              maxH="125px"
+                            />
+                            <Box mx={2}>
+                              <Text>
+                                {
+                                  dayjs(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                    .created_on)
+                                    .local()
+                                    .format('MMM DD, hh:mm a')
+                                }
+                              </Text>
+                              <Heading as="h5" size="sm" me={3}>
+                                {
+                                  profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                  .title
+                                }
+                              </Heading>
+                              <Text>
+                                {
+                                  profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                  .author
+                                }
+                              </Text>
+                              <Text
+                                noOfLines={2}
+                              >
+                                {
+                                  profileData
+                                  .CurrentlyReading[0]
+                                  .description
+                                }
+                              </Text>
+                            </Box>
+                          </Flex>
+                        ) : null}
+                      </>
+                    )
                   ): (
                     <i>Follow to see more</i>
                   )}
@@ -863,79 +867,83 @@ export default function Profile({server}: ProfileProps) {
                     {profileData?.CurrentlyReading?.length ? (
                       profileData.CurrentlyReading.map((readBook,i)=>{
                         return (
-                          i !== profileData.CurrentlyReading.length - 1 ? (
-                            <Flex 
-                              my={2}
-                              p={2}
-                              rounded="md"
-                              bg="gray.200"
-                              _dark={{
-                                bg: 'gray.600'
-                              }}
-                              position="relative"
-                              key={i}
-                            >
-                              <Image 
-                                src={readBook.image}
-                                maxH="125px"
-                              />
-                              <Box mx={2} w="100%">
-                                <Flex justify="space-between">
-                                  <Text>
-                                    {dayjs(readBook.created_on).local().format('MMM DD, hh:mm a')}
-                                  </Text>
-                                  <HStack>
+                          viewer !== "self" && readBook.hidden ? (
+                            null
+                          ) : (
+                            i !== profileData.CurrentlyReading.length - 1 ? (
+                              <Flex 
+                                my={2}
+                                p={2}
+                                rounded="md"
+                                bg="gray.200"
+                                _dark={{
+                                  bg: 'gray.600'
+                                }}
+                                position="relative"
+                                key={i}
+                              >
+                                <Image 
+                                  src={readBook.image}
+                                  maxH="125px"
+                                />
+                                <Box mx={2} w="100%">
+                                  <Flex justify="space-between">
                                     <Text>
-                                      {readBook.hidden ? <i>hidden</i> : ""}
+                                      {dayjs(readBook.created_on).local().format('MMM DD, hh:mm a')}
                                     </Text>
-                                    <Box>
-                                      {viewer === "self" ? (
-                                        <Menu>
-                                          <MenuButton 
-                                            as={Button}
-                                            size="md"
-                                            variant="ghost"
-                                            rounded="full"
-                                            height="25px"
-                                          >
-                                            <BiDotsHorizontalRounded/>
-                                          </MenuButton>
-                                          <MenuList>
-                                            <MenuItem
-                                              data-readingid={readBook.id}
-                                              data-hide={readBook.hidden ? false : true}
-                                              onClick={e=>hideReading(e as any)}
-                                              fontWeight="bold"
-                                              icon={<BiHide size={20} />}
+                                    <HStack>
+                                      <Text>
+                                        {viewer === "self" && readBook.hidden ? <i>hidden</i> : ""}
+                                      </Text>
+                                      <Box>
+                                        {viewer === "self" ? (
+                                          <Menu>
+                                            <MenuButton 
+                                              as={Button}
+                                              size="md"
+                                              variant="ghost"
+                                              rounded="full"
+                                              height="25px"
                                             >
-                                              {readBook.hidden ? "Unhide" : "Hide"}
-                                            </MenuItem>
-                                            <MenuItem
-                                              color="tomato"
-                                              onClick={e=>deleteReading(readBook.id)}
-                                              fontWeight="bold"
-                                              icon={<BiTrash size={20} />}
-                                            >
-                                              Delete
-                                            </MenuItem>
-                                          </MenuList>
-                                        </Menu>
-                                      ): null}
-                                    </Box>
-                                  </HStack>
-                                </Flex>
-                                <Heading as="h5" size="sm" me={3}>
-                                  {readBook.title}
-                                </Heading>
-                                <Text>{readBook.author}</Text>
-                                <Text
-                                  noOfLines={2}
-                                >
-                                  {readBook.description}
-                                </Text>
-                              </Box>
-                            </Flex>
-                          ) : null
+                                              <BiDotsHorizontalRounded/>
+                                            </MenuButton>
+                                            <MenuList>
+                                              <MenuItem
+                                                data-readingid={readBook.id}
+                                                data-hide={readBook.hidden ? false : true}
+                                                onClick={e=>hideReading(e as any)}
+                                                fontWeight="bold"
+                                                icon={<BiHide size={20} />}
+                                              >
+                                                {readBook.hidden ? "Unhide" : "Hide"}
+                                              </MenuItem>
+                                              <MenuItem
+                                                color="tomato"
+                                                onClick={e=>deleteReading(readBook.id)}
+                                                fontWeight="bold"
+                                                icon={<BiTrash size={20} />}
+                                              >
+                                                Delete
+                                              </MenuItem>
+                                            </MenuList>
+                                          </Menu>
+                                        ): null}
+                                      </Box>
+                                    </HStack>
+                                  </Flex>
+                                  <Heading as="h5" size="sm" me={3}>
+                                    {readBook.title}
+                                  </Heading>
+                                  <Text>{readBook.author}</Text>
+                                  <Text
+                                    noOfLines={2}
+                                  >
+                                    {readBook.description}
+                                  </Text>
+                                </Box>
+                              </Flex>
+                            ) : null
+                          )
                         )
                       }).reverse()
                     ) : null}

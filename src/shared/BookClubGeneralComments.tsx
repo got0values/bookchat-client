@@ -360,6 +360,14 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                                     <BiDotsHorizontalRounded/>
                                   </MenuButton>
                                   <MenuList>
+                                  <MenuItem 
+                                    value={comment.id}
+                                    onClick={e=>openReplyModal(e)}
+                                    fontWeight="bold"
+                                    icon={<BsReplyFill size={20} />}
+                                  >
+                                    Reply
+                                  </MenuItem>
                                   {comment.Profile.id === user.Profile.id || isBookClubCreator ? (
                                     <>
                                       <MenuItem
@@ -373,14 +381,6 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                                       </MenuItem>
                                     </>
                                   ): null}
-                                  <MenuItem 
-                                    value={comment.id}
-                                    onClick={e=>openReplyModal(e)}
-                                    fontWeight="bold"
-                                    icon={<BsReplyFill size={20} />}
-                                  >
-                                    Reply
-                                  </MenuItem>
                                   </MenuList>
                                 </Menu>
 
