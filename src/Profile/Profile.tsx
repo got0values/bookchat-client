@@ -426,6 +426,7 @@ const useProfile = ({server}: ProfileProps) => {
   }
 
   const commentRef = useRef({} as HTMLTextAreaElement);
+  const commentCurrentlyReadingButton = useRef({} as HTMLButtonElement)
   const commentCurrentlyReadingMutation = useMutation({
     mutationFn: async (e: MouseEvent<HTMLButtonElement>)=>{
       const tokenCookie = Cookies.get().token;
@@ -485,12 +486,12 @@ const useProfile = ({server}: ProfileProps) => {
     onCloseCommentModal()
   }
 
-  return {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef};
+  return {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton};
 }
 
 
 export default function Profile({server}: ProfileProps) {
-  const {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef} = useProfile({server});
+  const {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton} = useProfile({server});
 
   
 
@@ -876,7 +877,16 @@ export default function Profile({server}: ProfileProps) {
                                   </Box>
                                   <Box w="100%">
                                     <Flex justify="space-between">
-                                      <Text>{dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}</Text>
+                                      <HStack>
+                                        <Text
+                                          as={Link}
+                                          to={`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}`}
+                                          fontWeight="bold"
+                                        >
+                                          @{comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}
+                                        </Text>
+                                       <Text>{dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}</Text>
+                                      </HStack>
                                       {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.id === user.Profile.id ? (
                                         <Menu>
                                           <MenuButton
@@ -1010,7 +1020,16 @@ export default function Profile({server}: ProfileProps) {
                                     </Box>
                                     <Box w="100%">
                                       <Flex justify="space-between">
-                                        <Text>{dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}</Text>
+                                        <HStack>
+                                          <Text
+                                            as={Link}
+                                            to={`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}`}
+                                            fontWeight="bold"
+                                          >
+                                            @{comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}
+                                          </Text>
+                                          <Text>{dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}</Text>
+                                        </HStack>
                                         {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.id === user.Profile.id ? (
                                           <Menu>
                                             <MenuButton
@@ -1166,7 +1185,16 @@ export default function Profile({server}: ProfileProps) {
                                           </Box>
                                           <Box w="100%">
                                             <Flex justify="space-between">
-                                              <Text>{dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}</Text>
+                                              <HStack>
+                                                <Text 
+                                                  as={Link}
+                                                  fontWeight="bold"
+                                                  to={`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}`}
+                                                >
+                                                  @{comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}
+                                                </Text>
+                                                <Text>{dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}</Text>
+                                              </HStack>
                                               {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.id === user.Profile.id ? (
                                                 <Menu>
                                                   <MenuButton
@@ -1509,7 +1537,44 @@ export default function Profile({server}: ProfileProps) {
               </ModalContent>
             </Modal>
           </>
-          ): null}
+          ): (
+            <>
+              <Modal 
+              isOpen={isOpenCommentModal} 
+              onClose={closeCommentModal}
+              isCentered
+            >
+              <ModalOverlay />
+              <ModalContent maxH="80vh">
+                <ModalHeader>
+                  New Book Club Book
+                </ModalHeader>
+                <ModalCloseButton />
+                  <ModalBody h="auto" maxH="75vh" overflow="auto">
+                    <Input
+                      type="text"
+                      ref={commentRef as any}
+                      onKeyUp={e=>e.key === 'Enter' ? commentCurrentlyReadingButton.current.click() : null}
+                    />
+                  </ModalBody>
+                  <ModalFooter flexDirection="column">
+                  <> 
+                    <Button
+                      colorScheme="green"
+                      data-profileid={profileData.id}
+                      data-libraryid={user.Library.id}
+                      data-currentlyreadingid={commentBookData?.id}
+                      ref={commentCurrentlyReadingButton}
+                      onClick={e=>commentCurrentlyReading(e)}
+                    >
+                      Submit
+                    </Button>
+                  </>
+                  </ModalFooter>
+              </ModalContent>
+            </Modal>
+            </>
+          )}
         </>
         ) : <Box></Box>}
       </Skeleton>
