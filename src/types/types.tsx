@@ -257,4 +257,17 @@ export interface CurrentlyReading {
   hidden: boolean;
   created_on: Date;
   Profile: ProfileType;
+  CurrentlyReadingComment: CurrentlyReadingComment[];
+}
+
+export interface CurrentlyReadingComment {
+  id: number;
+  profile_id: number;
+  currently_reading_id: number;
+  library_id: number;
+  uri: string;
+  commenter_id: number;
+  comment: string;
+  datetime: string;
+  Profile_CurrentlyReadingComment_commenter_idToProfile: ProfileType;
 }

@@ -41,11 +41,13 @@ import {
   PopoverArrow,
   PopoverHeader,
   PopoverFooter,
+  Textarea,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
   CloseButton,
+  Divider,
   useDisclosure
 } from "@chakra-ui/react";
 import collectionToArray from "../utils/collectionToArray";
@@ -423,12 +425,72 @@ const useProfile = ({server}: ProfileProps) => {
     hideReadingMutation.mutate(e)
   }
 
-  return {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading};
+  const commentRef = useRef({} as HTMLTextAreaElement);
+  const commentCurrentlyReadingMutation = useMutation({
+    mutationFn: async (e: MouseEvent<HTMLButtonElement>)=>{
+      const tokenCookie = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .post(server + "/api/commentcurrentlyreading",
+            {
+              profileId: parseInt((e.target as any).dataset.profileid),
+              currentlyReadingId: parseInt((e.target as any).dataset.currentlyreadingid),
+              libraryId: parseInt((e.target as any).dataset.libraryid),
+              uri: window.location.pathname,
+              comment: (commentRef.current as any).value
+            },
+            {
+              headers: {
+                Authorization: tokenCookie
+              }
+            }
+          )
+          .catch(({response})=>{
+            console.log(response)
+            throw new Error(response.message)
+          })
+          return getProfile();
+      }
+      else {
+        throw new Error("An error occurred")
+      }
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ["profileKey"] })
+      queryClient.resetQueries({queryKey: ["profileKey"]})
+      queryClient.setQueryData(["profileKey"],data)
+      closeCommentModal()
+    }
+  })
+  function commentCurrentlyReading(e: any) {
+    commentCurrentlyReadingMutation.mutate(e as any)
+  }
+
+  //User edit modals
+  const { 
+    isOpen: isOpenCommentModal, 
+    onOpen: onOpenCommentModal, 
+    onClose: onCloseCommentModal 
+  } = useDisclosure()
+
+  const [commentBookData,setCommentBookData] = useState({} as any)
+  function openCommentModal(e: any) {
+    setCommentBookData(JSON.parse(e.target.dataset.book))
+    onOpenCommentModal()
+  }
+
+  function closeCommentModal(){
+    (commentRef.current as any).value = "";
+    setCommentBookData(null)
+    onCloseCommentModal()
+  }
+
+  return {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef};
 }
 
 
 export default function Profile({server}: ProfileProps) {
-  const {user,setProfileDataUpdated,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading} = useProfile({server});
+  const {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef} = useProfile({server});
 
   
 
@@ -641,7 +703,7 @@ export default function Profile({server}: ProfileProps) {
                       <Button onClick={searchBook}>Search</Button>
                     </Flex>
                     {selectedBook ? (
-                      <Flex 
+                      <Box
                         my={2}
                         p={2}
                         rounded="md"
@@ -651,48 +713,50 @@ export default function Profile({server}: ProfileProps) {
                         }}
                         position="relative"
                       >
-                        <CloseButton
-                          position="absolute"
-                          top="0"
-                          right="0"
-                          onClick={e=>setSelectedBook(null)}
-                        />
-                        <Image 
-                          src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
-                          maxH="125px"
-                        />
-                        <Box 
-                          mx={2}
-                        >
-                          <Heading as="h5" size="sm" me={3}>
-                            {selectedBook.volumeInfo.title}
-                          </Heading>
-                          <Text>
-                            {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
-                          </Text>
-                          <Text
-                            noOfLines={2}
+                        <Flex>
+                          <CloseButton
+                            position="absolute"
+                            top="0"
+                            right="0"
+                            onClick={e=>setSelectedBook(null)}
+                          />
+                          <Image 
+                            src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
+                            maxH="125px"
+                          />
+                          <Box 
+                            mx={2}
                           >
-                            {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
-                          </Text>
-                          <Flex justify="flex-end">
-                            <Button 
-                              size="sm"
-                              data-image={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
-                              data-title={selectedBook.volumeInfo.title}
-                              data-author={selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
-                              data-description={selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
-                              onClick={e=>postCurrentlyReading(e)}
+                            <Heading as="h5" size="sm" me={3}>
+                              {selectedBook.volumeInfo.title}
+                            </Heading>
+                            <Text>
+                              {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
+                            </Text>
+                            <Text
+                              noOfLines={2}
                             >
-                              Post
-                            </Button>
-                          </Flex>
-                        </Box>
-                      </Flex>
+                              {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
+                            </Text>
+                            <Flex justify="flex-end">
+                              <Button 
+                                size="sm"
+                                data-image={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
+                                data-title={selectedBook.volumeInfo.title}
+                                data-author={selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
+                                data-description={selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
+                                onClick={e=>postCurrentlyReading(e)}
+                              >
+                                Post
+                              </Button>
+                            </Flex>
+                          </Box>
+                        </Flex>
+                      </Box>
                     ) : null}
 
                     {profileData?.CurrentlyReading?.length ? (
-                      <Flex 
+                      <Box
                         my={2}
                         p={2}
                         rounded="md"
@@ -702,99 +766,148 @@ export default function Profile({server}: ProfileProps) {
                         }}
                         position="relative"
                       >
-                        <Image 
-                          src={
-                            profileData
-                            .CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                            .image
-                          }
-                          maxH="125px"
-                        />
-                        <Box mx={2}>
-                          <Flex justify="space-between">
+                        <Flex>
+                          <Image 
+                            src={
+                              profileData
+                              .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                              .image
+                            }
+                            maxH="125px"
+                          />
+                          <Box mx={2}>
+                            <Flex justify="space-between">
+                              <Text>
+                                {
+                                  dayjs(profileData
+                                    .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                    .created_on).local().format('MMM DD, hh:mm a')
+                                }
+                              </Text>
+                              <HStack>
+                                <Text>
+                                  {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? <i>hidden</i> : ""}
+                                </Text>
+                                <Box>
+                                    <Menu>
+                                      <MenuButton 
+                                        as={Button}
+                                        size="md"
+                                        variant="ghost"
+                                        rounded="full"
+                                        height="25px"
+                                      >
+                                        <BiDotsHorizontalRounded/>
+                                      </MenuButton>
+                                      <MenuList>
+                                        <MenuItem 
+                                          data-book={JSON.stringify(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1])}
+                                          onClick={e=>openCommentModal(e)}
+                                          fontWeight="bold"
+                                          icon={<BsReplyFill size={20} />}
+                                        >
+                                          Comment
+                                        </MenuItem>
+                                        {viewer === "self" ? (
+                                        <>
+                                          <MenuItem
+                                            data-readingid={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}
+                                            data-hide={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? false : true}
+                                            onClick={e=>hideReading(e as any)}
+                                            fontWeight="bold"
+                                            icon={<BiHide size={20} />}
+                                          >
+                                            {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? "Unhide" : "Hide"}
+                                          </MenuItem>
+                                          <MenuItem
+                                            color="tomato"
+                                            onClick={e=>deleteReading(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
+                                            fontWeight="bold"
+                                            icon={<BiTrash size={20} />}
+                                          >
+                                            Delete
+                                          </MenuItem>
+                                        </>
+                                        ): null}
+                                      </MenuList>
+                                    </Menu>
+                                </Box>
+                              </HStack>
+                            </Flex>
+                            <Heading as="h5" size="sm" me={3}>
+                              {
+                                profileData
+                                .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                .title
+                              }
+                            </Heading>
                             <Text>
                               {
-                                dayjs(profileData
-                                  .CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                  .created_on).local().format('MMM DD, hh:mm a')
+                              
+                              profileData
+                              .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                              .author
                               }
                             </Text>
-                            <HStack>
-                              <Text>
-                                {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? <i>hidden</i> : ""}
-                              </Text>
-                              <Box>
-                                  <Menu>
-                                    <MenuButton 
-                                      as={Button}
+                            <Text
+                              noOfLines={2}
+                            >
+                              {
+                                profileData
+                                .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                .description
+                              }
+                            </Text>
+                          </Box>
+                        </Flex>
+                        <Divider my={3} />
+                        {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment ? (
+                            profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment.map((comment,i)=>{
+                              return (
+                                <Flex key={i} my={2}>
+                                  <Box pe={2}>
+                                    <Avatar
+                                      onClick={e=>navigate(`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile}`)} 
                                       size="md"
-                                      variant="ghost"
-                                      rounded="full"
-                                      height="25px"
-                                    >
-                                      <BiDotsHorizontalRounded/>
-                                    </MenuButton>
-                                    <MenuList>
-                                      <MenuItem 
-                                        // value={comment.id}
-                                        // onClick={e=>openReplyModal(e)}
-                                        fontWeight="bold"
-                                        icon={<BsReplyFill size={20} />}
-                                      >
-                                        Comment
-                                      </MenuItem>
-                                      {viewer === "self" ? (
-                                      <>
-                                        <MenuItem
-                                          data-readingid={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}
-                                          data-hide={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? false : true}
-                                          onClick={e=>hideReading(e as any)}
-                                          fontWeight="bold"
-                                          icon={<BiHide size={20} />}
-                                        >
-                                          {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? "Unhide" : "Hide"}
-                                        </MenuItem>
-                                        <MenuItem
-                                          color="tomato"
-                                          onClick={e=>deleteReading(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
-                                          fontWeight="bold"
-                                          icon={<BiTrash size={20} />}
-                                        >
-                                          Delete
-                                        </MenuItem>
-                                      </>
+                                      cursor="pointer"
+                                      src={comment.Profile_CurrentlyReadingComment_commenter_idToProfile.profile_photo}
+                                      border="1px solid gray"
+                                    />
+                                  </Box>
+                                  <Box w="100%">
+                                    <Flex justify="space-between">
+                                      <Text>{dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}</Text>
+                                      {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.id === user.Profile.id ? (
+                                        <Menu>
+                                          <MenuButton
+                                            as={Button}
+                                            size="md"
+                                            variant="ghost"
+                                            rounded="full"
+                                            height="25px"
+                                          >
+                                            <BiDotsHorizontalRounded/>
+                                          </MenuButton>
+                                          <MenuList>
+                                            <MenuItem
+                                              color="tomato"
+                                              // onClick={e=>deleteReading(readBook.id)}
+                                              fontWeight="bold"
+                                              icon={<BiTrash size={20} />}
+                                            >
+                                              Delete
+                                            </MenuItem>
+                                          </MenuList>
+                                        </Menu>
                                       ): null}
-                                    </MenuList>
-                                  </Menu>
-                              </Box>
-                            </HStack>
-                          </Flex>
-                          <Heading as="h5" size="sm" me={3}>
-                            {
-                              profileData
-                              .CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                              .title
-                            }
-                          </Heading>
-                          <Text>
-                            {
-                            
-                            profileData
-                            .CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                            .author
-                            }
-                          </Text>
-                          <Text
-                            noOfLines={2}
-                          >
-                            {
-                              profileData
-                              .CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                              .description
-                            }
-                          </Text>
-                        </Box>
-                      </Flex>
+                                    </Flex>
+                                    <Text>{comment.comment}</Text>
+                                  </Box>
+                                </Flex>
+                              )
+                            }).reverse()
+                        ): null}
+                      </Box>
                     ) : null}
                   </>
                 ) : (
@@ -808,7 +921,7 @@ export default function Profile({server}: ProfileProps) {
                           Currently Reading
                         </Heading>
                         {profileData?.CurrentlyReading?.length ? (
-                          <Flex 
+                          <Box
                             my={2}
                             p={2}
                             rounded="md"
@@ -818,44 +931,117 @@ export default function Profile({server}: ProfileProps) {
                             }}
                             position="relative"
                           >
-                            <Image 
-                              src={
-                                profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].image
-                              }
-                              maxH="125px"
-                            />
-                            <Box mx={2}>
-                              <Text>
-                                {
-                                  dayjs(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                    .created_on)
-                                    .local()
-                                    .format('MMM DD, hh:mm a')
+                            <Flex>
+                              <Image 
+                                src={
+                                  profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].image
                                 }
-                              </Text>
-                              <Heading as="h5" size="sm" me={3}>
-                                {
-                                  profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                  .title
-                                }
-                              </Heading>
-                              <Text>
-                                {
-                                  profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                  .author
-                                }
-                              </Text>
-                              <Text
-                                noOfLines={2}
-                              >
-                                {
-                                  profileData
-                                  .CurrentlyReading[0]
-                                  .description
-                                }
-                              </Text>
-                            </Box>
-                          </Flex>
+                                maxH="125px"
+                              />
+                              <Box mx={2}>
+                                <HStack justify="space-between">
+                                  <Text>
+                                    {
+                                      dayjs(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                        .created_on)
+                                        .local()
+                                        .format('MMM DD, hh:mm a')
+                                    }
+                                  </Text>
+                                  <Box>
+                                    <Menu>
+                                      <MenuButton 
+                                        as={Button}
+                                        size="md"
+                                        variant="ghost"
+                                        rounded="full"
+                                        height="25px"
+                                      >
+                                        <BiDotsHorizontalRounded/>
+                                      </MenuButton>
+                                      <MenuList>
+                                        <MenuItem 
+                                          data-book={JSON.stringify(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1])}
+                                          onClick={e=>openCommentModal(e)}
+                                          fontWeight="bold"
+                                          icon={<BsReplyFill size={20} />}
+                                        >
+                                          Comment
+                                        </MenuItem>
+                                      </MenuList>
+                                    </Menu>
+                                  </Box>
+                                </HStack>
+                                <Heading as="h5" size="sm" me={3}>
+                                  {
+                                    profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                    .title
+                                  }
+                                </Heading>
+                                <Text>
+                                  {
+                                    profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                    .author
+                                  }
+                                </Text>
+                                <Text
+                                  noOfLines={2}
+                                >
+                                  {
+                                    profileData
+                                    .CurrentlyReading[0]
+                                    .description
+                                  }
+                                </Text>
+                              </Box>
+                            </Flex>
+                            {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment ? (
+                              profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment.map((comment,i)=>{
+                                return (
+                                  <Flex key={i} my={2}>
+                                    <Box pe={2}>
+                                      <Avatar
+                                        onClick={e=>navigate(`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile}`)} 
+                                        size="md"
+                                        cursor="pointer"
+                                        src={comment.Profile_CurrentlyReadingComment_commenter_idToProfile.profile_photo}
+                                        border="1px solid gray"
+                                      />
+                                    </Box>
+                                    <Box w="100%">
+                                      <Flex justify="space-between">
+                                        <Text>{dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}</Text>
+                                        {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.id === user.Profile.id ? (
+                                          <Menu>
+                                            <MenuButton
+                                              as={Button}
+                                              size="md"
+                                              variant="ghost"
+                                              rounded="full"
+                                              height="25px"
+                                            >
+                                              <BiDotsHorizontalRounded/>
+                                            </MenuButton>
+                                            <MenuList>
+                                              <MenuItem
+                                                color="tomato"
+                                                // onClick={e=>deleteReading(readBook.id)}
+                                                fontWeight="bold"
+                                                icon={<BiTrash size={20} />}
+                                              >
+                                                Delete
+                                              </MenuItem>
+                                            </MenuList>
+                                          </Menu>
+                                        ): null}
+                                      </Flex>
+                                      <Text>{comment.comment}</Text>
+                                    </Box>
+                                  </Flex>
+                                )
+                              }).reverse()
+                          ): null}
+                          </Box>
                         ) : null}
                       </>
                     )
@@ -882,7 +1068,8 @@ export default function Profile({server}: ProfileProps) {
                             null
                           ) : (
                             i !== profileData.CurrentlyReading.length - 1 ? (
-                              <Flex 
+                              <Box 
+                                key={i}
                                 my={2}
                                 p={2}
                                 rounded="md"
@@ -891,68 +1078,126 @@ export default function Profile({server}: ProfileProps) {
                                   bg: 'gray.600'
                                 }}
                                 position="relative"
-                                key={i}
                               >
-                                <Image 
-                                  src={readBook.image}
-                                  maxH="125px"
-                                />
-                                <Box mx={2} w="100%">
-                                  <Flex justify="space-between">
-                                    <Text>
-                                      {dayjs(readBook.created_on).local().format('MMM DD, hh:mm a')}
-                                    </Text>
-                                    <HStack>
+                                <Flex>
+                                  <Image 
+                                    src={readBook.image}
+                                    maxH="125px"
+                                  />
+                                  <Box mx={2} w="100%">
+                                    <Flex justify="space-between">
                                       <Text>
-                                        {viewer === "self" && readBook.hidden ? <i>hidden</i> : ""}
+                                        {dayjs(readBook.created_on).local().format('MMM DD, hh:mm a')}
                                       </Text>
-                                      <Box>
-                                        {viewer === "self" ? (
-                                          <Menu>
-                                            <MenuButton 
-                                              as={Button}
+                                      <HStack>
+                                        <Text>
+                                          {viewer === "self" && readBook.hidden ? <i>hidden</i> : ""}
+                                        </Text>
+                                        <Box>
+                                            <Menu>
+                                              <MenuButton 
+                                                as={Button}
+                                                size="md"
+                                                variant="ghost"
+                                                rounded="full"
+                                                height="25px"
+                                              >
+                                                <BiDotsHorizontalRounded/>
+                                              </MenuButton>
+                                              <MenuList>
+                                                <MenuItem 
+                                                  data-book={JSON.stringify(readBook)}
+                                                  onClick={e=>openCommentModal(e)}
+                                                  fontWeight="bold"
+                                                  icon={<BsReplyFill size={20} />}
+                                                >
+                                                  Comment
+                                                </MenuItem>
+                                                {viewer === "self" ? (
+                                                <>
+                                                  <MenuItem
+                                                    data-readingid={readBook.id}
+                                                    data-hide={readBook.hidden ? false : true}
+                                                    onClick={e=>hideReading(e as any)}
+                                                    fontWeight="bold"
+                                                    icon={<BiHide size={20} />}
+                                                  >
+                                                    {readBook.hidden ? "Unhide" : "Hide"}
+                                                  </MenuItem>
+                                                  <MenuItem
+                                                    color="tomato"
+                                                    onClick={e=>deleteReading(readBook.id)}
+                                                    fontWeight="bold"
+                                                    icon={<BiTrash size={20} />}
+                                                  >
+                                                    Delete
+                                                  </MenuItem>
+                                                </>
+                                                ): null}
+                                              </MenuList>
+                                            </Menu>
+                                        </Box>
+                                      </HStack>
+                                    </Flex>
+                                    <Heading as="h5" size="sm" me={3}>
+                                      {readBook.title}
+                                    </Heading>
+                                    <Text>{readBook.author}</Text>
+                                    <Text
+                                      noOfLines={2}
+                                    >
+                                      {readBook.description}
+                                    </Text>
+                                  </Box>
+                                </Flex>
+                                <Divider my={3} />
+                                {readBook.CurrentlyReadingComment ? (
+                                    readBook.CurrentlyReadingComment.map((comment,i)=>{
+                                      return (
+                                        <Flex key={i} my={2}>
+                                          <Box pe={2}>
+                                            <Avatar
+                                              onClick={e=>navigate(`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile}`)} 
                                               size="md"
-                                              variant="ghost"
-                                              rounded="full"
-                                              height="25px"
-                                            >
-                                              <BiDotsHorizontalRounded/>
-                                            </MenuButton>
-                                            <MenuList>
-                                              <MenuItem
-                                                data-readingid={readBook.id}
-                                                data-hide={readBook.hidden ? false : true}
-                                                onClick={e=>hideReading(e as any)}
-                                                fontWeight="bold"
-                                                icon={<BiHide size={20} />}
-                                              >
-                                                {readBook.hidden ? "Unhide" : "Hide"}
-                                              </MenuItem>
-                                              <MenuItem
-                                                color="tomato"
-                                                onClick={e=>deleteReading(readBook.id)}
-                                                fontWeight="bold"
-                                                icon={<BiTrash size={20} />}
-                                              >
-                                                Delete
-                                              </MenuItem>
-                                            </MenuList>
-                                          </Menu>
-                                        ): null}
-                                      </Box>
-                                    </HStack>
-                                  </Flex>
-                                  <Heading as="h5" size="sm" me={3}>
-                                    {readBook.title}
-                                  </Heading>
-                                  <Text>{readBook.author}</Text>
-                                  <Text
-                                    noOfLines={2}
-                                  >
-                                    {readBook.description}
-                                  </Text>
-                                </Box>
-                              </Flex>
+                                              cursor="pointer"
+                                              src={comment.Profile_CurrentlyReadingComment_commenter_idToProfile.profile_photo}
+                                              border="1px solid gray"
+                                            />
+                                          </Box>
+                                          <Box w="100%">
+                                            <Flex justify="space-between">
+                                              <Text>{dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}</Text>
+                                              {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.id === user.Profile.id ? (
+                                                <Menu>
+                                                  <MenuButton
+                                                    as={Button}
+                                                    size="md"
+                                                    variant="ghost"
+                                                    rounded="full"
+                                                    height="25px"
+                                                  >
+                                                    <BiDotsHorizontalRounded/>
+                                                  </MenuButton>
+                                                  <MenuList>
+                                                    <MenuItem
+                                                      color="tomato"
+                                                      // onClick={e=>deleteReading(readBook.id)}
+                                                      fontWeight="bold"
+                                                      icon={<BiTrash size={20} />}
+                                                    >
+                                                      Delete
+                                                    </MenuItem>
+                                                  </MenuList>
+                                                </Menu>
+                                              ): null}
+                                            </Flex>
+                                            <Text>{comment.comment}</Text>
+                                          </Box>
+                                        </Flex>
+                                      )
+                                    }).reverse()
+                                ): null}
+                              </Box>
                             ) : null
                           )
                         )
@@ -1226,6 +1471,39 @@ export default function Profile({server}: ProfileProps) {
                         <Text color="red">{(selectBookMutation.error as Error).message}</Text>
                       )
                     } */}
+                  </>
+                  </ModalFooter>
+              </ModalContent>
+            </Modal>
+
+            <Modal 
+              isOpen={isOpenCommentModal} 
+              onClose={closeCommentModal}
+              isCentered
+            >
+              <ModalOverlay />
+              <ModalContent maxH="80vh">
+                <ModalHeader>
+                  New Book Club Book
+                </ModalHeader>
+                <ModalCloseButton />
+                  <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
+                    <Textarea
+                      ref={commentRef}
+                    >
+                    </Textarea>
+                  </ModalBody>
+                  <ModalFooter flexDirection="column">
+                  <> 
+                    <Button
+                      colorScheme="green"
+                      data-profileid={profileData.id}
+                      data-libraryid={user.Library.id}
+                      data-currentlyreadingid={commentBookData?.id}
+                      onClick={e=>commentCurrentlyReading(e)}
+                    >
+                      Submit
+                    </Button>
                   </>
                   </ModalFooter>
               </ModalContent>
