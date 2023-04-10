@@ -153,6 +153,7 @@ export interface BookClubsType {
   BookClubMembers: BookClubMember[];
   BookClubBook: BookClubBookType[];
   BookClubBookPoll: BookClubBookPollType;
+  BookClubMeetingRsvp: BookClubRsvpType[];
 }
 
 export interface BookClubMember {
@@ -197,6 +198,7 @@ export interface BookClubRsvpType {
   book_club_id: number;
   profile_id: number;
   created_on: Date | string;
+  Profile: ProfileType;
 }
 
 

@@ -1368,6 +1368,30 @@ export default function BookClub({server}: {server: string}) {
                                   Un-RSVP
                                 </Button>
                               )}
+                              <Popover isLazy>
+                                <PopoverTrigger>
+                                  <Button size="xs" variant="ghost" m={1}>View RSVP List</Button>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                  <PopoverArrow />
+                                  <PopoverCloseButton />
+                                  <PopoverHeader>RSVP List</PopoverHeader>
+                                  <PopoverBody>{bookClub?.BookClubMeetingRsvp.length ? 
+                                  (
+                                    bookClub?.BookClubMeetingRsvp.map((rsvp,i)=>{
+                                      return (
+                                        <Text key={i}>
+                                          <Link
+                                            href={`/profile/${rsvp.Profile.username}`}
+                                          >
+                                            @{rsvp.Profile.username}
+                                          </Link>
+                                        </Text>
+                                      )
+                                    })
+                                  ) : null}</PopoverBody>
+                                </PopoverContent>
+                              </Popover>
                             </>
                           </Center>
                         </>
