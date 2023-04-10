@@ -913,7 +913,7 @@ export default function Profile({server}: ProfileProps) {
                 ) : (
                   <>
                   {viewer === "following" ? (
-                    profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? (
+                    profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]?.hidden ? (
                       null
                     ) : (
                       <>
