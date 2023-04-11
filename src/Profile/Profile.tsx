@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ProfileProps, HTMLInputEvent, ProfileType } from '../types/types';
+import { ProfileProps, HTMLInputEvent, ProfileType, CurrentlyReading, CurrentlyReadingComment } from '../types/types';
 import { 
   Box,
   Heading,
@@ -486,12 +486,87 @@ const useProfile = ({server}: ProfileProps) => {
     onCloseCommentModal()
   }
 
-  return {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton};
+  const Comments: Function = ({readBook}: {readBook: CurrentlyReading}) => {
+    const [increment,setIncrement] = useState(5);
+
+    return (
+      readBook.CurrentlyReadingComment.map((comment: CurrentlyReadingComment,i: number)=>{
+        return (
+          i >= increment ? (
+            i === increment + 1 ? (
+              <Box key={999} textAlign="center">
+                <Button 
+                  onClick={e=>setIncrement(prev=>prev+5)}
+                  size="xs"
+                  w="auto"
+                  variant="ghost"
+                >
+                  ...
+                </Button>
+              </Box>
+            ) : <Box key={i}></Box>
+          ) : (
+            <Flex key={i} my={2}>
+              <Box pe={2}>
+                <Avatar
+                  onClick={e=>navigate(`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile}`)} 
+                  size="md"
+                  cursor="pointer"
+                  src={comment.Profile_CurrentlyReadingComment_commenter_idToProfile.profile_photo}
+                  border="1px solid gray"
+                />
+              </Box>
+              <Box w="100%">
+                <Flex justify="space-between">
+                  <HStack>
+                    <Text 
+                      as={Link}
+                      fontWeight="bold"
+                      to={`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}`}
+                    >
+                      @{comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}
+                    </Text>
+                    <Text>{dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}</Text>
+                  </HStack>
+                  {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.id === user.Profile.id ? (
+                    <Menu>
+                      <MenuButton
+                        as={Button}
+                        size="md"
+                        variant="ghost"
+                        rounded="full"
+                        height="25px"
+                      >
+                        <BiDotsHorizontalRounded/>
+                      </MenuButton>
+                      <MenuList>
+                        <MenuItem
+                          color="tomato"
+                          // onClick={e=>deleteReading(readBook.id)}
+                          fontWeight="bold"
+                          icon={<BiTrash size={20} />}
+                        >
+                          Delete
+                        </MenuItem>
+                      </MenuList>
+                    </Menu>
+                  ): <Box></Box>}
+                </Flex>
+                <Text>{comment.comment}</Text>
+              </Box>
+            </Flex>
+          )
+        )
+      })
+    )
+  }
+
+  return {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments};
 }
 
 
 export default function Profile({server}: ProfileProps) {
-  const {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton} = useProfile({server});
+  const {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments} = useProfile({server});
 
   
 
@@ -863,59 +938,7 @@ export default function Profile({server}: ProfileProps) {
                         </Flex>
                         <Divider my={3} />
                         {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment ? (
-                            profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment.map((comment,i)=>{
-                              return (
-                                <Flex key={i} my={2}>
-                                  <Box pe={2}>
-                                    <Avatar
-                                      onClick={e=>navigate(`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile}`)} 
-                                      size="md"
-                                      cursor="pointer"
-                                      src={comment.Profile_CurrentlyReadingComment_commenter_idToProfile.profile_photo}
-                                      border="1px solid gray"
-                                    />
-                                  </Box>
-                                  <Box w="100%">
-                                    <Flex justify="space-between">
-                                      <HStack>
-                                        <Text
-                                          as={Link}
-                                          to={`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}`}
-                                          fontWeight="bold"
-                                        >
-                                          @{comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}
-                                        </Text>
-                                       <Text>{dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}</Text>
-                                      </HStack>
-                                      {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.id === user.Profile.id ? (
-                                        <Menu>
-                                          <MenuButton
-                                            as={Button}
-                                            size="md"
-                                            variant="ghost"
-                                            rounded="full"
-                                            height="25px"
-                                          >
-                                            <BiDotsHorizontalRounded/>
-                                          </MenuButton>
-                                          <MenuList>
-                                            <MenuItem
-                                              color="tomato"
-                                              // onClick={e=>deleteReading(readBook.id)}
-                                              fontWeight="bold"
-                                              icon={<BiTrash size={20} />}
-                                            >
-                                              Delete
-                                            </MenuItem>
-                                          </MenuList>
-                                        </Menu>
-                                      ): null}
-                                    </Flex>
-                                    <Text>{comment.comment}</Text>
-                                  </Box>
-                                </Flex>
-                              )
-                            }).reverse()
+                            <Comments readBook={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]}/>
                         ): null}
                       </Box>
                     ) : null}
@@ -1006,59 +1029,7 @@ export default function Profile({server}: ProfileProps) {
                               </Box>
                             </Flex>
                             {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment ? (
-                              profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment.map((comment,i)=>{
-                                return (
-                                  <Flex key={i} my={2}>
-                                    <Box pe={2}>
-                                      <Avatar
-                                        onClick={e=>navigate(`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile}`)} 
-                                        size="md"
-                                        cursor="pointer"
-                                        src={comment.Profile_CurrentlyReadingComment_commenter_idToProfile.profile_photo}
-                                        border="1px solid gray"
-                                      />
-                                    </Box>
-                                    <Box w="100%">
-                                      <Flex justify="space-between">
-                                        <HStack>
-                                          <Text
-                                            as={Link}
-                                            to={`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}`}
-                                            fontWeight="bold"
-                                          >
-                                            @{comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}
-                                          </Text>
-                                          <Text>{dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}</Text>
-                                        </HStack>
-                                        {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.id === user.Profile.id ? (
-                                          <Menu>
-                                            <MenuButton
-                                              as={Button}
-                                              size="md"
-                                              variant="ghost"
-                                              rounded="full"
-                                              height="25px"
-                                            >
-                                              <BiDotsHorizontalRounded/>
-                                            </MenuButton>
-                                            <MenuList>
-                                              <MenuItem
-                                                color="tomato"
-                                                // onClick={e=>deleteReading(readBook.id)}
-                                                fontWeight="bold"
-                                                icon={<BiTrash size={20} />}
-                                              >
-                                                Delete
-                                              </MenuItem>
-                                            </MenuList>
-                                          </Menu>
-                                        ): null}
-                                      </Flex>
-                                      <Text>{comment.comment}</Text>
-                                    </Box>
-                                  </Flex>
-                                )
-                              }).reverse()
+                              <Comments readBook={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]}/>
                           ): null}
                           </Box>
                         ) : null}
@@ -1171,59 +1142,7 @@ export default function Profile({server}: ProfileProps) {
                                 </Flex>
                                 <Divider my={3} />
                                 {readBook.CurrentlyReadingComment ? (
-                                    readBook.CurrentlyReadingComment.map((comment,i)=>{
-                                      return (
-                                        <Flex key={i} my={2}>
-                                          <Box pe={2}>
-                                            <Avatar
-                                              onClick={e=>navigate(`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile}`)} 
-                                              size="md"
-                                              cursor="pointer"
-                                              src={comment.Profile_CurrentlyReadingComment_commenter_idToProfile.profile_photo}
-                                              border="1px solid gray"
-                                            />
-                                          </Box>
-                                          <Box w="100%">
-                                            <Flex justify="space-between">
-                                              <HStack>
-                                                <Text 
-                                                  as={Link}
-                                                  fontWeight="bold"
-                                                  to={`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}`}
-                                                >
-                                                  @{comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}
-                                                </Text>
-                                                <Text>{dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}</Text>
-                                              </HStack>
-                                              {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.id === user.Profile.id ? (
-                                                <Menu>
-                                                  <MenuButton
-                                                    as={Button}
-                                                    size="md"
-                                                    variant="ghost"
-                                                    rounded="full"
-                                                    height="25px"
-                                                  >
-                                                    <BiDotsHorizontalRounded/>
-                                                  </MenuButton>
-                                                  <MenuList>
-                                                    <MenuItem
-                                                      color="tomato"
-                                                      // onClick={e=>deleteReading(readBook.id)}
-                                                      fontWeight="bold"
-                                                      icon={<BiTrash size={20} />}
-                                                    >
-                                                      Delete
-                                                    </MenuItem>
-                                                  </MenuList>
-                                                </Menu>
-                                              ): null}
-                                            </Flex>
-                                            <Text>{comment.comment}</Text>
-                                          </Box>
-                                        </Flex>
-                                      )
-                                    }).reverse()
+                                    <Comments readBook={readBook}/>
                                 ): null}
                               </Box>
                             ) : null
