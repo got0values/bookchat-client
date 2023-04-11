@@ -63,8 +63,7 @@ interface LinkItemProps {
 const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', linkTo: "/", icon: <AiFillHome size="20"/>},
   { name: 'Book Clubs', linkTo: "/bookclubs" },
-  { name: 'Reading Clubs', linkTo: "/" },
-  { name: 'Members', linkTo: "/members" }
+  { name: 'Reading Clubs', linkTo: "/" }
 ];
 
 const useTopNav = ({server,onLogout}: TopNavProps) => {
@@ -402,6 +401,13 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                 _hover={{
                   bg: useColorModeValue("gray.200","gray.500"),
                   color: useColorModeValue("black","white")
+                }}
+                // style={({isActive}: {isActive: boolean})=>({
+                //   backgroundColor: isActive ? "#E2E8F0" : ""
+                // })}
+                sx={{
+                  bg: window.location.pathname === linkItem.linkTo ? useColorModeValue("gray.200","gray.500") : "",
+                  color: window.location.pathname === linkItem.linkTo ? useColorModeValue("black","white") : ""
                 }}
               >
                 <Flex align="center" gap={2}>
