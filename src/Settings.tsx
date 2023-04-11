@@ -28,8 +28,26 @@ export default function Settings({server}: SettingsProps) {
   },[])
 
   return (
-    <Box className="main-content">
+    <Box className="main-content-smaller">
       <Stack>
+
+      <Flex className="well" direction="column">
+          <Stack>
+            <Heading as="h4" size="md">
+              Name
+            </Heading>
+            <Flex w="100%" gap={5} flexWrap="wrap" justify="space-between">
+              <Box flex="1 1 45%" minW="150px">
+                <FormLabel htmlFor="first-name">First Name</FormLabel>
+                <Input id="first-name" type="text"/>
+              </Box>
+              <Box flex="1 1 45%" minW="150px">
+                <FormLabel htmlFor="last-name">Last Name</FormLabel>
+                <Input id="last-name" type="text"/>
+              </Box>
+            </Flex>
+          </Stack>
+        </Flex>
 
         <Flex className="well" direction="column">
           <Stack>
