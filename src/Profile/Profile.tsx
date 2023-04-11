@@ -58,6 +58,7 @@ import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
 import { BsReplyFill } from 'react-icons/bs';
 import { useAuth } from '../hooks/useAuth';
 import { FollowProfileButton, CancelRequestButton, UnFollowProfileButton } from "./profileButtons";
+import Comments from "../shared/CurrentlyReadingComments";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
@@ -486,81 +487,6 @@ const useProfile = ({server}: ProfileProps) => {
     onCloseCommentModal()
   }
 
-  const Comments: Function = ({readBook}: {readBook: CurrentlyReading}) => {
-    const [increment,setIncrement] = useState(5);
-
-    return (
-      readBook.CurrentlyReadingComment.map((comment: CurrentlyReadingComment,i: number)=>{
-        return (
-          i >= increment ? (
-            i === increment + 1 ? (
-              <Box key={999} textAlign="center">
-                <Button 
-                  onClick={e=>setIncrement(prev=>prev+5)}
-                  size="xs"
-                  w="auto"
-                  variant="ghost"
-                >
-                  ...
-                </Button>
-              </Box>
-            ) : <Box key={i}></Box>
-          ) : (
-            <Flex key={i} my={2}>
-              <Box pe={2}>
-                <Avatar
-                  onClick={e=>navigate(`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile}`)} 
-                  size="md"
-                  cursor="pointer"
-                  src={comment.Profile_CurrentlyReadingComment_commenter_idToProfile.profile_photo}
-                  border="1px solid gray"
-                />
-              </Box>
-              <Box w="100%">
-                <Flex justify="space-between">
-                  <HStack>
-                    <Text 
-                      as={Link}
-                      fontWeight="bold"
-                      to={`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}`}
-                    >
-                      @{comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}
-                    </Text>
-                    <Text>{dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}</Text>
-                  </HStack>
-                  {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.id === user.Profile.id ? (
-                    <Menu>
-                      <MenuButton
-                        as={Button}
-                        size="md"
-                        variant="ghost"
-                        rounded="full"
-                        height="25px"
-                      >
-                        <BiDotsHorizontalRounded/>
-                      </MenuButton>
-                      <MenuList>
-                        <MenuItem
-                          color="tomato"
-                          // onClick={e=>deleteReading(readBook.id)}
-                          fontWeight="bold"
-                          icon={<BiTrash size={20} />}
-                        >
-                          Delete
-                        </MenuItem>
-                      </MenuList>
-                    </Menu>
-                  ): <Box></Box>}
-                </Flex>
-                <Text>{comment.comment}</Text>
-              </Box>
-            </Flex>
-          )
-        )
-      })
-    )
-  }
-
   return {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments};
 }
 
@@ -938,7 +864,7 @@ export default function Profile({server}: ProfileProps) {
                         </Flex>
                         <Divider my={3} />
                         {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment ? (
-                            <Comments readBook={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]}/>
+                            <Comments comments={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment}/>
                         ): null}
                       </Box>
                     ) : null}
@@ -1029,7 +955,7 @@ export default function Profile({server}: ProfileProps) {
                               </Box>
                             </Flex>
                             {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment ? (
-                              <Comments readBook={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]}/>
+                              <Comments comments={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment}/>
                           ): null}
                           </Box>
                         ) : null}
@@ -1142,7 +1068,7 @@ export default function Profile({server}: ProfileProps) {
                                 </Flex>
                                 <Divider my={3} />
                                 {readBook.CurrentlyReadingComment ? (
-                                    <Comments readBook={readBook}/>
+                                    <Comments comments={readBook.CurrentlyReadingComment}/>
                                 ): null}
                               </Box>
                             ) : null
@@ -1431,7 +1357,7 @@ export default function Profile({server}: ProfileProps) {
               <ModalOverlay />
               <ModalContent maxH="80vh">
                 <ModalHeader>
-                  New Book Club Book
+                  Comment
                 </ModalHeader>
                 <ModalCloseButton />
                   <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
@@ -1459,39 +1385,39 @@ export default function Profile({server}: ProfileProps) {
           ): (
             <>
               <Modal 
-              isOpen={isOpenCommentModal} 
-              onClose={closeCommentModal}
-              isCentered
-            >
-              <ModalOverlay />
-              <ModalContent maxH="80vh">
-                <ModalHeader>
-                  New Book Club Book
-                </ModalHeader>
-                <ModalCloseButton />
-                  <ModalBody h="auto" maxH="75vh" overflow="auto">
-                    <Input
-                      type="text"
-                      ref={commentRef as any}
-                      onKeyUp={e=>e.key === 'Enter' ? commentCurrentlyReadingButton.current.click() : null}
-                    />
-                  </ModalBody>
-                  <ModalFooter flexDirection="column">
-                  <> 
-                    <Button
-                      colorScheme="green"
-                      data-profileid={profileData.id}
-                      data-libraryid={user.Library.id}
-                      data-currentlyreadingid={commentBookData?.id}
-                      ref={commentCurrentlyReadingButton}
-                      onClick={e=>commentCurrentlyReading(e)}
-                    >
-                      Submit
-                    </Button>
-                  </>
-                  </ModalFooter>
-              </ModalContent>
-            </Modal>
+                isOpen={isOpenCommentModal} 
+                onClose={closeCommentModal}
+                isCentered
+              >
+                <ModalOverlay />
+                <ModalContent maxH="80vh">
+                  <ModalHeader>
+                    Comment
+                  </ModalHeader>
+                  <ModalCloseButton />
+                    <ModalBody h="auto" maxH="75vh" overflow="auto">
+                      <Input
+                        type="text"
+                        ref={commentRef as any}
+                        onKeyUp={e=>e.key === 'Enter' ? commentCurrentlyReadingButton.current.click() : null}
+                      />
+                    </ModalBody>
+                    <ModalFooter flexDirection="column">
+                    <> 
+                      <Button
+                        colorScheme="green"
+                        data-profileid={profileData.id}
+                        data-libraryid={user.Library.id}
+                        data-currentlyreadingid={commentBookData?.id}
+                        ref={commentCurrentlyReadingButton}
+                        onClick={e=>commentCurrentlyReading(e)}
+                      >
+                        Submit
+                      </Button>
+                    </>
+                    </ModalFooter>
+                </ModalContent>
+              </Modal>
             </>
           )}
         </>
