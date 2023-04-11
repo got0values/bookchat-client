@@ -216,7 +216,7 @@ const useProfile = ({server}: ProfileProps) => {
         .then((response)=>{
           if (response.data.success){
             if (navigateToNewUsernameOnReponse) {
-              const newUsername = response.data.message.Profile.username
+              const newUsername = profileUserNameRef.current.value
               navigate("/profile/" + newUsername)
             }
             else {
@@ -233,6 +233,7 @@ const useProfile = ({server}: ProfileProps) => {
       else {
         throw new Error("Please login again");
       }
+      getUser();
       return getProfile()
     },
     onSuccess: (data,variables)=>{
