@@ -63,7 +63,7 @@ interface LinkItemProps {
 const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', linkTo: "/", icon: <AiFillHome size="20"/>},
   { name: 'Book Clubs', linkTo: "/bookclubs" },
-  { name: 'Reading Clubs', linkTo: "/" }
+  { name: 'Reading Clubs', linkTo: "/readingclubs" }
 ];
 
 const useTopNav = ({server,onLogout}: TopNavProps) => {
