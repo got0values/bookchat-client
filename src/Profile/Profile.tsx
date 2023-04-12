@@ -39,9 +39,6 @@ import {
   PopoverContent,
   PopoverBody,
   PopoverArrow,
-  PopoverHeader,
-  PopoverFooter,
-  Textarea,
   Menu,
   MenuButton,
   MenuList,
@@ -741,6 +738,27 @@ export default function Profile({server}: ProfileProps) {
                             >
                               {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
                             </Text>
+                            <Center>
+                              <Popover isLazy>
+                                <PopoverTrigger>
+                                  <Button 
+                                    size="xs" 
+                                    variant="ghost" 
+                                    m={1}
+                                    h="auto"
+                                  >
+                                    ...
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                  <PopoverArrow />
+                                  <PopoverCloseButton />
+                                  <PopoverBody>
+                                    {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
+                                  </PopoverBody>
+                                </PopoverContent>
+                              </Popover>
+                            </Center>
                             <Flex justify="flex-end">
                               <Button 
                                 size="sm"
@@ -861,6 +879,27 @@ export default function Profile({server}: ProfileProps) {
                                 .description
                               }
                             </Text>
+                            <Center>
+                              <Popover isLazy>
+                                <PopoverTrigger>
+                                  <Button 
+                                    size="xs" 
+                                    variant="ghost" 
+                                    m={1}
+                                    h="auto"
+                                  >
+                                    ...
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                  <PopoverArrow />
+                                  <PopoverCloseButton />
+                                  <PopoverBody>
+                                    {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].description}
+                                  </PopoverBody>
+                                </PopoverContent>
+                              </Popover>
+                            </Center>
                           </Box>
                         </Flex>
                         <Divider my={3} />
@@ -953,6 +992,27 @@ export default function Profile({server}: ProfileProps) {
                                     .description
                                   }
                                 </Text>
+                                <Center>
+                                  <Popover isLazy>
+                                    <PopoverTrigger>
+                                      <Button 
+                                        size="xs" 
+                                        variant="ghost" 
+                                        m={1}
+                                        h="auto"
+                                      >
+                                        ...
+                                      </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent>
+                                      <PopoverArrow />
+                                      <PopoverCloseButton />
+                                      <PopoverBody>
+                                        {profileData.CurrentlyReading[0].description}
+                                      </PopoverBody>
+                                    </PopoverContent>
+                                  </Popover>
+                                </Center>
                               </Box>
                             </Flex>
                             {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment ? (
@@ -1065,6 +1125,27 @@ export default function Profile({server}: ProfileProps) {
                                     >
                                       {readBook.description}
                                     </Text>
+                                    <Center>
+                                      <Popover isLazy>
+                                        <PopoverTrigger>
+                                          <Button 
+                                            size="xs" 
+                                            variant="ghost" 
+                                            m={1}
+                                            h="auto"
+                                          >
+                                            ...
+                                          </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent>
+                                          <PopoverArrow />
+                                          <PopoverCloseButton />
+                                          <PopoverBody>
+                                            {readBook.description}
+                                          </PopoverBody>
+                                        </PopoverContent>
+                                      </Popover>
+                                    </Center>
                                   </Box>
                                 </Flex>
                                 <Divider my={3} />
@@ -1086,7 +1167,7 @@ export default function Profile({server}: ProfileProps) {
 
           </Flex>
 
-          {viewer === "self" ? (
+          {viewer === "self" && (
           <>
             <Modal isOpen={isOpenProfilePicModal} onClose={closeProfilePicModal}>
               <ModalOverlay />
@@ -1349,7 +1430,9 @@ export default function Profile({server}: ProfileProps) {
                   </ModalFooter>
               </ModalContent>
             </Modal>
-
+          </>
+          )}
+          <>
             <Modal 
               isOpen={isOpenCommentModal} 
               onClose={closeCommentModal}
@@ -1361,11 +1444,12 @@ export default function Profile({server}: ProfileProps) {
                   Comment
                 </ModalHeader>
                 <ModalCloseButton />
-                  <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-                    <Textarea
-                      ref={commentRef}
-                    >
-                    </Textarea>
+                  <ModalBody h="auto" maxH="75vh" overflow="auto">
+                    <Input
+                      type="text"
+                      ref={commentRef as any}
+                      onKeyUp={e=>e.key === 'Enter' ? commentCurrentlyReadingButton.current.click() : null}
+                    />
                   </ModalBody>
                   <ModalFooter flexDirection="column">
                   <> 
@@ -1374,6 +1458,7 @@ export default function Profile({server}: ProfileProps) {
                       data-profileid={profileData.id}
                       data-libraryid={user.Library.id}
                       data-currentlyreadingid={commentBookData?.id}
+                      ref={commentCurrentlyReadingButton}
                       onClick={e=>commentCurrentlyReading(e)}
                     >
                       Submit
@@ -1383,44 +1468,6 @@ export default function Profile({server}: ProfileProps) {
               </ModalContent>
             </Modal>
           </>
-          ): (
-            <>
-              <Modal 
-                isOpen={isOpenCommentModal} 
-                onClose={closeCommentModal}
-                isCentered
-              >
-                <ModalOverlay />
-                <ModalContent maxH="80vh">
-                  <ModalHeader>
-                    Comment
-                  </ModalHeader>
-                  <ModalCloseButton />
-                    <ModalBody h="auto" maxH="75vh" overflow="auto">
-                      <Input
-                        type="text"
-                        ref={commentRef as any}
-                        onKeyUp={e=>e.key === 'Enter' ? commentCurrentlyReadingButton.current.click() : null}
-                      />
-                    </ModalBody>
-                    <ModalFooter flexDirection="column">
-                    <> 
-                      <Button
-                        colorScheme="green"
-                        data-profileid={profileData.id}
-                        data-libraryid={user.Library.id}
-                        data-currentlyreadingid={commentBookData?.id}
-                        ref={commentCurrentlyReadingButton}
-                        onClick={e=>commentCurrentlyReading(e)}
-                      >
-                        Submit
-                      </Button>
-                    </>
-                    </ModalFooter>
-                </ModalContent>
-              </Modal>
-            </>
-          )}
         </>
         ) : <Box></Box>}
       </Skeleton>

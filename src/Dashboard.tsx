@@ -26,6 +26,13 @@ import {
   ModalBody,
   ModalCloseButton,
   Input,
+  Popover,
+  PopoverTrigger,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
+  Center,
   useDisclosure
 } from "@chakra-ui/react";
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
@@ -290,6 +297,27 @@ export default function Dashboard({server}: DashboardProps) {
                         >
                           {reading.description}
                         </Text>
+                        <Center>
+                          <Popover isLazy>
+                            <PopoverTrigger>
+                              <Button 
+                                size="xs" 
+                                variant="ghost" 
+                                m={1}
+                                h="auto"
+                              >
+                                ...
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                              <PopoverArrow />
+                              <PopoverCloseButton />
+                              <PopoverBody>
+                                {reading.description}
+                              </PopoverBody>
+                            </PopoverContent>
+                          </Popover>
+                        </Center>
                       </Box>
                     </Flex>
                     <Divider my={3} />
