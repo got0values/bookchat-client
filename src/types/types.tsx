@@ -34,11 +34,6 @@ export interface User {
   Profile: ProfileType
 }
 
-export interface UserNotificationsType {
-  followRequests: FollowRequest[];
-  bookClubRequests: BookClubMember[];
-}
-
 export interface FollowRequest {
   id: number;
   Profile_Following_self_profile_idToProfile: ProfileType;
@@ -270,4 +265,26 @@ export interface CurrentlyReadingComment {
   comment: string;
   datetime: string;
   Profile_CurrentlyReadingComment_commenter_idToProfile: ProfileType;
+}
+
+
+//Notifications
+export enum Notifications {
+  Comment = 1
+}
+
+export interface UserNotificationsType {
+  followRequests: FollowRequest[];
+  bookClubRequests: BookClubMember[];
+  comments: OtherNotificationsType[];
+}
+
+export interface OtherNotificationsType {
+  id: number;
+  profile_id: number;
+  type: Notifications;
+  from_data: ProfileType;
+  subject: any;
+  read: number | any;
+  datetime: string;
 }

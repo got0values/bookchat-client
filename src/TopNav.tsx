@@ -1,6 +1,6 @@
 import { ReactNode, useState, useLayoutEffect, useRef } from 'react';
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
-import { SearchData } from './types/types';
+import { SearchData, OtherNotificationsType } from './types/types';
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { TopNavProps, UserNotificationsType } from './types/types';
 import { useAuth } from './hooks/useAuth';
@@ -73,14 +73,45 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
   const toast = useToast();
   const navigate = useNavigate();
 
-  function getNotifications() {
+  async function getNotifications() {
     // resetNotifications();
     let userNotifications: UserNotificationsType = {
       followRequests: [],
-      bookClubRequests: []
+      bookClubRequests: [],
+      comments: []
     }
-    let totalRequests = 0;
+    let totalNotifications = 0;
     try {
+      const tokenCookie = Cookies.get().token;
+      const otherNotifications = await axios
+        .get(server + "/api/notifications",
+          {
+            headers: {
+              Authorization: tokenCookie
+            }
+          }
+        )
+        .then((response)=>{
+          return response.data.message;
+        })
+        .catch((response)=>{
+          console.log(response)
+        })
+        let commentData = otherNotifications?.filter((on: OtherNotificationsType)=>on.type === 1);
+        commentData = commentData.map((comment: any)=>{
+          return (
+            {
+              ...comment,
+              from_data: JSON.parse(comment.from_data),
+              subject: JSON.parse(comment.subject)
+             }
+          )
+        })
+        userNotifications = {
+          ...userNotifications, 
+          comments: [...userNotifications.comments as any[], ...commentData] 
+        }
+
       //check if any follow requests
       if (user.Profile.Following_Following_following_profile_idToProfile?.length) {
         let followers = user.Profile.Following_Following_following_profile_idToProfile;
@@ -88,7 +119,8 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
           if(followers[i].status === "requesting") {
             userNotifications = {
               ...userNotifications, 
-              followRequests: [...userNotifications.followRequests as any[], followers[i]] }
+              followRequests: [...userNotifications.followRequests as any[], followers[i]] 
+            }
           }
         }
       }
@@ -103,10 +135,10 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
           }
         }
       }
-      totalRequests = userNotifications.followRequests.length + userNotifications.bookClubRequests.length;
+      totalNotifications = userNotifications.followRequests.length + userNotifications.bookClubRequests.length + userNotifications.comments.length;
       return {
         userNotifications,
-        totalRequests
+        totalNotifications
       };
     } catch(error) {
       toast({
@@ -206,7 +238,9 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
       const tokenCookie = Cookies.get().token;
       await axios
       .put(server + "/api/acceptbookclubrequest",
-      {memberRequestId: requestId},
+      {
+        memberRequestId: requestId
+      },
       {headers: {
         'authorization': tokenCookie
       }})
@@ -318,7 +352,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
   const notificationQuery = useQuery({ queryKey: ['notificationKey'], queryFn: getNotifications });
   const notificationData = notificationQuery.data;
   const userNotifications = notificationData?.userNotifications;
-  const totalRequests: number = notificationData?.totalRequests as number;
+  const totalNotifications: number = notificationData?.totalNotifications as number;
 
   return (
     <>
@@ -452,7 +486,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                   size={'sm'}
                   src={profilePhoto ? profilePhoto : ""}
                 >
-                  {totalRequests ? (
+                  {totalNotifications ? (
                   <AvatarBadge 
                     borderColor="papayawhip" 
                     borderBottomLeftRadius="1px"
@@ -461,7 +495,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                     bg="tomato" 
                     boxSize="1.25em"
                     _before={{
-                      content: `"${totalRequests > 0 ? totalRequests : ''}"`,
+                      content: `"${totalNotifications > 0 ? totalNotifications : ''}"`,
                       fontWeight: "800",
                       fontSize: "13",
                       fontFamily: "Inter",
@@ -488,7 +522,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                   fontWeight="600"
                 >
                     Notifications
-                    {totalRequests > 0 ? (
+                    {totalNotifications > 0 ? (
                       <Icon as={RxDotFilled} boxSize="1.5em" color="red" verticalAlign="middle" />
                     ) : null}
                 </MenuItem>
@@ -670,6 +704,55 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                     </Flex>
                   )
                 })}
+
+                {userNotifications?.comments?.map((comment,i)=>{
+                  return (
+                    <Flex 
+                      align="center" 
+                      gap={1} 
+                      justify="space-between" 
+                      flexWrap="wrap"
+                      width="100%"
+                      key={i}
+                    >
+                      <Flex align="center" gap={1}>
+                        <Avatar src={comment.from_data?.profile_photo} size="sm"/>
+                        <Text>
+                          <Text
+                            as={Link} 
+                            to={`/profile/${comment.from_data?.username}`}
+                            onClick={onCloseNotificationsModal}
+                          >
+                            <Text 
+                              as="span"
+                              fontWeight="bold"
+                            >
+                            @{comment.from_data?.username}
+                            </Text> 
+                          </Text>
+                            {" "} commented on your {" "}
+                            <Text 
+                              as={Link} 
+                              to={comment.subject?.uri}
+                              onClick={onCloseNotificationsModal}
+                              fontWeight="bold"
+                            >
+                              post
+                            </Text>
+                        </Text>
+                      </Flex>
+                      <Flex m={1} gap={1} justify="flex-end">
+                        <Button 
+                          size="sm"
+                          // onClick={e=>acceptBookClubRequest(bookClubRequest?.id)}
+                        >
+                          OK
+                        </Button>
+                      </Flex>
+                    </Flex>
+                  )
+                })}
+
               </Flex>
             </ModalBody>
             <ModalFooter>
