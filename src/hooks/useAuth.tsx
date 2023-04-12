@@ -75,11 +75,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     return navigate("/login");
   }
 
-  const { isLoading, isError, data, error } = useQuery({ 
-    queryKey: ['profileKey',paramsUsername, profileDataUpdated], 
-    queryFn: getProfile 
-  });
-
   return (
     <AuthContext.Provider value={{ user, setUser, getUser, onLogin, onLogout}}>
       {children}
