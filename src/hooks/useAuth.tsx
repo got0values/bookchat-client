@@ -1,5 +1,4 @@
 import React, {createContext,useContext} from 'react';
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate,  } from "react-router-dom"
 import { AuthProviderProps, AuthContextProps } from '../types/types';
 import { useLocalStorage } from './useLocalStorage';
@@ -41,7 +40,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
           const newLocation = `${librarySubdomain}.${domain}`;
           window.location.href = `${protocol}//${newLocation}/`;
         }
-        return responseData.message;
+        return responseUser;
       }
       else {
         setUser(null);
