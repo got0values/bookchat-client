@@ -1,4 +1,5 @@
 import React, {createContext,useContext} from 'react';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate,  } from "react-router-dom"
 import { AuthProviderProps, AuthContextProps } from '../types/types';
 import { useLocalStorage } from './useLocalStorage';
@@ -73,6 +74,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     setUser(null)
     return navigate("/login");
   }
+
+  const { isLoading, isError, data, error } = useQuery({ 
+    queryKey: ['profileKey',paramsUsername, profileDataUpdated], 
+    queryFn: getProfile 
+  });
 
   return (
     <AuthContext.Provider value={{ user, setUser, getUser, onLogin, onLogout}}>
