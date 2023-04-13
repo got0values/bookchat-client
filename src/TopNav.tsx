@@ -1,7 +1,7 @@
 import { ReactNode, useState, useLayoutEffect, useRef } from 'react';
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
 import { SearchData, OtherNotificationsType } from './types/types';
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { TopNavProps, UserNotificationsType } from './types/types';
 import { useAuth } from './hooks/useAuth';
 import {
@@ -72,6 +72,7 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
   const { user, getUser } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   async function getNotifications() {
     // resetNotifications();
@@ -304,6 +305,48 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
     rejectBookClubRequestMutation.mutate(requestId);
   }
 
+  const readCommentNotificationMutation = useMutation({
+    mutationFn: async (commentId) => {
+      const tokenCookie = Cookies.get().token;
+      await axios
+        .put(server + "/api/readcommentnotification",
+        {
+          commentId
+        },
+        {headers: {
+            'authorization': tokenCookie,
+          }
+        })
+        .then((response)=>{
+          if (response.data.success) {
+            getUser()
+          }
+        })
+        .then((response)=>{
+          window.location.reload()
+        })
+        .catch(({response})=>{
+          console.log(response)
+          toast({
+            description: "An error has occurred",
+            status: "error",
+            duration: 9000,
+            isClosable: true
+          })
+          throw new Error(response.data?.message)
+        })
+      return getNotifications();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['notificationsKey'] })
+      queryClient.resetQueries({queryKey: ['notificationsKey']})
+      queryClient.setQueryData(["notificationsKey"],data)
+    }
+  })
+  function readCommentNotification(commentId: number) {
+    readCommentNotificationMutation.mutate(commentId);
+  }
+
   const { 
     isOpen: isOpenSearchModal, 
     onOpen: onOpenSearchModal, 
@@ -343,11 +386,11 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
     navSearchMutation.mutate();
   }
 
-  return { isOpen, onOpen, onClose, colorMode, navigate, user, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, acceptBookClubRequest, rejectBookClubRequest, getNotifications, navSearchRef, navSearch, isOpenSearchModal, closeSearchModal, searchData };
+  return { isOpen, onOpen, onClose, colorMode, navigate, user, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, acceptBookClubRequest, rejectBookClubRequest, getNotifications, navSearchRef, navSearch, isOpenSearchModal, closeSearchModal, searchData, readCommentNotification };
 }
 
 export default function TopNav({server,onLogout}: TopNavProps) {
-  const { isOpen, onOpen, onClose, colorMode, navigate, user, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, acceptBookClubRequest, rejectBookClubRequest, getNotifications, navSearchRef, navSearch, isOpenSearchModal, closeSearchModal, searchData } = useTopNav({server,onLogout});
+  const { isOpen, onOpen, onClose, colorMode, navigate, user, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, acceptBookClubRequest, rejectBookClubRequest, getNotifications, navSearchRef, navSearch, isOpenSearchModal, closeSearchModal, searchData, readCommentNotification } = useTopNav({server,onLogout});
 
   const notificationQuery = useQuery({ queryKey: ['notificationKey'], queryFn: getNotifications });
   const notificationData = notificationQuery.data;
@@ -744,7 +787,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                       <Flex m={1} gap={1} justify="flex-end">
                         <Button 
                           size="sm"
-                          // onClick={e=>acceptBookClubRequest(bookClubRequest?.id)}
+                          onClick={e=>readCommentNotification(comment.id)}
                         >
                           OK
                         </Button>
