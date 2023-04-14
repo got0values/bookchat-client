@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ProfileProps, HTMLInputEvent, ProfileType, CurrentlyReading, CurrentlyReadingComment } from '../types/types';
+import { ProfileProps, HTMLInputEvent, ProfileType } from '../types/types';
 import { 
   Box,
   Heading,
@@ -61,10 +61,9 @@ import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-const useProfile = ({server}: ProfileProps) => {
+export const useProfile = ({server}: ProfileProps) => {
   const { user, getUser } = useAuth();
   const { paramsUsername } = useParams<{paramsUsername: string}>();
-  const [ profileDataUpdated, setProfileDataUpdated ] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   dayjs.extend(utc)
@@ -215,9 +214,6 @@ const useProfile = ({server}: ProfileProps) => {
             if (navigateToNewUsernameOnReponse) {
               const newUsername = profileUserNameRef.current.value
               navigate("/profile/" + newUsername)
-            }
-            else {
-              setProfileDataUpdated(true);
             }
             closeProfileDataModal();
           }
@@ -485,17 +481,17 @@ const useProfile = ({server}: ProfileProps) => {
     onCloseCommentModal()
   }
 
-  return {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments};
+  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments};
 }
 
 
 export default function Profile({server}: ProfileProps) {
-  const {user,setProfileDataUpdated,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profileDataUpdated,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments} = useProfile({server});
+  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments} = useProfile({server});
 
   
 
   const { isLoading, isError, data, error } = useQuery({ 
-    queryKey: ['profileKey',paramsUsername, profileDataUpdated], 
+    queryKey: ['profileKey',paramsUsername], 
     queryFn: getProfile 
   });
   const profileData: ProfileType = data;
@@ -642,14 +638,14 @@ export default function Profile({server}: ProfileProps) {
                     </Button>
                     ) : (
                     viewer === "nonFollower" ? (
-                    <FollowProfileButton server={server} profileId={profileData.id} setProfileDataUpdated={setProfileDataUpdated} setProfileActionError={setProfileActionError} /> 
+                    <FollowProfileButton server={server} profileId={profileData.id} setProfileActionError={setProfileActionError} /> 
                     ) : (
                       viewer === "requesting" ? (
-                        <CancelRequestButton server={server} profileId={profileData.id} setProfileDataUpdated={setProfileDataUpdated} setProfileActionError={setProfileActionError} />
+                        <CancelRequestButton server={server} profileId={profileData.id} setProfileActionError={setProfileActionError} />
                       ) : (
                         viewer === "following" ? (
                           profileData.User.role === "admin" ? null : (
-                            <UnFollowProfileButton server={server} profileId={profileData.id} setProfileDataUpdated={setProfileDataUpdated} setProfileActionError={setProfileActionError} />
+                            <UnFollowProfileButton server={server} profileId={profileData.id} setProfileActionError={setProfileActionError} />
                           )
                         ) : null
                       )

@@ -1,31 +1,41 @@
 import { ProfileButtonProps } from "../types/types"
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useProfile } from "./Profile";
 import { Button } from "@chakra-ui/react"
 import Cookies from "js-cookie"
 import axios from "axios"
 
-export const FollowProfileButton = ({server,profileId,setProfileDataUpdated,setProfileActionError}: ProfileButtonProps) => {
-  async function follow() {
+export const FollowProfileButton = ({server,profileId,setProfileActionError}: ProfileButtonProps) => {
+  const queryClient = useQueryClient();
+  const {getProfile} = useProfile({server});
+
+  async function followFn() {
     const tokenCookie = Cookies.get().token;
     await axios
-    .post(server + "/api/profileaction",
-      {
-        action: "follow",
-        profileId: profileId
-      },
-      {headers: {
-        Authorization: tokenCookie
-      }}
-    )
-    .then((response)=>{
-      if (response.data.success) {
-        setProfileDataUpdated(true)
-      }
-    })
-    .catch(({response})=>{
-      console.log(response)
-      setProfileActionError(response.data?.error ? response.data?.error : response.status)
-    })
-    
+      .post(server + "/api/profileaction",
+        {
+          action: "follow",
+          profileId: profileId
+        },
+        {headers: {
+          Authorization: tokenCookie
+        }}
+      )
+      .catch(({response})=>{
+        setProfileActionError(response.data?.error ? response.data?.error : response.status)
+      })
+    return getProfile()
+  }
+  const followMutation = useMutation({
+    mutationFn: followFn,
+    onSuccess: (data)=>{
+      queryClient.invalidateQueries({ queryKey: ['profileKey'] })
+      queryClient.resetQueries({queryKey: ['profileKey']})
+      queryClient.setQueryData(["profileKey"],data)
+    }
+  })
+  function follow() {
+    followMutation.mutate();
   }
 
   return (
@@ -47,28 +57,38 @@ export const FollowProfileButton = ({server,profileId,setProfileDataUpdated,setP
   )
 }
 
-export const CancelRequestButton = ({server,profileId,setProfileDataUpdated,setProfileActionError}: ProfileButtonProps) => {
-  async function cancelRequest() {
+export const CancelRequestButton = ({server,profileId,setProfileActionError}: ProfileButtonProps) => {
+  const queryClient = useQueryClient();
+  const {getProfile} = useProfile({server});
+
+  async function cancelRequestFn() {
     const tokenCookie = Cookies.get().token;
     await axios
-    .post(server + "/api/profileaction",
-      {
-        action: "cancelrequest",
-        profileId: profileId
-      },
-      {headers: {
-        Authorization: tokenCookie
-      }}
-    )
-    .then((response)=>{
-      if (response.data.success) {
-        setProfileDataUpdated(true)
-      }
-    })
-    .catch(({response})=>{
-      console.log(response)
-      setProfileActionError(response.data?.error ? response.data?.error : response.status)
-    })
+      .post(server + "/api/profileaction",
+        {
+          action: "cancelrequest",
+          profileId: profileId
+        },
+        {headers: {
+          Authorization: tokenCookie
+        }}
+      )
+      .catch(({response})=>{
+        console.log(response)
+        setProfileActionError(response.data?.error ? response.data?.error : response.status)
+      })
+    return getProfile();
+  }
+  const cancelRequestMutation = useMutation({
+    mutationFn: cancelRequestFn,
+    onSuccess: (data)=>{
+      queryClient.invalidateQueries({ queryKey: ['profileKey'] })
+      queryClient.resetQueries({queryKey: ['profileKey']})
+      queryClient.setQueryData(["profileKey"],data)
+    }
+  })
+  function cancelRequest() {
+    cancelRequestMutation.mutate();
   }
 
   return (
@@ -90,8 +110,11 @@ export const CancelRequestButton = ({server,profileId,setProfileDataUpdated,setP
   )
 }
 
-export const UnFollowProfileButton = ({server,profileId,setProfileDataUpdated,setProfileActionError}: ProfileButtonProps) => {
-  async function unFollow() {
+export const UnFollowProfileButton = ({server,profileId,setProfileActionError}: ProfileButtonProps) => {
+  const queryClient = useQueryClient();
+  const {getProfile} = useProfile({server});
+
+  async function unFollowFn() {
     const tokenCookie = Cookies.get().token;
     await axios
     .post(server + "/api/profileaction",
@@ -103,15 +126,22 @@ export const UnFollowProfileButton = ({server,profileId,setProfileDataUpdated,se
         Authorization: tokenCookie
       }}
     )
-    .then((response)=>{
-      if (response.data.success) {
-        setProfileDataUpdated(true)
-      }
-    })
     .catch(({response})=>{
       console.log(response)
       setProfileActionError(response.data?.error ? response.data?.error : response.status)
     })
+    return getProfile();
+  }
+  const unFollowMutation = useMutation({
+    mutationFn: unFollowFn,
+    onSuccess: (data)=>{
+      queryClient.invalidateQueries({ queryKey: ['profileKey'] })
+      queryClient.resetQueries({queryKey: ['profileKey']})
+      queryClient.setQueryData(["profileKey"],data)
+    }
+  })
+  function unFollow() {
+    unFollowMutation.mutate();
   }
 
   return (
