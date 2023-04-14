@@ -1,4 +1,4 @@
-import { ReactNode, useState, useLayoutEffect, useRef } from 'react';
+import { useState, useLayoutEffect, useRef } from 'react';
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
 import { SearchData, OtherNotificationsType } from './types/types';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -66,10 +66,10 @@ const LinkItems: Array<LinkItemProps> = [
   { name: 'Reading Clubs', linkTo: "/readingclubs" }
 ];
 
-const useTopNav = ({server,onLogout}: TopNavProps) => {
+export default function TopNav({server,onLogout}: TopNavProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
-  const { user, getUser } = useAuth();
+  const { user,getUser } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -179,7 +179,6 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
         }
       })
       .catch(({response})=>{
-        console.log(response)
         toast({
           description: "An error has occurred",
           status: "error",
@@ -191,6 +190,10 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
       return getNotifications();
     },
     onSuccess: (data)=>{
+      queryClient.removeQueries({
+        queryKey: ["notificationKey"],
+        exact: true
+      })
       queryClient.invalidateQueries({ queryKey: ['notificationKey'] })
       queryClient.resetQueries({queryKey: ['notificationKey']})
       queryClient.setQueryData(["notificationKey"],data)
@@ -231,6 +234,10 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
       return getNotifications();
     },
     onSuccess: (data)=>{
+      queryClient.removeQueries({
+        queryKey: ["notificationKey"],
+        exact: true
+      })
       queryClient.invalidateQueries({ queryKey: ['notificationKey'] })
       queryClient.resetQueries({queryKey: ['notificationKey']})
       queryClient.setQueryData(["notificationKey"],data)
@@ -269,6 +276,10 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
       return getNotifications();
     },
     onSuccess: (data)=>{
+      queryClient.removeQueries({
+        queryKey: ["notificationKey"],
+        exact: true
+      })
       queryClient.invalidateQueries({ queryKey: ['notificationKey'] })
       queryClient.resetQueries({queryKey: ['notificationKey']})
       queryClient.setQueryData(["notificationKey"],data)
@@ -308,6 +319,10 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
       return getNotifications();
     },
     onSuccess: (data)=>{
+      queryClient.removeQueries({
+        queryKey: ["notificationKey"],
+        exact: true
+      })
       queryClient.invalidateQueries({ queryKey: ['notificationKey'] })
       queryClient.resetQueries({queryKey: ['notificationKey']})
       queryClient.setQueryData(["notificationKey"],data)
@@ -394,12 +409,6 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
   function navSearch() {
     navSearchMutation.mutate();
   }
-
-  return { isOpen, onOpen, onClose, colorMode, navigate, user, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, acceptBookClubRequest, rejectBookClubRequest, getNotifications, navSearchRef, navSearch, isOpenSearchModal, closeSearchModal, searchData, readCommentNotification };
-}
-
-export default function TopNav({server,onLogout}: TopNavProps) {
-  const { isOpen, onOpen, onClose, colorMode, navigate, user, onOpenNotificationsModal, profilePhoto, toggleColorMode, isOpenNotificationsModal, onCloseNotificationsModal, acceptFollowRequest, rejectFollowRequest, acceptBookClubRequest, rejectBookClubRequest, getNotifications, navSearchRef, navSearch, isOpenSearchModal, closeSearchModal, searchData, readCommentNotification } = useTopNav({server,onLogout});
 
   const notificationQuery = useQuery({ queryKey: ['notificationKey'], queryFn: getNotifications });
   const notificationData = notificationQuery.data;

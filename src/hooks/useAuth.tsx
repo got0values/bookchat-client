@@ -58,7 +58,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
       navigate("/login")
       throw new Error(response.message)
     })
-
     return data;
   }
 
