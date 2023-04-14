@@ -178,9 +178,6 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
           getUser()
         }
       })
-      .then((r)=>{
-        window.location.reload()
-      })
       .catch(({response})=>{
         console.log(response)
         toast({
@@ -191,6 +188,12 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
         })
         throw new Error(response.data?.message)
       })
+      return getNotifications();
+    },
+    onSuccess: (data)=>{
+      queryClient.invalidateQueries({ queryKey: ['notificationKey'] })
+      queryClient.resetQueries({queryKey: ['notificationKey']})
+      queryClient.setQueryData(["notificationKey"],data)
     }
   })
   function acceptFollowRequest(requestId: number) {
@@ -215,9 +218,6 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
           getUser()
         }
       })
-      .then((r)=>{
-        window.location.reload()
-      })
       .catch(({response})=>{
         console.log(response)
         toast({
@@ -228,6 +228,12 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
         })
         throw new Error(response.data?.message)
       })
+      return getNotifications();
+    },
+    onSuccess: (data)=>{
+      queryClient.invalidateQueries({ queryKey: ['notificationKey'] })
+      queryClient.resetQueries({queryKey: ['notificationKey']})
+      queryClient.setQueryData(["notificationKey"],data)
     }
   })
   function rejectFollowRequest(requestId: number) {
@@ -250,9 +256,6 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
           getUser()
         }
       })
-      .then((r)=>{
-        window.location.reload()
-      })
       .catch(({response})=>{
         console.log(response)
         toast({
@@ -263,6 +266,12 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
         })
         throw new Error(response.data?.message)
       })
+      return getNotifications();
+    },
+    onSuccess: (data)=>{
+      queryClient.invalidateQueries({ queryKey: ['notificationKey'] })
+      queryClient.resetQueries({queryKey: ['notificationKey']})
+      queryClient.setQueryData(["notificationKey"],data)
     }
   })
   function acceptBookClubRequest(requestId: number) {
@@ -286,9 +295,6 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
             getUser()
           }
         })
-        .then((r)=>{
-          window.location.reload()
-        })
         .catch(({response})=>{
           console.log(response)
           toast({
@@ -299,6 +305,12 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
           })
           throw new Error(response.data?.message)
         })
+      return getNotifications();
+    },
+    onSuccess: (data)=>{
+      queryClient.invalidateQueries({ queryKey: ['notificationKey'] })
+      queryClient.resetQueries({queryKey: ['notificationKey']})
+      queryClient.setQueryData(["notificationKey"],data)
     }
   })
   function rejectBookClubRequest(requestId: number) {
@@ -306,7 +318,7 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
   }
 
   const readCommentNotificationMutation = useMutation({
-    mutationFn: async (commentId) => {
+    mutationFn: async (commentId: number) => {
       const tokenCookie = Cookies.get().token;
       await axios
         .put(server + "/api/readcommentnotification",
@@ -322,9 +334,6 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
             getUser()
           }
         })
-        .then((response)=>{
-          window.location.reload()
-        })
         .catch(({response})=>{
           console.log(response)
           toast({
@@ -337,10 +346,10 @@ const useTopNav = ({server,onLogout}: TopNavProps) => {
         })
       return getNotifications();
     },
-    onSuccess: (data,variables)=>{
-      queryClient.invalidateQueries({ queryKey: ['notificationsKey'] })
-      queryClient.resetQueries({queryKey: ['notificationsKey']})
-      queryClient.setQueryData(["notificationsKey"],data)
+    onSuccess: (data)=>{
+      queryClient.invalidateQueries({ queryKey: ['notificationKey'] })
+      queryClient.resetQueries({queryKey: ['notificationKey']})
+      queryClient.setQueryData(["notificationKey"],data)
     }
   })
   function readCommentNotification(commentId: number) {
@@ -395,6 +404,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
   const notificationQuery = useQuery({ queryKey: ['notificationKey'], queryFn: getNotifications });
   const notificationData = notificationQuery.data;
   const userNotifications = notificationData?.userNotifications;
+  console.log(userNotifications)
   const totalNotifications: number = notificationData?.totalNotifications as number;
 
   return (
