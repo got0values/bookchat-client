@@ -38,7 +38,6 @@ import {
   ModalCloseButton,
   useToast,
   Link as ChakraLink,
-  AvatarGroup,
 } from '@chakra-ui/react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { MdClose, MdLogout } from 'react-icons/md';
@@ -46,7 +45,6 @@ import { BsFillMoonFill, BsFillSunFill } from 'react-icons/bs';
 import { FiSettings, FiMail } from 'react-icons/fi';
 import { RxDotFilled } from 'react-icons/rx';
 import { AiOutlineBell, AiFillHome } from 'react-icons/ai';
-import { BiMessageDetail } from 'react-icons/bi';
 import { FaSearch } from 'react-icons/fa';
 import logoIcon from './assets/community-book-club-logo-logo-only.png';
 import logoIconWhite from './assets/community-book-club-logo-logo-only-white.png';
@@ -587,15 +585,6 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                     {totalNotifications > 0 ? (
                       <Icon as={RxDotFilled} boxSize="1.5em" color="red" verticalAlign="middle" />
                     ) : null}
-                </MenuItem>
-                <MenuDivider/>
-                <MenuItem
-                  aria-label="messages"
-                  icon={<BiMessageDetail size={20}/>}
-                  fontSize="lg"
-                  fontWeight="600"
-                >
-                    Messages
                 </MenuItem>
                 <MenuDivider/>
                 <MenuItem
