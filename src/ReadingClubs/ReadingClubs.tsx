@@ -102,7 +102,7 @@ export default function ReadingClubs({server}: {server: string}) {
       let tokenCookie: string | null = Cookies.get().token;
       if (tokenCookie) {
         const readingClubsData = axios
-          .get(server + "/api/getbookclubs",
+          .get(server + "/api/getreadingclubs",
             {
               headers: {
                 'authorization': tokenCookie
@@ -112,7 +112,7 @@ export default function ReadingClubs({server}: {server: string}) {
           .then((response)=>{
             console.log(response.data)
             const {data} = response;
-            return response.data;
+            return data;
           })
           .catch(({response})=>{
             console.log(response)
@@ -125,6 +125,7 @@ export default function ReadingClubs({server}: {server: string}) {
       }
     }
   });
+  const viewer = data?.viewer;
   
   if (isError) {
     return <Flex align="center" justify="center" minH="90vh">
@@ -138,26 +139,29 @@ export default function ReadingClubs({server}: {server: string}) {
         isLoaded={!isLoading}
       >
           <Flex>
-            <Box className="well" flex="1 1 30%">
-              <Stack
-                flexWrap="wrap" 
-                justify="space-between" 
-                mb={2}
-              >
-                <Flex align="center" justify="space-between" gap={2}>
-                  <Heading as="h3" size="md">
-                    Admin
-                  </Heading>
-                </Flex>
-                <Button
-                  // variant="ghost"
-                  leftIcon={<IoIosAdd size={25} />}
-                  onClick={openCreateReadingClubModal}
+            {viewer === "admin" ? (
+              <Box className="well" flex="1 1 30%">
+                <Stack
+                  flexWrap="wrap" 
+                  justify="space-between" 
+                  mb={2}
                 >
-                  Create Reading Club
-                </Button>
-              </Stack>
-            </Box>
+                  <Flex align="center" justify="space-between" gap={2}>
+                    <Heading as="h3" size="md">
+                      Admin
+                    </Heading>
+                  </Flex>
+                  <Button
+                    // variant="ghost"
+                    width="auto"
+                    leftIcon={<IoIosAdd size={25} />}
+                    onClick={openCreateReadingClubModal}
+                  >
+                    Create Reading Club
+                  </Button>
+                </Stack>
+              </Box>
+            ) : null}
 
             <Box className="well" flex="1 1 65%">
               <Heading as="h3" size="md">
@@ -170,39 +174,41 @@ export default function ReadingClubs({server}: {server: string}) {
             </Box>
           </Flex>
 
-        <Modal isOpen={isOpenCreateReadingClubModal} onClose={closeCreateReadingClubModal} size="xl">
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>
-              <Heading as="h3" size="lg">
-                What is your reading club name?
-              </Heading>
-            </ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <Input
-              type="text"
-              ref={createReadingClubNameRef}
-              required
-              />
-            </ModalBody>
-            <ModalFooter>
-              <HStack>
-                <Text color="red">
-                  {createReadingClubError}
-                </Text>
-                <Button 
-                  variant='ghost' 
-                  mr={3}
-                  size="lg"
-                  onClick={createReadingClub}
-                >
-                  Create
-                </Button>
-              </HStack>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+        {viewer === "admin" ? (
+          <Modal isOpen={isOpenCreateReadingClubModal} onClose={closeCreateReadingClubModal} size="xl">
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>
+                <Heading as="h3" size="lg">
+                  What is your reading club name?
+                </Heading>
+              </ModalHeader>
+              <ModalCloseButton />
+              <ModalBody>
+                <Input
+                type="text"
+                ref={createReadingClubNameRef}
+                required
+                />
+              </ModalBody>
+              <ModalFooter>
+                <HStack>
+                  <Text color="red">
+                    {createReadingClubError}
+                  </Text>
+                  <Button 
+                    variant='ghost' 
+                    mr={3}
+                    size="lg"
+                    onClick={createReadingClub}
+                  >
+                    Create
+                  </Button>
+                </HStack>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        ) : null}
       </Skeleton>
     </Box>
   );
