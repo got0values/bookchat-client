@@ -287,3 +287,13 @@ export interface OtherNotificationsType {
   read: number | any;
   datetime: string;
 }
+
+//Reading Clubs
+export interface ReadingClub {
+  id: number,
+  name: string,
+  description: string,
+  library: number,
+  hidden: number,
+  created_on: string
+}
