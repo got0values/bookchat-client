@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { HTMLInputEvent, RegisterFormProps } from './types/types';
 import { 
   FormControl, 
-  FormLabel, 
+  Tooltip, 
   Input, 
   Button, 
   Text,
@@ -16,15 +16,25 @@ import {
   useColorModeValue,
   useToast
 } from "@chakra-ui/react";
+import {FaRegQuestionCircle} from 'react-icons/fa';
 import logo from './assets/community-book-club-logo3.png';
 import logoWhite from './assets/community-book-club-logo3-white.png';
 import { getLibraryFromSubdomain } from './utils/getLibraryFromSubdomain';
+import passwordValidator from "password-validator";
 import axios from "axios";
-
 
 const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
   const [searchParams] = useSearchParams();
   const [role,setRole] = useState("user");
+  var schema = new passwordValidator();
+  schema
+  .is().min(8)// Minimum length 8
+  .is().max(100)// Maximum length 100
+  .has().uppercase()// Must have uppercase letters
+  .has().lowercase()// Must have lowercase letters
+  .has().digits(2)// Must have at least 2 digits
+  .has().symbols(1)
+  .has().not().spaces()// Should not have spaces
 
   useEffect(()=>{
     if (searchParams.get("role")) {
@@ -43,13 +53,11 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string | null>(null);
   const [error, setError] = useState("");
 
   const subdomain = window.location.hostname.split(".")[0];
-  const {libraryFromSubdomain} = getLibraryFromSubdomain({subdomain,server});
-
-  const toast = useToast();
+  const {libraryFromSubdomain} = getLibraryFromSubdomain({subdomain,server});  const toast = useToast();
 
   function confirmPasswordCheck(text: string) {
     setConfirmPassword(text)
@@ -57,8 +65,21 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
       setConfirmPasswordError("Password and confirm password do not match")
     }
     else {
-      setConfirmPasswordError("")
+      setConfirmPasswordError(null)
     }
+  }
+
+  const [passwordError,setPasswordError] = useState(null)
+  function checkPassword(pwInput: string) {
+    const pwValidationErrors = schema.validate(pwInput, {details:true})
+    if ((pwValidationErrors as any[]).length) {
+      setPasswordError((pwValidationErrors as any[]).length ? (pwValidationErrors as any[])[0].message : null)
+    }
+    else {
+      setPasswordError(null)
+    }
+    setPassword(prev=>pwInput)
+    return
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -94,6 +115,14 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
       setError("An error has occurred")
     }
   };
+
+  if (!libraryFromSubdomain) {
+    return (
+      <Flex h="100vh" align="center" justify="center">
+          <Heading as="h1" size="2xl">404</Heading>
+      </Flex>
+    )
+  }
 
   return (
     <Flex
@@ -162,15 +191,20 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                 />
               </FormControl>
               <FormControl mb={4}>
-                <Input
-                  type="password"
-                  placeholder="Password*"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  size="lg"
-                  minLength={8}
-                  required
-                />
+                <Tooltip label="Passwords requirements: Minimum length of 8, maximum length of 100, minimum of 1 uppercase letter, must have lowercase letters, minimum of 2 digits, minimum of 1 symbol, should not have spaces" hasArrow>
+                  <Input
+                    type="password"
+                    placeholder="Password*"
+                    value={password}
+                    onChange={(e) => checkPassword(e.target.value)}
+                    size="lg"
+                    minLength={8}
+                    required
+                  />
+                </Tooltip>
+                <Text color="red" mt={2} mb={4}>
+                  {passwordError}
+                </Text>
               </FormControl>
               <FormControl mb={4}>
                 <Input
@@ -182,7 +216,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                   minLength={8}
                   required
                 />
-                <Text color="red" mb={4}>
+                <Text color="red" mt={2} mb={4}>
                   {confirmPasswordError}
                 </Text>
               </FormControl>
@@ -195,6 +229,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                     bg: 'blue.500',
                   }}
                   size="lg"
+                  isDisabled={Boolean(passwordError) || password === "" || Boolean(confirmPasswordError) || confirmPassword === "" || email === "" || firstName === "" || lastName === ""}
                 >
                   Register
                 </Button>

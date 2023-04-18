@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { LoginFormProps } from "./types/types";
 import { 
@@ -28,7 +27,6 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
   const { user } = useAuth();
 
   const subdomain = window.location.hostname.split(".")[0];
@@ -37,7 +35,6 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
   useEffect(()=>{
     const tokenCookie = Cookies.get().token;
     if (user && user !== null && tokenCookie) {
-      // navigate("/")
       window.location.href = `${window.location.protocol}//${user.Library.subdomain}.${window.location.host.split(".")[1]}`
     }
   },[user])
@@ -63,6 +60,14 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
   });
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     handleSubmitMutation.mutate(e);
+  }
+
+  if (!libraryFromSubdomain) {
+    return (
+      <Flex h="100vh" align="center" justify="center">
+          <Heading as="h1" size="2xl">404</Heading>
+      </Flex>
+    )
   }
 
   return (
