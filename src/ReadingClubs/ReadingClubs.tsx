@@ -1,20 +1,22 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ReadingClub } from "../types/types";
+import { ReadingClub, FormType, ReadingClubQuestionnaire } from "../types/types";
 import { 
   Box,
   Tag,
   Heading,
   Text,
   Spinner,
-  Fade,
+  Select,
   Stack,
   HStack,
   Button,
   Input,
   Textarea,
   FormLabel,
+  InputGroup,
+  InputLeftAddon,
   Flex,
   Skeleton,
   Modal,
@@ -66,6 +68,106 @@ export default function ReadingClubs({server}: {server: string}) {
       else {
         throw new Error("RC101")
       }
+  }
+
+  const { 
+    isOpen: isOpenCreateQuestionnaireModal, 
+    onOpen: onOpenCreateQuestionnaireModal, 
+    onClose: onCloseCreateQuestionnaireModal 
+  } = useDisclosure()
+
+  function openCreateQuestionnaireModal() {
+    onOpenCreateQuestionnaireModal();
+  }
+
+  function closeCreateQuestionnaireModal() {
+    setCreateQuestionnaireError("");
+    (labelRef.current as HTMLInputElement).value = "";
+    setQuestionnaireFields([]);
+    onCloseCreateQuestionnaireModal();
+  }
+
+  const createQuestionnaireNameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
+  const [questionnaireFields,setQuestionnaireFields] = useState<FormType[]>([]);
+  const [createQuestionnaireError,setCreateQuestionnaireError] = useState<string>("");
+  const createQuestionnaireMutation = useMutation({
+    mutationFn: async (e: React.FormEvent<HTMLFormElement>)=>{
+      e.preventDefault();
+      const questionnaireName = createQuestionnaireNameRef.current.value;
+      console.log(questionnaireName)
+      let tokenCookie: string | null = Cookies.get().token;
+      if (questionnaireName) {
+        await axios
+        .post(server + "/api/createreadingclubquestionnaire", 
+        {
+          questionnaireName: questionnaireName,
+          questionnaireFields: JSON.stringify(questionnaireFields)
+        },
+        {headers: {
+          'authorization': tokenCookie
+        }}
+        )
+        .then((response)=>{
+          if (response.data.success){
+            closeCreateQuestionnaireModal();
+            toast({
+              description: "Reading club created!",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+          }
+        })
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data) {
+            setCreateQuestionnaireError(response.data.message)
+          }
+        })
+      }
+      else {
+        setCreateQuestionnaireError("Please enter a questionnaire name")
+      }
+      return getReadingClubs()
+    },
+    onSuccess: (data)=>{
+      queryClient.invalidateQueries({ queryKey: ['readingClubsKey'] })
+      queryClient.resetQueries({queryKey: ['readingClubsKey']})
+      queryClient.setQueryData(["readingClubsKey"],data)
+    }
+  })
+  async function createQuestionnaire(e: React.FormEvent<HTMLFormElement>) {
+    createQuestionnaireMutation.mutate(e);
+  }
+
+  const labelRef = useRef<HTMLInputElement>()
+  const typeRef = useRef<HTMLInputElement>();
+  const requiredRef = useRef<HTMLInputElement>();
+  function addQuestionnaireField() {
+    console.log(questionnaireFields)
+    const labelText = (labelRef.current as HTMLInputElement).value
+    const typeText = (typeRef.current as HTMLInputElement).value
+    const requiredBool = (requiredRef.current as HTMLInputElement).checked
+    setQuestionnaireFields((prev)=>{
+      const i = 0;
+      return (
+        [...prev,
+          {
+            id: `${typeText}-${prev.length}`,
+            type: typeText,
+            label: labelText,
+            required: requiredBool,
+            sequence: prev.length
+          }
+        ]
+      )
+    });
+    (labelRef.current as HTMLInputElement).value = "";
+  }
+  function removeQuestionnaireField(fieldId: string) {
+    setQuestionnaireFields(prev=>{
+      return prev.filter((field)=>field.id !== fieldId)
+    })
   }
 
   const { 
@@ -146,11 +248,14 @@ export default function ReadingClubs({server}: {server: string}) {
   const [editName,setEditName] = useState("");
   const [editDescription,setEditDescription] = useState("");
   const [editHidden,setEditHidden] = useState("");
+  const [defaultQuestionnaire,setDefaultQuestionnaire] = useState("");
+  const editReadingClubQuestionnaireRef = useRef<HTMLInputElement>(null);
   function openEditReadingClubModal(e: React.FormEvent<HTMLButtonElement>) {
     setEditId((e.target as HTMLElement).dataset.id!)
     setEditName((e.target as HTMLElement).dataset.name!)
     setEditDescription((e.target as HTMLElement).dataset.description!)
     setEditHidden((e.target as HTMLElement).dataset.display!)
+    setDefaultQuestionnaire((e.target as HTMLElement).dataset.questionnaire!)
     onOpenEditReadingClubModal();
   }
 
@@ -160,7 +265,28 @@ export default function ReadingClubs({server}: {server: string}) {
     setEditDescription("")
     setEditHidden("")
     setEditReadingClubError("");
+    setDefaultQuestionnaire("");
+    (editReadingClubQuestionnaireRef.current as HTMLInputElement).value = "";
     onCloseEditReadingClubModal();
+  }
+
+  const { 
+    isOpen: isOpenFillQuestionnaireModal, 
+    onOpen: onOpenFillQuestionnaireModal, 
+    onClose: onCloseFillQuestionnaireModal 
+  } = useDisclosure()
+
+  const [fillQuestionnaire,setFillQuestionnaire] = useState({} as ReadingClubQuestionnaire)
+  function openFillQuestionnaireModal(e: HTMLFormElement) {
+    if ((e.target as any).dataset.questionnaire !== "null") {
+      setFillQuestionnaire(JSON.parse((e.target as any).dataset.questionnaire))
+      onOpenFillQuestionnaireModal();
+    }
+  }
+
+  function closeFillQuestionnaireModal() {
+    setFillQuestionnaire({} as ReadingClubQuestionnaire)
+    onCloseFillQuestionnaireModal();
   }
 
   const editReadingClubNameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
@@ -174,6 +300,8 @@ export default function ReadingClubs({server}: {server: string}) {
       const readingClubName = editReadingClubNameRef.current.value;
       const readingClubDescription = editReadingClubDescriptionRef.current.value;
       const readingClubHidden = editReadingClubHiddenRef.current.checked ? 1 : 0;
+      const readingClubQuestionnaireAnswer = (editReadingClubQuestionnaireRef.current as HTMLInputElement).value === "" ? null : parseInt((editReadingClubQuestionnaireRef.current as HTMLInputElement).value)
+
       let tokenCookie: string | null = Cookies.get().token;
       if (readingClubName.length) {
         await axios
@@ -182,6 +310,7 @@ export default function ReadingClubs({server}: {server: string}) {
           readingClubId: (e.target as HTMLElement).dataset.id,
           readingClubName: readingClubName,
           readingClubDescription: readingClubDescription,
+          readingClubQuestionnaire: readingClubQuestionnaireAnswer,
           readingClubHidden: readingClubHidden
         },
         {headers: {
@@ -274,6 +403,7 @@ export default function ReadingClubs({server}: {server: string}) {
   });
   const viewer = data?.viewer;
   const readingClubs = data?.readingClubs;
+  const questionnaires = data?.questionnaires;
   
   if (isError) {
     return <Flex align="center" justify="center" minH="90vh">
@@ -300,12 +430,32 @@ export default function ReadingClubs({server}: {server: string}) {
                     </Heading>
                   </Flex>
                   <Button
-                    // variant="ghost"
+                    width="auto"
+                    leftIcon={<IoIosAdd size={25} />}
+                    onClick={openCreateQuestionnaireModal}
+                  >
+                    Create Reading Questionairre
+                  </Button>
+                  <Button
+                    width="auto"
+                    // leftIcon={<IoIosAdd size={25} />}
+                    // onClick={openCreateQuestionnaireModal}
+                  >
+                    Delete Reading Questionairre
+                  </Button>
+                  <Button
                     width="auto"
                     leftIcon={<IoIosAdd size={25} />}
                     onClick={openCreateReadingClubModal}
                   >
                     Create Reading Club
+                  </Button>
+                  <Button
+                    width="auto"
+                    // leftIcon={<IoIosAdd size={25} />}
+                    // onClick={openCreateReadingClubModal}
+                  >
+                    View Entries
                   </Button>
                 </Stack>
               </Box>
@@ -338,7 +488,16 @@ export default function ReadingClubs({server}: {server: string}) {
                         }}
                       >
                         <Flex  gap={2} align="center" justify="center">
-                          <Heading as="h3" size="sm">
+                          <Heading 
+                            as="h3" 
+                            size="sm"
+                            data-questionnaire={JSON.stringify(readingClub.ReadingClubQuestionnaire)}
+                            onClick={e=>openFillQuestionnaireModal(e as any)}
+                            _hover={{
+                              cursor: "pointer",
+                              textDecoration: "underline"
+                            }}
+                          >
                             {readingClub.name}
                           </Heading>
                           {readingClub.hidden ? <i>(hidden)</i> : ""}
@@ -353,6 +512,7 @@ export default function ReadingClubs({server}: {server: string}) {
                             data-name={readingClub.name}
                             data-description={readingClub.description}
                             data-display={readingClub.hidden}
+                            data-questionnaire={readingClub.ReadingClubQuestionnaire ? readingClub.ReadingClubQuestionnaire.id : null}
                             onClick={e=>openEditReadingClubModal(e as React.FormEvent<HTMLButtonElement>)}
                           >
                             Edit
@@ -368,6 +528,176 @@ export default function ReadingClubs({server}: {server: string}) {
 
         {viewer === "admin" ? (
           <>
+            <Modal isOpen={isOpenCreateQuestionnaireModal} onClose={closeCreateQuestionnaireModal} size="xl">
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>
+                  <Heading as="h3" size="lg">
+                    Create Questionnaire
+                  </Heading>
+                </ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  <Box mb={2}>
+                    <FormLabel htmlFor="name" mb={1}>Name</FormLabel>
+                    <Input
+                      type="text"
+                      id="name"
+                      ref={createQuestionnaireNameRef}
+                    />
+                  </Box>
+
+                  <Flex direction="column" gap={3} border="1px solid grey" rounded="md" p={3}>
+                    <Heading as="h4" size="sm">Preview:</Heading>
+                    {questionnaireFields.length ? (
+                      questionnaireFields.map((field,i)=>{
+                        return (
+                          <Box key={i}>
+                            {field.type === "short-text" ? (
+                              <>
+                                <Flex gap={2}>
+                                  <FormLabel htmlFor={field.id}>{field.label}</FormLabel>
+                                  <Button
+                                    size="xs"
+                                    colorScheme="red"
+                                    variant="ghost"
+                                    onClick={e=>removeQuestionnaireField(field.id)}
+                                  >
+                                    Remove
+                                  </Button>
+                                </Flex>
+                                <Input id={field.id} type="text"/>
+                              </>
+                            ) : field.type === "long-text" ? (
+                              <>
+                                <Flex gap={2}>
+                                  <FormLabel htmlFor={field.id}>{field.label}</FormLabel>
+                                  <Button
+                                    size="xs"
+                                    colorScheme="red"
+                                    variant="ghost"
+                                    onClick={e=>removeQuestionnaireField(field.id)}
+                                  >
+                                    Remove
+                                  </Button>
+                                </Flex>
+                                <Textarea id={field.id}></Textarea>
+                              </>
+                            ) : field.type === "number" ? (
+                              <>
+                                <Flex gap={2}>
+                                  <FormLabel htmlFor={field.id}>{field.label}</FormLabel>
+                                  <Button
+                                    size="xs"
+                                    colorScheme="red"
+                                    variant="ghost"
+                                    onClick={e=>removeQuestionnaireField(field.id)}
+                                  >
+                                    Remove
+                                  </Button>
+                                </Flex>
+                                <Input id={field.id} type="number"/>
+                              </>
+                            ) : field.type === "checkbox" ? (
+                              <>
+                                <Flex gap={2}>
+                                  <Checkbox id={field.id}>
+                                    {field.label}
+                                  </Checkbox>
+                                  <Button
+                                    size="xs"
+                                    colorScheme="red"
+                                    variant="ghost"
+                                    onClick={e=>removeQuestionnaireField(field.id)}
+                                  >
+                                    Remove
+                                  </Button>
+                                </Flex>
+                              </>
+                            ) : field.type === "telephone" ? (
+                              <>
+                                <Flex gap={2}>
+                                  <FormLabel htmlFor={field.id}>{field.label}</FormLabel>
+                                  <Button
+                                    size="xs"
+                                    colorScheme="red"
+                                    variant="ghost"
+                                    onClick={e=>removeQuestionnaireField(field.id)}
+                                  >
+                                    Remove
+                                  </Button>
+                                </Flex>
+                                <Input id={field.id} type="tel"/>
+                              </>
+                            ) : field.type === "email" ? (
+                              <>
+                                <Flex gap={2}>
+                                  <FormLabel htmlFor={field.id}>{field.label}</FormLabel>
+                                  <Button
+                                    size="xs"
+                                    colorScheme="red"
+                                    variant="ghost"
+                                    onClick={e=>removeQuestionnaireField(field.id)}
+                                  >
+                                    Remove
+                                  </Button>
+                                </Flex>
+                                <Input id={field.id} type="email"/>
+                              </>
+                            ) : null}
+                          </Box>
+                        )
+                      })
+                    ): null}
+                  </Flex>
+
+                  <Flex mt={5} direction="column" gap={2}>
+                    <InputGroup>
+                      <InputLeftAddon children="Label"/>
+                      <Input 
+                        type="text"
+                        ref={labelRef as any}
+                      />
+                    </InputGroup>
+                    <InputGroup>
+                      <InputLeftAddon children="Type"/>
+                      <Select 
+                        ref={typeRef as any} 
+                      >
+                        <option value="short-text">Short Text</option>
+                        <option value="long-text">Long Text</option>
+                        <option value="number">Number</option>
+                        <option value="checkbox">Checkbox</option>
+                        <option value="telephone">Telephone</option>
+                        <option value="email">Email</option>
+                      </Select>
+                    </InputGroup>
+                    <Checkbox ref={requiredRef as any}>Required?</Checkbox>
+                    <Button
+                      onClick={addQuestionnaireField}
+                    >
+                      Add
+                    </Button>
+                  </Flex>
+                </ModalBody>
+                <ModalFooter>
+                  <HStack>
+                    <Text color="red">
+                      {createQuestionnaireError}
+                    </Text>
+                    <Button 
+                      variant='ghost' 
+                      mr={3}
+                      size="lg"
+                      onClick={e=>createQuestionnaire(e as any)}
+                    >
+                      Save
+                    </Button>
+                  </HStack>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
+
             <Modal isOpen={isOpenCreateReadingClubModal} onClose={closeCreateReadingClubModal} size="xl">
               <ModalOverlay />
               <ModalContent>
@@ -429,35 +759,50 @@ export default function ReadingClubs({server}: {server: string}) {
                 onSubmit={e=>editReadingClub(e as React.FormEvent<HTMLFormElement>)}
               >
                 <ModalBody>
-                  <Box mb={2}>
-                    <FormLabel htmlFor="name" mb={1}>Name</FormLabel>
-                    <Input
-                    type="text"
-                    id="name"
-                    ref={editReadingClubNameRef}
-                    defaultValue={editName}
-                    required
-                    />
-                  </Box>
-                  <Box>
-                    <FormLabel htmlFor="description" mb={1}>Description</FormLabel>
-                    <Textarea
-                      id="description"
-                      ref={editReadingClubDescriptionRef}
-                      defaultValue={editDescription}
-                    ></Textarea>
-                  </Box>
-                  <Text color="red" width="100%">
-                    {editReadingClubError}
-                  </Text>
-                  <Checkbox 
-                    defaultChecked={editHidden.includes("1")}
-                    ref={editReadingClubHiddenRef}
-                    onChange={e=>console.log(e)}
-                    mt={2}
-                  >
-                    Hide?
-                  </Checkbox>
+                  <Flex direction="column" gap={2}>
+                    <Box mb={2}>
+                      <FormLabel htmlFor="name" mb={1}>Name</FormLabel>
+                      <Input
+                      type="text"
+                      id="name"
+                      ref={editReadingClubNameRef}
+                      defaultValue={editName}
+                      required
+                      />
+                    </Box>
+                    <Box>
+                      <FormLabel htmlFor="description" mb={1}>Description</FormLabel>
+                      <Textarea
+                        id="description"
+                        ref={editReadingClubDescriptionRef}
+                        defaultValue={editDescription}
+                      ></Textarea>
+                    </Box>
+                    <Text color="red" width="100%">
+                      {editReadingClubError}
+                    </Text>
+                    <Select 
+                      ref={editReadingClubQuestionnaireRef as any}
+                      defaultValue={defaultQuestionnaire}
+                    >
+                        <option value="">None</option>
+                        {questionnaires && questionnaires.length ? (
+                          questionnaires.map((q: ReadingClubQuestionnaire,i: number)=>{
+                            return (
+                              <option key={i} value={q.id}>{q.name}</option>
+                            )
+                          })
+                        ) : null}
+                    </Select>
+                    <Checkbox 
+                      defaultChecked={editHidden.includes("1")}
+                      ref={editReadingClubHiddenRef}
+                      onChange={e=>console.log(e)}
+                      mt={2}
+                    >
+                      Hide?
+                    </Checkbox>
+                  </Flex>
                 </ModalBody>
                 <ModalFooter>
                   <Flex width="100%" justify="space-between">
@@ -482,6 +827,110 @@ export default function ReadingClubs({server}: {server: string}) {
             </Modal>
           </>
         ) : null}
+
+          <Modal isOpen={isOpenFillQuestionnaireModal} onClose={closeFillQuestionnaireModal} size="xl">
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>
+                <Heading as="h3" size="lg">
+                  {fillQuestionnaire.name}
+                </Heading>
+              </ModalHeader>
+              <ModalCloseButton />
+              <form 
+                // data-id={editId}
+                // onSubmit={e=>editReadingClub(e as React.FormEvent<HTMLFormElement>)}
+                onSubmit={e=>{
+                  e.preventDefault();
+                  console.log(e)
+                }}
+              >
+                <ModalBody>
+                  <Flex direction="column" gap={2}>
+                  {fillQuestionnaire.questionnaire_fields && 
+                    JSON.parse(fillQuestionnaire.questionnaire_fields).length ? (
+                      JSON.parse(fillQuestionnaire.questionnaire_fields).map((field: FormType,i: number)=>{
+                        return (
+                          <Box key={i}>
+                            {field.type === "short-text" ? (
+                              <>
+                                <FormLabel htmlFor={field.id} mb={1}>{field.label}</FormLabel>
+                                <Input 
+                                  id={field.id} 
+                                  type="text" 
+                                  isRequired={field.required ? true : false}
+                                  data-question={field.label}
+                                />
+                              </>
+                            ) : field.type === "long-text" ? (
+                              <>
+                                <FormLabel htmlFor={field.id} mb={1}>{field.label}</FormLabel>
+                                <Textarea 
+                                  id={field.id} 
+                                  isRequired={field.required ? true : false}
+                                  data-question={field.label}
+                                ></Textarea>
+                              </>
+                            ) : field.type === "number" ? (
+                              <>
+                                <FormLabel htmlFor={field.id} mb={1}>{field.label}</FormLabel>
+                                <Input 
+                                  id={field.id} 
+                                  type="number" 
+                                  isRequired={field.required ? true : false}
+                                  data-question={field.label}
+                                />
+                              </>
+                            ) : field.type === "checkbox" ? (
+                              <>
+                                <Checkbox 
+                                  id={field.id}
+                                  data-question={field.label}
+                                >
+                                  {field.label}
+                                </Checkbox>
+                              </>
+                            ) : field.type === "telephone" ? (
+                              <>
+                                <FormLabel htmlFor={field.id} mb={1}>{field.label}</FormLabel>
+                                <Input 
+                                  id={field.id} 
+                                  type="tel" 
+                                  isRequired={field.required ? true : false}
+                                  data-question={field.label}
+                                />
+                              </>
+                            ) : field.type === "email" ? (
+                              <>
+                                <FormLabel htmlFor={field.id} mb={1}>{field.label}</FormLabel>
+                                <Input 
+                                  id={field.id} 
+                                  type="email" 
+                                  isRequired={field.required ? true : false}
+                                  data-question={field.label}
+                                />
+                              </>
+                            ) : null}
+                          </Box>
+                        )
+                      })
+                    ): null}
+                  </Flex>
+                </ModalBody>
+                <ModalFooter>
+                  <Flex width="100%" justify="flex-end">
+                    <Button  
+                      mr={3}
+                      type="submit"
+                      colorScheme="green"
+                    >
+                      Submit
+                    </Button>
+                  </Flex>
+                </ModalFooter>
+              </form>
+            </ModalContent>
+          </Modal>
       </Skeleton>
     </Box>
   );

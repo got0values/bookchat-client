@@ -295,5 +295,22 @@ export interface ReadingClub {
   description: string,
   library: number,
   hidden: number,
+  ReadingClubQuestionnaire: ReadingClubQuestionnaire,
   created_on: string
+}
+
+export interface ReadingClubQuestionnaire {
+  id: number;
+  name: string;
+  questionnaire_fields: string;
+  library: number;
+  created_on: string;
+}
+
+export interface FormType {
+  id: string;
+  type: string;
+  label: string;
+  required: boolean;
+  sequence: number;
 }
