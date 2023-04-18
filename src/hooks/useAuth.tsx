@@ -26,20 +26,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     })
     .then((response)=>{
       const responseData = response.data;
+      const responseUser = responseData.message;
+      // change the subdomain if it doesn't match the user Library subdomain
+      const subdomain = window.location.host.split(".")[0];
+      const librarySubdomain = responseUser.Library.subdomain;
+      if (subdomain !== librarySubdomain) {
+        let protocol = window.location.protocol;
+        let slicedHost = window.location.host.split(".").slice(1);
+        let domain = slicedHost.join(".");
+        const newLocation = `${librarySubdomain}.${domain}`;
+        window.location.href = `${protocol}//${newLocation}/`;
+      }
+        return response;
+    })
+    .then((response)=>{
+      const responseData = response.data;
       if (responseData.success) {
         const responseUser = responseData.message;
         setUser(responseUser);
-
-        //change the subdomain if it doesn't match the user Library subdomain
-        const subdomain = window.location.host.split(".")[0];
-        const librarySubdomain = responseUser.Library.subdomain;
-        if (subdomain !== librarySubdomain) {
-          let protocol = window.location.protocol;
-          let slicedHost = window.location.host.split(".").slice(1);
-          let domain = slicedHost.join(".");
-          const newLocation = `${librarySubdomain}.${domain}`;
-          window.location.href = `${protocol}//${newLocation}/`;
-        }
         return responseUser;
       }
       else {
@@ -62,9 +66,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   }
 
   async function onLogin(token: string) {
+    navigate("/");
     Cookies.set("token", token);
     await getUser();
-    return navigate("/");
+    return
   }
 
   function onLogout(): void {

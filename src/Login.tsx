@@ -19,6 +19,7 @@ import {
 import logo from './assets/community-book-club-logo3.png';
 import logoWhite from './assets/community-book-club-logo3-white.png';
 import { getLibraryFromSubdomain } from './utils/getLibraryFromSubdomain';
+import Cookies from "js-cookie";
 import { useAuth } from "./hooks/useAuth";
 import axios from "axios";
 
@@ -34,8 +35,10 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
   const {libraryFromSubdomain} = getLibraryFromSubdomain({subdomain,server});
 
   useEffect(()=>{
-    if (user) {
-      navigate("/")
+    const tokenCookie = Cookies.get().token;
+    if (user && user !== null && tokenCookie) {
+      // navigate("/")
+      window.location.href = `${window.location.protocol}//${user.Library.subdomain}.${window.location.host.split(".")[1]}`
     }
   },[user])
 

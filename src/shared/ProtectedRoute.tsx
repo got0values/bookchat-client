@@ -11,7 +11,6 @@ import { useAuth } from '../hooks/useAuth';
 
 export const ProtectedRoute = ({children}: ProtectedRouteProps) => {
   const { getUser } = useAuth();
-  const navigate = useNavigate();
 
   const { isLoading, isError, data, error } = useQuery({ queryKey: ['protectedKey'], queryFn: getUser });
   const user = data;
@@ -25,12 +24,12 @@ export const ProtectedRoute = ({children}: ProtectedRouteProps) => {
     )
   }
   if (isError) {
-    navigate("/login")
-    // return (
-    //   <Flex align="center" justify="center" minH="100vh">
-    //     <Heading as="h1" size="xl">Error: {(error as Error).message}</Heading>
-    //   </Flex>
-    // )
+    // navigate("/login")
+    return (
+      <Flex align="center" justify="center" minH="100vh">
+        <Heading as="h1" size="xl">Error: {(error as Error).message}</Heading>
+      </Flex>
+    )
   }
 
   if (!user) {
