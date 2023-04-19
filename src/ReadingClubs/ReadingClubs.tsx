@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ReadingClub, FormType, ReadingClubForm } from "../types/types";
+import { ReadingClub, FormType, ReadingClubForm, School } from "../types/types";
 import { 
   Box,
   Tag,
@@ -148,11 +148,10 @@ export default function ReadingClubs({server}: {server: string}) {
   const typeRef = useRef<HTMLInputElement>();
   const requiredRef = useRef<HTMLInputElement>();
   function addFormField() {
-    console.log(formFields)
     const labelText = (labelRef.current as HTMLInputElement).value
     const typeText = (typeRef.current as HTMLInputElement).value
     const requiredBool = (requiredRef.current as HTMLInputElement).checked
-    setFormFields((prev)=>{
+    setFormFields((prev: any[])=>{
       const i = 0;
       return (
         [...prev,
@@ -272,6 +271,113 @@ export default function ReadingClubs({server}: {server: string}) {
   }
 
 
+  const editReadingClubNameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
+  const editReadingClubDescriptionRef = useRef<HTMLTextAreaElement>({} as HTMLTextAreaElement);
+  const editReadingClubHiddenRef = useRef<HTMLInputElement>({} as HTMLInputElement);
+  const [editReadingClubError,setEditReadingClubError] = useState<string>("");
+  const editReadingClubMutation = useMutation({
+    mutationFn: async (e: React.FormEvent<HTMLFormElement>)=>{
+      e.preventDefault();
+      console.log(editReadingClubHiddenRef.current.checked)
+      const readingClubName = editReadingClubNameRef.current.value;
+      const readingClubDescription = editReadingClubDescriptionRef.current.value;
+      const readingClubHidden = editReadingClubHiddenRef.current.checked ? 1 : 0;
+      const readingClubFormAnswer = (editReadingClubFormRef.current as HTMLInputElement).value === "" ? null : parseInt((editReadingClubFormRef.current as HTMLInputElement).value)
+
+      let tokenCookie: string | null = Cookies.get().token;
+      if (readingClubName.length) {
+        await axios
+        .put(server + "/api/editreadingclub", 
+        {
+          readingClubId: (e.target as HTMLElement).dataset.id,
+          readingClubName: readingClubName,
+          readingClubDescription: readingClubDescription,
+          readingClubForm: readingClubFormAnswer,
+          readingClubHidden: readingClubHidden
+        },
+        {headers: {
+          'authorization': tokenCookie
+        }}
+        )
+        .then((response)=>{
+          if (response.data.success){
+            closeEditReadingClubModal();
+            toast({
+              description: "Reading club edited!",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+          }
+        })
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data) {
+            setCreateReadingClubError(response.data.message)
+          }
+        })
+      }
+      else {
+        setEditReadingClubError("Please enter a book club name")
+      }
+      return getReadingClubs()
+    },
+    onSuccess: (data)=>{
+      queryClient.invalidateQueries({ queryKey: ['readingClubsKey'] })
+      queryClient.resetQueries({queryKey: ['readingClubsKey']})
+      queryClient.setQueryData(["readingClubsKey"],data)
+    }
+  })
+  async function editReadingClub(e: React.FormEvent<HTMLFormElement>) {
+    editReadingClubMutation.mutate(e);
+  }
+  
+
+  const deleteReadingClubMutation = useMutation({
+    mutationFn: async (e: React.FormEvent<HTMLButtonElement>)=>{
+      e.preventDefault();
+      if (window.confirm("Are you sure you would like to delete this reading club?")) {
+        let tokenCookie: string | null = Cookies.get().token;
+        await axios
+          .delete(server + "/api/deletereadingclub", 
+          {
+            headers: {
+              'authorization': tokenCookie
+            },
+            data: {
+              readingClubId: (e.target as HTMLElement).dataset.id
+            }
+          })
+          .then((response)=>{
+            if (response.data.success){
+              toast({
+                description: "Reading club deleted!",
+                status: "success",
+                duration: 9000,
+                isClosable: true
+              })
+            }
+          })
+          .catch(({response})=>{
+            console.log(response)
+            if (response.data) {
+              setEditReadingClubError(response.data.message)
+            }
+        })
+      }
+      return getReadingClubs()
+    },
+    onSuccess: (data)=>{
+      queryClient.invalidateQueries({ queryKey: ['readingClubsKey'] })
+      queryClient.resetQueries({queryKey: ['readingClubsKey']})
+      queryClient.setQueryData(["readingClubsKey"],data)
+    }
+  })
+  async function deleteReadingClub(e: React.FormEvent<HTMLButtonElement>) {
+    deleteReadingClubMutation.mutate(e);
+  }
+
+
   const { 
     isOpen: isOpenFillFormModal, 
     onOpen: onOpenFillFormModal, 
@@ -342,29 +448,30 @@ export default function ReadingClubs({server}: {server: string}) {
     deleteFormMutation.mutate();
   }
 
-  const editReadingClubNameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
-  const editReadingClubDescriptionRef = useRef<HTMLTextAreaElement>({} as HTMLTextAreaElement);
-  const editReadingClubHiddenRef = useRef<HTMLInputElement>({} as HTMLInputElement);
-  const [editReadingClubError,setEditReadingClubError] = useState<string>("");
-  const editReadingClubMutation = useMutation({
+
+  const { 
+    isOpen: isOpenSchoolsModal, 
+    onOpen: onOpenSchoolsModal, 
+    onClose: onCloseSchoolsModal 
+  } = useDisclosure()
+  const schoolDeleteRef = useRef<HTMLSelectElement>({} as HTMLSelectElement);
+  function openSchoolsModal() {
+    onOpenSchoolsModal();
+  }
+  function closeSchoolsModal() {
+    (schoolDeleteRef.current as any).value = "";
+    onCloseSchoolsModal();
+  }
+  const schoolTextRef = useRef<HTMLInputElement>({} as HTMLInputElement);
+  const addSchoolMutation = useMutation({
     mutationFn: async (e: React.FormEvent<HTMLFormElement>)=>{
       e.preventDefault();
-      console.log(editReadingClubHiddenRef.current.checked)
-      const readingClubName = editReadingClubNameRef.current.value;
-      const readingClubDescription = editReadingClubDescriptionRef.current.value;
-      const readingClubHidden = editReadingClubHiddenRef.current.checked ? 1 : 0;
-      const readingClubFormAnswer = (editReadingClubFormRef.current as HTMLInputElement).value === "" ? null : parseInt((editReadingClubFormRef.current as HTMLInputElement).value)
-
+      const schoolName = schoolTextRef.current.value;
       let tokenCookie: string | null = Cookies.get().token;
-      if (readingClubName.length) {
-        await axios
-        .put(server + "/api/editreadingclub", 
+      await axios
+        .post(server + "/api/addschool", 
         {
-          readingClubId: (e.target as HTMLElement).dataset.id,
-          readingClubName: readingClubName,
-          readingClubDescription: readingClubDescription,
-          readingClubForm: readingClubFormAnswer,
-          readingClubHidden: readingClubHidden
+          schoolName: schoolName
         },
         {headers: {
           'authorization': tokenCookie
@@ -372,9 +479,49 @@ export default function ReadingClubs({server}: {server: string}) {
         )
         .then((response)=>{
           if (response.data.success){
-            closeEditReadingClubModal();
             toast({
-              description: "Reading club edited!",
+              description: "School added!",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+            schoolTextRef.current.value = "";
+          }
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data.message)
+        })
+      return getReadingClubs()
+    },
+    onSuccess: (data)=>{
+      queryClient.invalidateQueries({ queryKey: ['readingClubsKey'] })
+      queryClient.resetQueries({queryKey: ['readingClubsKey']})
+      queryClient.setQueryData(["readingClubsKey"],data)
+    }
+  })
+  async function addSchool(e: React.FormEvent<HTMLFormElement>) {
+    addSchoolMutation.mutate(e);
+  }
+
+  const deleteSchoolMutation = useMutation({
+    mutationFn: async ()=>{
+      const schoolId = schoolDeleteRef.current.value;
+      let tokenCookie: string | null = Cookies.get().token;
+      await axios
+      .delete(server + "/api/deleteschool",
+        {
+          headers: {
+          'authorization': tokenCookie
+          },
+          data: {
+            schoolId: parseInt(schoolId)
+          }
+        })
+        .then((response)=>{
+          if (response.data.success){
+            toast({
+              description: "School deleted!",
               status: "success",
               duration: 9000,
               isClosable: true
@@ -383,14 +530,8 @@ export default function ReadingClubs({server}: {server: string}) {
         })
         .catch(({response})=>{
           console.log(response)
-          if (response.data) {
-            setCreateReadingClubError(response.data.message)
-          }
+          throw new Error(response.data.message)
         })
-      }
-      else {
-        setEditReadingClubError("Please enter a book club name")
-      }
       return getReadingClubs()
     },
     onSuccess: (data)=>{
@@ -399,52 +540,8 @@ export default function ReadingClubs({server}: {server: string}) {
       queryClient.setQueryData(["readingClubsKey"],data)
     }
   })
-  async function editReadingClub(e: React.FormEvent<HTMLFormElement>) {
-    editReadingClubMutation.mutate(e);
-  }
-
-  const deleteReadingClubMutation = useMutation({
-    mutationFn: async (e: React.FormEvent<HTMLButtonElement>)=>{
-      e.preventDefault();
-      if (window.confirm("Are you sure you would like to delete this reading club?")) {
-        let tokenCookie: string | null = Cookies.get().token;
-        await axios
-          .delete(server + "/api/deletereadingclub", 
-          {
-            headers: {
-              'authorization': tokenCookie
-            },
-            data: {
-              readingClubId: (e.target as HTMLElement).dataset.id
-            }
-          })
-          .then((response)=>{
-            if (response.data.success){
-              toast({
-                description: "Reading club deleted!",
-                status: "success",
-                duration: 9000,
-                isClosable: true
-              })
-            }
-          })
-          .catch(({response})=>{
-            console.log(response)
-            if (response.data) {
-              setEditReadingClubError(response.data.message)
-            }
-        })
-      }
-      return getReadingClubs()
-    },
-    onSuccess: (data)=>{
-      queryClient.invalidateQueries({ queryKey: ['readingClubsKey'] })
-      queryClient.resetQueries({queryKey: ['readingClubsKey']})
-      queryClient.setQueryData(["readingClubsKey"],data)
-    }
-  })
-  async function deleteReadingClub(e: React.FormEvent<HTMLButtonElement>) {
-    deleteReadingClubMutation.mutate(e);
+  async function deleteSchool() {
+    deleteSchoolMutation.mutate();
   }
 
  
@@ -455,6 +552,7 @@ export default function ReadingClubs({server}: {server: string}) {
   const viewer = data?.viewer;
   const readingClubs = data?.readingClubs;
   const forms = data?.forms;
+  const schools = data?.schools;
   
   if (isError) {
     return <Flex align="center" justify="center" minH="90vh">
@@ -503,7 +601,7 @@ export default function ReadingClubs({server}: {server: string}) {
                     variant="ghost"
                     size="sm"
                     leftIcon={<BiBuildings size={25} />}
-                    // onClick={openSchoolsModal}
+                    onClick={openSchoolsModal}
                   >
                     Schools
                   </Button>
@@ -643,7 +741,13 @@ export default function ReadingClubs({server}: {server: string}) {
                     />
                   </Box>
 
-                  <Flex direction="column" gap={3} border="1px solid grey" rounded="md" p={3}>
+                  <Flex 
+                    direction="column" 
+                    gap={3} 
+                    border="1px solid grey" 
+                    rounded="md" p={3}
+                    boxShadow="lg"
+                  >
                     <Heading as="h4" size="sm">Preview:</Heading>
                     {formFields.length ? (
                       formFields.map((field,i)=>{
@@ -755,6 +859,29 @@ export default function ReadingClubs({server}: {server: string}) {
                                 </Flex>
                                 <Input id={field.id} type="date"/>
                               </>
+                            ) : field.type === "school" ? (
+                              <>
+                                <Flex justify="space-between">
+                                  <FormLabel htmlFor={field.id}>{field.label}</FormLabel>
+                                  <Button
+                                    size="xs"
+                                    colorScheme="red"
+                                    variant="ghost"
+                                    onClick={e=>removeFormField(field.id)}
+                                  >
+                                    Remove
+                                  </Button>
+                                </Flex>
+                                <Select>
+                                  {schools.length ? (
+                                    schools.map((school: School,i: number)=>{
+                                      return (
+                                        <option key={i} value={school.id}>{school.name}</option>
+                                      )
+                                    })
+                                  ) : null}
+                                </Select>
+                              </>
                             ) : null}
                           </Box>
                         )
@@ -782,6 +909,7 @@ export default function ReadingClubs({server}: {server: string}) {
                         <option value="telephone">Telephone</option>
                         <option value="email">Email</option>
                         <option value="date">Date</option>
+                        <option value="school">School Selection</option>
                       </Select>
                     </InputGroup>
                     <Checkbox ref={requiredRef as any}>Required?</Checkbox>
@@ -964,6 +1092,64 @@ export default function ReadingClubs({server}: {server: string}) {
                   </ModalFooter>
               </ModalContent>
             </Modal>
+
+            <Modal isOpen={isOpenSchoolsModal} onClose={closeSchoolsModal} size="md">
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>
+                  <Heading as="h3" size="lg">
+                    Schools
+                  </Heading>
+                </ModalHeader>
+                <ModalCloseButton />
+                  <ModalBody>
+                    <Flex direction="column" gap={5}>
+                      <form
+                        onSubmit={e=>addSchool(e as any)}
+                      >
+                        <Flex gap={2}>
+                          <Input
+                            type="text"
+                            ref={schoolTextRef}
+                            isRequired={true}
+                          />
+                          <Button
+                            type="submit"
+                          >
+                            Add
+                          </Button>
+                        </Flex>
+                      </form>
+                      <Flex gap={2}>
+                        <Select
+                          ref={schoolDeleteRef}
+                        >
+                          {schools.length ? schools.map((school: School,i: number)=>{
+                            return (
+                              <option key={i} value={school.id}>{school.name}</option>
+                            )
+                          }) : null}
+                        </Select>
+                        <Button
+                          colorScheme="red"
+                          onClick={deleteSchool}
+                        >
+                          Delete
+                        </Button>
+                      </Flex>
+                      {addSchoolMutation.isError && (
+                        <Text color="red">{(addSchoolMutation.error as Error).message}</Text>
+                      )}
+                      {deleteSchoolMutation.isError && (
+                        <Text color="red">{(deleteSchoolMutation.error as Error).message}</Text>
+                      )}
+                    </Flex>
+                  </ModalBody>
+                  <ModalFooter>
+
+                  </ModalFooter>
+              </ModalContent>
+            </Modal>
           </>
         ) : null}
 
@@ -1058,6 +1244,32 @@ export default function ReadingClubs({server}: {server: string}) {
                                   isRequired={field.required ? true : false}
                                   data-question={field.label}
                                 />
+                              </>
+                            ) : field.type === "school" ? (
+                              <>
+                                <FormLabel 
+                                  htmlFor={field.id}
+                                >
+                                  {field.label}
+                                </FormLabel>
+                                <Select
+                                  id={field.id}
+                                  isRequired={field.required ? true : false}
+                                  data-question={field.label}
+                                >
+                                  {schools.length ? (
+                                    schools.map((school: School,i: number)=>{
+                                      return (
+                                        <option 
+                                          key={i} 
+                                          value={school.id}
+                                        >
+                                          {school.name}
+                                        </option>
+                                      )
+                                    })
+                                  ) : null}
+                                </Select>
                               </>
                             ) : null}
                           </Box>

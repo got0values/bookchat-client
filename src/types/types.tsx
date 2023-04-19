@@ -314,3 +314,9 @@ export interface FormType {
   required: boolean;
   sequence: number;
 }
+
+export interface School {
+  id: number;
+  name: string;
+  library: number;
+}
