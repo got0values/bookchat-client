@@ -320,3 +320,21 @@ export interface School {
   name: string;
   library: number;
 }
+
+export interface EntryData {
+  id: string;
+  type: string;
+  question: string;
+  answer: string;
+  required: string;
+  sequence: number;
+}
+
+export interface UserEntry {
+  id: number;
+  profile: number;
+  reading_club: number;
+  library: number;
+  entry_data: EntryData | string;
+  created_on: string;
+}

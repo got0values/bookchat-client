@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ReadingClub, FormType, ReadingClubForm, School } from "../types/types";
+import { ReadingClub, FormType, ReadingClubForm, School, EntryData, UserEntry } from "../types/types";
 import { 
   Box,
   Tag,
@@ -39,14 +38,16 @@ import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { BiDotsHorizontalRounded, BiTrash, BiBuildings } from 'react-icons/bi';
 import { AiOutlineLineChart } from 'react-icons/ai';
 import { MdEdit } from 'react-icons/md';
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
 import axios from "axios";
 
 
 export default function ReadingClubs({server}: {server: string}) {
   const toast = useToast();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
+  dayjs.extend(utc);
 
   async function getReadingClubs() {
     let tokenCookie: string | null = Cookies.get().token;
@@ -384,15 +385,73 @@ export default function ReadingClubs({server}: {server: string}) {
     onClose: onCloseFillFormModal 
   } = useDisclosure()
   const [fillForm,setFillForm] = useState({} as ReadingClubForm)
+  const [formReadingClubId,setFormReadingClubId] = useState<number | null>(null);
   function openFillFormModal(e: HTMLFormElement) {
     if ((e.target as any).dataset.form !== "null") {
       setFillForm(JSON.parse((e.target as any).dataset.form))
+      setFormReadingClubId((e.target as any).dataset.readingclubid);
       onOpenFillFormModal();
     }
   }
   function closeFillFormModal() {
     setFillForm({} as ReadingClubForm)
+    setFormReadingClubId(null)
     onCloseFillFormModal();
+  }
+
+  const submitReadingClubEntryMutation = useMutation({
+    mutationFn: async (e: React.FormEvent<HTMLFormElement>)=>{
+      e.preventDefault();
+      const readingClubId = (e.target as HTMLFormElement).dataset.readingclubid;
+      let entryData: EntryData[] = []
+      const entryFields: EventTarget[] = Array.from(e.target as HTMLFormElement);
+      console.log(entryFields)
+      entryFields.forEach((field: any,i: number)=>{
+        entryData.push({
+          id: field.id,
+          type: field.dataset.fieldtype,
+          question: field.dataset.question,
+          answer: field.value,
+          required: field.required,
+          sequence: i
+        })
+      })
+      let tokenCookie: string | null = Cookies.get().token;
+      await axios
+        .post(server + "/api/submitreadingclubentry", 
+        {
+          entryData: JSON.stringify(entryData),
+          readingClubId: parseInt(readingClubId!)
+        },
+        {headers: {
+          'authorization': tokenCookie
+        }}
+        )
+        .then((response)=>{
+          if (response.data.success){
+            toast({
+              description: "Form submitted!",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+            closeFillFormModal();
+          }
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data.message)
+        })
+      return getReadingClubs()
+    },
+    onSuccess: (data)=>{
+      queryClient.invalidateQueries({ queryKey: ['readingClubsKey'] })
+      queryClient.resetQueries({queryKey: ['readingClubsKey']})
+      queryClient.setQueryData(["readingClubsKey"],data)
+    }
+  })
+  async function submitReadingClubEntry(e: React.FormEvent<HTMLFormElement>) {
+    submitReadingClubEntryMutation.mutate(e);
   }
 
 
@@ -544,6 +603,22 @@ export default function ReadingClubs({server}: {server: string}) {
     deleteSchoolMutation.mutate();
   }
 
+
+  const { 
+    isOpen: isOpenUserEditEntryModal, 
+    onOpen: onOpenUserEditEntryModal, 
+    onClose: onCloseUserEditEntryModal 
+  } = useDisclosure()
+  const [userEntryForm,setUserEntryForm] = useState(null);
+  function openUserEditEntryModal(e: React.FormEvent<HTMLElement>) {
+    setUserEntryForm(JSON.parse((e.target as HTMLElement).dataset.form!))
+    onOpenUserEditEntryModal();
+  }
+  function closeUserEditEntryModal() {
+    setUserEntryForm(null)
+    onCloseUserEditEntryModal();
+  }
+
  
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['readingClubsKey'], 
@@ -553,6 +628,7 @@ export default function ReadingClubs({server}: {server: string}) {
   const readingClubs = data?.readingClubs;
   const forms = data?.forms;
   const schools = data?.schools;
+  const userEntries = data?.userEntries;
   
   if (isError) {
     return <Flex align="center" justify="center" minH="90vh">
@@ -561,74 +637,103 @@ export default function ReadingClubs({server}: {server: string}) {
   }
   
   return (
-    <Box className={viewer === "admin" ? "main-content" : "main-content-smaller"}>
+    <Box className="main-content">
       <Skeleton 
         isLoaded={!isLoading}
       >
           <Flex flexWrap="wrap">
-            {viewer === "admin" ? (
-              <Box className="well" height="fit-content" flex="1 1 30%">
-                <Stack
-                  flexWrap="wrap" 
-                  justify="space-between"
-                  align="flex-start"
-                >
-                  <Flex align="center" justify="space-between" gap={2}>
-                    <Heading as="h3" size="md">
-                      Admin
-                    </Heading>
-                  </Flex>
-                  <Button
-                    width="auto"
-                    variant="ghost"
-                    size="sm"
-                    leftIcon={<IoIosAdd size={25} />}
-                    onClick={openCreateFormModal}
+            <Box flex="1 1 30%">
+              {viewer === "admin" ? (
+                <Box className="well" height="fit-content">
+                  <Stack
+                    flexWrap="wrap" 
+                    justify="space-between"
+                    align="flex-start"
                   >
-                    Create Reading Form
-                  </Button>
-                  <Button
-                    width="auto"
-                    variant="ghost"
-                    size="sm"
-                    leftIcon={<IoIosRemove size={25} />}
-                    onClick={e=>openDeleteFormModal()}
-                  >
-                    Delete Reading Form
-                  </Button>
-                  <Button
-                    width="auto"
-                    variant="ghost"
-                    size="sm"
-                    leftIcon={<BiBuildings size={25} />}
-                    onClick={openSchoolsModal}
-                  >
-                    Schools
-                  </Button>
-                  <Divider/>
-                  <Button
-                    width="auto"
-                    variant="ghost"
-                    size="sm"
-                    leftIcon={<IoIosAdd size={25} />}
-                    onClick={openCreateReadingClubModal}
-                  >
-                    Create Reading Club
-                  </Button>
-                  <Divider/>
-                  <Button
-                    width="auto"
-                    variant="ghost"
-                    size="sm"
-                    leftIcon={<AiOutlineLineChart size={25} />}
-                    // onClick={openCreateReadingClubModal}
-                  >
-                    View Entries
-                  </Button>
-                </Stack>
-              </Box>
-            ) : null}
+                    <Flex align="center" justify="space-between" gap={2}>
+                      <Heading as="h3" size="md">
+                        Admin
+                      </Heading>
+                    </Flex>
+                    <Button
+                      width="auto"
+                      variant="ghost"
+                      size="sm"
+                      leftIcon={<IoIosAdd size={25} />}
+                      onClick={openCreateFormModal}
+                    >
+                      Create Reading Form
+                    </Button>
+                    <Button
+                      width="auto"
+                      variant="ghost"
+                      size="sm"
+                      leftIcon={<IoIosRemove size={25} />}
+                      onClick={e=>openDeleteFormModal()}
+                    >
+                      Delete Reading Form
+                    </Button>
+                    <Button
+                      width="auto"
+                      variant="ghost"
+                      size="sm"
+                      leftIcon={<BiBuildings size={25} />}
+                      onClick={openSchoolsModal}
+                    >
+                      Schools
+                    </Button>
+                    <Divider/>
+                    <Button
+                      width="auto"
+                      variant="ghost"
+                      size="sm"
+                      leftIcon={<IoIosAdd size={25} />}
+                      onClick={openCreateReadingClubModal}
+                    >
+                      Create Reading Club
+                    </Button>
+                    <Divider/>
+                    <Button
+                      width="auto"
+                      variant="ghost"
+                      size="sm"
+                      leftIcon={<AiOutlineLineChart size={25} />}
+                      // onClick={openCreateReadingClubModal}
+                    >
+                      View Entries
+                    </Button>
+                  </Stack>
+                </Box>
+              ) : null}
 
+              {viewer === "admin" || viewer || "user" ? (
+                <Box className="well" height="fit-content">
+                  <Heading as="h3" size="md" mb={2}>
+                    Entries
+                  </Heading>
+                  <Stack flexWrap="wrap">
+                    {userEntries?.length ? (
+                      userEntries.map((entry: UserEntry, i: number)=>{
+                        return (
+                          <Text 
+                            key={i}
+                            _hover={{
+                              cursor: "pointer"
+                            }}
+                            data-form={entry.entry_data}
+                            onClick={e=>openUserEditEntryModal(e)}
+                          >
+                            {dayjs(entry.created_on).local().format('MMM DD, hh:mm a')}
+                          </Text>
+                        )
+                      })
+                    ) : (
+                      <Text fontStyle="italic">No entries yet</Text>
+                    )}
+                  </Stack>
+                </Box>
+              ) : null}
+            </Box>
             <Box className="well" flex="1 1 65%">
               <Heading as="h3" size="md" mb={3}>
                 Reading Clubs
@@ -660,6 +765,7 @@ export default function ReadingClubs({server}: {server: string}) {
                           <Heading 
                             as="h3" 
                             size="sm"
+                            data-readingclubid={readingClub.id}
                             data-form={JSON.stringify(readingClub.ReadingClubForm)}
                             onClick={e=>openFillFormModal(e as any)}
                             _hover={{
@@ -1162,13 +1268,9 @@ export default function ReadingClubs({server}: {server: string}) {
                 </Heading>
               </ModalHeader>
               <ModalCloseButton />
-              <form 
-                // data-id={editId}
-                // onSubmit={e=>editReadingClub(e as React.FormEvent<HTMLFormElement>)}
-                onSubmit={e=>{
-                  e.preventDefault();
-                  console.log(e)
-                }}
+              <form
+                data-readingclubid={formReadingClubId}
+                onSubmit={e=>{submitReadingClubEntry(e)}}
               >
                 <ModalBody>
                   <Flex direction="column" gap={2}>
@@ -1185,6 +1287,7 @@ export default function ReadingClubs({server}: {server: string}) {
                                   type="text" 
                                   isRequired={field.required ? true : false}
                                   data-question={field.label}
+                                  data-fieldtype={field.type}
                                 />
                               </>
                             ) : field.type === "long-text" ? (
@@ -1194,6 +1297,7 @@ export default function ReadingClubs({server}: {server: string}) {
                                   id={field.id} 
                                   isRequired={field.required ? true : false}
                                   data-question={field.label}
+                                  data-fieldtype={field.type}
                                 ></Textarea>
                               </>
                             ) : field.type === "number" ? (
@@ -1204,6 +1308,7 @@ export default function ReadingClubs({server}: {server: string}) {
                                   type="number" 
                                   isRequired={field.required ? true : false}
                                   data-question={field.label}
+                                  data-fieldtype={field.type}
                                 />
                               </>
                             ) : field.type === "checkbox" ? (
@@ -1211,6 +1316,7 @@ export default function ReadingClubs({server}: {server: string}) {
                                 <Checkbox 
                                   id={field.id}
                                   data-question={field.label}
+                                  data-fieldtype={field.type}
                                 >
                                   {field.label}
                                 </Checkbox>
@@ -1223,6 +1329,7 @@ export default function ReadingClubs({server}: {server: string}) {
                                   type="tel" 
                                   isRequired={field.required ? true : false}
                                   data-question={field.label}
+                                  data-fieldtype={field.type}
                                 />
                               </>
                             ) : field.type === "email" ? (
@@ -1233,6 +1340,7 @@ export default function ReadingClubs({server}: {server: string}) {
                                   type="email" 
                                   isRequired={field.required ? true : false}
                                   data-question={field.label}
+                                  data-fieldtype={field.type}
                                 />
                               </>
                             ) : field.type === "date" ? (
@@ -1243,6 +1351,7 @@ export default function ReadingClubs({server}: {server: string}) {
                                   type="date"
                                   isRequired={field.required ? true : false}
                                   data-question={field.label}
+                                  data-fieldtype={field.type}
                                 />
                               </>
                             ) : field.type === "school" ? (
@@ -1256,8 +1365,9 @@ export default function ReadingClubs({server}: {server: string}) {
                                   id={field.id}
                                   isRequired={field.required ? true : false}
                                   data-question={field.label}
+                                  data-fieldtype={field.type}
                                 >
-                                  {schools.length ? (
+                                  {schools?.length ? (
                                     schools.map((school: School,i: number)=>{
                                       return (
                                         <option 
@@ -1280,12 +1390,158 @@ export default function ReadingClubs({server}: {server: string}) {
                 </ModalBody>
                 <ModalFooter>
                   <Flex width="100%" justify="flex-end">
+                    {submitReadingClubEntryMutation.isError && (
+                      <Text color="red">
+                        {(submitReadingClubEntryMutation.error as Error).message}
+                      </Text>
+                    )}
                     <Button  
                       mr={3}
                       type="submit"
                       colorScheme="green"
                     >
                       Submit
+                    </Button>
+                  </Flex>
+                </ModalFooter>
+              </form>
+            </ModalContent>
+          </Modal>
+
+          <Modal isOpen={isOpenUserEditEntryModal} onClose={closeUserEditEntryModal} size="xl">
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>
+                <Heading as="h3" size="lg">
+                  {/* {fillForm.name} */}
+                  Form
+                </Heading>
+              </ModalHeader>
+              <ModalCloseButton />
+              <form
+                // data-readingclubid={formReadingClubId}
+                // onSubmit={e=>{submitReadingClubEntry(e)}}
+              >
+                <ModalBody>
+                  <Flex direction="column" gap={2}>
+                  {userEntryForm && (userEntryForm as EntryData[]).length ? (
+                    (userEntryForm as EntryData[]).map((field: EntryData,i: number)=>{
+                      return (
+                        <Box key={i}>
+                          {field.type === "short-text" ? (
+                            <>
+                              <FormLabel htmlFor={field.id} mb={1}>{field.question}</FormLabel>
+                              <Input 
+                                id={field.id} 
+                                type="text" 
+                                isRequired={field.required === "true" ? true : false}
+                                defaultValue={field.answer}
+                              />
+                            </>
+                          ) : field.type === "long-text" ? (
+                            <>
+                              <FormLabel htmlFor={field.id} mb={1}>{field.question}</FormLabel>
+                              <Textarea 
+                                id={field.id} 
+                                isRequired={field.required === "true" ? true : false}
+                                defaultValue={field.answer}
+                              ></Textarea>
+                            </>
+                          ) : field.type === "number" ? (
+                            <>
+                              <FormLabel htmlFor={field.id} mb={1}>{field.question}</FormLabel>
+                              <Input 
+                                id={field.id} 
+                                type="number" 
+                                isRequired={field.required === "true" ? true : false}
+                                defaultValue={field.answer}
+                              />
+                            </>
+                          ) : field.type === "checkbox" ? (
+                            <>
+                              <Checkbox 
+                                id={field.id}
+                                defaultChecked={Boolean(field.answer)}
+                              >
+                                {field.question}
+                              </Checkbox>
+                            </>
+                          ) : field.type === "telephone" ? (
+                            <>
+                              <FormLabel htmlFor={field.id} mb={1}>{field.question}</FormLabel>
+                              <Input 
+                                id={field.id} 
+                                type="tel" 
+                                isRequired={field.required === "true" ? true : false}
+                                defaultValue={field.answer}
+                              />
+                            </>
+                          ) : field.type === "email" ? (
+                            <>
+                              <FormLabel htmlFor={field.id} mb={1}>{field.question}</FormLabel>
+                              <Input 
+                                id={field.id} 
+                                type="email" 
+                                isRequired={field.required === "true" ? true : false}
+                                defaultValue={field.answer}
+                              />
+                            </>
+                          ) : field.type === "date" ? (
+                            <>
+                              <FormLabel htmlFor={field.id}>{field.question}</FormLabel>
+                              <Input 
+                                id={field.id} 
+                                type="date"
+                                isRequired={field.required === "true" ? true : false}
+                                defaultValue={field.answer}
+                              />
+                            </>
+                          ) : field.type === "school" ? (
+                            <>
+                              <FormLabel 
+                                htmlFor={field.id}
+                              >
+                                {field.question}
+                              </FormLabel>
+                              <Select
+                                id={field.id}
+                                isRequired={field.required === "true" ? true : false}
+                                defaultValue={field.answer}
+                              >
+                                {schools?.length ? (
+                                  schools.map((school: School,i: number)=>{
+                                    return (
+                                      <option 
+                                        key={i} 
+                                        value={school.id}
+                                      >
+                                        {school.name}
+                                      </option>
+                                    )
+                                  })
+                                ) : null}
+                              </Select>
+                            </>
+                          ) : null}
+                        </Box>
+                      )
+                    })
+                  ) :null}
+                  </Flex>
+                </ModalBody>
+                <ModalFooter>
+                  <Flex width="100%" justify="flex-end">
+                    {/* {submitReadingClubEntryMutation.isError && (
+                      <Text color="red">
+                        {(submitReadingClubEntryMutation.error as Error).message}
+                      </Text>
+                    )} */}
+                    <Button  
+                      mr={3}
+                      type="submit"
+                      colorScheme="green"
+                    >
+                      Update
                     </Button>
                   </Flex>
                 </ModalFooter>
