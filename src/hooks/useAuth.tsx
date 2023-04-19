@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     .catch(({response})=>{
       setUser(null)
       toast({
-        description: "An error has occured",
+        description: response.data.message,
         status: "error",
         duration: 9000,
         isClosable: true

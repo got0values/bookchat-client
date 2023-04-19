@@ -19,6 +19,10 @@ import {
   InputLeftAddon,
   Flex,
   Skeleton,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -30,12 +34,12 @@ import {
   useToast,
   useDisclosure
 } from "@chakra-ui/react";
-import { IoIosAdd } from 'react-icons/io';
-import { FaBookReader } from 'react-icons/fa';
-import { BsDot } from 'react-icons/bs';
+import { IoIosAdd, IoIosRemove } from 'react-icons/io';
+import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
+import { AiOutlineLineChart } from 'react-icons/ai';
+import { MdEdit } from 'react-icons/md';
 import Cookies from "js-cookie";
 import axios from "axios";
-import { BookClubsType } from "../types/types";
 
 
 export default function ReadingClubs({server}: {server: string}) {
@@ -367,7 +371,6 @@ export default function ReadingClubs({server}: {server: string}) {
           })
           .then((response)=>{
             if (response.data.success){
-              closeEditReadingClubModal();
               toast({
                 description: "Reading club deleted!",
                 status: "success",
@@ -383,10 +386,9 @@ export default function ReadingClubs({server}: {server: string}) {
             }
         })
       }
-    return getReadingClubs()
+      return getReadingClubs()
     },
     onSuccess: (data)=>{
-      closeEditReadingClubModal();
       queryClient.invalidateQueries({ queryKey: ['readingClubsKey'] })
       queryClient.resetQueries({queryKey: ['readingClubsKey']})
       queryClient.setQueryData(["readingClubsKey"],data)
@@ -421,8 +423,8 @@ export default function ReadingClubs({server}: {server: string}) {
               <Box className="well" height="fit-content" flex="1 1 30%">
                 <Stack
                   flexWrap="wrap" 
-                  justify="space-between" 
-                  mb={2}
+                  justify="space-between"
+                  align="flex-start"
                 >
                   <Flex align="center" justify="space-between" gap={2}>
                     <Heading as="h3" size="md">
@@ -431,20 +433,26 @@ export default function ReadingClubs({server}: {server: string}) {
                   </Flex>
                   <Button
                     width="auto"
+                    variant="ghost"
+                    size="sm"
                     leftIcon={<IoIosAdd size={25} />}
                     onClick={openCreateQuestionnaireModal}
                   >
-                    Create Reading Questionairre
+                    Create Reading Questionnaire
                   </Button>
                   <Button
                     width="auto"
-                    // leftIcon={<IoIosAdd size={25} />}
+                    variant="ghost"
+                    size="sm"
+                    leftIcon={<IoIosRemove size={25} />}
                     // onClick={openCreateQuestionnaireModal}
                   >
-                    Delete Reading Questionairre
+                    Delete Reading Questionnaire
                   </Button>
                   <Button
                     width="auto"
+                    variant="ghost"
+                    size="sm"
                     leftIcon={<IoIosAdd size={25} />}
                     onClick={openCreateReadingClubModal}
                   >
@@ -452,7 +460,9 @@ export default function ReadingClubs({server}: {server: string}) {
                   </Button>
                   <Button
                     width="auto"
-                    // leftIcon={<IoIosAdd size={25} />}
+                    variant="ghost"
+                    size="sm"
+                    leftIcon={<AiOutlineLineChart size={25} />}
                     // onClick={openCreateReadingClubModal}
                   >
                     View Entries
@@ -474,6 +484,7 @@ export default function ReadingClubs({server}: {server: string}) {
                     return (
                       <Flex 
                         key={i} 
+                        position="relative"
                         direction="column"
                         align="center"
                         justify="center"
@@ -506,17 +517,42 @@ export default function ReadingClubs({server}: {server: string}) {
                           {readingClub.description}
                         </Text>
                         {viewer === "admin" ? (
-                          <Button
-                            size="sm"
-                            data-id={readingClub.id}
-                            data-name={readingClub.name}
-                            data-description={readingClub.description}
-                            data-display={readingClub.hidden}
-                            data-questionnaire={readingClub.ReadingClubQuestionnaire ? readingClub.ReadingClubQuestionnaire.id : null}
-                            onClick={e=>openEditReadingClubModal(e as React.FormEvent<HTMLButtonElement>)}
-                          >
-                            Edit
-                          </Button>
+                          <Menu>
+                            <MenuButton 
+                              as={Button}
+                              size="md"
+                              variant="ghost"
+                              rounded="full"
+                              height="25px"
+                              position="absolute" 
+                              top={2} 
+                              right={2}
+                            >
+                              <BiDotsHorizontalRounded/>
+                            </MenuButton>
+                            <MenuList>
+                              <MenuItem 
+                                data-id={readingClub.id}
+                                data-name={readingClub.name}
+                                data-description={readingClub.description}
+                                data-display={readingClub.hidden}
+                                data-questionnaire={readingClub.ReadingClubQuestionnaire ? readingClub.ReadingClubQuestionnaire.id : null}
+                                onClick={e=>openEditReadingClubModal(e as React.FormEvent<HTMLButtonElement>)}
+                                icon={<MdEdit size={20} />}
+                              >
+                                Edit
+                              </MenuItem>
+                              <MenuItem
+                                data-id={readingClub.id}
+                                onClick={e=>deleteReadingClub(e as React.FormEvent<HTMLButtonElement>)}
+                                color="red"
+                                fontWeight="bold"
+                                icon={<BiTrash size={20} />}
+                              >
+                                Delete
+                              </MenuItem>
+                            </MenuList>
+                          </Menu>
                         ): null}
                       </Flex>
                     )
@@ -555,7 +591,7 @@ export default function ReadingClubs({server}: {server: string}) {
                           <Box key={i}>
                             {field.type === "short-text" ? (
                               <>
-                                <Flex gap={2}>
+                                <Flex justify="space-between">
                                   <FormLabel htmlFor={field.id}>{field.label}</FormLabel>
                                   <Button
                                     size="xs"
@@ -570,7 +606,7 @@ export default function ReadingClubs({server}: {server: string}) {
                               </>
                             ) : field.type === "long-text" ? (
                               <>
-                                <Flex gap={2}>
+                                <Flex justify="space-between">
                                   <FormLabel htmlFor={field.id}>{field.label}</FormLabel>
                                   <Button
                                     size="xs"
@@ -585,7 +621,7 @@ export default function ReadingClubs({server}: {server: string}) {
                               </>
                             ) : field.type === "number" ? (
                               <>
-                                <Flex gap={2}>
+                                <Flex justify="space-between">
                                   <FormLabel htmlFor={field.id}>{field.label}</FormLabel>
                                   <Button
                                     size="xs"
@@ -600,7 +636,7 @@ export default function ReadingClubs({server}: {server: string}) {
                               </>
                             ) : field.type === "checkbox" ? (
                               <>
-                                <Flex gap={2}>
+                                <Flex justify="space-between">
                                   <Checkbox id={field.id}>
                                     {field.label}
                                   </Checkbox>
@@ -616,7 +652,7 @@ export default function ReadingClubs({server}: {server: string}) {
                               </>
                             ) : field.type === "telephone" ? (
                               <>
-                                <Flex gap={2}>
+                                <Flex justify="space-between">
                                   <FormLabel htmlFor={field.id}>{field.label}</FormLabel>
                                   <Button
                                     size="xs"
@@ -631,7 +667,7 @@ export default function ReadingClubs({server}: {server: string}) {
                               </>
                             ) : field.type === "email" ? (
                               <>
-                                <Flex gap={2}>
+                                <Flex justify="space-between">
                                   <FormLabel htmlFor={field.id}>{field.label}</FormLabel>
                                   <Button
                                     size="xs"
@@ -643,6 +679,21 @@ export default function ReadingClubs({server}: {server: string}) {
                                   </Button>
                                 </Flex>
                                 <Input id={field.id} type="email"/>
+                              </>
+                            ) : field.type === "date" ? (
+                              <>
+                                <Flex justify="space-between">
+                                  <FormLabel htmlFor={field.id}>{field.label}</FormLabel>
+                                  <Button
+                                    size="xs"
+                                    colorScheme="red"
+                                    variant="ghost"
+                                    onClick={e=>removeQuestionnaireField(field.id)}
+                                  >
+                                    Remove
+                                  </Button>
+                                </Flex>
+                                <Input id={field.id} type="date"/>
                               </>
                             ) : null}
                           </Box>
@@ -670,6 +721,7 @@ export default function ReadingClubs({server}: {server: string}) {
                         <option value="checkbox">Checkbox</option>
                         <option value="telephone">Telephone</option>
                         <option value="email">Email</option>
+                        <option value="date">Date</option>
                       </Select>
                     </InputGroup>
                     <Checkbox ref={requiredRef as any}>Required?</Checkbox>
@@ -805,22 +857,13 @@ export default function ReadingClubs({server}: {server: string}) {
                   </Flex>
                 </ModalBody>
                 <ModalFooter>
-                  <Flex width="100%" justify="space-between">
-                    <Button
-                      colorScheme="red"
-                      data-id={editId}
-                      onClick={e=>deleteReadingClub(e as React.FormEvent<HTMLButtonElement>)}
-                    >
-                      Delete
-                    </Button>
-                    <Button  
-                      mr={3}
-                      type="submit"
-                      colorScheme="green"
-                    >
-                      Submit
-                    </Button>
-                  </Flex>
+                  <Button  
+                    mr={3}
+                    type="submit"
+                    colorScheme="green"
+                  >
+                    Submit
+                  </Button>
                 </ModalFooter>
               </form>
             </ModalContent>
@@ -909,6 +952,21 @@ export default function ReadingClubs({server}: {server: string}) {
                                   isRequired={field.required ? true : false}
                                   data-question={field.label}
                                 />
+                              </>
+                            ) : field.type === "date" ? (
+                              <>
+                                <Flex gap={2}>
+                                  <FormLabel htmlFor={field.id}>{field.label}</FormLabel>
+                                  <Button
+                                    size="xs"
+                                    colorScheme="red"
+                                    variant="ghost"
+                                    onClick={e=>removeQuestionnaireField(field.id)}
+                                  >
+                                    Remove
+                                  </Button>
+                                </Flex>
+                                <Input id={field.id} type="date"/>
                               </>
                             ) : null}
                           </Box>
