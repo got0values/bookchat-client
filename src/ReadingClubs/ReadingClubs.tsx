@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ReadingClub, FormType, ReadingClubQuestionnaire } from "../types/types";
+import { ReadingClub, FormType, ReadingClubForm } from "../types/types";
 import { 
   Box,
   Tag,
@@ -75,37 +75,37 @@ export default function ReadingClubs({server}: {server: string}) {
   }
 
   const { 
-    isOpen: isOpenCreateQuestionnaireModal, 
-    onOpen: onOpenCreateQuestionnaireModal, 
-    onClose: onCloseCreateQuestionnaireModal 
+    isOpen: isOpenCreateFormModal, 
+    onOpen: onOpenCreateFormModal, 
+    onClose: onCloseCreateFormModal 
   } = useDisclosure()
 
-  function openCreateQuestionnaireModal() {
-    onOpenCreateQuestionnaireModal();
+  function openCreateFormModal() {
+    onOpenCreateFormModal();
   }
 
-  function closeCreateQuestionnaireModal() {
-    setCreateQuestionnaireError("");
+  function closeCreateFormModal() {
+    setCreateFormError("");
     (labelRef.current as HTMLInputElement).value = "";
-    setQuestionnaireFields([]);
-    onCloseCreateQuestionnaireModal();
+    setFormFields([]);
+    onCloseCreateFormModal();
   }
 
-  const createQuestionnaireNameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
-  const [questionnaireFields,setQuestionnaireFields] = useState<FormType[]>([]);
-  const [createQuestionnaireError,setCreateQuestionnaireError] = useState<string>("");
-  const createQuestionnaireMutation = useMutation({
+  const createFormNameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
+  const [formFields,setFormFields] = useState<FormType[]>([]);
+  const [createFormError,setCreateFormError] = useState<string>("");
+  const createFormMutation = useMutation({
     mutationFn: async (e: React.FormEvent<HTMLFormElement>)=>{
       e.preventDefault();
-      const questionnaireName = createQuestionnaireNameRef.current.value;
-      console.log(questionnaireName)
+      const formName = createFormNameRef.current.value;
+      console.log(formName)
       let tokenCookie: string | null = Cookies.get().token;
-      if (questionnaireName) {
+      if (formName) {
         await axios
-        .post(server + "/api/createreadingclubquestionnaire", 
+        .post(server + "/api/createreadingclubform", 
         {
-          questionnaireName: questionnaireName,
-          questionnaireFields: JSON.stringify(questionnaireFields)
+          formName: formName,
+          formFields: JSON.stringify(formFields)
         },
         {headers: {
           'authorization': tokenCookie
@@ -113,7 +113,7 @@ export default function ReadingClubs({server}: {server: string}) {
         )
         .then((response)=>{
           if (response.data.success){
-            closeCreateQuestionnaireModal();
+            closeCreateFormModal();
             toast({
               description: "Reading club created!",
               status: "success",
@@ -125,12 +125,12 @@ export default function ReadingClubs({server}: {server: string}) {
         .catch(({response})=>{
           console.log(response)
           if (response.data) {
-            setCreateQuestionnaireError(response.data.message)
+            setCreateFormError(response.data.message)
           }
         })
       }
       else {
-        setCreateQuestionnaireError("Please enter a questionnaire name")
+        setCreateFormError("Please enter a form name")
       }
       return getReadingClubs()
     },
@@ -140,19 +140,19 @@ export default function ReadingClubs({server}: {server: string}) {
       queryClient.setQueryData(["readingClubsKey"],data)
     }
   })
-  async function createQuestionnaire(e: React.FormEvent<HTMLFormElement>) {
-    createQuestionnaireMutation.mutate(e);
+  async function createForm(e: React.FormEvent<HTMLFormElement>) {
+    createFormMutation.mutate(e);
   }
 
   const labelRef = useRef<HTMLInputElement>()
   const typeRef = useRef<HTMLInputElement>();
   const requiredRef = useRef<HTMLInputElement>();
-  function addQuestionnaireField() {
-    console.log(questionnaireFields)
+  function addFormField() {
+    console.log(formFields)
     const labelText = (labelRef.current as HTMLInputElement).value
     const typeText = (typeRef.current as HTMLInputElement).value
     const requiredBool = (requiredRef.current as HTMLInputElement).checked
-    setQuestionnaireFields((prev)=>{
+    setFormFields((prev)=>{
       const i = 0;
       return (
         [...prev,
@@ -168,8 +168,8 @@ export default function ReadingClubs({server}: {server: string}) {
     });
     (labelRef.current as HTMLInputElement).value = "";
   }
-  function removeQuestionnaireField(fieldId: string) {
-    setQuestionnaireFields(prev=>{
+  function removeFormField(fieldId: string) {
+    setFormFields(prev=>{
       return prev.filter((field)=>field.id !== fieldId)
     })
   }
@@ -252,14 +252,14 @@ export default function ReadingClubs({server}: {server: string}) {
   const [editName,setEditName] = useState("");
   const [editDescription,setEditDescription] = useState("");
   const [editHidden,setEditHidden] = useState("");
-  const [defaultQuestionnaire,setDefaultQuestionnaire] = useState("");
-  const editReadingClubQuestionnaireRef = useRef<HTMLInputElement>(null);
+  const [defaultForm,setDefaultForm] = useState("");
+  const editReadingClubFormRef = useRef<HTMLInputElement>(null);
   function openEditReadingClubModal(e: React.FormEvent<HTMLButtonElement>) {
     setEditId((e.target as HTMLElement).dataset.id!)
     setEditName((e.target as HTMLElement).dataset.name!)
     setEditDescription((e.target as HTMLElement).dataset.description!)
     setEditHidden((e.target as HTMLElement).dataset.display!)
-    setDefaultQuestionnaire((e.target as HTMLElement).dataset.questionnaire!)
+    setDefaultForm((e.target as HTMLElement).dataset.form!)
     onOpenEditReadingClubModal();
   }
 
@@ -269,28 +269,28 @@ export default function ReadingClubs({server}: {server: string}) {
     setEditDescription("")
     setEditHidden("")
     setEditReadingClubError("");
-    setDefaultQuestionnaire("");
-    (editReadingClubQuestionnaireRef.current as HTMLInputElement).value = "";
+    setDefaultForm("");
+    (editReadingClubFormRef.current as HTMLInputElement).value = "";
     onCloseEditReadingClubModal();
   }
 
   const { 
-    isOpen: isOpenFillQuestionnaireModal, 
-    onOpen: onOpenFillQuestionnaireModal, 
-    onClose: onCloseFillQuestionnaireModal 
+    isOpen: isOpenFillFormModal, 
+    onOpen: onOpenFillFormModal, 
+    onClose: onCloseFillFormModal 
   } = useDisclosure()
 
-  const [fillQuestionnaire,setFillQuestionnaire] = useState({} as ReadingClubQuestionnaire)
-  function openFillQuestionnaireModal(e: HTMLFormElement) {
-    if ((e.target as any).dataset.questionnaire !== "null") {
-      setFillQuestionnaire(JSON.parse((e.target as any).dataset.questionnaire))
-      onOpenFillQuestionnaireModal();
+  const [fillForm,setFillForm] = useState({} as ReadingClubForm)
+  function openFillFormModal(e: HTMLFormElement) {
+    if ((e.target as any).dataset.form !== "null") {
+      setFillForm(JSON.parse((e.target as any).dataset.form))
+      onOpenFillFormModal();
     }
   }
 
-  function closeFillQuestionnaireModal() {
-    setFillQuestionnaire({} as ReadingClubQuestionnaire)
-    onCloseFillQuestionnaireModal();
+  function closeFillFormModal() {
+    setFillForm({} as ReadingClubForm)
+    onCloseFillFormModal();
   }
 
   const editReadingClubNameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
@@ -304,7 +304,7 @@ export default function ReadingClubs({server}: {server: string}) {
       const readingClubName = editReadingClubNameRef.current.value;
       const readingClubDescription = editReadingClubDescriptionRef.current.value;
       const readingClubHidden = editReadingClubHiddenRef.current.checked ? 1 : 0;
-      const readingClubQuestionnaireAnswer = (editReadingClubQuestionnaireRef.current as HTMLInputElement).value === "" ? null : parseInt((editReadingClubQuestionnaireRef.current as HTMLInputElement).value)
+      const readingClubFormAnswer = (editReadingClubFormRef.current as HTMLInputElement).value === "" ? null : parseInt((editReadingClubFormRef.current as HTMLInputElement).value)
 
       let tokenCookie: string | null = Cookies.get().token;
       if (readingClubName.length) {
@@ -314,7 +314,7 @@ export default function ReadingClubs({server}: {server: string}) {
           readingClubId: (e.target as HTMLElement).dataset.id,
           readingClubName: readingClubName,
           readingClubDescription: readingClubDescription,
-          readingClubQuestionnaire: readingClubQuestionnaireAnswer,
+          readingClubForm: readingClubFormAnswer,
           readingClubHidden: readingClubHidden
         },
         {headers: {
@@ -405,7 +405,7 @@ export default function ReadingClubs({server}: {server: string}) {
   });
   const viewer = data?.viewer;
   const readingClubs = data?.readingClubs;
-  const questionnaires = data?.questionnaires;
+  const forms = data?.forms;
   
   if (isError) {
     return <Flex align="center" justify="center" minH="90vh">
@@ -436,18 +436,18 @@ export default function ReadingClubs({server}: {server: string}) {
                     variant="ghost"
                     size="sm"
                     leftIcon={<IoIosAdd size={25} />}
-                    onClick={openCreateQuestionnaireModal}
+                    onClick={openCreateFormModal}
                   >
-                    Create Reading Questionnaire
+                    Create Reading Form
                   </Button>
                   <Button
                     width="auto"
                     variant="ghost"
                     size="sm"
                     leftIcon={<IoIosRemove size={25} />}
-                    // onClick={openCreateQuestionnaireModal}
+                    // onClick={openCreateFormModal}
                   >
-                    Delete Reading Questionnaire
+                    Delete Reading Form
                   </Button>
                   <Button
                     width="auto"
@@ -502,8 +502,8 @@ export default function ReadingClubs({server}: {server: string}) {
                           <Heading 
                             as="h3" 
                             size="sm"
-                            data-questionnaire={JSON.stringify(readingClub.ReadingClubQuestionnaire)}
-                            onClick={e=>openFillQuestionnaireModal(e as any)}
+                            data-form={JSON.stringify(readingClub.ReadingClubForm)}
+                            onClick={e=>openFillFormModal(e as any)}
                             _hover={{
                               cursor: "pointer",
                               textDecoration: "underline"
@@ -536,7 +536,7 @@ export default function ReadingClubs({server}: {server: string}) {
                                 data-name={readingClub.name}
                                 data-description={readingClub.description}
                                 data-display={readingClub.hidden}
-                                data-questionnaire={readingClub.ReadingClubQuestionnaire ? readingClub.ReadingClubQuestionnaire.id : null}
+                                data-form={readingClub.ReadingClubForm ? readingClub.ReadingClubForm.id : null}
                                 onClick={e=>openEditReadingClubModal(e as React.FormEvent<HTMLButtonElement>)}
                                 icon={<MdEdit size={20} />}
                               >
@@ -564,12 +564,12 @@ export default function ReadingClubs({server}: {server: string}) {
 
         {viewer === "admin" ? (
           <>
-            <Modal isOpen={isOpenCreateQuestionnaireModal} onClose={closeCreateQuestionnaireModal} size="xl">
+            <Modal isOpen={isOpenCreateFormModal} onClose={closeCreateFormModal} size="xl">
               <ModalOverlay />
               <ModalContent>
                 <ModalHeader>
                   <Heading as="h3" size="lg">
-                    Create Questionnaire
+                    Create Form
                   </Heading>
                 </ModalHeader>
                 <ModalCloseButton />
@@ -579,14 +579,14 @@ export default function ReadingClubs({server}: {server: string}) {
                     <Input
                       type="text"
                       id="name"
-                      ref={createQuestionnaireNameRef}
+                      ref={createFormNameRef}
                     />
                   </Box>
 
                   <Flex direction="column" gap={3} border="1px solid grey" rounded="md" p={3}>
                     <Heading as="h4" size="sm">Preview:</Heading>
-                    {questionnaireFields.length ? (
-                      questionnaireFields.map((field,i)=>{
+                    {formFields.length ? (
+                      formFields.map((field,i)=>{
                         return (
                           <Box key={i}>
                             {field.type === "short-text" ? (
@@ -597,7 +597,7 @@ export default function ReadingClubs({server}: {server: string}) {
                                     size="xs"
                                     colorScheme="red"
                                     variant="ghost"
-                                    onClick={e=>removeQuestionnaireField(field.id)}
+                                    onClick={e=>removeFormField(field.id)}
                                   >
                                     Remove
                                   </Button>
@@ -612,7 +612,7 @@ export default function ReadingClubs({server}: {server: string}) {
                                     size="xs"
                                     colorScheme="red"
                                     variant="ghost"
-                                    onClick={e=>removeQuestionnaireField(field.id)}
+                                    onClick={e=>removeFormField(field.id)}
                                   >
                                     Remove
                                   </Button>
@@ -627,7 +627,7 @@ export default function ReadingClubs({server}: {server: string}) {
                                     size="xs"
                                     colorScheme="red"
                                     variant="ghost"
-                                    onClick={e=>removeQuestionnaireField(field.id)}
+                                    onClick={e=>removeFormField(field.id)}
                                   >
                                     Remove
                                   </Button>
@@ -644,7 +644,7 @@ export default function ReadingClubs({server}: {server: string}) {
                                     size="xs"
                                     colorScheme="red"
                                     variant="ghost"
-                                    onClick={e=>removeQuestionnaireField(field.id)}
+                                    onClick={e=>removeFormField(field.id)}
                                   >
                                     Remove
                                   </Button>
@@ -658,7 +658,7 @@ export default function ReadingClubs({server}: {server: string}) {
                                     size="xs"
                                     colorScheme="red"
                                     variant="ghost"
-                                    onClick={e=>removeQuestionnaireField(field.id)}
+                                    onClick={e=>removeFormField(field.id)}
                                   >
                                     Remove
                                   </Button>
@@ -673,7 +673,7 @@ export default function ReadingClubs({server}: {server: string}) {
                                     size="xs"
                                     colorScheme="red"
                                     variant="ghost"
-                                    onClick={e=>removeQuestionnaireField(field.id)}
+                                    onClick={e=>removeFormField(field.id)}
                                   >
                                     Remove
                                   </Button>
@@ -688,7 +688,7 @@ export default function ReadingClubs({server}: {server: string}) {
                                     size="xs"
                                     colorScheme="red"
                                     variant="ghost"
-                                    onClick={e=>removeQuestionnaireField(field.id)}
+                                    onClick={e=>removeFormField(field.id)}
                                   >
                                     Remove
                                   </Button>
@@ -726,7 +726,7 @@ export default function ReadingClubs({server}: {server: string}) {
                     </InputGroup>
                     <Checkbox ref={requiredRef as any}>Required?</Checkbox>
                     <Button
-                      onClick={addQuestionnaireField}
+                      onClick={addFormField}
                     >
                       Add
                     </Button>
@@ -735,13 +735,13 @@ export default function ReadingClubs({server}: {server: string}) {
                 <ModalFooter>
                   <HStack>
                     <Text color="red">
-                      {createQuestionnaireError}
+                      {createFormError}
                     </Text>
                     <Button 
                       variant='ghost' 
                       mr={3}
                       size="lg"
-                      onClick={e=>createQuestionnaire(e as any)}
+                      onClick={e=>createForm(e as any)}
                     >
                       Save
                     </Button>
@@ -834,12 +834,12 @@ export default function ReadingClubs({server}: {server: string}) {
                       {editReadingClubError}
                     </Text>
                     <Select 
-                      ref={editReadingClubQuestionnaireRef as any}
-                      defaultValue={defaultQuestionnaire}
+                      ref={editReadingClubFormRef as any}
+                      defaultValue={defaultForm}
                     >
                         <option value="">None</option>
-                        {questionnaires && questionnaires.length ? (
-                          questionnaires.map((q: ReadingClubQuestionnaire,i: number)=>{
+                        {forms && forms.length ? (
+                          forms.map((q: ReadingClubForm,i: number)=>{
                             return (
                               <option key={i} value={q.id}>{q.name}</option>
                             )
@@ -871,12 +871,12 @@ export default function ReadingClubs({server}: {server: string}) {
           </>
         ) : null}
 
-          <Modal isOpen={isOpenFillQuestionnaireModal} onClose={closeFillQuestionnaireModal} size="xl">
+          <Modal isOpen={isOpenFillFormModal} onClose={closeFillFormModal} size="xl">
             <ModalOverlay />
             <ModalContent>
               <ModalHeader>
                 <Heading as="h3" size="lg">
-                  {fillQuestionnaire.name}
+                  {fillForm.name}
                 </Heading>
               </ModalHeader>
               <ModalCloseButton />
@@ -890,9 +890,9 @@ export default function ReadingClubs({server}: {server: string}) {
               >
                 <ModalBody>
                   <Flex direction="column" gap={2}>
-                  {fillQuestionnaire.questionnaire_fields && 
-                    JSON.parse(fillQuestionnaire.questionnaire_fields).length ? (
-                      JSON.parse(fillQuestionnaire.questionnaire_fields).map((field: FormType,i: number)=>{
+                  {fillForm.form_fields && 
+                    JSON.parse(fillForm.form_fields).length ? (
+                      JSON.parse(fillForm.form_fields).map((field: FormType,i: number)=>{
                         return (
                           <Box key={i}>
                             {field.type === "short-text" ? (
@@ -955,18 +955,13 @@ export default function ReadingClubs({server}: {server: string}) {
                               </>
                             ) : field.type === "date" ? (
                               <>
-                                <Flex gap={2}>
-                                  <FormLabel htmlFor={field.id}>{field.label}</FormLabel>
-                                  <Button
-                                    size="xs"
-                                    colorScheme="red"
-                                    variant="ghost"
-                                    onClick={e=>removeQuestionnaireField(field.id)}
-                                  >
-                                    Remove
-                                  </Button>
-                                </Flex>
-                                <Input id={field.id} type="date"/>
+                                <FormLabel htmlFor={field.id}>{field.label}</FormLabel>
+                                <Input 
+                                  id={field.id} 
+                                  type="date"
+                                  isRequired={field.required ? true : false}
+                                  data-question={field.label}
+                                />
                               </>
                             ) : null}
                           </Box>
