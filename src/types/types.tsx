@@ -295,14 +295,14 @@ export interface ReadingClub {
   description: string,
   library: number,
   hidden: number,
-  ReadingClubQuestionnaire: ReadingClubQuestionnaire,
+  ReadingClubForm: ReadingClubForm,
   created_on: string
 }
 
-export interface ReadingClubQuestionnaire {
+export interface ReadingClubForm {
   id: number;
   name: string;
-  questionnaire_fields: string;
+  form_fields: string;
   library: number;
   created_on: string;
 }

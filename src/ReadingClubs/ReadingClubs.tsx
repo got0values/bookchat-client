@@ -8,6 +8,7 @@ import {
   Heading,
   Text,
   Spinner,
+  Divider,
   Select,
   Stack,
   HStack,
@@ -35,7 +36,7 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
-import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
+import { BiDotsHorizontalRounded, BiTrash, BiBuildings } from 'react-icons/bi';
 import { AiOutlineLineChart } from 'react-icons/ai';
 import { MdEdit } from 'react-icons/md';
 import Cookies from "js-cookie";
@@ -74,23 +75,22 @@ export default function ReadingClubs({server}: {server: string}) {
       }
   }
 
+
+
   const { 
     isOpen: isOpenCreateFormModal, 
     onOpen: onOpenCreateFormModal, 
     onClose: onCloseCreateFormModal 
   } = useDisclosure()
-
   function openCreateFormModal() {
     onOpenCreateFormModal();
   }
-
   function closeCreateFormModal() {
     setCreateFormError("");
     (labelRef.current as HTMLInputElement).value = "";
     setFormFields([]);
     onCloseCreateFormModal();
   }
-
   const createFormNameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
   const [formFields,setFormFields] = useState<FormType[]>([]);
   const [createFormError,setCreateFormError] = useState<string>("");
@@ -174,21 +174,19 @@ export default function ReadingClubs({server}: {server: string}) {
     })
   }
 
+
   const { 
     isOpen: isOpenCreateReadingClubModal, 
     onOpen: onOpenCreateReadingClubModal, 
     onClose: onCloseCreateReadingClubModal 
   } = useDisclosure()
-
   function openCreateReadingClubModal() {
     onOpenCreateReadingClubModal();
   }
-
   function closeCreateReadingClubModal() {
     setCreateReadingClubError("");
     onCloseCreateReadingClubModal();
   }
-
   const createReadingClubNameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
   const createReadingClubDescriptionRef = useRef<HTMLTextAreaElement>({} as HTMLTextAreaElement);
   const [createReadingClubError,setCreateReadingClubError] = useState<string>("");
@@ -242,12 +240,12 @@ export default function ReadingClubs({server}: {server: string}) {
     createReadingClubMutation.mutate(e);
   }
 
+
   const { 
     isOpen: isOpenEditReadingClubModal, 
     onOpen: onOpenEditReadingClubModal, 
     onClose: onCloseEditReadingClubModal 
   } = useDisclosure()
-
   const [editId,setEditId] = useState("");
   const [editName,setEditName] = useState("");
   const [editDescription,setEditDescription] = useState("");
@@ -262,7 +260,6 @@ export default function ReadingClubs({server}: {server: string}) {
     setDefaultForm((e.target as HTMLElement).dataset.form!)
     onOpenEditReadingClubModal();
   }
-
   function closeEditReadingClubModal() {
     setEditId("")
     setEditName("")
@@ -274,12 +271,12 @@ export default function ReadingClubs({server}: {server: string}) {
     onCloseEditReadingClubModal();
   }
 
+
   const { 
     isOpen: isOpenFillFormModal, 
     onOpen: onOpenFillFormModal, 
     onClose: onCloseFillFormModal 
   } = useDisclosure()
-
   const [fillForm,setFillForm] = useState({} as ReadingClubForm)
   function openFillFormModal(e: HTMLFormElement) {
     if ((e.target as any).dataset.form !== "null") {
@@ -287,10 +284,62 @@ export default function ReadingClubs({server}: {server: string}) {
       onOpenFillFormModal();
     }
   }
-
   function closeFillFormModal() {
     setFillForm({} as ReadingClubForm)
     onCloseFillFormModal();
+  }
+
+
+  const { 
+    isOpen: isOpenDeleteFormModal, 
+    onOpen: onOpenDeleteFormModal, 
+    onClose: onCloseDeleteFormModal 
+  } = useDisclosure()
+  const deleteFormRef = useRef<HTMLSelectElement>({} as HTMLSelectElement);
+  function openDeleteFormModal() {
+    onOpenDeleteFormModal();
+  }
+  function closeDeleteFormModal() {
+    (deleteFormRef.current as any).value = "";
+    onCloseDeleteFormModal();
+  }
+  const deleteFormMutation = useMutation({
+    mutationFn: async ()=>{
+      const deleteFormRefCurrent = deleteFormRef.current;
+      let tokenCookie: string | null = Cookies.get().token;
+      await axios
+      .delete(server + "/api/deletereadingclubform",
+        {
+          headers: {
+          'authorization': tokenCookie
+          },
+          data: {
+            formId: parseInt((deleteFormRefCurrent as any).value)
+          }
+        })
+        .then((response)=>{
+          if (response.data.success){
+            toast({
+              description: "Reading club form deleted!",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+          }
+        })
+        .catch(({response})=>{
+          console.log(response)
+        })
+      return getReadingClubs()
+    },
+    onSuccess: (data)=>{
+      queryClient.invalidateQueries({ queryKey: ['readingClubsKey'] })
+      queryClient.resetQueries({queryKey: ['readingClubsKey']})
+      queryClient.setQueryData(["readingClubsKey"],data)
+    }
+  })
+  async function deleteForm() {
+    deleteFormMutation.mutate();
   }
 
   const editReadingClubNameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
@@ -445,10 +494,20 @@ export default function ReadingClubs({server}: {server: string}) {
                     variant="ghost"
                     size="sm"
                     leftIcon={<IoIosRemove size={25} />}
-                    // onClick={openCreateFormModal}
+                    onClick={e=>openDeleteFormModal()}
                   >
                     Delete Reading Form
                   </Button>
+                  <Button
+                    width="auto"
+                    variant="ghost"
+                    size="sm"
+                    leftIcon={<BiBuildings size={25} />}
+                    // onClick={openSchoolsModal}
+                  >
+                    Schools
+                  </Button>
+                  <Divider/>
                   <Button
                     width="auto"
                     variant="ghost"
@@ -458,6 +517,7 @@ export default function ReadingClubs({server}: {server: string}) {
                   >
                     Create Reading Club
                   </Button>
+                  <Divider/>
                   <Button
                     width="auto"
                     variant="ghost"
@@ -867,6 +927,42 @@ export default function ReadingClubs({server}: {server: string}) {
                 </ModalFooter>
               </form>
             </ModalContent>
+            </Modal>
+
+            <Modal isOpen={isOpenDeleteFormModal} onClose={closeDeleteFormModal} size="xl">
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>
+                  <Heading as="h3" size="lg">
+                    Delete Reading Form
+                  </Heading>
+                </ModalHeader>
+                <ModalCloseButton />
+                  <ModalBody>
+                    <Flex direction="column" gap={2}>
+                      <Flex gap={2}>
+                        <Select
+                          ref={deleteFormRef}
+                        >
+                          {forms.length ? forms.map((form: ReadingClubForm,i: number)=>{
+                            return (
+                              <option key={i} value={form.id}>{form.name}</option>
+                            )
+                          }) : null}
+                        </Select>
+                        <Button
+                          colorScheme="red"
+                          onClick={deleteForm}
+                        >
+                          Delete
+                        </Button>
+                      </Flex>
+                    </Flex>
+                  </ModalBody>
+                  <ModalFooter>
+
+                  </ModalFooter>
+              </ModalContent>
             </Modal>
           </>
         ) : null}
