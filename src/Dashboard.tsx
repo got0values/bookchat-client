@@ -226,7 +226,7 @@ export default function Dashboard({server}: DashboardProps) {
                     key={i}
                   >
                     <Flex
-                      align="center"
+                      align="flex-start"
                       justify="space-between"
                       mb={3}
                     >
@@ -239,12 +239,14 @@ export default function Dashboard({server}: DashboardProps) {
                           border="2px solid gray"
                           title={`@${reading.Profile.username}`}
                         />
-                        <Text fontWeight="bold">
-                          {reading.Profile.User.first_name + " " + reading.Profile.User.last_name}
-                        </Text>
-                        <Text>
-                          {dayjs(reading.created_on).local().format('MMM DD, hh:mm a')}
-                        </Text>
+                        <Flex direction="column">
+                          <Text fontWeight="bold">
+                            {reading.Profile.User.first_name + " " + reading.Profile.User.last_name}
+                          </Text>
+                          <Text fontStyle="italic">
+                            {dayjs(reading.created_on).local().format('MMM DD, hh:mm a')}
+                          </Text>
+                        </Flex>
                       </HStack>
                       <Box>
                         <Menu>

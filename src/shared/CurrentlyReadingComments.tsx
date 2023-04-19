@@ -46,7 +46,7 @@ const Comments: Function = ({comments}: {comments: CurrentlyReadingComment[]}) =
             <Box pe={2}>
               <Avatar
                 onClick={e=>navigate(`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile}`)} 
-                size="md"
+                size="sm"
                 cursor="pointer"
                 src={comment.Profile_CurrentlyReadingComment_commenter_idToProfile.profile_photo}
                 border="1px solid gray"
@@ -54,16 +54,18 @@ const Comments: Function = ({comments}: {comments: CurrentlyReadingComment[]}) =
             </Box>
             <Box w="100%">
               <Flex justify="space-between">
-                <HStack>
+                <Flex flexWrap="wrap" columnGap={2}>
                   <Text 
                     as={Link}
                     fontWeight="bold"
                     to={`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}`}
                   >
-                    @{comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}
+                    {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.User?.first_name + " " + comment.Profile_CurrentlyReadingComment_commenter_idToProfile.User?.last_name}
                   </Text>
-                  <Text>{dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}</Text>
-                </HStack>
+                  <Text fontStyle="italic">
+                    {dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}
+                  </Text>
+                </Flex>
                 {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.id === user.Profile.id ? (
                   <Menu>
                     <MenuButton

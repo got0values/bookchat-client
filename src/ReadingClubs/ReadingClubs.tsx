@@ -711,7 +711,10 @@ export default function ReadingClubs({server}: {server: string}) {
                   <Heading as="h3" size="md" mb={2}>
                     Entries
                   </Heading>
-                  <Stack flexWrap="wrap">
+                  <Stack 
+                    maxHeight="200px"
+                    overflowY="auto"
+                  >
                     {userEntries?.length ? (
                       userEntries.map((entry: UserEntry, i: number)=>{
                         return (
