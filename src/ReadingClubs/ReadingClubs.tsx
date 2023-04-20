@@ -614,14 +614,22 @@ export default function ReadingClubs({server}: {server: string}) {
   } = useDisclosure()
   const [userEntryFormData,setUserEntryFormData] = useState(null);
   const [userEntryFormDataId,setUserEntryFormDataId] = useState<string | null>(null);
+  const [userEntryFormName,setUserEntryFormName] = useState<string | null>(null);
+  const [userEntryDate,setUserEntryDate] = useState<string | null>(null);
   function openUserEditEntryModal(e: React.FormEvent<HTMLElement>) {
-    setUserEntryFormData(JSON.parse((e.target as HTMLElement).dataset.entryformdata!))
-    setUserEntryFormDataId((e.target as HTMLElement).dataset.entryid!)
-    onOpenUserEditEntryModal();
+    if ((e.target as HTMLElement).dataset.entryformdata) {
+      setUserEntryFormData(JSON.parse((e.target as HTMLElement).dataset.entryformdata!))
+      setUserEntryFormDataId((e.target as HTMLElement).dataset.entryid!)
+      setUserEntryFormName((e.target as HTMLElement).dataset.entryformname!)
+      setUserEntryDate((e.target as HTMLElement).dataset.entrydate!)
+      onOpenUserEditEntryModal();
+    }
   }
   function closeUserEditEntryModal() {
     setUserEntryFormData(null)
     setUserEntryFormDataId(null)
+    setUserEntryFormName(null)
+    setUserEntryDate(null)
     onCloseUserEditEntryModal();
   }
 
@@ -666,6 +674,60 @@ export default function ReadingClubs({server}: {server: string}) {
   })
   async function deleteUserEntry(e: React.FormEvent<HTMLFormElement>) {
     deleteUserEntryMutation.mutate(e);
+  }
+
+  const updateReadingClubEntryMutation = useMutation({
+    mutationFn: async (e: React.FormEvent<HTMLFormElement>)=>{
+      e.preventDefault();
+      const userEntryId = (e.target as HTMLFormElement).dataset.userentryid!;
+      let entryData: EntryData[] = []
+      const entryFields: EventTarget[] = Array.from(e.target as HTMLFormElement);
+      entryFields.forEach((field: any,i: number)=>{
+        entryData.push({
+          id: field.id,
+          type: field.dataset.fieldtype,
+          question: field.dataset.question,
+          answer: field.value,
+          required: field.required,
+          sequence: i
+        })
+      })
+      let tokenCookie: string | null = Cookies.get().token;
+      await axios
+        .put(server + "/api/updatereadingclubentry", 
+        {
+          entryData: JSON.stringify(entryData),
+          userEntryId: parseInt(userEntryId)
+        },
+        {headers: {
+          'authorization': tokenCookie
+        }}
+        )
+        .then((response)=>{
+          if (response.data.success){
+            toast({
+              description: "Form updated!",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+            closeUserEditEntryModal();
+          }
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data.message)
+        })
+      return getReadingClubs()
+    },
+    onSuccess: (data)=>{
+      queryClient.invalidateQueries({ queryKey: ['readingClubsKey'] })
+      queryClient.resetQueries({queryKey: ['readingClubsKey']})
+      queryClient.setQueryData(["readingClubsKey"],data)
+    }
+  })
+  async function updateReadingClubEntry(e: React.FormEvent<HTMLFormElement>) {
+    updateReadingClubEntryMutation.mutate(e);
   }
 
  
@@ -757,27 +819,33 @@ export default function ReadingClubs({server}: {server: string}) {
 
               <Box className="well" height="fit-content">
                 <Heading as="h3" size="md" mb={2}>
-                  Entries
+                  My Entries
                 </Heading>
                 <Stack 
                   maxHeight="200px"
                   overflowY="auto"
                 >
                   {userEntries?.length ? (
-                    userEntries.map((entry: UserEntry, i: number)=>{
-                      return (
-                        <Link 
-                          key={i}
-                          href="#"
-                          data-entryformdata={entry.entry_data}
-                          data-entryid={entry.id}
-                          fontSize="sm"
-                          onClick={e=>openUserEditEntryModal(e)}
-                        >
-                          {entry.form_name} <Text fontStyle="italic">{dayjs(entry.created_on).local().format('MMM DD, hh:mm a')}</Text>
-                        </Link>
-                      )
-                    })
+                    userEntries
+                      .sort((a: UserEntry,b: UserEntry)=>{
+                        return (new Date(a.created_on) as any) - (new Date(b.created_on) as any);
+                      })
+                      .map((entry: UserEntry, i: number)=>{
+                        return (
+                          <Link 
+                            key={i}
+                            href="#"
+                            data-entryformname={entry.form_name}
+                            data-entrydate={entry.created_on}
+                            data-entryformdata={entry.entry_data}
+                            data-entryid={entry.id}
+                            fontSize="sm"
+                            onClick={e=>openUserEditEntryModal(e)}
+                          >
+                            {entry.form_name} <Text fontStyle="italic">{dayjs(entry.created_on).local().format('MMM DD, hh:mm a')}</Text>
+                          </Link>
+                        )
+                      })
                   ) : (
                     <Text fontStyle="italic">No entries yet</Text>
                   )}
@@ -1464,15 +1532,23 @@ export default function ReadingClubs({server}: {server: string}) {
             <ModalContent>
               <ModalHeader>
                 <Heading as="h3" size="lg">
-                  Form
+                  Edit Form Entry
                 </Heading>
               </ModalHeader>
               <ModalCloseButton />
               <form
-                // data-readingclubid={formReadingClubId}
-                // onSubmit={e=>{submitReadingClubEntry(e)}}
+                data-userentryid={userEntryFormDataId}
+                onSubmit={e=>{updateReadingClubEntry(e)}}
               >
                 <ModalBody>
+                  <Flex gap={2} align="center" flexWrap="wrap" mb={3} rowGap={1}>
+                    <Heading as="h2" size="md">
+                      {userEntryFormName}
+                    </Heading>
+                    <Text fontStyle="italic">
+                      {dayjs(userEntryDate).local().format('MMM DD, hh:mm a')}
+                    </Text>
+                  </Flex>
                   <Flex direction="column" gap={2}>
                   {userEntryFormData && (userEntryFormData as EntryData[]).length ? (
                     (userEntryFormData as EntryData[]).map((field: EntryData,i: number)=>{
@@ -1486,6 +1562,8 @@ export default function ReadingClubs({server}: {server: string}) {
                                 type="text" 
                                 isRequired={field.required === "true" ? true : false}
                                 defaultValue={field.answer}
+                                data-question={field.question}
+                                data-fieldtype={field.type}
                               />
                             </>
                           ) : field.type === "long-text" ? (
@@ -1495,6 +1573,8 @@ export default function ReadingClubs({server}: {server: string}) {
                                 id={field.id} 
                                 isRequired={field.required === "true" ? true : false}
                                 defaultValue={field.answer}
+                                data-question={field.question}
+                                data-fieldtype={field.type}
                               ></Textarea>
                             </>
                           ) : field.type === "number" ? (
@@ -1505,6 +1585,8 @@ export default function ReadingClubs({server}: {server: string}) {
                                 type="number" 
                                 isRequired={field.required === "true" ? true : false}
                                 defaultValue={field.answer}
+                                data-question={field.question}
+                                data-fieldtype={field.type}
                               />
                             </>
                           ) : field.type === "checkbox" ? (
@@ -1512,6 +1594,8 @@ export default function ReadingClubs({server}: {server: string}) {
                               <Checkbox 
                                 id={field.id}
                                 defaultChecked={Boolean(field.answer)}
+                                data-question={field.question}
+                                data-fieldtype={field.type}
                               >
                                 {field.question}
                               </Checkbox>
@@ -1524,6 +1608,8 @@ export default function ReadingClubs({server}: {server: string}) {
                                 type="tel" 
                                 isRequired={field.required === "true" ? true : false}
                                 defaultValue={field.answer}
+                                data-question={field.question}
+                                data-fieldtype={field.type}
                               />
                             </>
                           ) : field.type === "email" ? (
@@ -1534,6 +1620,8 @@ export default function ReadingClubs({server}: {server: string}) {
                                 type="email" 
                                 isRequired={field.required === "true" ? true : false}
                                 defaultValue={field.answer}
+                                data-question={field.question}
+                                data-fieldtype={field.type}
                               />
                             </>
                           ) : field.type === "date" ? (
@@ -1544,6 +1632,8 @@ export default function ReadingClubs({server}: {server: string}) {
                                 type="date"
                                 isRequired={field.required === "true" ? true : false}
                                 defaultValue={field.answer}
+                                data-question={field.question}
+                                data-fieldtype={field.type}
                               />
                             </>
                           ) : field.type === "school" ? (
@@ -1557,6 +1647,8 @@ export default function ReadingClubs({server}: {server: string}) {
                                 id={field.id}
                                 isRequired={field.required === "true" ? true : false}
                                 defaultValue={field.answer}
+                                data-question={field.question}
+                                data-fieldtype={field.type}
                               >
                                 {schools?.length ? (
                                   schools.map((school: School,i: number)=>{
