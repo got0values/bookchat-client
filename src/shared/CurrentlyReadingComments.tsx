@@ -66,7 +66,7 @@ const Comments: Function = ({comments}: {comments: CurrentlyReadingComment[]}) =
                     {dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}
                   </Text>
                 </Flex>
-                {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.id === user.Profile.id ? (
+                {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.id === user?.Profile.id ? (
                   <Menu>
                     <MenuButton
                       as={Button}

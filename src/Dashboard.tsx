@@ -268,7 +268,7 @@ export default function Dashboard({server}: DashboardProps) {
                             >
                               Comment
                             </MenuItem>
-                            {reading.Profile.id === user.Profile.id ? (
+                            {reading.Profile.id === user?.Profile.id ? (
                               <MenuItem
                                 color="tomato"
                                 onClick={e=>deleteReading(reading.id)}
@@ -357,7 +357,7 @@ export default function Dashboard({server}: DashboardProps) {
               <Button
                 colorScheme="green"
                 data-profileid={commentBookData?.Profile?.id}
-                data-libraryid={user.Library.id}
+                data-libraryid={user?.Library.id}
                 data-currentlyreadingid={commentBookData?.id}
                 ref={commentCurrentlyReadingButton}
                 onClick={e=>commentCurrentlyReading(e)}

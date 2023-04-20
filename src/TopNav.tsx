@@ -112,7 +112,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
         }
 
       //check if any follow requests
-      if (user.Profile.Following_Following_following_profile_idToProfile?.length) {
+      if (user?.Profile.Following_Following_following_profile_idToProfile?.length) {
         let followers = user.Profile.Following_Following_following_profile_idToProfile;
         for (let i = 0; i < followers.length; i++) {
           if(followers[i].status === "requesting") {
@@ -123,7 +123,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
           }
         }
       }
-      if (user.Profile.BookClubMembers_BookClubMembers_book_club_creatorToProfile?.length) {
+      if (user?.Profile.BookClubMembers_BookClubMembers_book_club_creatorToProfile?.length) {
         let bookClubMembers = user.Profile.BookClubMembers_BookClubMembers_book_club_creatorToProfile;
         for (let i = 0; i < bookClubMembers.length; i++) {
           if(bookClubMembers[i].status === 1) {
@@ -152,8 +152,8 @@ export default function TopNav({server,onLogout}: TopNavProps) {
 
   const [profilePhoto,setProfilePhoto] = useState<string | null>(null);
   useLayoutEffect(()=>{
-    setProfilePhoto(`${user.Profile.profile_photo}?x=${new Date().getTime()}`);
-  },[user.Profile])
+    setProfilePhoto(`${user?.Profile.profile_photo}?x=${new Date().getTime()}`);
+  },[user?.Profile])
 
   //User edit modals
   const { 
@@ -513,7 +513,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
             ))}
           </HStack>
           <Flex alignItems={'center'} justify="space-between" gap={3}>
-            {user.Library ? (
+            {user?.Library ? (
               <Heading 
                 as="h6" 
                 size="xs"
@@ -571,7 +571,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                   fontSize="lg"
                   fontWeight="600"
                 >
-                  {`${user.first_name} ${user.last_name}`}
+                  {`${user?.first_name} ${user?.last_name}`}
                 </MenuItem>
                 <MenuDivider/>
                 <MenuItem
