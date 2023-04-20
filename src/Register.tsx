@@ -17,6 +17,7 @@ import {
   useToast
 } from "@chakra-ui/react";
 import {FaRegQuestionCircle} from 'react-icons/fa';
+import { ImInfo } from 'react-icons/im';
 import logo from './assets/community-book-club-logo3.png';
 import logoWhite from './assets/community-book-club-logo3-white.png';
 import { getLibraryFromSubdomain } from './utils/getLibraryFromSubdomain';
@@ -191,17 +192,22 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                 />
               </FormControl>
               <FormControl mb={4}>
-                <Tooltip label="Passwords requirements: Minimum length of 8, maximum length of 100, minimum of 1 uppercase letter, must have lowercase letters, minimum of 2 digits, minimum of 1 symbol, should not have spaces" hasArrow>
-                  <Input
-                    type="password"
-                    placeholder="Password*"
-                    value={password}
-                    onChange={(e) => checkPassword(e.target.value)}
-                    size="lg"
-                    minLength={8}
-                    required
-                  />
-                </Tooltip>
+                  <Flex gap={2}>
+                    <Input
+                      type="password"
+                      placeholder="Password*"
+                      value={password}
+                      onChange={(e) => checkPassword(e.target.value)}
+                      size="lg"
+                      minLength={8}
+                      required
+                    />
+                    <Tooltip label="Passwords requirements: Minimum length of 8, maximum length of 100, minimum of 1 uppercase letter, must have lowercase letters, minimum of 2 digits, minimum of 1 symbol, should not have spaces" hasArrow>
+                      <Flex align="center" justify="center">
+                        <ImInfo size={25} color="gray" />
+                      </Flex>
+                    </Tooltip>
+                  </Flex>
                 <Text color="red" mt={2} mb={4}>
                   {passwordError}
                 </Text>
