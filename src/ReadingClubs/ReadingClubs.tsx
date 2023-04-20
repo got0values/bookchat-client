@@ -190,19 +190,22 @@ export default function ReadingClubs({server}: {server: string}) {
   }
   const createReadingClubNameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
   const createReadingClubDescriptionRef = useRef<HTMLTextAreaElement>({} as HTMLTextAreaElement);
+  const createReadingClubFormRef = useRef<HTMLInputElement>(null);
   const [createReadingClubError,setCreateReadingClubError] = useState<string>("");
   const createReadingClubMutation = useMutation({
     mutationFn: async (e: React.FormEvent<HTMLFormElement>)=>{
       e.preventDefault();
       const readingClubName = createReadingClubNameRef.current.value;
       const readingClubDescription = createReadingClubDescriptionRef.current.value;
+      const readingClubFormAnswer = (createReadingClubFormRef.current as HTMLInputElement).value === "" ? null : parseInt((createReadingClubFormRef.current as HTMLInputElement).value)
       let tokenCookie: string | null = Cookies.get().token;
       if (readingClubName.length) {
         await axios
         .post(server + "/api/createreadingclub", 
         {
           readingClubName: readingClubName,
-          readingClubDescription: readingClubDescription
+          readingClubDescription: readingClubDescription,
+          readingClubForm: readingClubFormAnswer
         },
         {headers: {
           'authorization': tokenCookie
@@ -773,7 +776,7 @@ export default function ReadingClubs({server}: {server: string}) {
                       leftIcon={<IoIosAdd size={25} />}
                       onClick={openCreateFormModal}
                     >
-                      Create Reading Form
+                      Create a form
                     </Button>
                     <Button
                       width="auto"
@@ -782,8 +785,9 @@ export default function ReadingClubs({server}: {server: string}) {
                       leftIcon={<IoIosRemove size={25} />}
                       onClick={e=>openDeleteFormModal()}
                     >
-                      Delete Reading Form
+                      Delete a form
                     </Button>
+                    <Divider/>
                     <Button
                       width="auto"
                       variant="ghost"
@@ -798,21 +802,22 @@ export default function ReadingClubs({server}: {server: string}) {
                       width="auto"
                       variant="ghost"
                       size="sm"
-                      leftIcon={<IoIosAdd size={25} />}
-                      onClick={openCreateReadingClubModal}
-                    >
-                      Create Reading Club
-                    </Button>
-                    <Divider/>
-                    <Button
-                      width="auto"
-                      variant="ghost"
-                      size="sm"
                       leftIcon={<AiOutlineLineChart size={25} />}
                       // onClick={openCreateReadingClubModal}
                     >
-                      View Entries
+                      View entries
                     </Button>
+                    <Divider/>
+                    <Flex justify="center" w="100%">
+                      <Button
+                        width="auto"
+                        size="sm"
+                        colorScheme="green"
+                        onClick={openCreateReadingClubModal}
+                      >
+                        Create Reading Club
+                      </Button>
+                    </Flex>
                   </Stack>
                 </Box>
               ) : null}
@@ -1136,11 +1141,13 @@ export default function ReadingClubs({server}: {server: string}) {
                         <option value="school">School Selection</option>
                       </Select>
                     </InputGroup>
-                    <Checkbox ref={requiredRef as any}>Required?</Checkbox>
+                    <Flex justify="center" w="100%">
+                      <Checkbox ref={requiredRef as any}>Required?</Checkbox>
+                    </Flex>
                     <Button
                       onClick={addFormField}
                     >
-                      Add
+                      Add Field
                     </Button>
                   </Flex>
                 </ModalBody>
@@ -1150,9 +1157,9 @@ export default function ReadingClubs({server}: {server: string}) {
                       {createFormError}
                     </Text>
                     <Button 
-                      variant='ghost' 
                       mr={3}
                       size="lg"
+                      colorScheme="green"
                       onClick={e=>createForm(e as any)}
                     >
                       Save
@@ -1173,22 +1180,40 @@ export default function ReadingClubs({server}: {server: string}) {
                 <ModalCloseButton />
                 <form onSubmit={e=>createReadingClub(e as React.FormEvent<HTMLFormElement>)}>
                   <ModalBody>
-                    <Box mb={2}>
-                      <FormLabel htmlFor="name" mb={1}>Name</FormLabel>
-                      <Input
-                        type="text"
-                        id="name"
-                        ref={createReadingClubNameRef}
-                        required
-                      />
-                    </Box>
-                    <Box>
-                      <FormLabel htmlFor="description" mb={1}>Description</FormLabel>
-                      <Textarea
-                        id="description"
-                        ref={createReadingClubDescriptionRef}
-                      ></Textarea>
-                    </Box>
+                    <Flex direction="column" gap={2}>
+                      <Box>
+                        <FormLabel htmlFor="name" mb={1}>Name</FormLabel>
+                        <Input
+                          type="text"
+                          id="name"
+                          ref={createReadingClubNameRef}
+                          required
+                        />
+                      </Box>
+                      <Box>
+                        <FormLabel htmlFor="description" mb={1}>Description</FormLabel>
+                        <Textarea
+                          id="description"
+                          ref={createReadingClubDescriptionRef}
+                        ></Textarea>
+                      </Box>
+                      <Box>
+                        <FormLabel htmlFor="form" mb={1}>Form</FormLabel>
+                        <Select 
+                          ref={createReadingClubFormRef as any}
+                          defaultValue={defaultForm}
+                        >
+                          <option value="">None</option>
+                          {forms && forms.length ? (
+                            forms.map((q: ReadingClubForm,i: number)=>{
+                              return (
+                                <option key={i} value={q.id}>{q.name}</option>
+                              )
+                            })
+                          ) : null}
+                        </Select>
+                      </Box>
+                    </Flex>
                   </ModalBody>
                   <ModalFooter>
                     <HStack>
