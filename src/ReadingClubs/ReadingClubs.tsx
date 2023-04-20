@@ -32,6 +32,7 @@ import {
   ModalCloseButton,
   Checkbox,
   useToast,
+  Link,
   useDisclosure
 } from "@chakra-ui/react";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
@@ -403,6 +404,7 @@ export default function ReadingClubs({server}: {server: string}) {
     mutationFn: async (e: React.FormEvent<HTMLFormElement>)=>{
       e.preventDefault();
       const readingClubId = (e.target as HTMLFormElement).dataset.readingclubid;
+      const formName = (e.target as HTMLFormElement).dataset.formname;
       let entryData: EntryData[] = []
       const entryFields: EventTarget[] = Array.from(e.target as HTMLFormElement);
       console.log(entryFields)
@@ -421,7 +423,8 @@ export default function ReadingClubs({server}: {server: string}) {
         .post(server + "/api/submitreadingclubentry", 
         {
           entryData: JSON.stringify(entryData),
-          readingClubId: parseInt(readingClubId!)
+          readingClubId: parseInt(readingClubId!),
+          formName: formName
         },
         {headers: {
           'authorization': tokenCookie
@@ -706,36 +709,33 @@ export default function ReadingClubs({server}: {server: string}) {
                 </Box>
               ) : null}
 
-              {viewer === "admin" || viewer || "user" ? (
-                <Box className="well" height="fit-content">
-                  <Heading as="h3" size="md" mb={2}>
-                    Entries
-                  </Heading>
-                  <Stack 
-                    maxHeight="200px"
-                    overflowY="auto"
-                  >
-                    {userEntries?.length ? (
-                      userEntries.map((entry: UserEntry, i: number)=>{
-                        return (
-                          <Text 
-                            key={i}
-                            _hover={{
-                              cursor: "pointer"
-                            }}
-                            data-form={entry.entry_data}
-                            onClick={e=>openUserEditEntryModal(e)}
-                          >
-                            {dayjs(entry.created_on).local().format('MMM DD, hh:mm a')}
-                          </Text>
-                        )
-                      })
-                    ) : (
-                      <Text fontStyle="italic">No entries yet</Text>
-                    )}
-                  </Stack>
-                </Box>
-              ) : null}
+              <Box className="well" height="fit-content">
+                <Heading as="h3" size="md" mb={2}>
+                  Entries
+                </Heading>
+                <Stack 
+                  maxHeight="200px"
+                  overflowY="auto"
+                >
+                  {userEntries?.length ? (
+                    userEntries.map((entry: UserEntry, i: number)=>{
+                      return (
+                        <Link 
+                          key={i}
+                          href="#"
+                          data-form={entry.entry_data}
+                          fontSize="sm"
+                          onClick={e=>openUserEditEntryModal(e)}
+                        >
+                          {entry.form_name} <Text fontStyle="italic">{dayjs(entry.created_on).local().format('MMM DD, hh:mm a')}</Text>
+                        </Link>
+                      )
+                    })
+                  ) : (
+                    <Text fontStyle="italic">No entries yet</Text>
+                  )}
+                </Stack>
+              </Box>
             </Box>
             <Box className="well" flex="1 1 65%">
               <Heading as="h3" size="md" mb={3}>
@@ -1273,6 +1273,7 @@ export default function ReadingClubs({server}: {server: string}) {
               <ModalCloseButton />
               <form
                 data-readingclubid={formReadingClubId}
+                data-formname={fillForm.name}
                 onSubmit={e=>{submitReadingClubEntry(e)}}
               >
                 <ModalBody>
@@ -1416,7 +1417,6 @@ export default function ReadingClubs({server}: {server: string}) {
             <ModalContent>
               <ModalHeader>
                 <Heading as="h3" size="lg">
-                  {/* {fillForm.name} */}
                   Form
                 </Heading>
               </ModalHeader>
