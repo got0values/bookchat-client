@@ -612,14 +612,60 @@ export default function ReadingClubs({server}: {server: string}) {
     onOpen: onOpenUserEditEntryModal, 
     onClose: onCloseUserEditEntryModal 
   } = useDisclosure()
-  const [userEntryForm,setUserEntryForm] = useState(null);
+  const [userEntryFormData,setUserEntryFormData] = useState(null);
+  const [userEntryFormDataId,setUserEntryFormDataId] = useState<string | null>(null);
   function openUserEditEntryModal(e: React.FormEvent<HTMLElement>) {
-    setUserEntryForm(JSON.parse((e.target as HTMLElement).dataset.form!))
+    setUserEntryFormData(JSON.parse((e.target as HTMLElement).dataset.entryformdata!))
+    setUserEntryFormDataId((e.target as HTMLElement).dataset.entryid!)
     onOpenUserEditEntryModal();
   }
   function closeUserEditEntryModal() {
-    setUserEntryForm(null)
+    setUserEntryFormData(null)
+    setUserEntryFormDataId(null)
     onCloseUserEditEntryModal();
+  }
+
+
+  const deleteUserEntryMutation = useMutation({
+    mutationFn: async (e: React.FormEvent<HTMLFormElement>)=>{
+      e.preventDefault();
+      const userEntryId = (e.target as HTMLFormElement).dataset.userentryid!;
+      let tokenCookie: string | null = Cookies.get().token;
+      await axios
+        .delete(server + "/api/deletereadingclubentry", 
+        {
+          headers: {
+          'authorization': tokenCookie
+          },
+          data: {
+            userEntryId: parseInt(userEntryId)
+          }
+        })
+        .then((response)=>{
+          if (response.data.success){
+            toast({
+              description: "Entry removed",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+            closeUserEditEntryModal();
+          }
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data.message)
+        })
+      return getReadingClubs()
+    },
+    onSuccess: (data)=>{
+      queryClient.invalidateQueries({ queryKey: ['readingClubsKey'] })
+      queryClient.resetQueries({queryKey: ['readingClubsKey']})
+      queryClient.setQueryData(["readingClubsKey"],data)
+    }
+  })
+  async function deleteUserEntry(e: React.FormEvent<HTMLFormElement>) {
+    deleteUserEntryMutation.mutate(e);
   }
 
  
@@ -645,7 +691,7 @@ export default function ReadingClubs({server}: {server: string}) {
         isLoaded={!isLoading}
       >
           <Flex flexWrap="wrap">
-            <Box flex="1 1 30%">
+            <Box flex="1 1 30%" minW="250px">
               {viewer === "admin" ? (
                 <Box className="well" height="fit-content">
                   <Stack
@@ -723,7 +769,8 @@ export default function ReadingClubs({server}: {server: string}) {
                         <Link 
                           key={i}
                           href="#"
-                          data-form={entry.entry_data}
+                          data-entryformdata={entry.entry_data}
+                          data-entryid={entry.id}
                           fontSize="sm"
                           onClick={e=>openUserEditEntryModal(e)}
                         >
@@ -1427,8 +1474,8 @@ export default function ReadingClubs({server}: {server: string}) {
               >
                 <ModalBody>
                   <Flex direction="column" gap={2}>
-                  {userEntryForm && (userEntryForm as EntryData[]).length ? (
-                    (userEntryForm as EntryData[]).map((field: EntryData,i: number)=>{
+                  {userEntryFormData && (userEntryFormData as EntryData[]).length ? (
+                    (userEntryFormData as EntryData[]).map((field: EntryData,i: number)=>{
                       return (
                         <Box key={i}>
                           {field.type === "short-text" ? (
@@ -1533,12 +1580,19 @@ export default function ReadingClubs({server}: {server: string}) {
                   </Flex>
                 </ModalBody>
                 <ModalFooter>
-                  <Flex width="100%" justify="flex-end">
+                  <Flex width="100%" justify="space-between">
                     {/* {submitReadingClubEntryMutation.isError && (
                       <Text color="red">
                         {(submitReadingClubEntryMutation.error as Error).message}
                       </Text>
                     )} */}
+                    <Button
+                      data-userentryid={userEntryFormDataId}
+                      onClick={e=>deleteUserEntry(e as any)}
+                      colorScheme="red"
+                    >
+                      Delete
+                    </Button>
                     <Button  
                       mr={3}
                       type="submit"
