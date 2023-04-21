@@ -71,6 +71,8 @@ export default function TopNav({server,onLogout}: TopNavProps) {
   const toast = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const activeLinkBg = useColorModeValue("gray.200","gray.500");
+  const activeLinkColor = useColorModeValue("black","white");
 
   async function getNotifications() {
     // resetNotifications();
@@ -493,15 +495,15 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                 fontWeight="600"
                 whiteSpace="nowrap"
                 _hover={{
-                  bg: useColorModeValue("gray.200","gray.500"),
-                  color: useColorModeValue("black","white")
+                  bg: activeLinkBg,
+                  color: activeLinkColor
                 }}
                 // style={({isActive}: {isActive: boolean})=>({
                 //   backgroundColor: isActive ? "#E2E8F0" : ""
                 // })}
                 sx={{
-                  bg: window.location.pathname === linkItem.linkTo ? useColorModeValue("gray.200","gray.500") : "",
-                  color: window.location.pathname === linkItem.linkTo ? useColorModeValue("black","white") : ""
+                  bg: window.location.pathname === linkItem.linkTo ? activeLinkBg : "",
+                  color: window.location.pathname === linkItem.linkTo ? activeLinkColor : ""
                 }}
               >
                 <Flex align="center" gap={2}>

@@ -143,6 +143,9 @@ export default function BookClub({server}: {server: string}) {
               pollVotesBookThree
             }
           }
+          else {
+            throw new Error("Error: BCFE200")
+          }
         })
         .catch(({response})=>{
           console.log(response)
