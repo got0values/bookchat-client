@@ -79,7 +79,8 @@ export default function TopNav({server,onLogout}: TopNavProps) {
     let userNotifications: UserNotificationsType = {
       followRequests: [],
       bookClubRequests: [],
-      comments: []
+      comments: [],
+      replies: []
     }
     let totalNotifications = 0;
     try {
@@ -93,6 +94,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
           }
         )
         .then((response)=>{
+          console.log(response.data.message)
           return response.data.message;
         })
         .catch((response)=>{
@@ -108,9 +110,20 @@ export default function TopNav({server,onLogout}: TopNavProps) {
              }
           )
         })
+        let replyData = otherNotifications?.filter((on: OtherNotificationsType)=>on.type === 2);
+        replyData = replyData.map((reply: any)=>{
+          return (
+            {
+              ...reply,
+              from_data: JSON.parse(reply.from_data),
+              subject: JSON.parse(reply.subject)
+            }
+          )
+        })
         userNotifications = {
           ...userNotifications, 
-          comments: [...userNotifications.comments as any[], ...commentData] 
+          comments: [...userNotifications.comments as any[], ...commentData],
+          replies: [...userNotifications.replies as any[], ...replyData]
         }
 
       //check if any follow requests
@@ -136,7 +149,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
           }
         }
       }
-      totalNotifications = userNotifications.followRequests.length + userNotifications.bookClubRequests.length + userNotifications.comments.length;
+      totalNotifications = userNotifications.followRequests.length + userNotifications.bookClubRequests.length + userNotifications.comments.length + userNotifications.replies.length;
       return {
         userNotifications,
         totalNotifications
@@ -386,7 +399,6 @@ export default function TopNav({server,onLogout}: TopNavProps) {
   const [searchData,setSearchData] = useState({} as SearchData);
   const navSearchMutation = useMutation({
     mutationFn: async () => {
-      console.log(navSearchRef.current.value)
       const tokenCookie = Cookies.get().token;
       await axios
         .get(`${server}/api/search?searchterm=${navSearchRef.current.value}`,
@@ -704,7 +716,6 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                 })}
 
                 {userNotifications?.bookClubRequests?.map((bookClubRequest,i)=>{
-                  console.log(bookClubRequest)
                   return (
                     <Flex 
                       align="center" 
@@ -798,6 +809,54 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                         <Button 
                           size="sm"
                           onClick={e=>readCommentNotification(comment.id)}
+                        >
+                          OK
+                        </Button>
+                      </Flex>
+                    </Flex>
+                  )
+                })}
+
+                {userNotifications?.replies?.map((reply,i)=>{
+                  return (
+                    <Flex 
+                      align="center" 
+                      gap={1} 
+                      justify="space-between" 
+                      flexWrap="wrap"
+                      width="100%"
+                      key={i}
+                    >
+                      <Flex align="center" gap={1}>
+                        <Avatar src={reply.from_data?.profile_photo} size="sm"/>
+                        <Text>
+                          <Text
+                            as={Link} 
+                            to={`/profile/${reply.from_data?.username}`}
+                            onClick={onCloseNotificationsModal}
+                          >
+                            <Text 
+                              as="span"
+                              fontWeight="bold"
+                            >
+                            @{reply.from_data?.username}
+                            </Text> 
+                          </Text>
+                            {" "} replied to your {" "}
+                            <Text 
+                              as={Link} 
+                              to={reply.subject?.uri}
+                              onClick={onCloseNotificationsModal}
+                              fontWeight="bold"
+                            >
+                              comment
+                            </Text>
+                        </Text>
+                      </Flex>
+                      <Flex m={1} gap={1} justify="flex-end">
+                        <Button 
+                          size="sm"
+                          onClick={e=>readCommentNotification(reply.id)}
                         >
                           OK
                         </Button>

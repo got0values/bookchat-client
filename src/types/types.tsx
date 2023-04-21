@@ -269,13 +269,15 @@ export interface CurrentlyReadingComment {
 
 //Notifications
 export enum Notifications {
-  Comment = 1
+  Comment = 1,
+  GeneralReply = 2
 }
 
 export interface UserNotificationsType {
   followRequests: FollowRequest[];
   bookClubRequests: BookClubMember[];
   comments: OtherNotificationsType[];
+  replies: OtherNotificationsType[];
 }
 
 export interface OtherNotificationsType {
