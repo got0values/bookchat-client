@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ProfileProps, HTMLInputEvent, ProfileType } from '../types/types';
+import { ProfileProps, HTMLInputEvent, ProfileType, Following_Following_following_profile_idToProfile } from '../types/types';
 import { 
   Box,
   Heading,
@@ -66,6 +66,7 @@ export const useProfile = ({server}: ProfileProps) => {
   const { paramsUsername } = useParams<{paramsUsername: string}>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const profileData: any = queryClient.getQueryData(["profileKey",paramsUsername])
   dayjs.extend(utc)
 
   //self, unauthorized (differentLibrary), nonFollower, requesting, follower
@@ -271,6 +272,42 @@ export const useProfile = ({server}: ProfileProps) => {
     })
   }
 
+  //Followers modal
+  const { 
+    isOpen: isOpenFollowersModal, 
+    onOpen: onOpenFollowersModal, 
+    onClose: onCloseFollowersModal 
+  } = useDisclosure()
+  const [followers,setFollowers] = useState<any[] | null>(null)
+  function openFollowersModal() {
+    if (profileData!.Following_Following_following_profile_idToProfile && profileData?.Following_Following_following_profile_idToProfile?.length) {
+      setFollowers(profileData!.Following_Following_following_profile_idToProfile)
+    }
+    onOpenFollowersModal()
+  }
+  function closeFollowersModal(){
+    setFollowers(null)
+    onCloseFollowersModal()
+  }
+
+  //Following modal
+  const { 
+    isOpen: isOpenFollowingModal, 
+    onOpen: onOpenFollowingModal, 
+    onClose: onCloseFollowingModal 
+  } = useDisclosure()
+  const [following,setFollowing] = useState<any[] | null>(null)
+  function openFollowingModal(e: any) {
+    if (profileData!.Following_Following_self_profile_idToProfile && profileData?.Following_Following_self_profile_idToProfile?.length) {
+      setFollowing(profileData!.Following_Following_self_profile_idToProfile)
+    }
+    onOpenFollowingModal()
+  }
+  function closeFollowingModal(){
+    setFollowing(null)
+    onCloseFollowingModal()
+  }
+
   const { 
     isOpen: isOpenReadingModal, 
     onOpen: onOpenReadingModal, 
@@ -468,25 +505,23 @@ export const useProfile = ({server}: ProfileProps) => {
     onOpen: onOpenCommentModal, 
     onClose: onCloseCommentModal 
   } = useDisclosure()
-
   const [commentBookData,setCommentBookData] = useState({} as any)
   function openCommentModal(e: any) {
     setCommentBookData(JSON.parse(e.target.dataset.book))
     onOpenCommentModal()
   }
-
   function closeCommentModal(){
     (commentRef.current as any).value = "";
     setCommentBookData(null)
     onCloseCommentModal()
   }
 
-  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments};
+  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following};
 }
 
 
 export default function Profile({server}: ProfileProps) {
-  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments} = useProfile({server});
+  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following} = useProfile({server});
 
   
 
@@ -591,7 +626,12 @@ export default function Profile({server}: ProfileProps) {
                         {profileData.Following_Following_following_profile_idToProfile?.length} followers
                       </Heading>
                       <Flex justify="center">
-                        <AvatarGroup size="sm" max={4} mt={1}>
+                        <AvatarGroup 
+                          size="sm" 
+                          max={4} 
+                          mt={1}
+                          onClick={openFollowersModal}
+                        >
                         {profileData.Following_Following_following_profile_idToProfile?.length ? (
                           profileData.Following_Following_following_profile_idToProfile?.map((follower,i)=>{
                             return (
@@ -612,7 +652,12 @@ export default function Profile({server}: ProfileProps) {
                         {profileData.Following_Following_self_profile_idToProfile?.length} following
                       </Heading>
                       <Flex justify="center">
-                        <AvatarGroup size="sm" max={4} mt={1}>
+                        <AvatarGroup 
+                          size="sm" 
+                          max={4} 
+                          mt={1}
+                          onClick={openFollowingModal}
+                        >
                         {profileData.Following_Following_self_profile_idToProfile?.length ? (
                           profileData.Following_Following_self_profile_idToProfile?.map((follower,i)=>{
                             return (
@@ -1428,42 +1473,130 @@ export default function Profile({server}: ProfileProps) {
             </Modal>
           </>
           )}
-          <>
-            <Modal 
-              isOpen={isOpenCommentModal} 
-              onClose={closeCommentModal}
-              isCentered
-            >
-              <ModalOverlay />
-              <ModalContent maxH="80vh">
-                <ModalHeader>
-                  Comment
-                </ModalHeader>
-                <ModalCloseButton />
-                  <ModalBody h="auto" maxH="75vh" overflow="auto">
-                    <Input
-                      type="text"
-                      ref={commentRef as any}
-                      onKeyUp={e=>e.key === 'Enter' ? commentCurrentlyReadingButton.current.click() : null}
-                    />
-                  </ModalBody>
-                  <ModalFooter flexDirection="column">
-                  <> 
-                    <Button
-                      colorScheme="green"
-                      data-profileid={profileData.id}
-                      data-libraryid={user.Library.id}
-                      data-currentlyreadingid={commentBookData?.id}
-                      ref={commentCurrentlyReadingButton}
-                      onClick={e=>commentCurrentlyReading(e)}
-                    >
-                      Submit
-                    </Button>
-                  </>
-                  </ModalFooter>
-              </ModalContent>
-            </Modal>
-          </>
+          <Modal 
+            isOpen={isOpenCommentModal} 
+            onClose={closeCommentModal}
+            isCentered
+          >
+            <ModalOverlay />
+            <ModalContent maxH="80vh">
+              <ModalHeader>
+                Comment
+              </ModalHeader>
+              <ModalCloseButton />
+                <ModalBody h="auto" maxH="75vh" overflow="auto">
+                  <Input
+                    type="text"
+                    ref={commentRef as any}
+                    onKeyUp={e=>e.key === 'Enter' ? commentCurrentlyReadingButton.current.click() : null}
+                  />
+                </ModalBody>
+                <ModalFooter flexDirection="column">
+                <> 
+                  <Button
+                    colorScheme="green"
+                    data-profileid={profileData.id}
+                    data-libraryid={user.Library.id}
+                    data-currentlyreadingid={commentBookData?.id}
+                    ref={commentCurrentlyReadingButton}
+                    onClick={e=>commentCurrentlyReading(e)}
+                  >
+                    Submit
+                  </Button>
+                </>
+                </ModalFooter>
+            </ModalContent>
+          </Modal>
+          
+          <Modal 
+            isOpen={isOpenFollowersModal} 
+            onClose={closeFollowersModal}
+            isCentered
+          >
+            <ModalOverlay />
+            <ModalContent maxH="80vh">
+              <ModalHeader>
+                Followers
+              </ModalHeader>
+              <ModalCloseButton />
+                <ModalBody h="auto" maxH="75vh" overflow="auto">
+                  {followers ? (
+                    followers.map((f,i: number)=>{
+                      return (
+                        <Flex 
+                          key={f.id} 
+                          align="center" 
+                          mb={2} 
+                          flexWrap="wrap"
+                          gap={2}
+                          onClick={e=>{
+                            closeFollowersModal()
+                            navigate(`/profile/${f.Profile_Following_self_profile_idToProfile!.username}`)
+                          }}
+                          cursor="pointer"
+                        >
+                          <Avatar
+                            size="sm"
+                            src={f.Profile_Following_self_profile_idToProfile!.profile_photo}
+                            border="2px solid gray"
+                          />
+                          <Text>
+                            @{f.Profile_Following_self_profile_idToProfile!.username}
+                          </Text>
+                        </Flex>
+                      )
+                    })
+                  ): null}
+                </ModalBody>
+                <ModalFooter flexDirection="column">
+                </ModalFooter>
+            </ModalContent>
+          </Modal>
+
+          <Modal 
+            isOpen={isOpenFollowingModal} 
+            onClose={closeFollowingModal}
+            isCentered
+          >
+            <ModalOverlay />
+            <ModalContent maxH="80vh">
+              <ModalHeader>
+                Following
+              </ModalHeader>
+              <ModalCloseButton />
+                <ModalBody h="auto" maxH="75vh" overflow="auto">
+                {following ? (
+                    following.map((f,i: number)=>{
+                      return (
+                        <Flex 
+                          key={f.id} 
+                          align="center" 
+                          mb={2} 
+                          flexWrap="wrap"
+                          gap={2}
+                          onClick={e=>{
+                            closeFollowersModal()
+                            navigate(`/profile/${f.Profile_Following_following_profile_idToProfile!.username}`)
+                          }}
+                          cursor="pointer"
+                        >
+                          <Avatar
+                            size="sm"
+                            src={f.Profile_Following_following_profile_idToProfile!.profile_photo}
+                            border="2px solid gray"
+                          />
+                          <Text>
+                            @{f.Profile_Following_following_profile_idToProfile!.username}
+                          </Text>
+                        </Flex>
+                      )
+                    })
+                  ): null}
+                </ModalBody>
+                <ModalFooter flexDirection="column">
+                </ModalFooter>
+            </ModalContent>
+          </Modal>
         </>
         ) : <Box></Box>}
       </Skeleton>
