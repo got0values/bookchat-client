@@ -1008,7 +1008,6 @@ export default function BookClub({server}: {server: string}) {
                       bookClubGroups.sort().map((group,i)=>{
                         return (
                           <Flex align="center" key={i}>
-                            {i > 0 ? <BsDot/> : null}
                             <Tag 
                               colorScheme={group == "0" ? "teal" : (
                                   group == "1" ? "green" : (
