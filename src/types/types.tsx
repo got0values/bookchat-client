@@ -336,6 +336,7 @@ export interface UserEntry {
   id: number;
   profile: number;
   reading_club: number;
+  ReadingClub: ReadingClub;
   library: number;
   Profile: ProfileType;
   entry_data: EntryData | string;
