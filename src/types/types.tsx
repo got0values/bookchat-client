@@ -337,6 +337,7 @@ export interface UserEntry {
   profile: number;
   reading_club: number;
   library: number;
+  Profile: ProfileType;
   entry_data: EntryData | string;
   created_on: string;
   form_name: string;

@@ -11,6 +11,7 @@ import BookClub from './BookClubs/BookClub';
 import BookClubBook from './BookClubs/BookClubBook';
 import Profile from './Profile/Profile';
 import ReadingClubs from './ReadingClubs/ReadingClubs';
+import ReadingClubEntries from "./ReadingClubs/ReadingClubEntries";
 import Settings from './Settings';
 import { useAuth } from './hooks/useAuth';
 
@@ -72,8 +73,16 @@ function App() {
         </Route>
         <Route 
           path="readingclubs" 
-          element={ <ReadingClubs server={server} /> } 
-        />
+        >
+          <Route
+            index
+            element={ <ReadingClubs server={server} /> }
+          />
+          <Route
+            path="entries"
+            element={ <ReadingClubEntries server={server}/> }
+          />
+        </Route>
         <Route 
           path="settings" 
           element={ <Settings server={server} /> } 

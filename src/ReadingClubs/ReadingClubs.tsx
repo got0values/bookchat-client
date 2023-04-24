@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ReadingClub, FormType, ReadingClubForm, School, EntryData, UserEntry } from "../types/types";
 import { 
@@ -48,6 +49,7 @@ import axios from "axios";
 export default function ReadingClubs({server}: {server: string}) {
   const toast = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   dayjs.extend(utc);
 
   async function getReadingClubs() {
@@ -803,7 +805,7 @@ export default function ReadingClubs({server}: {server: string}) {
                       variant="ghost"
                       size="sm"
                       leftIcon={<AiOutlineLineChart size={25} />}
-                      // onClick={openCreateReadingClubModal}
+                      onClick={e=>navigate("/readingclubs/entries")}
                     >
                       View entries
                     </Button>
@@ -837,18 +839,21 @@ export default function ReadingClubs({server}: {server: string}) {
                       })
                       .map((entry: UserEntry, i: number)=>{
                         return (
-                          <Link 
-                            key={i}
-                            href="#"
-                            data-entryformname={entry.form_name}
-                            data-entrydate={entry.created_on}
-                            data-entryformdata={entry.entry_data}
-                            data-entryid={entry.id}
-                            fontSize="sm"
-                            onClick={e=>openUserEditEntryModal(e)}
-                          >
-                            {entry.form_name} <Text fontStyle="italic">{dayjs(entry.created_on).local().format('MMM DD, hh:mm a')}</Text>
-                          </Link>
+                          <Flex align="flex-start" direction="column" gap={0}>
+                            <Link 
+                              key={i}
+                              href="#"
+                              data-entryformname={entry.form_name}
+                              data-entrydate={entry.created_on}
+                              data-entryformdata={entry.entry_data}
+                              data-entryid={entry.id}
+                              fontSize="sm"
+                              onClick={e=>openUserEditEntryModal(e)}
+                            >
+                              {entry.form_name}
+                            </Link>
+                            <Text fontStyle="italic">{dayjs(entry.created_on).local().format('MMM DD, hh:mm a')}</Text>
+                          </Flex>
                         )
                       })
                   ) : (
