@@ -35,6 +35,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
         let slicedHost = window.location.host.split(".").slice(1);
         let domain = slicedHost.join(".");
         const newLocation = `${librarySubdomain}.${domain}`;
+        Cookies.remove("token", { path: ' '});
         window.location.href = `${protocol}//${newLocation}/`;
       }
         return response;
