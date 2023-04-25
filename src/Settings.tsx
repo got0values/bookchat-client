@@ -37,7 +37,6 @@ export default function Settings({server}: SettingsProps) {
             }
           )
           .then((response)=>{
-            console.log(response.data)
             const {data} = response;
             return data;
           })

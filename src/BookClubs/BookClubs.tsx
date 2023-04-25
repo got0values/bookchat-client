@@ -116,7 +116,6 @@ export default function BookClubs({server}: {server: string}) {
             }
           )
           .then((response)=>{
-            console.log(response.data)
             const {data} = response;
             setBookClubsOwned(data.bookClubsOwned)
             setBookClubsJoined(data.bookClubsJoined)

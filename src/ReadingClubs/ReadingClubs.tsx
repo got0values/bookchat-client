@@ -64,7 +64,6 @@ export default function ReadingClubs({server}: {server: string}) {
             }
           )
           .then((response)=>{
-            console.log(response.data)
             const {data} = response;
             return data;
           })
@@ -102,7 +101,6 @@ export default function ReadingClubs({server}: {server: string}) {
     mutationFn: async (e: React.FormEvent<HTMLFormElement>)=>{
       e.preventDefault();
       const formName = createFormNameRef.current.value;
-      console.log(formName)
       let tokenCookie: string | null = Cookies.get().token;
       if (formName) {
         await axios
@@ -285,7 +283,6 @@ export default function ReadingClubs({server}: {server: string}) {
   const editReadingClubMutation = useMutation({
     mutationFn: async (e: React.FormEvent<HTMLFormElement>)=>{
       e.preventDefault();
-      console.log(editReadingClubHiddenRef.current.checked)
       const readingClubName = editReadingClubNameRef.current.value;
       const readingClubDescription = editReadingClubDescriptionRef.current.value;
       const readingClubHidden = editReadingClubHiddenRef.current.checked ? 1 : 0;
@@ -412,7 +409,6 @@ export default function ReadingClubs({server}: {server: string}) {
       const formName = (e.target as HTMLFormElement).dataset.formname;
       let entryData: EntryData[] = []
       const entryFields: EventTarget[] = Array.from(e.target as HTMLFormElement);
-      console.log(entryFields)
       entryFields.forEach((field: any,i: number)=>{
         entryData.push({
           id: field.id,

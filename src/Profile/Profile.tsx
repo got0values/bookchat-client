@@ -327,7 +327,6 @@ export const useProfile = ({server}: ProfileProps) => {
     await axios
       .get("https://www.googleapis.com/books/v1/volumes?q=" + whatImReadingRef.current.value)
       .then((response)=>{
-        console.log(response)
         setBookResults(response.data.items)
         setBookResultsLoading(false)
         onOpenReadingModal();
@@ -422,7 +421,6 @@ export const useProfile = ({server}: ProfileProps) => {
 
   const hideReadingMutation = useMutation({
     mutationFn: async (e: any)=>{
-      console.log(e.target.dataset)
       const tokenCookie = Cookies.get().token;
       if (tokenCookie) {
         await axios
@@ -530,7 +528,6 @@ export default function Profile({server}: ProfileProps) {
     queryFn: getProfile 
   });
   const profileData: ProfileType = data;
-  console.log(profileData)
   if (isLoading) {
     return (
       <Flex align="center" justify="center" minH="80vh">

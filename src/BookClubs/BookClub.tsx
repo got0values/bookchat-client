@@ -77,7 +77,6 @@ export default function BookClub({server}: {server: string}) {
           }
         )
         .then((response)=>{
-          console.log(response)
           if (response.data.success) {
             let responseBookClub = response.data.message
             const currentBook1 = responseBookClub.BookClubBook.reverse()[0]
@@ -242,7 +241,6 @@ export default function BookClub({server}: {server: string}) {
   function handleGroupCheckbox(e: React.ChangeEvent<HTMLInputElement>) {
     const isChecked = bookClubAgeGroups.includes(e.target.value)
     if (!isChecked) {
-      console.log("not checked")
       bookClubAgeGroups.push(e.target.value)
     }
     else if (bookClubAgeGroups) {
@@ -254,7 +252,6 @@ export default function BookClub({server}: {server: string}) {
         }
       })
     }
-    console.log(bookClubAgeGroups)
     setBookClubAgeGroups(prev=>bookClubAgeGroups)
   }
 
@@ -434,7 +431,6 @@ export default function BookClub({server}: {server: string}) {
     await axios
       .get(`https://www.googleapis.com/books/v1/volumes?q=${searchBookRef.current.value}`)
       .then((response)=>{
-        console.log(response)
         setBookResults(response.data.items)
         setBookResultsLoading(false)
       })

@@ -46,7 +46,6 @@ const Comments: Function = (
 
   const deleteCommentMutation = useMutation({
     mutationFn: async (commentId)=>{
-      console.log(location)
       const tokenCookie = Cookies.get().token;
       if (tokenCookie) {
         await axios
@@ -60,9 +59,6 @@ const Comments: Function = (
               }
             }
           )
-          .then((response)=>{
-            console.log(response)
-          })
           .catch(({response})=>{
             console.log(response)
             throw new Error(response.message)

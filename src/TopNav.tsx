@@ -94,7 +94,6 @@ export default function TopNav({server,onLogout}: TopNavProps) {
           }
         )
         .then((response)=>{
-          console.log(response.data.message)
           return response.data.message;
         })
         .catch((response)=>{
@@ -425,7 +424,6 @@ export default function TopNav({server,onLogout}: TopNavProps) {
   const notificationQuery = useQuery({ queryKey: ['notificationKey'], queryFn: getNotifications });
   const notificationData = notificationQuery.data;
   const userNotifications = notificationData?.userNotifications;
-  console.log(userNotifications)
   const totalNotifications: number = notificationData?.totalNotifications as number;
 
   return (

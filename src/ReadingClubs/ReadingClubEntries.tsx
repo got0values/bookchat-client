@@ -69,7 +69,6 @@ export default function ReadingClubEntries({server}: {server: string}) {
             }
           )
           .then((response)=>{
-            console.log(response.data)
             const {data} = response;
             return data;
           })

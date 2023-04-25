@@ -56,7 +56,6 @@ export default function BookClub({server}: {server: string}) {
           }
         )
         .then((response)=>{
-          console.log(response.data)
           return response.data.message;
         })
         .catch(({response})=>{

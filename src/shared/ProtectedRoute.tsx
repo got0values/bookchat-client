@@ -14,7 +14,6 @@ export const ProtectedRoute = ({children}: ProtectedRouteProps) => {
 
   const { isLoading, isError, data, error } = useQuery({ queryKey: ['protectedKey'], queryFn: getUser });
   const user = data;
-  console.log("FROM user VARIABLE:", user)
 
   if (isLoading) {
     return (
