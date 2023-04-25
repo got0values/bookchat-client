@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, Link } from "react-router-dom";
 import {CurrentlyReadingComment} from '../types/types';
 import {
@@ -16,14 +17,67 @@ import {
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
 import { useAuth } from "../hooks/useAuth";
 import dayjs from "dayjs";
+import Cookies from "js-cookie";
 import utc from "dayjs/plugin/utc";
+import axios from "axios";
 
 
-const Comments: Function = ({comments}: {comments: CurrentlyReadingComment[]}) => {
+const Comments: Function = (
+    {
+      comments,
+      getDashboard, 
+      server
+    }: {
+      comments: CurrentlyReadingComment[], 
+      getDashboard: ()=>void;
+      server: string
+    }
+  ) => {
   const navigate = useNavigate()
   const [increment,setIncrement] = useState(3);
   const {user} = useAuth();
+  const queryClient = useQueryClient();
   dayjs.extend(utc)
+
+
+  const deleteCommentMutation = useMutation({
+    mutationFn: async (commentId)=>{
+      console.log(commentId)
+      const tokenCookie = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .delete(server + "/api/currentlyreadingcomment",
+            {
+              headers: {
+                Authorization: tokenCookie
+              },
+              data: {
+                commentId: commentId
+              }
+            }
+          )
+          .then((response)=>{
+            console.log(response)
+          })
+          .catch(({response})=>{
+            console.log(response)
+            throw new Error(response.message)
+          })
+          return getDashboard();
+      }
+      else {
+        throw new Error("An error occurred")
+      }
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ["dashboardKey"] })
+      queryClient.resetQueries({queryKey: ["dashboardKey"]})
+      queryClient.setQueryData(["dashboardKey"],data)
+    }
+  })
+  function deleteComment(commentId: number) {
+    deleteCommentMutation.mutate(commentId as any)
+  }
 
   return (
     comments.map((comment: CurrentlyReadingComment,i: number)=>{
@@ -80,7 +134,7 @@ const Comments: Function = ({comments}: {comments: CurrentlyReadingComment[]}) =
                     <MenuList>
                       <MenuItem
                         color="tomato"
-                        // onClick={e=>deleteReading(readBook.id)}
+                        onClick={e=>deleteComment(comment.id)}
                         fontWeight="bold"
                         icon={<BiTrash size={20} />}
                       >

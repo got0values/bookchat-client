@@ -263,6 +263,7 @@ export interface CurrentlyReadingComment {
   commenter_id: number;
   comment: string;
   datetime: string;
+  Profile_CurrentlyReadingComment_profile_idToProfile: ProfileType;
   Profile_CurrentlyReadingComment_commenter_idToProfile: ProfileType;
 }
 
