@@ -73,7 +73,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   }
 
   function onLogout(): void {
-    Cookies.remove("token");
+    Cookies.remove("token", { path: ' '});
     setUser(null)
     return navigate("/login");
   }
