@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   FormLabel, 
   Input, 
@@ -6,6 +7,7 @@ import {
   Box,
   Flex,
   Checkbox,
+  Skeleton,
   Stack,
   Heading,
   useToast
@@ -21,6 +23,34 @@ interface SettingsProps {
 export default function Settings({server}: SettingsProps) {
   const {onLogout} = useAuth();
   const toast = useToast();
+  const queryClient = useQueryClient();
+
+  async function getSettings() {
+    let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        const settingsData = await axios
+          .get(server + "/api/settings",
+            {
+              headers: {
+                'authorization': tokenCookie
+              }
+            }
+          )
+          .then((response)=>{
+            console.log(response.data)
+            const {data} = response;
+            return data;
+          })
+          .catch(({response})=>{
+            console.log(response)
+            throw new Error(response.data.error)
+          })
+        return settingsData
+      }
+      else {
+        throw new Error("S101")
+      }
+  }
 
   async function deleteAccount() {
     let tokenCookie: string | null = Cookies.get().token;
@@ -59,61 +89,113 @@ export default function Settings({server}: SettingsProps) {
     }
   }
 
+  const firstNameRef = useRef({} as HTMLInputElement);
+  const lastNameRef = useRef({} as HTMLInputElement);
+  const updateSettingsMutation = useMutation({
+    mutationFn: async ()=>{
+      let tokenCookie: string | null = Cookies.get().token;
+      await axios
+        .put(server + "/api/settings", 
+        {
+          firstName: firstNameRef.current.value,
+          lastName: lastNameRef.current.value
+        },
+        {headers: {
+          'authorization': tokenCookie
+        }}
+        )
+        .then((response)=>{
+          if (response.data.success){
+            toast({
+              description: "Settings updated!",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+          }
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data.message)
+        })
+      return getSettings()
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['settingsKey'] })
+      queryClient.resetQueries({queryKey: ['settingsKey']})
+      queryClient.setQueryData(["settingsKey"],data)
+    }
+  })
+  function updateSettings() {
+    updateSettingsMutation.mutate();
+  }
+
+  const { isLoading, isError, data, error } = useQuery({ 
+    queryKey: ['settingsKey'], 
+    queryFn: getSettings
+  });
+  const settings = data?.message;
+  const role = settings?.role;
+  const firstName = settings?.first_name;
+  const lastName = settings?.last_name;
+
+  if (isError) {
+    return <Flex align="center" justify="center" minH="90vh">
+      <Heading as="h1" size="xl">Error: {(error as Error).message}</Heading>
+    </Flex>
+  }
+
   return (
     <Box className="main-content-smaller">
-      <Stack>
+      <Skeleton
+        isLoaded={!isLoading}
+      >
+        <Stack>
+          <Flex className="well" direction="column">
+            <Stack>
+              <Heading as="h4" size="md">
+                Name
+              </Heading>
+              <Flex w="100%" gap={5} flexWrap="wrap" justify="space-between">
+                <Box flex="1 1 45%" minW="150px">
+                  <FormLabel htmlFor="first-name">First Name</FormLabel>
+                  <Input 
+                    id="first-name" 
+                    type="text"
+                    defaultValue={firstName}
+                    ref={firstNameRef}
+                  />
+                </Box>
+                <Box flex="1 1 45%" minW="150px">
+                  <FormLabel htmlFor="last-name">Last Name</FormLabel>
+                  <Input 
+                    id="last-name" 
+                    type="text"
+                    defaultValue={lastName}
+                    ref={lastNameRef}
+                  />
+                </Box>
+              </Flex>
+            </Stack>
+          </Flex>
 
-      <Flex className="well" direction="column">
-          <Stack>
-            <Heading as="h4" size="md">
-              Name
-            </Heading>
-            <Flex w="100%" gap={5} flexWrap="wrap" justify="space-between">
-              <Box flex="1 1 45%" minW="150px">
-                <FormLabel htmlFor="first-name">First Name</FormLabel>
-                <Input id="first-name" type="text"/>
-              </Box>
-              <Box flex="1 1 45%" minW="150px">
-                <FormLabel htmlFor="last-name">Last Name</FormLabel>
-                <Input id="last-name" type="text"/>
-              </Box>
-            </Flex>
-          </Stack>
-        </Flex>
-
-        <Flex className="well" direction="column">
-          <Stack>
-            <Heading as="h4" size="md">
-              Email
-            </Heading>
-            <Checkbox>Email me when someone replies to my comment?</Checkbox>
-          </Stack>
-        </Flex>
-
-        <Flex className="well" direction="column">
-          <Stack>
-            <Heading as="h4" size="md">
-              Profile
-            </Heading>
-            <Checkbox>Hide my profile?</Checkbox>
-          </Stack>
-        </Flex>
-
-        <Flex justify="space-between" m=".5rem!important">
-          <Button
-            colorScheme="red"
-            onClick={e=>deleteAccount()}
-          >
-            Delete account
-          </Button>
-          <Button
-            colorScheme="green"
-          >
-            Save
-          </Button>
-        </Flex>
-
-      </Stack>
+          <Flex justify="space-between" m=".5rem!important">
+            <Button
+              colorScheme="red"
+              onClick={e=>deleteAccount()}
+            >
+              Delete account
+            </Button>
+            <Button
+              colorScheme="green"
+              onClick={e=>updateSettings()}
+              isLoading={updateSettingsMutation.isLoading}
+            >
+              Save
+            </Button>
+          </Flex>
+        </Stack>
+      </Skeleton>
     </Box>
   );
 };
