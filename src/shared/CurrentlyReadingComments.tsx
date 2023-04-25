@@ -26,10 +26,14 @@ const Comments: Function = (
     {
       comments,
       getDashboard, 
+      getProfile,
+      location,
       server
     }: {
       comments: CurrentlyReadingComment[], 
-      getDashboard: ()=>void;
+      getDashboard?: ()=>void;
+      getProfile?: ()=>void;
+      location: string;
       server: string
     }
   ) => {
@@ -42,7 +46,7 @@ const Comments: Function = (
 
   const deleteCommentMutation = useMutation({
     mutationFn: async (commentId)=>{
-      console.log(commentId)
+      console.log(location)
       const tokenCookie = Cookies.get().token;
       if (tokenCookie) {
         await axios
@@ -63,16 +67,28 @@ const Comments: Function = (
             console.log(response)
             throw new Error(response.message)
           })
-          return getDashboard();
+          if (getDashboard && location === "dashboard") {
+            return getDashboard();
+          }
+          if (getProfile && location === "profile") {
+            return getProfile();
+          }
       }
       else {
         throw new Error("An error occurred")
       }
     },
     onSuccess: (data,variables)=>{
-      queryClient.invalidateQueries({ queryKey: ["dashboardKey"] })
-      queryClient.resetQueries({queryKey: ["dashboardKey"]})
-      queryClient.setQueryData(["dashboardKey"],data)
+      if (location === "dashboard") {
+        queryClient.invalidateQueries({ queryKey: ["dashboardKey"] })
+        queryClient.resetQueries({queryKey: ["dashboardKey"]})
+        queryClient.setQueryData(["dashboardKey"],data)
+      }
+      else if (location === "profile") {
+        queryClient.invalidateQueries({ queryKey: ["profileKey"] })
+        queryClient.resetQueries({queryKey: ["profileKey"]})
+        queryClient.setQueryData(["profileKey"],data)
+      }
     }
   })
   function deleteComment(commentId: number) {

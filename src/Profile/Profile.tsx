@@ -945,7 +945,12 @@ export default function Profile({server}: ProfileProps) {
                         </Flex>
                         <Divider my={3} />
                         {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment ? (
-                            <Comments comments={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment}/>
+                            <Comments 
+                              comments={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment} 
+                              getProfile={getProfile} 
+                              location="profile"
+                              server={server}
+                            />
                         ): null}
                       </Box>
                     ) : null}
@@ -1057,7 +1062,12 @@ export default function Profile({server}: ProfileProps) {
                               </Box>
                             </Flex>
                             {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment ? (
-                              <Comments comments={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment}/>
+                              <Comments 
+                                comments={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment} 
+                                getProfile={getProfile} 
+                                location="profile"
+                                server={server}
+                              />
                           ): null}
                           </Box>
                         ) : null}
@@ -1191,7 +1201,12 @@ export default function Profile({server}: ProfileProps) {
                                 </Flex>
                                 <Divider my={3} />
                                 {readBook.CurrentlyReadingComment ? (
-                                    <Comments comments={readBook.CurrentlyReadingComment}/>
+                                    <Comments 
+                                      comments={readBook.CurrentlyReadingComment} 
+                                      getProfile={getProfile} 
+                                      location="profile"
+                                      server={server}
+                                    />
                                 ): null}
                               </Box>
                             ) : null

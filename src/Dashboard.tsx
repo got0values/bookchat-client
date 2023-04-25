@@ -324,7 +324,12 @@ export default function Dashboard({server}: DashboardProps) {
                     </Flex>
                     <Divider my={3} />
                     {reading.CurrentlyReadingComment && reading.CurrentlyReadingComment.length ? (
-                      <Comments comments={reading.CurrentlyReadingComment} getDashboard={getDashboard} server={server} />
+                      <Comments 
+                        comments={reading.CurrentlyReadingComment} 
+                        getDashboard={getDashboard} 
+                        location="dashboard"
+                        server={server} 
+                      />
                     ): null}
                   </Box>
                 )
