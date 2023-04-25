@@ -27,13 +27,14 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { user } = useAuth();
+  const { user,getUser } = useAuth();
 
   const subdomain = window.location.hostname.split(".")[0];
   const {libraryFromSubdomain} = getLibraryFromSubdomain({subdomain,server});
 
   useEffect(()=>{
     const tokenCookie = Cookies.get().token;
+    getUser()
     if (user && user !== null && tokenCookie) {
       window.location.href = `${window.location.protocol}//${user.Library.subdomain}.${window.location.host.split(".")[1]}`
     }
