@@ -36,7 +36,12 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
     const tokenCookie = Cookies.get().token;
     getUser()
     if (user && user !== null && tokenCookie) {
-      window.location.href = `${window.location.protocol}//${user.Library.subdomain}.${window.location.host.split(".")[1]}`
+      if (window.location.host.includes(".com")) {
+        window.location.href = `${window.location.protocol}//${user.Library.subdomain}.${window.location.host.split(".")[1]}.com`
+      }
+      else {
+        window.location.href = `${window.location.protocol}//${user.Library.subdomain}.${window.location.host.split(".")[1]}`
+      }
     }
   },[user])
 
