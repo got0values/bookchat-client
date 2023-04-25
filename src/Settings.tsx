@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { 
-  FormControl, 
   FormLabel, 
   Input, 
   Button, 
-  Text,
   Box,
   Flex,
   Checkbox,
   Stack,
-  Link,
   Heading,
-  useColorModeValue,
+  useToast
 } from "@chakra-ui/react";
+import { useAuth } from './hooks/useAuth';
+import Cookies from "js-cookie";
 import axios from "axios";
 
 interface SettingsProps {
@@ -20,12 +19,45 @@ interface SettingsProps {
 }
 
 export default function Settings({server}: SettingsProps) {
-  const user = window.localStorage.getItem("user");
-  useEffect(()=>{
-    if (user) {
-      console.log(JSON.parse(user))
+  const {onLogout} = useAuth();
+  const toast = useToast();
+
+  async function deleteAccount() {
+    let tokenCookie: string | null = Cookies.get().token;
+    if (tokenCookie) {
+      if (window.confirm("Are you sure you would like to delete your account. This cannot be undone.")) {
+        await axios
+        .delete(server + "/api/deleteaccount",
+          {
+            headers: {
+              authorization: tokenCookie
+            }
+          }
+        )
+        .then((response)=>{
+          onLogout();
+          toast({
+            description: "Account deleted",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          });
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data?.message)
+        })
+      }
     }
-  },[])
+    else {
+      toast({
+        description: "An error has occurred (DA100)",
+        status: "error",
+        duration: 9000,
+        isClosable: true
+      })
+    }
+  }
 
   return (
     <Box className="main-content-smaller">
@@ -70,6 +102,7 @@ export default function Settings({server}: SettingsProps) {
         <Flex justify="space-between" m=".5rem!important">
           <Button
             colorScheme="red"
+            onClick={e=>deleteAccount()}
           >
             Delete account
           </Button>

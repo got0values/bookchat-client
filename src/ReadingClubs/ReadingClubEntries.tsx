@@ -55,8 +55,6 @@ import axios from "axios";
 
 
 export default function ReadingClubEntries({server}: {server: string}) {
-  const toast = useToast();
-  const queryClient = useQueryClient();
   dayjs.extend(utc);
 
   async function getReadingClubEntries() {
