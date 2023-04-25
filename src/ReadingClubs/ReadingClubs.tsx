@@ -835,7 +835,7 @@ export default function ReadingClubs({server}: {server: string}) {
                       })
                       .map((entry: UserEntry, i: number)=>{
                         return (
-                          <Flex align="flex-start" direction="column" gap={0}>
+                          <Flex key={i} align="flex-start" direction="column" gap={0}>
                             <Link 
                               key={i}
                               href="#"

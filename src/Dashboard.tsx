@@ -96,7 +96,6 @@ export default function Dashboard({server}: DashboardProps) {
             console.log(response)
             throw new Error(response.message)
           })
-          console.log(getDashboard())
           return getDashboard();
       }
       else {
@@ -185,7 +184,6 @@ export default function Dashboard({server}: DashboardProps) {
   user?.Profile?.CurrentlyReading?.forEach((book)=>{
     followingCurrentlyReading?.push(book)
   })
-  console.log(followingCurrentlyReading)
   let followingCurrentlyReadingSorted = followingCurrentlyReading?.sort((a: CurrentlyReading,b: CurrentlyReading)=>{
     return (new Date(a.created_on) as any) - (new Date(b.created_on) as any);
   }).reverse()
@@ -198,7 +196,6 @@ export default function Dashboard({server}: DashboardProps) {
     )
   }
   if (dashboard.isError) {
-    console.log(dashboard.error)
     return (
       <div>
         Error!
