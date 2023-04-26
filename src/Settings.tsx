@@ -90,6 +90,7 @@ export default function Settings({server}: SettingsProps) {
 
   const firstNameRef = useRef({} as HTMLInputElement);
   const lastNameRef = useRef({} as HTMLInputElement);
+  const libraryNameRef = useRef({} as HTMLInputElement);
   const updateSettingsMutation = useMutation({
     mutationFn: async ()=>{
       let tokenCookie: string | null = Cookies.get().token;
@@ -97,7 +98,9 @@ export default function Settings({server}: SettingsProps) {
         .put(server + "/api/settings", 
         {
           firstName: firstNameRef.current.value,
-          lastName: lastNameRef.current.value
+          lastName: lastNameRef.current.value,
+          libraryId: parseInt(libraryNameRef.current.dataset.libraryid!),
+          libraryName: libraryNameRef.current.value,
         },
         {headers: {
           'authorization': tokenCookie
@@ -112,6 +115,7 @@ export default function Settings({server}: SettingsProps) {
               isClosable: true
             })
           }
+          window.location.reload();
         })
         .catch(({response})=>{
           console.log(response)
@@ -137,6 +141,8 @@ export default function Settings({server}: SettingsProps) {
   const role = settings?.role;
   const firstName = settings?.first_name;
   const lastName = settings?.last_name;
+  const libraryId = settings?.library_id;
+  const libraryName = settings?.library_name;
 
   if (isError) {
     return <Flex align="center" justify="center" minH="90vh">
@@ -150,6 +156,28 @@ export default function Settings({server}: SettingsProps) {
         isLoaded={!isLoading}
       >
         <Stack>
+          {role === "admin" ? (
+          <Flex className="well" direction="column">
+            <Stack>
+              <Heading as="h4" size="md">
+                Library
+              </Heading>
+              <Flex w="100%" gap={5} flexWrap="wrap" justify="space-between">
+                <Box flex="1 1 45%" minW="150px">
+                  <FormLabel htmlFor="first-name">Name</FormLabel>
+                  <Input 
+                    id="first-name" 
+                    type="text"
+                    data-libraryid={libraryId}
+                    defaultValue={libraryName}
+                    ref={libraryNameRef}
+                  />
+                </Box>
+              </Flex>
+            </Stack>
+          </Flex>
+          ) : null}
+
           <Flex className="well" direction="column">
             <Stack>
               <Heading as="h4" size="md">
