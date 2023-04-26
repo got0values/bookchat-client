@@ -514,6 +514,8 @@ export const useProfile = ({server}: ProfileProps) => {
           )
           .then((response=>{
             closeFollowersModal()
+            queryClient.invalidateQueries({ queryKey: ['profileKey',paramsUsername] })
+            queryClient.resetQueries({queryKey: ['profileKey',paramsUsername]})
           }))
           .catch(({response})=>{
             console.log(response)
@@ -526,8 +528,6 @@ export const useProfile = ({server}: ProfileProps) => {
       }
     },
     onSuccess: (data,variables)=>{
-      queryClient.invalidateQueries({ queryKey: ['profileKey',paramsUsername] })
-      queryClient.resetQueries({queryKey: ['profileKey',paramsUsername]})
       queryClient.setQueryData(['profileKey',paramsUsername],data)
       openFollowersModal()
     }
