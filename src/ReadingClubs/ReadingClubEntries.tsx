@@ -1,28 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ReadingClub, FormType, ReadingClubForm, School, EntryData, UserEntry } from "../types/types";
+import { ReadingClub, ReaderNotes, ReadingClubForm, School, EntryData, UserEntry } from "../types/types";
 import { 
   Box,
-  Tag,
   Heading,
   Text,
-  Spinner,
-  Divider,
   Select,
   Stack,
-  HStack,
   Button,
   Input,
   Textarea,
   FormLabel,
-  InputGroup,
-  InputLeftAddon,
   Flex,
   Skeleton,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -30,7 +20,6 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Checkbox,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
@@ -38,7 +27,6 @@ import {
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
@@ -56,6 +44,8 @@ import axios from "axios";
 
 export default function ReadingClubEntries({server}: {server: string}) {
   dayjs.extend(utc);
+  const toast = useToast()
+  const queryClient = useQueryClient();
 
   async function getReadingClubEntries() {
     let tokenCookie: string | null = Cookies.get().token;
@@ -144,6 +134,69 @@ export default function ReadingClubEntries({server}: {server: string}) {
 
       });
     })
+  }
+
+  const { 
+    isOpen: isOpenReaderNotesModal, 
+    onOpen: onOpenReaderNotesModal, 
+    onClose: onCloseReaderNotesModal 
+  } = useDisclosure()
+  const [readerNotesData,setReaderNotesData] = useState<ReaderNotes | null>(null);
+  const [readerProfileIdForModal,setReaderProfileIdForModal] = useState<number | null>(null);
+  const [readerName,setReaderName] = useState<string | null>(null);
+  function openReaderNotesModal(e: React.FormEvent<HTMLElement>) {
+    setReaderNotesData(prev=>JSON.parse((e.target as any).dataset.readernotesdata)[0])
+    setReaderProfileIdForModal(prev=>parseInt((e.target as any).dataset.readerprofileid))
+    setReaderName((e.target as any).dataset.readername)
+    onOpenReaderNotesModal();
+  }
+  function closeReaderNotesModal() {
+    setReaderNotesData(null)
+    setReaderProfileIdForModal(null)
+    setReaderName(null)
+    onCloseReaderNotesModal();
+  }
+
+  const readerNotesRef = useRef<HTMLTextAreaElement>();
+  const createUpdateReaderNotesMutation = useMutation({
+    mutationFn: async (e: React.FormEvent)=>{
+      let tokenCookie: string | null = Cookies.get().token;
+      const readerProfile = parseInt((e.target as any).dataset.readerprofileid);
+      const notes = readerNotesRef.current!.value;
+      await axios
+        .post(server + "/api/readernotes", 
+        {
+          readerProfile,
+          notes
+        },
+        {headers: {
+          'authorization': tokenCookie
+        }}
+        )
+        .then((response)=>{
+          if (response.data.success){
+            toast({
+              description: "Reader notes updated",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+          }
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data.message)
+        })
+      return getReadingClubEntries();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['readingClubEntriesKey'] })
+      queryClient.resetQueries({queryKey: ['readingClubEntriesKey']})
+      queryClient.setQueryData(["readingClubEntriesKey"],data)
+    }
+  })
+  function createUpdateReaderNotes(e: React.FormEvent) {
+    createUpdateReaderNotesMutation.mutate(e);
   }
  
   const { isLoading, isError, data, error } = useQuery({ 
@@ -252,12 +305,16 @@ export default function ReadingClubEntries({server}: {server: string}) {
                   whiteSpace="break-spaces"
                   overflowX="auto"
                   overflowY="auto"
-                  // maxWidth="60%"
+                  // overflow="auto"
                   display="block"
+                  maxH="75vh"
                 >
                   <Table
                     size="sm" 
                     variant="simple"
+                    sx={{
+                      tableLayout: "auto"
+                    }}
                   >
                     <TableCaption>
                       Total: {entries && entries.length}
@@ -277,10 +334,22 @@ export default function ReadingClubEntries({server}: {server: string}) {
                         return (
                           <Tr key={i}>
                             <Td
-                              maxWidth="100px"
+                              maxWidth="125px"
                               whiteSpace="break-spaces"
                             >
-                              {entry.Profile.User.last_name + ", " + entry.Profile.User.first_name}
+                              <Button
+                                size="xs"
+                                whiteSpace="break-spaces"
+                                padding="5px"
+                                height="auto"
+                                variant="ghost"
+                                data-readername={entry.Profile.User.last_name + ", " + entry.Profile.User.first_name}
+                                data-readerprofileid={entry.Profile.id}
+                                data-readernotesdata={JSON.stringify(entry.Profile.ReaderNotes)}
+                                onClick={e=>openReaderNotesModal(e)}
+                              >
+                                {entry.Profile.User.last_name + ", " + entry.Profile.User.first_name}
+                              </Button>
                             </Td>
                             <Td>{dayjs(entry.created_on).local().format("MM/DD/YYYY")}</Td>
                             <Td 
@@ -363,6 +432,44 @@ export default function ReadingClubEntries({server}: {server: string}) {
                   })) : null}
                 </ModalBody>
                 <ModalFooter>
+                </ModalFooter>
+            </ModalContent>
+          </Modal>
+
+          <Modal 
+            isOpen={isOpenReaderNotesModal} 
+            onClose={closeReaderNotesModal}
+            isCentered
+          >
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>
+                <Box>
+                  <Heading as="h3" size="md">
+                    {readerName}
+                  </Heading>
+                </Box>
+              </ModalHeader>
+              <ModalCloseButton />
+                <ModalBody>
+                  <Textarea
+                    defaultValue={readerNotesData?.notes ? readerNotesData.notes : ""}
+                    ref={readerNotesRef as any}
+                    rows={15}
+                  >
+                  </Textarea>
+                  <Text mt={2}>
+                    last updated: <i>{readerNotesData?.datetime ? dayjs(readerNotesData.datetime).local().format("MM/DD/YYYY H:mm a") : null}</i>
+                  </Text>
+                </ModalBody>
+                <ModalFooter>
+                  <Button
+                    colorScheme="green"
+                    data-readerprofileid={readerProfileIdForModal}
+                    onClick={e=>createUpdateReaderNotes(e)}
+                  >
+                    Save
+                  </Button>
                 </ModalFooter>
             </ModalContent>
           </Modal>

@@ -59,6 +59,7 @@ export interface ProfileType {
   Interests?: Interests[];
   User: User;
   BookClubs: BookClubsType[];
+  ReaderNotes: ReaderNotes;
   CurrentlyReading: CurrentlyReading[];
   Following_Following_self_profile_idToProfile?: Following_Following_self_profile_idToProfile[];
   Following_Following_following_profile_idToProfile?: Following_Following_following_profile_idToProfile[];
@@ -343,4 +344,11 @@ export interface UserEntry {
   entry_data: EntryData | string;
   created_on: string;
   form_name: string;
+}
+
+export interface ReaderNotes {
+  id: number;
+  profile: number;
+  notes: string;
+  datetime: string;
 }
