@@ -497,6 +497,45 @@ export const useProfile = ({server}: ProfileProps) => {
     commentCurrentlyReadingMutation.mutate(e as any)
   }
 
+  const removeFollowerMutation = useMutation({
+    mutationFn: async (followerProfileId: number)=>{
+      const tokenCookie = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .delete(server + "/api/removefollower",
+            {
+              headers: {
+                Authorization: tokenCookie
+              },
+              data: {
+                followerProfileId: followerProfileId
+              }
+            }
+          )
+          .then((response=>{
+            closeFollowersModal()
+          }))
+          .catch(({response})=>{
+            console.log(response)
+            throw new Error(response.message)
+          })
+          return getProfile();
+      }
+      else {
+        throw new Error("An error occurred")
+      }
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['profileKey',paramsUsername] })
+      queryClient.resetQueries({queryKey: ['profileKey',paramsUsername]})
+      queryClient.setQueryData(['profileKey',paramsUsername],data)
+      openFollowersModal()
+    }
+  })
+  function removeFollower(followerProfileId: number) {
+    removeFollowerMutation.mutate(followerProfileId)
+  }
+
   //User edit modals
   const { 
     isOpen: isOpenCommentModal, 
@@ -514,12 +553,12 @@ export const useProfile = ({server}: ProfileProps) => {
     onCloseCommentModal()
   }
 
-  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following};
+  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation};
 }
 
 
 export default function Profile({server}: ProfileProps) {
-  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following} = useProfile({server});
+  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePrefiewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation} = useProfile({server});
 
   
 
@@ -1535,26 +1574,42 @@ export default function Profile({server}: ProfileProps) {
                   {followers ? (
                     followers.map((f,i: number)=>{
                       return (
-                        <Flex 
-                          key={f.id} 
-                          align="center" 
-                          mb={2} 
-                          flexWrap="wrap"
-                          gap={2}
-                          onClick={e=>{
-                            closeFollowersModal()
-                            navigate(`/profile/${f.Profile_Following_self_profile_idToProfile!.username}`)
-                          }}
-                          cursor="pointer"
+                        <Flex
+                          key={f.id}
+                          align="center"
+                          mb={2}
+                          wrap="wrap"
+                          justify="space-between"
                         >
-                          <Avatar
-                            size="sm"
-                            src={f.Profile_Following_self_profile_idToProfile!.profile_photo}
-                            border="2px solid gray"
-                          />
-                          <Text>
-                            @{f.Profile_Following_self_profile_idToProfile!.username}
-                          </Text>
+                          <Flex 
+                            align="center"
+                            gap={2}
+                            onClick={e=>{
+                              closeFollowersModal()
+                              navigate(`/profile/${f.Profile_Following_self_profile_idToProfile!.username}`)
+                            }}
+                            cursor="pointer"
+                          >
+                            <Avatar
+                              size="sm"
+                              src={f.Profile_Following_self_profile_idToProfile!.profile_photo}
+                              border="2px solid gray"
+                            />
+                            <Text>
+                              @{f.Profile_Following_self_profile_idToProfile!.username}
+                            </Text>
+                          </Flex>
+                          {viewer === "self" ? (
+                            <Button
+                              size="xs"
+                              variant="ghost"
+                              colorScheme="red"
+                              onClick={e=>removeFollower(f.Profile_Following_self_profile_idToProfile!.id)}
+                              isLoading={removeFollowerMutation.isLoading}
+                            >
+                              Remove
+                            </Button>
+                          ) : null}
                         </Flex>
                       )
                     })
