@@ -1175,7 +1175,7 @@ export default function BookClub({server}: {server: string}) {
                       {currentBook ? (
                       <>
                         <Box
-                          bg="gray.100"
+                          bg="white"
                           p={2}
                           rounded="md"
                           boxShadow="base"
@@ -1302,7 +1302,7 @@ export default function BookClub({server}: {server: string}) {
                         <>
                           {bookClub.next_meeting_location || bookClub.next_meeting_start || bookClub.next_meeting_end ? (
                             <Box
-                              bg="gray.100"
+                              bg="white"
                               rounded="md"
                               boxShadow="base"
                               _dark={{
@@ -1425,7 +1425,7 @@ export default function BookClub({server}: {server: string}) {
                               <Flex
                                 flexDirection="column" 
                                 flex="0 1 175px"
-                                bg="gray.100"
+                                bg="white"
                                 boxShadow="base"
                                 p={2}
                                 rounded="md"
@@ -1498,7 +1498,7 @@ export default function BookClub({server}: {server: string}) {
                               <Flex
                                 flexDirection="column" 
                                 flex="0 1 175px"
-                                bg="gray.100"
+                                bg="white"
                                 boxShadow="base"
                                 p={2}
                                 rounded="md"
@@ -1570,7 +1570,7 @@ export default function BookClub({server}: {server: string}) {
                               <Flex
                                 flexDirection="column" 
                                 flex="0 1 175px"
-                                bg="gray.100"
+                                bg="white"
                                 boxShadow="base"
                                 p={2}
                                 rounded="md"
@@ -1919,7 +1919,7 @@ export default function BookClub({server}: {server: string}) {
                           direction="column"
                           align="center"
                           rounded="md"
-                          bg="gray.100"
+                          bg="white"
                           _dark={{
                             bg: "gray.600"
                           }}
@@ -2030,7 +2030,7 @@ export default function BookClub({server}: {server: string}) {
                           direction="column"
                           align="center"
                           rounded="md"
-                          bg="gray.100"
+                          bg="white"
                           _dark={{
                             bg: "gray.600"
                           }}

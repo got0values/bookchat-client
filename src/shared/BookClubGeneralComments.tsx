@@ -318,7 +318,7 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                           key={i}
                           my={1}
                           p={2}
-                          bg="gray.100"
+                          bg="white"
                           boxShadow="base"
                           rounded="md"
                           _dark={{
@@ -552,7 +552,7 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                           p={2}
                           rounded="md"
                           _hover={{
-                            bg: "gray.100"
+                            bg: "white"
                           }}
                           _dark={{
                             '&:hover': {

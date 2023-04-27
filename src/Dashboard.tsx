@@ -295,7 +295,7 @@ export default function Dashboard({server}: DashboardProps) {
                 placeholder="What i'm reading"
                 borderRadius="25px" 
                 border="transparent"
-                bg="gray.100" 
+                bg="white" 
                 _dark={{
                   bg: "gray.500"
                 }}
@@ -573,7 +573,7 @@ export default function Dashboard({server}: DashboardProps) {
                           direction="column"
                           align="center"
                           rounded="md"
-                          bg="gray.100"
+                          bg="white"
                           _dark={{
                             bg: "gray.600"
                           }}

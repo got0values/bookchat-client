@@ -881,7 +881,7 @@ export default function ReadingClubs({server}: {server: string}) {
                         p={2}
                         rounded="md"
                         boxShadow="base"
-                        bg="gray.100"
+                        bg="white"
                         _dark={{
                           bg: 'gray.600'
                         }}

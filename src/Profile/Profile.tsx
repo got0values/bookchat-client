@@ -771,7 +771,7 @@ export default function Profile({server}: ProfileProps) {
                         placeholder="What i'm reading"
                         borderRadius="25px" 
                         border="transparent"
-                        bg="gray.100" 
+                        bg="white" 
                         _dark={{
                           bg: "gray.500"
                         }}
@@ -785,7 +785,7 @@ export default function Profile({server}: ProfileProps) {
                         my={2}
                         p={2}
                         rounded="md"
-                        bg="gray.100"
+                        bg="white"
                         boxShadow="base"
                         _dark={{
                           bg: 'gray.600'
@@ -861,7 +861,7 @@ export default function Profile({server}: ProfileProps) {
                         p={2}
                         rounded="md"
                         boxShadow="base"
-                        bg="gray.100"
+                        bg="white"
                         _dark={{
                           bg: 'gray.600'
                         }}
@@ -1010,7 +1010,7 @@ export default function Profile({server}: ProfileProps) {
                             p={2}
                             rounded="md"
                             boxShadow="base"
-                            bg="gray.100"
+                            bg="white"
                             _dark={{
                               bg: 'gray.600'
                             }}
@@ -1142,7 +1142,7 @@ export default function Profile({server}: ProfileProps) {
                                 p={2}
                                 rounded="md"
                                 boxShadow="base"
-                                bg="gray.100"
+                                bg="white"
                                 _dark={{
                                   bg: 'gray.600'
                                 }}
@@ -1460,7 +1460,7 @@ export default function Profile({server}: ProfileProps) {
                                 direction="column"
                                 align="center"
                                 rounded="md"
-                                bg="gray.100"
+                                bg="white"
                                 _dark={{
                                   bg: "gray.600"
                                 }}

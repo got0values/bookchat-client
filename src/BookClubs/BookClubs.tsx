@@ -179,7 +179,7 @@ export default function BookClubs({server}: {server: string}) {
                     return (
                       <Box 
                         p={5} 
-                        bg="gray.100"
+                        bg="white"
                         boxShadow="base"
                         m={2} 
                         rounded="md"
@@ -216,7 +216,7 @@ export default function BookClubs({server}: {server: string}) {
                     return (
                       <Box 
                         p={5} 
-                        bg="gray.100" 
+                        bg="white" 
                         m={2} 
                         rounded="md"
                         boxShadow="base"
@@ -308,7 +308,7 @@ export default function BookClubs({server}: {server: string}) {
             <Box className="well">
               <Flex align="center" justify="space-between" gap={2} mb={2}>
                 <Heading as="h3" size="md">
-                  Friend's
+                  Friends
                 </Heading>
               </Flex>
               <Box>
@@ -318,7 +318,7 @@ export default function BookClubs({server}: {server: string}) {
                       <Fade in={true} key={i}>
                         <Box 
                           p={5} 
-                          bg="gray.100"
+                          bg="white"
                           m={2} 
                           rounded="md"
                           boxShadow="base"
@@ -425,7 +425,7 @@ export default function BookClubs({server}: {server: string}) {
                       <Fade in={true} key={i}>
                         <Box 
                           p={5} 
-                          bg="gray.100"
+                          bg="white"
                           boxShadow="base"
                           m={2} 
                           rounded="md"

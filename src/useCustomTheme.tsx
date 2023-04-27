@@ -34,7 +34,7 @@ const config = {
         maxW: '700px'
       },
       '.well': {
-        bg: 'white',
+        bg: 'gray.50',
         p: 4,
         m: '0.5rem!important',
         boxShadow: "base",
