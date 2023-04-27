@@ -10,6 +10,7 @@ import {
   Skeleton,
   Stack,
   Heading,
+  Badge,
   useToast
 } from "@chakra-ui/react";
 import { useAuth } from './hooks/useAuth';
@@ -160,11 +161,19 @@ export default function Settings({server}: SettingsProps) {
           <Flex className="well" direction="column">
             <Stack>
               <Heading as="h4" size="md">
-                Library
+                Library 
+                <Badge
+                  colorScheme="green"
+                  rounded="lg"
+                  pt={.5}
+                  ml={2}
+                >
+                  Admin
+                </Badge>
               </Heading>
               <Flex w="100%" gap={5} flexWrap="wrap" justify="space-between">
                 <Box flex="1 1 45%" minW="150px">
-                  <FormLabel htmlFor="first-name">Name</FormLabel>
+                  <FormLabel htmlFor="first-name" mb={1}>Name</FormLabel>
                   <Input 
                     id="first-name" 
                     type="text"
@@ -185,7 +194,7 @@ export default function Settings({server}: SettingsProps) {
               </Heading>
               <Flex w="100%" gap={5} flexWrap="wrap" justify="space-between">
                 <Box flex="1 1 45%" minW="150px">
-                  <FormLabel htmlFor="first-name">First Name</FormLabel>
+                  <FormLabel htmlFor="first-name" mb={1}>First Name</FormLabel>
                   <Input 
                     id="first-name" 
                     type="text"
@@ -194,7 +203,7 @@ export default function Settings({server}: SettingsProps) {
                   />
                 </Box>
                 <Box flex="1 1 45%" minW="150px">
-                  <FormLabel htmlFor="last-name">Last Name</FormLabel>
+                  <FormLabel htmlFor="last-name" mb={1}>Last Name</FormLabel>
                   <Input 
                     id="last-name" 
                     type="text"
