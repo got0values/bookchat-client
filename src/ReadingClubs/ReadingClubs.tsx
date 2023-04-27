@@ -880,7 +880,8 @@ export default function ReadingClubs({server}: {server: string}) {
                         width="100%"
                         p={2}
                         rounded="md"
-                        bg="gray.200"
+                        boxShadow="base"
+                        bg="gray.100"
                         _dark={{
                           bg: 'gray.600'
                         }}

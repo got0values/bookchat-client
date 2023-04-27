@@ -37,6 +37,7 @@ const config = {
         bg: 'white',
         p: 4,
         m: '0.5rem!important',
+        boxShadow: "base",
         borderRadius: 10,
         _dark: {
           bg: 'gray.700'

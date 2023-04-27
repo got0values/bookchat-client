@@ -179,7 +179,8 @@ export default function BookClubs({server}: {server: string}) {
                     return (
                       <Box 
                         p={5} 
-                        bg="gray.100" 
+                        bg="gray.100"
+                        boxShadow="base"
                         m={2} 
                         rounded="md"
                         _dark={{
@@ -218,6 +219,7 @@ export default function BookClubs({server}: {server: string}) {
                         bg="gray.100" 
                         m={2} 
                         rounded="md"
+                        boxShadow="base"
                         _dark={{
                           bg: "gray.600"
                         }}
@@ -319,6 +321,7 @@ export default function BookClubs({server}: {server: string}) {
                           bg="gray.100"
                           m={2} 
                           rounded="md"
+                          boxShadow="base"
                           _dark={{
                             bg: "gray.600"
                           }}
@@ -423,6 +426,7 @@ export default function BookClubs({server}: {server: string}) {
                         <Box 
                           p={5} 
                           bg="gray.100"
+                          boxShadow="base"
                           m={2} 
                           rounded="md"
                           _dark={{

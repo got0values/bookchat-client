@@ -1178,6 +1178,7 @@ export default function BookClub({server}: {server: string}) {
                           bg="gray.100"
                           p={2}
                           rounded="md"
+                          boxShadow="base"
                           _dark={{
                             bg: "gray.600"
                           }}
@@ -1303,6 +1304,7 @@ export default function BookClub({server}: {server: string}) {
                             <Box
                               bg="gray.100"
                               rounded="md"
+                              boxShadow="base"
                               _dark={{
                                 bg: "gray.600"
                               }}
@@ -1423,7 +1425,8 @@ export default function BookClub({server}: {server: string}) {
                               <Flex
                                 flexDirection="column" 
                                 flex="0 1 175px"
-                                bg="gray.200"
+                                bg="gray.100"
+                                boxShadow="base"
                                 p={2}
                                 rounded="md"
                                 _dark={{
@@ -1495,7 +1498,8 @@ export default function BookClub({server}: {server: string}) {
                               <Flex
                                 flexDirection="column" 
                                 flex="0 1 175px"
-                                bg="gray.200"
+                                bg="gray.100"
+                                boxShadow="base"
                                 p={2}
                                 rounded="md"
                                 _dark={{
@@ -1566,7 +1570,8 @@ export default function BookClub({server}: {server: string}) {
                               <Flex
                                 flexDirection="column" 
                                 flex="0 1 175px"
-                                bg="gray.200"
+                                bg="gray.100"
+                                boxShadow="base"
                                 p={2}
                                 rounded="md"
                                 _dark={{

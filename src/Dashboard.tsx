@@ -390,9 +390,9 @@ export default function Dashboard({server}: DashboardProps) {
                     p={3}
                     rounded="md"
                     boxShadow="base"
-                    bg="gray.200"
+                    bg="white"
                     _dark={{
-                      bg: 'gray.600'
+                      bg: 'gray.700'
                     }}
                     key={i}
                   >

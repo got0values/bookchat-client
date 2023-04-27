@@ -319,6 +319,7 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                           my={1}
                           p={2}
                           bg="gray.100"
+                          boxShadow="base"
                           rounded="md"
                           _dark={{
                             bg: "gray.600"

@@ -593,6 +593,7 @@ export default function Profile({server}: ProfileProps) {
                 className="profile-card"
                 rounded={'lg'}
                 textAlign={'center'}
+                boxShadow="base"
               >
                 <Avatar
                   mb={4}
@@ -784,7 +785,8 @@ export default function Profile({server}: ProfileProps) {
                         my={2}
                         p={2}
                         rounded="md"
-                        bg="gray.200"
+                        bg="gray.100"
+                        boxShadow="base"
                         _dark={{
                           bg: 'gray.600'
                         }}
@@ -858,7 +860,8 @@ export default function Profile({server}: ProfileProps) {
                         my={2}
                         p={2}
                         rounded="md"
-                        bg="gray.200"
+                        boxShadow="base"
+                        bg="gray.100"
                         _dark={{
                           bg: 'gray.600'
                         }}
@@ -1006,7 +1009,8 @@ export default function Profile({server}: ProfileProps) {
                             my={2}
                             p={2}
                             rounded="md"
-                            bg="gray.200"
+                            boxShadow="base"
+                            bg="gray.100"
                             _dark={{
                               bg: 'gray.600'
                             }}
@@ -1137,7 +1141,8 @@ export default function Profile({server}: ProfileProps) {
                                 my={2}
                                 p={2}
                                 rounded="md"
-                                bg="gray.200"
+                                boxShadow="base"
+                                bg="gray.100"
                                 _dark={{
                                   bg: 'gray.600'
                                 }}
