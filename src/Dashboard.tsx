@@ -7,6 +7,7 @@ import {
   Heading,
   Flex,
   Spinner,
+  CloseButton,
   Text,
   Image,
   HStack,
@@ -32,6 +33,7 @@ import {
   PopoverContent,
   PopoverBody,
   PopoverArrow,
+  Stack,
   Center,
   useDisclosure
 } from "@chakra-ui/react";
@@ -172,6 +174,82 @@ export default function Dashboard({server}: DashboardProps) {
   function commentCurrentlyReading(e: any) {
     commentCurrentlyReadingMutation.mutate(e as any)
   }
+
+  const { 
+    isOpen: isOpenReadingModal, 
+    onOpen: onOpenReadingModal, 
+    onClose: onCloseReadingModal 
+  } = useDisclosure()
+
+  function closeReadingModal() {
+    setBookResults(null)
+    onCloseReadingModal();
+  }
+
+  const whatImReadingRef = useRef({} as HTMLInputElement);
+  const [bookResults,setBookResults] = useState<any[] | null>(null);
+  const [bookResultsLoading,setBookResultsLoading] = useState(false)
+  async function searchBook() {
+    setBookResultsLoading(true)
+    await axios
+      .get("https://www.googleapis.com/books/v1/volumes?q=" + whatImReadingRef.current.value)
+      .then((response)=>{
+        setBookResults(response.data.items)
+        setBookResultsLoading(false)
+        onOpenReadingModal();
+      })
+      .catch((error)=>{
+        console.log(error)
+      })
+  }
+
+  const [selectedBook,setSelectedBook] = useState<any | null>(null);
+  function selectBook(e: React.FormEvent) {
+    setSelectedBook(JSON.parse((e.target as HTMLDivElement).dataset.book!))
+    whatImReadingRef.current.value = "";
+    closeReadingModal();
+  }
+
+  const postCurrentlyReadingMutation = useMutation({
+    mutationFn: async (e: React.FormEvent)=>{
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+        .post(server + "/api/currentlyreading",
+        {
+          image: (e.target as HTMLDivElement).dataset.image,
+          title: (e.target as HTMLDivElement).dataset.title,
+          author: (e.target as HTMLDivElement).dataset.author,
+          description: (e.target as HTMLDivElement).dataset.description
+        },
+        {
+          headers: {
+            'authorization': tokenCookie
+          }
+        }
+        )
+        .then((response)=>{
+          setSelectedBook(null)
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.message)
+        })
+      }
+      else {
+        throw new Error("Please login again")
+      }
+      return getDashboard();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['dashboardKey'] })
+      queryClient.resetQueries({queryKey: ['dashboardKey']})
+      queryClient.setQueryData(["dashboardKey"],data)
+    }
+  })
+  function postCurrentlyReading(e: React.FormEvent) {
+    postCurrentlyReadingMutation.mutate(e);
+  }
   
   const dashboard = useQuery({
     queryKey: ["dashboardKey"],
@@ -207,6 +285,100 @@ export default function Dashboard({server}: DashboardProps) {
     <>
       <Box className="main-content-smaller">
         <Skeleton isLoaded={!dashboard.isLoading}>
+          <Box 
+            m={0}
+            className="well"
+          >
+            <Flex gap={2} align="center">
+              <Input 
+                type="text" 
+                placeholder="What i'm reading"
+                borderRadius="25px" 
+                border="transparent"
+                bg="gray.100" 
+                _dark={{
+                  bg: "gray.500"
+                }}
+                ref={whatImReadingRef}
+                onKeyDown={e=>e.key === 'Enter' ? searchBook() : null}
+              />
+              <Button onClick={searchBook}>Search</Button>
+            </Flex>
+            {selectedBook ? (
+              <Box
+                my={2}
+                p={2}
+                rounded="md"
+                bg="gray.200"
+                _dark={{
+                  bg: 'gray.600'
+                }}
+                position="relative"
+              >
+                <Flex>
+                  <CloseButton
+                    position="absolute"
+                    top="0"
+                    right="0"
+                    onClick={e=>setSelectedBook(null)}
+                  />
+                  <Image 
+                    src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
+                    maxH="125px"
+                  />
+                  <Box 
+                    mx={2}
+                  >
+                    <Heading as="h5" size="sm" me={3}>
+                      {selectedBook.volumeInfo.title}
+                    </Heading>
+                    <Text>
+                      {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
+                    </Text>
+                    <Text
+                      noOfLines={2}
+                    >
+                      {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
+                    </Text>
+                    <Center>
+                      <Popover isLazy>
+                        <PopoverTrigger>
+                          <Button 
+                            size="xs" 
+                            variant="ghost" 
+                            m={1}
+                            h="auto"
+                          >
+                            ...
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <PopoverArrow />
+                          <PopoverCloseButton />
+                          <PopoverBody>
+                            {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
+                          </PopoverBody>
+                        </PopoverContent>
+                      </Popover>
+                    </Center>
+                    <Flex justify="flex-end">
+                      <Button 
+                        size="sm"
+                        data-image={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
+                        data-title={selectedBook.volumeInfo.title}
+                        data-author={selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
+                        data-description={selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
+                        onClick={e=>postCurrentlyReading(e)}
+                      >
+                        Post
+                      </Button>
+                    </Flex>
+                  </Box>
+                </Flex>
+              </Box>
+            ) : null}
+          </Box>
+
           {followingCurrentlyReadingSorted.map((reading: CurrentlyReading,i: number)=>{
               return (
                 reading.hidden ? (
@@ -214,8 +386,10 @@ export default function Dashboard({server}: DashboardProps) {
                 ) : (
                   <Box
                     my={5}
+                    mx=".5rem"
                     p={3}
                     rounded="md"
+                    boxShadow="base"
                     bg="gray.200"
                     _dark={{
                       bg: 'gray.600'
@@ -370,6 +544,97 @@ export default function Dashboard({server}: DashboardProps) {
             </ModalFooter>
         </ModalContent>
       </Modal>
+
+      <Modal 
+        isOpen={isOpenReadingModal} 
+        onClose={closeReadingModal}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent maxH="80vh">
+          <ModalHeader>
+            New Book Club Book
+          </ModalHeader>
+          <ModalCloseButton />
+            <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
+              <Stack gap={2} position="relative">
+                {bookResultsLoading ? (
+                  <Center>
+                    <Spinner size="xl"/>
+                  </Center>
+                ) : (
+                  <Flex gap={1} align="center" justify="space-between" flexWrap="wrap">
+                    {bookResults ? bookResults.map((book,i)=>{
+                      return (
+                        <Flex
+                          m={3}
+                          p={2}
+                          maxW="165px"
+                          direction="column"
+                          align="center"
+                          rounded="md"
+                          bg="gray.100"
+                          _dark={{
+                            bg: "gray.600"
+                          }}
+                          key={i}
+                        >
+                          <Box
+                            pointerEvents="none"
+                          >
+                            <Image
+                              maxW="100%" 
+                              w="100%"
+                              h="auto"
+                              pt={2} 
+                              mb={1}
+                              className="book-image"
+                              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                              src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
+                              alt="book image"
+                            />
+                            <Heading
+                              as="h4"
+                              size="sm"
+                            >
+                              {book.volumeInfo.title}
+                            </Heading>
+                            <Text>
+                              {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
+                            </Text>
+                          </Box>
+                          <Flex align="center" justify="space-between">
+                            <Popover isLazy>
+                              <PopoverTrigger>
+                                <Button size="xs" m={2}>Description</Button>
+                              </PopoverTrigger>
+                              <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody>{book.volumeInfo.description}</PopoverBody>
+                              </PopoverContent>
+                            </Popover>
+                            <Button 
+                              size="xs"
+                              data-book={JSON.stringify(book)}
+                              onClick={e=>selectBook(e)}
+                              colorScheme="green"
+                            >
+                              Set
+                            </Button>
+                          </Flex>
+                        </Flex>
+                      )
+                    }) : null}
+                  </Flex>
+                )}
+              </Stack>
+            </ModalBody>
+            <ModalFooter flexDirection="column">
+            </ModalFooter>
+        </ModalContent>
+      </Modal>
+
     </>
   );
 };
