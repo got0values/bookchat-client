@@ -132,6 +132,11 @@ export interface RegisterFormProps {
   server: string;
 }
 
+//Reset Password
+export interface ResetPasswordFormProps {
+  server: string;
+}
+
 
 //BookClubs
 export interface BookClubsType {

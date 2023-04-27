@@ -13,6 +13,7 @@ import Profile from './Profile/Profile';
 import ReadingClubs from './ReadingClubs/ReadingClubs';
 import ReadingClubEntries from "./ReadingClubs/ReadingClubEntries";
 import Settings from './Settings';
+import ResetPassword from "./ResetPassword";
 import { useAuth } from './hooks/useAuth';
 
 function App() {
@@ -30,6 +31,10 @@ function App() {
       <Route 
         path="/register" 
         element={<Register onLogin={onLogin} server={server} />} 
+      />
+      <Route 
+        path="/resetpassword" 
+        element={<ResetPassword server={server} />} 
       />
       <Route 
         path="/" 

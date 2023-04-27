@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { LoginFormProps } from "./types/types";
 import { 
@@ -13,7 +13,16 @@ import {
   Stack,
   Link,
   Heading,
-  useColorModeValue
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useColorModeValue,
+  useToast,
+  useDisclosure
 } from "@chakra-ui/react";
 import logo from './assets/community-book-club-logo3.png';
 import logoWhite from './assets/community-book-club-logo3-white.png';
@@ -28,6 +37,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { user,getUser } = useAuth();
+  const toast = useToast();
 
   const subdomain = window.location.hostname.split(".")[0];
   const {libraryFromSubdomain} = getLibraryFromSubdomain({subdomain,server});
@@ -74,6 +84,50 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
           <Heading as="h1" size="2xl">404</Heading>
       </Flex>
     )
+  }
+
+  const { 
+    isOpen: isOpenPasswordResetModal, 
+    onOpen: onOpenPasswordResetModal, 
+    onClose: onClosePasswordResetModal 
+  } = useDisclosure()
+  const [following,setFollowing] = useState<any[] | null>(null)
+  function openPasswordResetModal(e: any) {
+    onOpenPasswordResetModal()
+  }
+  function closePasswordResetModal(){
+    setPwResetError("")
+    onClosePasswordResetModal()
+  }
+
+  const pwResetEmailRef = useRef();
+  const [pwResetError,setPwResetError] = useState("");
+  async function pwResetEmailCallback() {
+    const pwResetEmail = (pwResetEmailRef.current as any).value;
+    if (pwResetEmail !== "") {
+      await axios
+      .post(server + "/api/pwresetemail", 
+      {
+        pwResetEmail: pwResetEmail
+      })
+      .then((response)=>{
+        closePasswordResetModal();
+        toast({
+          description: "Password reset email sent",
+          status: "success",
+          duration: 9000,
+          isClosable: true
+        })
+      })
+      .catch(({response})=>{
+        setPwResetError("Error: PWR200")
+        console.log(response.data.message)
+        throw new Error("An error has occurred")
+      })
+    }
+    else {
+      setPwResetError("Please enter your email address")
+    }
   }
 
   return (
@@ -142,11 +196,54 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
               </Button>
             </Box>
           </form>
+          <Text textAlign="center" mt={3}>
+            Forgot password? <Link 
+              href="#"
+              onClick={openPasswordResetModal}
+            >
+              Click here
+            </Link>
+          </Text>
         </Box>
         <Text fontSize={'lg'} color={'gray.600'} textAlign="center">
           Don't have an account? <Link href="/register" color={'blue.400'}>Register</Link>
         </Text>
       </Stack>
+
+      <Modal 
+        isOpen={isOpenPasswordResetModal} 
+        onClose={closePasswordResetModal}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent maxH="80vh">
+          <ModalHeader>
+            Reset Password
+          </ModalHeader>
+          <ModalCloseButton />
+            <ModalBody>
+              <FormLabel htmlFor="pwResetEmail">
+                Email
+              </FormLabel>
+              <Input
+                id="pwResetEmail"
+                type="email"
+                ref={pwResetEmailRef as any}
+              />
+            </ModalBody>
+            <ModalFooter justifyContent="space-between">
+              <Text color="red">
+                {pwResetError}
+              </Text>
+              <Button
+                onClick={e=>pwResetEmailCallback()}
+              >
+                Submit
+              </Button>
+            </ModalFooter>
+        </ModalContent>
+      </Modal>
+
     </Flex>
   );
 };
