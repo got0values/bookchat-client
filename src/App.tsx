@@ -14,6 +14,7 @@ import ReadingClubs from './ReadingClubs/ReadingClubs';
 import ReadingClubEntries from "./ReadingClubs/ReadingClubEntries";
 import Settings from './Settings';
 import ResetPassword from "./ResetPassword";
+import Terms from "./Terms";
 import { useAuth } from './hooks/useAuth';
 
 function App() {
@@ -31,6 +32,10 @@ function App() {
       <Route 
         path="/register" 
         element={<Register onLogin={onLogin} server={server} />} 
+      />
+      <Route 
+        path="/terms" 
+        element={<Terms/>} 
       />
       <Route 
         path="/resetpassword" 

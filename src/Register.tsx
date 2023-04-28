@@ -14,6 +14,7 @@ import {
   Link,
   Heading,
   useColorModeValue,
+  Checkbox,
   useToast
 } from "@chakra-ui/react";
 import {FaRegQuestionCircle} from 'react-icons/fa';
@@ -55,10 +56,20 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState<string | null>(null);
+  const [termsChecked,setTermsChecked] = useState(false);
   const [error, setError] = useState("");
 
   const subdomain = window.location.hostname.split(".")[0];
   const {libraryFromSubdomain} = getLibraryFromSubdomain({subdomain,server});  const toast = useToast();
+
+  function handleTermsChecked(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.checked) {
+      setTermsChecked(true)
+    }
+    else if (!e.target.checked) {
+      setTermsChecked(false)
+    }
+  }
 
   function confirmPasswordCheck(text: string) {
     setConfirmPassword(text)
@@ -226,6 +237,15 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                   {confirmPasswordError}
                 </Text>
               </FormControl>
+              <FormControl mb={4}>
+                <Checkbox
+                  onChange={e=>handleTermsChecked(e)}
+                >
+                  <Text>
+                    I agree to the <Link color="blue.400" href="/terms" target="_blank">Community Book Club Terms</Link>
+                  </Text>
+                </Checkbox>
+              </FormControl>
               <Box textAlign="center">
                 <Button 
                   type="submit"
@@ -235,7 +255,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                     bg: 'blue.500',
                   }}
                   size="lg"
-                  isDisabled={Boolean(passwordError) || password === "" || Boolean(confirmPasswordError) || confirmPassword === "" || email === "" || firstName === "" || lastName === ""}
+                  isDisabled={Boolean(passwordError) || password === "" || Boolean(confirmPasswordError) || confirmPassword === "" || email === "" || firstName === "" || lastName === "" || !termsChecked}
                 >
                   Register
                 </Button>
