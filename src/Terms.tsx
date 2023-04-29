@@ -7,12 +7,16 @@ import {
   Stack,
   Heading,
   Link,
-  useColorModeValue
+  UnorderedList,
+  ListItem,
+  useColorMode,
+  OrderedList
 } from "@chakra-ui/react";
 import logo from './assets/community-book-club-logo3.png';
 import logoWhite from './assets/community-book-club-logo3-white.png';
 
 const Terms = () => {
+  const {colorMode} = useColorMode()
 
   return (
     <Flex
@@ -27,7 +31,7 @@ const Terms = () => {
           mb={2}
         >
           <Image 
-            src={useColorModeValue(logo,logoWhite)} 
+            src={colorMode === "light" ? logo : logoWhite} 
             maxH="75px"
           />
         </Link>
@@ -38,31 +42,172 @@ const Terms = () => {
           backgroundColor="white"
           boxShadow="base"
           rounded="sm"
-          _dark={{
-            backgroundColor: "white"
-          }}
+          className="well"
         >
           <Heading as="h1" size="lg" textAlign="center">
-            Terms and Conditions
+            Terms of Service
           </Heading>
+          <Text>
+            The Community Book Club Product enables people to connect with each other and build communities. These Terms govern your use of Community Book Club.
+          </Text>
+          <Text>
+            We don't charge you to use Community Book Club. Instead, we get commissions for purchases made through links to products and/or get paid to show you ads. By using Community Book Club, you agree that we can show you ads that we think may be relevant to you and your interests. Protecting people's privacy is central to how we've designed our ad system. We don't sell your personal data.
+          </Text>
           <Heading as="h2" size="md">
-            1. Terms of use
+            Your commitments to Community Book Club and our community
           </Heading>
           <Text>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi non risus pharetra, consequat diam vel, tristique dui. Nulla gravida varius leo eget porttitor. Suspendisse hendrerit, augue in mollis congue, est magna accumsan nunc, ac lacinia dui risus vel risus. Curabitur sit amet dapibus lacus, id bibendum odio. Fusce at vestibulum erat, sed consequat erat. Vestibulum a accumsan leo. Maecenas non tellus nulla. Pellentesque tincidunt libero libero, ac condimentum libero pretium eu.
+            We provide our service to you and others to help advance our mission. In exchange, we need you to make the following commitments:
+          </Text>
+          <Text fontWeight="bold">
+            1. Who can use Community Book Club
           </Text>
           <Text>
-            Mauris sollicitudin bibendum sem. Integer vitae ligula condimentum, efficitur ipsum et, imperdiet est. Maecenas luctus tempor turpis, sit amet rhoncus felis finibus semper. Cras purus metus, tincidunt ac dolor ac, ultrices accumsan felis. Integer tristique tortor eget massa interdum faucibus. Aenean non sodales magna. Mauris tristique magna ac enim ornare viverra. Suspendisse elit sem, dignissim sit amet est id, pharetra semper nisl. Nunc interdum dolor a purus sagittis efficitur. Integer molestie mi mi, cursus tristique tortor molestie id. Aliquam blandit libero risus, nec congue ex auctor eget. Cras tincidunt vel lacus at porta. Vestibulum cursus nulla quis urna pulvinar, at auctor ligula vehicula. Curabitur mattis congue volutpat.
+            When people stand behind their opinions and actions, our community is safer and more accountable. For this reason, you must:
+          </Text>
+          <Box pl={3}>
+            <UnorderedList spacing={2}>
+              <ListItem>
+                Provide for your account the same name that you use in everyday life.
+              </ListItem>
+              <ListItem>
+                Provide accurate information about yourself.
+              </ListItem>
+              <ListItem>
+                Create only one account (your own) and use it for personal purposes.
+              </ListItem>
+              <ListItem>
+                Not share your password, give access to your Community Book Club account to others, or transfer your account to anyone else (without our permission).
+              </ListItem>
+            </UnorderedList>
+          </Box>
+          <Text>
+            We try to make Community Book Club broadly available to everyone, but you cannot use Community Book Club if:
+          </Text>
+          <Box pl={3}>
+            <UnorderedList spacing={2}>
+              <ListItem>
+                You are a convicted sex offender.
+              </ListItem>
+              <ListItem>
+                We've previously disabled your account for violations of our Terms, the administering library's terms, or other terms and policies that apply to your use of Community Book Club. If we disable your account for a violation of our Terms or other terms and policies, you agree not to create another account without our permission. Receiving permission to create a new account is provided at our sole discretion, and does not mean or imply that the disciplinary action was wrong or without cause.
+              </ListItem>
+              <ListItem>
+                You are prohibited from receiving our product under applicable laws.
+              </ListItem>
+            </UnorderedList>
+          </Box>
+          <Text fontWeight="bold">
+            2. What you can share and do on Community Book Club Products
           </Text>
           <Text>
-            Curabitur faucibus eros tempus est elementum, at faucibus lacus mattis. Fusce at lectus venenatis, vestibulum libero et, iaculis mauris. Praesent nunc urna, volutpat nec ultrices et, tristique vitae velit. Nam aliquet condimentum porttitor. Cras tincidunt fermentum ultrices. Curabitur aliquet, felis dignissim tempor imperdiet, nisi eros sagittis urna, et pretium tellus sem eu quam. Suspendisse pretium diam ac sem accumsan sagittis vitae et tellus. Suspendisse vehicula nisi et metus tincidunt finibus. Duis gravida, orci cursus consequat mollis, eros velit faucibus justo, vel facilisis tellus metus non ligula. Phasellus sed diam sed orci venenatis lacinia. Morbi eget mi a mi sollicitudin tincidunt ac in elit. In ac ante sed est ullamcorper egestas. Aenean blandit ex vitae luctus fermentum. Nulla pretium, sapien vitae semper pellentesque, orci mauris viverra libero, ac rhoncus nisi massa eu sapien. Pellentesque eu erat purus. Suspendisse tincidunt, urna sit amet mollis vulputate, libero augue elementum erat, eget placerat lectus libero quis tortor.
+            We want people to use Community Book Club Products to express themselves and to share content that is important to them, but not at the expense of the safety and well-being of others or the integrity of the community. You therefore agree not to engage in the conduct described below (or to facilitate or support others in doing so):
           </Text>
           <Text>
-            Maecenas elementum libero at urna fringilla, eget dignissim mauris luctus. Nullam et placerat velit. Duis sollicitudin ultricies leo, at finibus mi sagittis eget. Maecenas quis suscipit elit. Mauris ut mi vel leo sodales volutpat non nec ligula. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nunc fermentum odio eu mi egestas bibendum. In mattis tincidunt urna, scelerisque pharetra ligula rutrum gravida. Fusce ullamcorper libero eu fermentum consequat. Praesent faucibus condimentum nisi, nec tincidunt odio hendrerit eu. Interdum et malesuada fames ac ante ipsum primis in faucibus.
+            You may not use our Product to do or share anything:
           </Text>
           <Text>
-            Suspendisse posuere ipsum sit amet mi pulvinar, et blandit enim aliquet. Proin porttitor molestie eleifend. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce a quam tortor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Duis vulputate bibendum placerat. Curabitur ipsum mi, congue sit amet luctus sed, consequat ac dolor.
+            That violates these Terms, the Community Standards, or other terms and policies that apply to your use of our Products.
           </Text>
+          <Text>
+            That is unlawful, misleading, discriminatory or fraudulent (or assists someone else in using our Products in such a way).
+          </Text>
+          <Text>
+            That infringes or violates someone else's rights, including their intellectual property rights (such as by infringing another's copyright or trademark, or distributing or selling counterfeit or pirated goods), unless an exception or limitation applies under applicable law.
+          </Text>
+          <Text>
+            You may not upload viruses or malicious code, use the services to send spam, or do anything else that could disable, overburden, interfere with, or impair the proper working, integrity, operation, or appearance of our services, systemes, or Product.
+          </Text>
+          <Text>
+            You may not access or collect data from our Product using automated means (without our prior permission) or attempt to access data you do not have permission to access.
+          </Text>
+          <Text>
+            You may not proxy, request, or collect Product usernames or passwords, or misappropriate access tokens.
+            You may not sell, license, or purchase any data obtained from us or our services, except as provided in the Platform Terms.
+          </Text>
+          <Text>
+            We can remove or restrict access to content that is in violation of these provisions. We can also suspend or disable your account for conduct that violates these provisions.
+          </Text>
+          <Text>
+            To help support our community, we encourage you to report content or conduct that you believe violates your rights (including intellectual property rights) or our terms and policies to admin@communitybookclub.com, if this feature exists in your jurisdiction.
+          </Text>
+          <Text>
+            We also can remove or restrict access to content features, services, or information if we determine that doing so is reasonably necessary to avoid or mitigate misuse of our services or adverse legal or regulatory impacts to Community Book Club.
+          </Text>
+          <Heading as="h2" size="md">
+            Additional provisions
+          </Heading>
+          <Text fontWeight="bold">
+            1. Updating our Terms
+          </Text>
+          <Text>
+            We work constantly to improve our services and develop new features to make our Product better for you and our community. As a result, we may need to update these Terms from time to time to accurately reflect our services and practices, to promote a safe and secure experience on our Products and services, and/or to comply with applicable law. Unless otherwise required by law, we will notify you before we make changes to these Terms and give you an opportunity to review them before they go into effect. Once any updated Terms are in effect, you will be bound by them if you continue to use our Product.
+          </Text>
+          <Text>
+            We hope that you will continue using our Product, but if you do not agree to our updated Terms and no longer want to be a part of the Community Book Club community, you can delete your account at any time.
+          </Text>
+          <Text fontWeight="bold">
+            2. Account suspension or termination
+          </Text>
+          <Text>
+            We want Community Book Club to be a place where people feel welcome and safe to express themselves and share their thoughts and ideas.
+          </Text>
+          <Text>
+            If we determine, in our discretion, that you have clearly, seriously or repeatedly breached our Terms or Policies, we may suspend or permanently disable your access to Community Book Club, and we may permanently disable or delete your account. We may also disable or delete your account where we are required to do so for legal reasons.
+          </Text>
+          <Text>
+            We may disable or delete your account if after registration your account is not confirmed, your account is unused and remains inactive for an extended period of time, or if we detect someone may have used it without your permission and we are unable to confirm your ownership of the account.
+          </Text>
+          <Text>
+            Where we take such action we'll let you know and explain any options you have to request a review, unless doing so may expose us or others to legal liability; harm our community of users; compromise or interfere with the integrity or operation of any of our services, systems or Product; where we are restricted due to technical limitations; or where we are prohibited from doing so for legal reasons.
+          </Text>
+          <Text>
+            If you delete or we disable or delete your account, these Terms shall terminate as an agreement between you and us.
+          </Text>
+          <Text fontWeight="bold">
+            3. Limits on liability
+          </Text>
+          <Text>
+            We work hard to provide the best Products we can and to specify clear guidelines for everyone who uses them. Our Products, however, are provided "as is," and we make no guarantees that they always will be safe, secure, or error-free, or that they will function without disruptions, delays, or imperfections. To the extent permitted by law, we also DISCLAIM ALL WARRANTIES, WHETHER EXPRESS OR IMPLIED, INCLUDING THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. We do not control or direct what people and others do or say, and we are not responsible for their actions or conduct (whether online or offline) or any content they share (including offensive, inappropriate, obscene, unlawful, and other objectionable content).
+          </Text>
+          <Text>
+            We cannot predict when issues might arise with our Products. Accordingly, our liability shall be limited to the fullest extent permitted by applicable law, and under no circumstance will we be liable to you for any lost information, or data, or consequential, special, indirect, exemplary, punitive, or incidental damages arising out of or related to these Terms or the Community Book Club Product (however caused and on any theory of liability, including negligence), even if we have been advised of the possibility of such damages.
+          </Text>
+          <Text fontWeight="bold">
+            4. Other
+          </Text>
+          <Box pl={3}>
+            <OrderedList>
+              <ListItem>
+                <Text>
+                  These Terms make up the entire agreement between you and Community Book Club regarding your use of our Product. They supersede any prior agreements.
+                </Text>
+              </ListItem>
+              <ListItem>
+                <Text>
+                  If any portion of these Terms is found to be unenforceable, the unenforceable portion will be deemed amended to the minimum extent necessary to make it enforceable, and if it can't be made enforceable, then it will be severed and the remaining portion will remain in full force and effect. If we fail to enforce any of these Terms, it will not be considered a waiver. Any amendment to or waiver of these Terms must be made in writing and signed by us.
+                </Text>
+              </ListItem>
+              <ListItem>
+                <Text>
+                  You will not transfer any of your rights or obligations under these Terms to anyone else without our consent.
+                </Text>
+                <Text>
+                  These Terms do not confer any third-party beneficiary rights. All of our rights and obligations under these Terms are freely assignable by us in connection with a merger, acquisition, or sale of assets, or by operation of law or otherwise.
+                </Text>
+              </ListItem>
+              <ListItem>
+                <Text>
+                  We may need to change the username for your account in certain circumstances (for example, if someone else claims the username and it appears unrelated to the name you use in everyday life).
+                </Text>
+              </ListItem>
+              <ListItem>
+                <Text>
+                  We reserve all rights not expressly granted to you.
+                </Text>
+              </ListItem>
+            </OrderedList>
+          </Box>
         </Stack>
       </Stack>
     </Flex>

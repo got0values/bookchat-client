@@ -12,7 +12,7 @@ import {
   Image,
   Stack,
   Heading,
-  useColorModeValue,
+  useColorMode,
   useToast
 } from "@chakra-ui/react";
 import { ImInfo } from 'react-icons/im';
@@ -23,6 +23,7 @@ import passwordValidator from "password-validator";
 import axios from "axios";
 
 const ResetPassword: React.FC<ResetPasswordFormProps> = ({ server }) => {
+  const {colorMode} = useColorMode()
   const [searchParams] = useSearchParams();
   const [paramsError,setParamsError] = useState(false);
   const [token,setToken] = useState<string | null>(null);
@@ -120,21 +121,21 @@ const ResetPassword: React.FC<ResetPasswordFormProps> = ({ server }) => {
       minH={'100vh'}
       align={'center'}
       justify={'center'}
-      bg={useColorModeValue('gray.50', 'gray.800')}
+      bg={colorMode === "light" ? "gray.50" : "gray.800"}
     >
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align="center">
           {libraryFromSubdomain ? (
             <Text>{libraryFromSubdomain.name}</Text>
           ): null}
-          <Image src={useColorModeValue(logo,logoWhite)} maxH="75px"/>
+          <Image src={colorMode === "light" ? logo : logoWhite} maxH="75px"/>
         </Stack>
         <Stack align={'center'}>
           <Heading fontSize={'4xl'}>Reset Password</Heading>
         </Stack>
         <Box
           rounded={'lg'}
-          bg={useColorModeValue('white', 'gray.700')}
+          bg={colorMode === "light" ? "white" : "gray.700"}
           boxShadow={'lg'}
           p={8}
         >

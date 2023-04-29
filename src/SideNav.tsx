@@ -11,7 +11,6 @@ import {
   CloseButton,
   Flex,
   Icon,
-  useColorModeValue,
   Drawer,
   DrawerContent,
   Text,
@@ -75,9 +74,9 @@ export default function SideNav({onLogout}: SideNavProps) {
     return (
       <Flex
         direction="column"
-        bg={useColorModeValue('white', 'gray.900')}
+        bg={colorMode === "light" ? "white" : "gray.900"}
         borderRight="1px"
-        borderRightColor={useColorModeValue('gray.200', 'gray.700')}
+        borderRightColor={colorMode === "light" ? "gray.200" : "gray.700"}
         w={{ base: 'full', md: "275px" }}
         pos="fixed"
         h="full"
@@ -226,7 +225,7 @@ export default function SideNav({onLogout}: SideNavProps) {
   return (
     <>
       <Box 
-        bg={useColorModeValue('gray.100', 'gray.900')}
+        bg={colorMode === "light" ? "gray.100" : "gray.900"}
       >
         <SidebarContent
           onClose={() => onClose}
@@ -250,9 +249,9 @@ export default function SideNav({onLogout}: SideNavProps) {
           px={{ base: 4, md: 24 }}
           height="20"
           alignItems="center"
-          bg={useColorModeValue('white', 'gray.900')}
+          bg={colorMode === "light" ? "white" : "gray.900"}
           borderBottomWidth="1px"
-          borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
+          borderBottomColor={colorMode === "light" ? "gray.200" : "gray.700"}
           justifyContent="space-between"
           display={{ base: 'flex', md: 'none' }}
         >

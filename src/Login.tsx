@@ -20,7 +20,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  useColorModeValue,
+  useColorMode,
   useToast,
   useDisclosure
 } from "@chakra-ui/react";
@@ -38,6 +38,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
   const [error, setError] = useState("");
   const { user,getUser } = useAuth();
   const toast = useToast();
+  const {colorMode} = useColorMode()
 
   const subdomain = window.location.hostname.split(".")[0];
   const {libraryFromSubdomain} = getLibraryFromSubdomain({subdomain,server});
@@ -135,7 +136,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
       minH={'100vh'}
       align={'center'}
       justify={'center'}
-      bg={useColorModeValue('gray.50', 'gray.800')}
+      bg={colorMode === "light" ? "gray.50" : "gray.800"}
     >
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align={'center'}>
@@ -143,13 +144,13 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
             {libraryFromSubdomain ? (
               <Text>{libraryFromSubdomain.name}</Text>
             ): null}
-            <Image src={useColorModeValue(logo,logoWhite)} maxH="75px"/>
+            <Image src={colorMode === "light" ? logo : logoWhite} maxH="75px"/>
           </Stack>
           <Heading fontSize={'4xl'}>Sign in to your account</Heading>
         </Stack>
         <Box
           rounded={'lg'}
-          bg={useColorModeValue('white', 'gray.700')}
+          bg={colorMode === "light" ? "white" : "gray.700"}
           boxShadow={'lg'}
           p={8}
         >

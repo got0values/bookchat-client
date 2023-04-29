@@ -13,7 +13,7 @@ import {
   Stack,
   Link,
   Heading,
-  useColorModeValue,
+  useColorMode,
   Checkbox,
   useToast
 } from "@chakra-ui/react";
@@ -26,6 +26,7 @@ import passwordValidator from "password-validator";
 import axios from "axios";
 
 const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
+  const{colorMode} = useColorMode();
   const [searchParams] = useSearchParams();
   const [role,setRole] = useState("user");
   var schema = new passwordValidator();
@@ -141,14 +142,14 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
       minH={'100vh'}
       align={'center'}
       justify={'center'}
-      bg={useColorModeValue('gray.50', 'gray.800')}
+      bg={colorMode === "light" ? "gray.50" : "gray.800"}
     >
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align="center">
           {libraryFromSubdomain ? (
             <Text>{libraryFromSubdomain.name}</Text>
           ): null}
-          <Image src={useColorModeValue(logo,logoWhite)} maxH="75px"/>
+          <Image src={colorMode === "light" ? logo : logoWhite} maxH="75px"/>
         </Stack>
         <Stack align={'center'}>
           <Heading fontSize={'4xl'}>Register for an account</Heading>
@@ -158,7 +159,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
         </Stack>
         <Box
           rounded={'lg'}
-          bg={useColorModeValue('white', 'gray.700')}
+          bg={colorMode === "light" ? "white" : "gray.700"}
           boxShadow={'lg'}
           p={8}
         >
