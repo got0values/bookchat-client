@@ -305,6 +305,7 @@ export interface ReadingClub {
   library: number,
   hidden: number,
   ReadingClubForm: ReadingClubForm,
+  milestones: number;
   created_on: string
 }
 

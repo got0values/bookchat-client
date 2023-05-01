@@ -12,6 +12,7 @@ import BookClubBook from './BookClubs/BookClubBook';
 import Profile from './Profile/Profile';
 import ReadingClubs from './ReadingClubs/ReadingClubs';
 import ReadingClubEntries from "./ReadingClubs/ReadingClubEntries";
+import ReadingClubMilestones from "./ReadingClubs/ReadingClubMilestones";
 import Settings from './Settings';
 import ResetPassword from "./ResetPassword";
 import Terms from "./Terms";
@@ -91,6 +92,10 @@ function App() {
           <Route
             path="entries"
             element={ <ReadingClubEntries server={server}/> }
+          />
+          <Route
+            path="milestones"
+            element={ <ReadingClubMilestones server={server}/> }
           />
         </Route>
         <Route 

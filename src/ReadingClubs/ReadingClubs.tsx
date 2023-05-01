@@ -191,6 +191,7 @@ export default function ReadingClubs({server}: {server: string}) {
   const createReadingClubNameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
   const createReadingClubDescriptionRef = useRef<HTMLTextAreaElement>({} as HTMLTextAreaElement);
   const createReadingClubFormRef = useRef<HTMLInputElement>(null);
+  const createReadingClubMilestonesRef = useRef<HTMLInputElement>(null);
   const [createReadingClubError,setCreateReadingClubError] = useState<string>("");
   const createReadingClubMutation = useMutation({
     mutationFn: async (e: React.FormEvent<HTMLFormElement>)=>{
@@ -198,6 +199,7 @@ export default function ReadingClubs({server}: {server: string}) {
       const readingClubName = createReadingClubNameRef.current.value;
       const readingClubDescription = createReadingClubDescriptionRef.current.value;
       const readingClubFormAnswer = (createReadingClubFormRef.current as HTMLInputElement).value === "" ? null : parseInt((createReadingClubFormRef.current as HTMLInputElement).value)
+      const readingClubMilestones = parseInt((createReadingClubMilestonesRef.current as HTMLInputElement).value);
       let tokenCookie: string | null = Cookies.get().token;
       if (readingClubName.length) {
         await axios
@@ -205,7 +207,8 @@ export default function ReadingClubs({server}: {server: string}) {
         {
           readingClubName: readingClubName,
           readingClubDescription: readingClubDescription,
-          readingClubForm: readingClubFormAnswer
+          readingClubForm: readingClubFormAnswer,
+          readingClubMilestones: readingClubMilestones
         },
         {headers: {
           'authorization': tokenCookie
@@ -279,6 +282,7 @@ export default function ReadingClubs({server}: {server: string}) {
   const editReadingClubNameRef = useRef<HTMLInputElement>({} as HTMLInputElement);
   const editReadingClubDescriptionRef = useRef<HTMLTextAreaElement>({} as HTMLTextAreaElement);
   const editReadingClubHiddenRef = useRef<HTMLInputElement>({} as HTMLInputElement);
+  const editReadingClubMilestonesRef = useRef<HTMLInputElement>({} as HTMLInputElement);
   const [editReadingClubError,setEditReadingClubError] = useState<string>("");
   const editReadingClubMutation = useMutation({
     mutationFn: async (e: React.FormEvent<HTMLFormElement>)=>{
@@ -287,6 +291,7 @@ export default function ReadingClubs({server}: {server: string}) {
       const readingClubDescription = editReadingClubDescriptionRef.current.value;
       const readingClubHidden = editReadingClubHiddenRef.current.checked ? 1 : 0;
       const readingClubFormAnswer = (editReadingClubFormRef.current as HTMLInputElement).value === "" ? null : parseInt((editReadingClubFormRef.current as HTMLInputElement).value)
+      const readingClubMilestones = parseInt((editReadingClubMilestonesRef.current as HTMLInputElement).value);
 
       let tokenCookie: string | null = Cookies.get().token;
       if (readingClubName.length) {
@@ -297,6 +302,7 @@ export default function ReadingClubs({server}: {server: string}) {
           readingClubName: readingClubName,
           readingClubDescription: readingClubDescription,
           readingClubForm: readingClubFormAnswer,
+          readingClubMilestones: readingClubMilestones,
           readingClubHidden: readingClubHidden
         },
         {headers: {
@@ -806,6 +812,16 @@ export default function ReadingClubs({server}: {server: string}) {
                       View entries
                     </Button>
                     <Divider/>
+                    <Button
+                      width="auto"
+                      variant="ghost"
+                      size="sm"
+                      leftIcon={<AiOutlineLineChart size={25} />}
+                      onClick={e=>navigate("/readingclubs/milestones")}
+                    >
+                      Member milestones
+                    </Button>
+                    <Divider/>
                     <Flex justify="center" w="100%">
                       <Button
                         width="auto"
@@ -1215,6 +1231,14 @@ export default function ReadingClubs({server}: {server: string}) {
                           ) : null}
                         </Select>
                       </Box>
+                      <Box>
+                        <FormLabel htmlFor="milestones" mb={1}>Number of milestones</FormLabel>
+                        <Input
+                          type="number"
+                          id="milestones"
+                          ref={createReadingClubMilestonesRef}
+                        />
+                      </Box>
                     </Flex>
                   </ModalBody>
                   <ModalFooter>
@@ -1269,22 +1293,31 @@ export default function ReadingClubs({server}: {server: string}) {
                         defaultValue={editDescription}
                       ></Textarea>
                     </Box>
-                    <Text color="red" width="100%">
-                      {editReadingClubError}
-                    </Text>
-                    <Select 
-                      ref={editReadingClubFormRef as any}
-                      defaultValue={defaultForm}
-                    >
-                        <option value="">None</option>
-                        {forms && forms.length ? (
-                          forms.map((q: ReadingClubForm,i: number)=>{
-                            return (
-                              <option key={i} value={q.id}>{q.name}</option>
-                            )
-                          })
-                        ) : null}
-                    </Select>
+                    <Box>
+                      <FormLabel htmlFor="form" mb={1}>Form</FormLabel>
+                      <Select 
+                        id="form"
+                        ref={editReadingClubFormRef as any}
+                        defaultValue={defaultForm}
+                      >
+                          <option value="">None</option>
+                          {forms && forms.length ? (
+                            forms.map((q: ReadingClubForm,i: number)=>{
+                              return (
+                                <option key={i} value={q.id}>{q.name}</option>
+                              )
+                            })
+                          ) : null}
+                      </Select>
+                    </Box>
+                    <Box>
+                      <FormLabel htmlFor="milestones" mb={1}>Number of milestones</FormLabel>
+                      <Input
+                        type="number"
+                        id="milestones"
+                        ref={editReadingClubMilestonesRef}
+                      />
+                    </Box>
                     <Checkbox 
                       defaultChecked={editHidden.includes("1")}
                       ref={editReadingClubHiddenRef}
@@ -1293,6 +1326,9 @@ export default function ReadingClubs({server}: {server: string}) {
                     >
                       Hide?
                     </Checkbox>
+                    <Text color="red" width="100%">
+                      {editReadingClubError}
+                    </Text>
                   </Flex>
                 </ModalBody>
                 <ModalFooter>
