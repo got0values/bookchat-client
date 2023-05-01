@@ -32,6 +32,7 @@ import {
   Td,
   Checkbox,
   TableContainer,
+  Spinner,
   useToast,
   useDisclosure
 } from "@chakra-ui/react";
@@ -74,9 +75,41 @@ export default function ReadingClubMilestones({server}: {server: string}) {
   }
 
   const [milestonesNumber,setMilestonesNumber] = useState(0)
-  function getMilestonesNumber(e: any) {
-    const dataMilestonesNumber = e.target.options[e.target.selectedIndex].dataset.milestonesnumber;
-    setMilestonesNumber(parseInt(dataMilestonesNumber))
+  const [entryPeople,setEntryPeople] = useState({} as any)
+  const [entriesLoading,setEntriesLoading] = useState(false)
+  async function getMilestonesReadingClubEntries(e: any) {
+    setEntriesLoading(true)
+    let tokenCookie: string | null = Cookies.get().token;
+    if (tokenCookie) {
+      await axios
+        .get(`${server}/api/getmilestonesreadingclubentries?readingclub=${e.target.value}`,
+          {
+            headers: {
+              'authorization': tokenCookie
+            }
+          }
+        )
+        .then((response)=>{
+          const {data} = response;
+          console.log(data)
+          setMilestonesNumber(data.milestones)
+          let entries = data.readingClubEntries.filter((value: any, index: number, self: any) =>
+            index === self.findIndex((t: any) => (
+              t.Profile.id === value.Profile.id
+            ))
+          )
+          
+          setEntryPeople(entries)
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data.error)
+        })
+    }
+    else {
+      throw new Error("RCMSE101")
+    }
+    setEntriesLoading(false)
   }
 
   const { 
@@ -178,7 +211,7 @@ export default function ReadingClubMilestones({server}: {server: string}) {
             </Heading>
             <Select
               width="auto"
-              onClick={e=>getMilestonesNumber(e)}
+              onClick={e=>getMilestonesReadingClubEntries(e)}
             >
               <option value="">None</option>
               {readingClubs && readingClubs.length ? (
@@ -187,7 +220,6 @@ export default function ReadingClubMilestones({server}: {server: string}) {
                     <option 
                       key={readingClub.id}
                       value={readingClub.id}
-                      data-milestonesnumber={readingClub.milestones}
                     >
                       {readingClub.name}
                     </option>
@@ -200,7 +232,6 @@ export default function ReadingClubMilestones({server}: {server: string}) {
             whiteSpace="break-spaces"
             overflowX="auto"
             overflowY="auto"
-            // overflow="auto"
             display="block"
             maxH="75vh"
           >
@@ -218,7 +249,7 @@ export default function ReadingClubMilestones({server}: {server: string}) {
                   {milestonesNumber ? (
                     [...Array(milestonesNumber)].map((m,i)=>{
                       return (
-                        <Th>{i + 1}</Th>
+                        <Th key={i}>{i + 1}</Th>
                       )
                     })
                   ) : null}
@@ -227,49 +258,61 @@ export default function ReadingClubMilestones({server}: {server: string}) {
                 </Tr>
               </Thead>
               <Tbody>
-                <Tr>
-                  <Td
-                    maxWidth="125px"
-                    whiteSpace="break-spaces"
-                  >
-                    Name
-                  </Td>
-                  <Td
-                    maxWidth="125px"
-                    whiteSpace="break-spaces"
-                  >
-                    Number
-                  </Td>
-                  {milestonesNumber ? (
-                    [...Array(milestonesNumber)].map((m)=>{
-                      return (
-                        <Td>
-                          <Checkbox></Checkbox>
+              {entriesLoading ? (
+                <Flex justify="center" w="100%">
+                  <Spinner/>
+                </Flex>
+              ) : (
+                entryPeople && entryPeople.length ? (
+                  entryPeople.map((eP: UserEntry,i: number)=>{
+                    return (
+                      <Tr key={i}>
+                        <Td
+                          maxWidth="125px"
+                          whiteSpace="break-spaces"
+                        >
+                          {eP.Profile.User.last_name + ", " + eP.Profile.User.first_name}
                         </Td>
-                      )
-                    })
-                  ) : null}
-                  <Td
-                    maxWidth="125px"
-                    whiteSpace="break-spaces"
-                  >
-                    <Button
-                      size="xs"
-                    >
-                      Save
-                    </Button>
-                  </Td>
-                  <Td
-                    maxWidth="125px"
-                    whiteSpace="break-spaces"
-                  >
-                    <Button
-                      size="xs"
-                    >
-                      View
-                    </Button>
-                  </Td>
-                </Tr>
+                        <Td
+                          maxWidth="125px"
+                          whiteSpace="break-spaces"
+                        >
+                          Number
+                        </Td>
+                        {milestonesNumber ? (
+                          [...Array(milestonesNumber)].map((m,i)=>{
+                            return (
+                              <Td key={i}>
+                                <Checkbox></Checkbox>
+                              </Td>
+                            )
+                          })
+                        ) : null}
+                        <Td
+                          maxWidth="125px"
+                          whiteSpace="break-spaces"
+                        >
+                          <Button
+                            size="xs"
+                          >
+                            Save
+                          </Button>
+                        </Td>
+                        <Td
+                          maxWidth="125px"
+                          whiteSpace="break-spaces"
+                        >
+                          <Button
+                            size="xs"
+                          >
+                            View
+                          </Button>
+                        </Td>
+                      </Tr>
+                    )
+                  })
+                ) : null
+              )}
               </Tbody>
             </Table>
           </TableContainer>
