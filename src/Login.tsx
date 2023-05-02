@@ -45,7 +45,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
 
   useEffect(()=>{
     const tokenCookie = Cookies.get().token;
-    getUser()
+    // getUser()
     if (user && user !== null && tokenCookie) {
       let protocol = window.location.protocol;
       let slicedHost = window.location.host.split(".").slice(1);
