@@ -60,6 +60,7 @@ export interface ProfileType {
   User: User;
   BookClubs: BookClubsType[];
   ReaderNotes: ReaderNotes;
+  ReaderMilestones: ReaderMilestones[];
   CurrentlyReading: CurrentlyReading[];
   Following_Following_self_profile_idToProfile?: Following_Following_self_profile_idToProfile[];
   Following_Following_following_profile_idToProfile?: Following_Following_following_profile_idToProfile[];
@@ -352,9 +353,21 @@ export interface UserEntry {
   form_name: string;
 }
 
+export interface UserEntryWNumOfEntries extends UserEntry {
+  numOfEntries: number;
+}
+
 export interface ReaderNotes {
   id: number;
   profile: number;
   notes: string;
+  datetime: string;
+}
+
+export interface ReaderMilestones {
+  id: number;
+  profile: number;
+  reading_club: number;
+  milestones: string;
   datetime: string;
 }

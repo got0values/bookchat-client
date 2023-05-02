@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ReadingClub, ReaderNotes, ReadingClubForm, School, EntryData, UserEntry } from "../types/types";
+import { ReadingClub, ReaderNotes, UserEntry, UserEntryWNumOfEntries, HTMLInputEvent } from "../types/types";
 import { 
   Box,
   Heading,
@@ -46,7 +46,6 @@ import axios from "axios";
 export default function ReadingClubMilestones({server}: {server: string}) {
   dayjs.extend(utc);
   const toast = useToast()
-  const queryClient = useQueryClient();
 
   async function getMilestonesReadingClubs() {
     let tokenCookie: string | null = Cookies.get().token;
@@ -77,12 +76,13 @@ export default function ReadingClubMilestones({server}: {server: string}) {
   const [milestonesNumber,setMilestonesNumber] = useState(0)
   const [entryPeople,setEntryPeople] = useState({} as any)
   const [entriesLoading,setEntriesLoading] = useState(false)
-  async function getMilestonesReadingClubEntries(e: any) {
+  async function getMilestonesReadingClubEntries(readingClubId: string) {
+    if (readingClubId === "") return;
     setEntriesLoading(true)
     let tokenCookie: string | null = Cookies.get().token;
     if (tokenCookie) {
       await axios
-        .get(`${server}/api/getmilestonesreadingclubentries?readingclub=${e.target.value}`,
+        .get(`${server}/api/getmilestonesreadingclubentries?readingclub=${readingClubId}`,
           {
             headers: {
               'authorization': tokenCookie
@@ -91,14 +91,26 @@ export default function ReadingClubMilestones({server}: {server: string}) {
         )
         .then((response)=>{
           const {data} = response;
-          console.log(data)
           setMilestonesNumber(data.milestones)
           let entries = data.readingClubEntries.filter((value: any, index: number, self: any) =>
             index === self.findIndex((t: any) => (
               t.Profile.id === value.Profile.id
             ))
           )
-          
+          //enter number of entries
+          entries = entries.map((entry: UserEntry)=>{
+            return {...entry, numOfEntries: data.readingClubEntries.filter((e: UserEntry)=>e.Profile.id === entry.Profile.id).length}
+          })
+          //filter profile milestones to specific reading club
+          entries = entries.map((entry: UserEntry)=>{
+            return {
+              ...entry, Profile: {
+                ...entry.Profile, ReaderMilestones: entry.Profile.ReaderMilestones.filter((milestones)=>{
+                  return milestones.reading_club === parseInt(readingClubId)
+                })[0]
+              }
+            }
+          })
           setEntryPeople(entries)
         })
         .catch(({response})=>{
@@ -158,17 +170,12 @@ export default function ReadingClubMilestones({server}: {server: string}) {
               isClosable: true
             })
           }
+          window.location.reload();
         })
         .catch(({response})=>{
           console.log(response)
           throw new Error(response.data.message)
         })
-      // return getReadingClubEntries();
-    },
-    onSuccess: (data,variables)=>{
-      // queryClient.invalidateQueries({ queryKey: ['readingClubEntriesKey'] })
-      // queryClient.resetQueries({queryKey: ['readingClubEntriesKey']})
-      // queryClient.setQueryData(["readingClubEntriesKey"],data)
     }
   })
   function createUpdateReaderNotes(e: React.FormEvent) {
@@ -185,6 +192,56 @@ export default function ReadingClubMilestones({server}: {server: string}) {
     return <Flex align="center" justify="center" minH="90vh">
       <Heading as="h1" size="xl">Error: {(error as Error).message}</Heading>
     </Flex>
+  }
+
+  async function saveMilestones(e: React.FormEvent<HTMLElement>) {
+    const readerReadingClubId = parseInt((e.target as HTMLElement).dataset.readingclubid!);
+    const readerProfileId = parseInt((e.target as HTMLElement).dataset.profileid!);
+    const rowId = (e.target as HTMLElement).dataset.rowid!;
+    const row = document.getElementById(rowId);
+    const checkBoxes = row?.querySelectorAll("input[type='checkbox']");
+    let milestones: any[] = []
+    checkBoxes?.forEach((checkbox: any,i:number)=>{
+      milestones.push({
+        sequence: i,
+        checked: checkbox.checked ? true : false
+      })
+    })
+    let tokenCookie: string | null = Cookies.get().token;
+    await axios
+      .post(server + "/api/savemilestones", 
+      {
+        readerReadingClubId,
+        readerProfileId,
+        milestones: JSON.stringify(milestones)
+      },
+      {
+          headers: {
+          'authorization': tokenCookie
+        }
+      }
+      )
+      .then((response)=>{
+        if (response.data.success){
+          toast({
+            description: "Reader milestones updated",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          })
+        }
+        getMilestonesReadingClubEntries(readerReadingClubId.toString())
+      })
+      .catch(({response})=>{
+        console.log(response)
+        toast({
+          description: "Error: RM200",
+          status: "error",
+          duration: 9000,
+          isClosable: true
+        })
+        throw new Error(response.data.message)
+      })
   }
   
   return (
@@ -211,7 +268,7 @@ export default function ReadingClubMilestones({server}: {server: string}) {
             </Heading>
             <Select
               width="auto"
-              onClick={e=>getMilestonesReadingClubEntries(e)}
+              onClick={e=>getMilestonesReadingClubEntries((e.target as any).value)}
             >
               <option value="">None</option>
               {readingClubs && readingClubs.length ? (
@@ -228,94 +285,116 @@ export default function ReadingClubMilestones({server}: {server: string}) {
               ) : null}
             </Select>
           </Flex>
-          <TableContainer
-            whiteSpace="break-spaces"
-            overflowX="auto"
-            overflowY="auto"
-            display="block"
-            maxH="75vh"
-          >
-            <Table
-              size="sm" 
-              variant="simple"
-              sx={{
-                tableLayout: "auto"
-              }}
+          {entriesLoading ? (
+            <Flex justify="center" w="100%">
+              <Spinner/>
+            </Flex>
+          ) : (
+            <TableContainer
+              whiteSpace="break-spaces"
+              overflowX="auto"
+              overflowY="auto"
+              display="block"
+              maxH="75vh"
             >
-              <Thead>
-                <Tr>
-                  <Th>Name</Th>
-                  <Th># of entries</Th>
-                  {milestonesNumber ? (
-                    [...Array(milestonesNumber)].map((m,i)=>{
+              <Table
+                size="sm" 
+                variant="simple"
+                sx={{
+                  tableLayout: "auto"
+                }}
+              >
+                <Thead>
+                  <Tr>
+                    <Th>Name</Th>
+                    <Th># of entries</Th>
+                    {milestonesNumber ? (
+                      [...Array(milestonesNumber)].map((m,i)=>{
+                        return (
+                          <Th key={i}>{i + 1}</Th>
+                        )
+                      })
+                    ) : null}
+                    <Th></Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                {entryPeople && entryPeople.length ? (
+                    entryPeople.map((eP: UserEntryWNumOfEntries,index: number)=>{
+                      let savedMilestones = eP.Profile.ReaderMilestones;
+                      if (savedMilestones !== undefined) {
+                        savedMilestones = JSON.parse((savedMilestones as any).milestones)
+                      }
                       return (
-                        <Th key={i}>{i + 1}</Th>
+                        <Tr key={index} id={index + "-" + eP.Profile.User.last_name.replace(/\s/g, '')}>
+                          <Td
+                            maxWidth="125px"
+                            whiteSpace="break-spaces"
+                          >
+                            <Button
+                                size="xs"
+                                whiteSpace="break-spaces"
+                                padding="5px"
+                                height="auto"
+                                variant="ghost"
+                                data-readername={eP.Profile.User.last_name + ", " + eP.Profile.User.first_name}
+                                data-readerprofileid={eP.Profile.id}
+                                data-readernotesdata={JSON.stringify(eP.Profile.ReaderNotes)}
+                                onClick={e=>openReaderNotesModal(e)}
+                              >
+                                {eP.Profile.User.last_name + ", " + eP.Profile.User.first_name}
+                              </Button>
+                          </Td>
+                          <Td
+                            maxWidth="125px"
+                            whiteSpace="break-spaces"
+                          >
+                            {eP.numOfEntries}
+                          </Td>
+                          {milestonesNumber ? (
+                            [...Array(milestonesNumber)].map((m,j)=>{
+                              return (
+                                <Td key={j}>
+                                  <Checkbox
+                                    defaultChecked={savedMilestones && savedMilestones[j] ? (savedMilestones[j] as any).checked : false}
+                                  >
+                                  </Checkbox>
+                                </Td>
+                              )
+                            })
+                          ) : null}
+                          <Td
+                            maxWidth="125px"
+                            whiteSpace="break-spaces"
+                          >
+                            <Flex
+                              direction="column"
+                              align="center"
+                              justify="center"
+                            >
+                              <Button
+                                data-readingclubid={eP.reading_club}
+                                data-profileid={eP.Profile.id}
+                                data-rowid={index + "-" + eP.Profile.User.last_name.replace(/\s/g, '')}
+                                onClick={e=>saveMilestones(e)}
+                                size="xs"
+                                mb={1}
+                              >
+                                Save
+                              </Button>
+                              <Box fontSize="xs">
+                                {dayjs((eP.Profile.ReaderMilestones as any).datetime).local().format("MM/DD/YYYY h:mm a")}
+                              </Box>
+                            </Flex>
+                          </Td>
+                        </Tr>
                       )
                     })
                   ) : null}
-                  <Th></Th>
-                  <Th>Notes</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-              {entriesLoading ? (
-                <Flex justify="center" w="100%">
-                  <Spinner/>
-                </Flex>
-              ) : (
-                entryPeople && entryPeople.length ? (
-                  entryPeople.map((eP: UserEntry,i: number)=>{
-                    return (
-                      <Tr key={i}>
-                        <Td
-                          maxWidth="125px"
-                          whiteSpace="break-spaces"
-                        >
-                          {eP.Profile.User.last_name + ", " + eP.Profile.User.first_name}
-                        </Td>
-                        <Td
-                          maxWidth="125px"
-                          whiteSpace="break-spaces"
-                        >
-                          Number
-                        </Td>
-                        {milestonesNumber ? (
-                          [...Array(milestonesNumber)].map((m,i)=>{
-                            return (
-                              <Td key={i}>
-                                <Checkbox></Checkbox>
-                              </Td>
-                            )
-                          })
-                        ) : null}
-                        <Td
-                          maxWidth="125px"
-                          whiteSpace="break-spaces"
-                        >
-                          <Button
-                            size="xs"
-                          >
-                            Save
-                          </Button>
-                        </Td>
-                        <Td
-                          maxWidth="125px"
-                          whiteSpace="break-spaces"
-                        >
-                          <Button
-                            size="xs"
-                          >
-                            View
-                          </Button>
-                        </Td>
-                      </Tr>
-                    )
-                  })
-                ) : null
-              )}
-              </Tbody>
-            </Table>
-          </TableContainer>
+                </Tbody>
+              </Table>
+            </TableContainer>
+          )}
         </Box>
 
           <Modal 

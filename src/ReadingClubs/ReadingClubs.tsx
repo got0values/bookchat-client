@@ -256,6 +256,7 @@ export default function ReadingClubs({server}: {server: string}) {
   const [editId,setEditId] = useState("");
   const [editName,setEditName] = useState("");
   const [editDescription,setEditDescription] = useState("");
+  const [editMilestones,setEditMilestones] = useState("");
   const [editHidden,setEditHidden] = useState("");
   const [defaultForm,setDefaultForm] = useState("");
   const editReadingClubFormRef = useRef<HTMLInputElement>(null);
@@ -263,15 +264,17 @@ export default function ReadingClubs({server}: {server: string}) {
     setEditId((e.target as HTMLElement).dataset.id!)
     setEditName((e.target as HTMLElement).dataset.name!)
     setEditDescription((e.target as HTMLElement).dataset.description!)
+    setEditMilestones((e.target as HTMLElement).dataset.milestones!)
     setEditHidden((e.target as HTMLElement).dataset.display!)
     setDefaultForm((e.target as HTMLElement).dataset.form!)
     onOpenEditReadingClubModal();
   }
   function closeEditReadingClubModal() {
-    setEditId("")
-    setEditName("")
-    setEditDescription("")
-    setEditHidden("")
+    setEditId("");
+    setEditName("");
+    setEditDescription("");
+    setEditMilestones("");
+    setEditHidden("");
     setEditReadingClubError("");
     setDefaultForm("");
     (editReadingClubFormRef.current as HTMLInputElement).value = "";
@@ -940,6 +943,7 @@ export default function ReadingClubs({server}: {server: string}) {
                                 data-id={readingClub.id}
                                 data-name={readingClub.name}
                                 data-description={readingClub.description}
+                                data-milestones={readingClub.milestones}
                                 data-display={readingClub.hidden}
                                 data-form={readingClub.ReadingClubForm ? readingClub.ReadingClubForm.id : null}
                                 onClick={e=>openEditReadingClubModal(e as React.FormEvent<HTMLButtonElement>)}
@@ -1315,6 +1319,7 @@ export default function ReadingClubs({server}: {server: string}) {
                       <Input
                         type="number"
                         id="milestones"
+                        defaultValue={editMilestones}
                         ref={editReadingClubMilestonesRef}
                       />
                     </Box>
