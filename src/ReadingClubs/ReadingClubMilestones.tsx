@@ -383,7 +383,7 @@ export default function ReadingClubMilestones({server}: {server: string}) {
                                 Save
                               </Button>
                               <Box fontSize="xs">
-                                {dayjs((eP.Profile.ReaderMilestones as any).datetime).local().format("MM/DD/YYYY h:mm a")}
+                                {(eP.Profile.ReaderMilestones as any).datetime && dayjs((eP.Profile.ReaderMilestones as any).datetime).local().format("MM/DD/YYYY h:mm a")}
                               </Box>
                             </Flex>
                           </Td>
