@@ -95,13 +95,15 @@ export default function Settings({server}: SettingsProps) {
   const updateSettingsMutation = useMutation({
     mutationFn: async ()=>{
       let tokenCookie: string | null = Cookies.get().token;
+      const libraryId = role === "admin" ? parseInt(libraryNameRef.current.dataset.libraryid!) : null;
+      const libraryName = role === "admin" ? libraryNameRef.current.value : null;
       await axios
         .put(server + "/api/settings", 
         {
           firstName: firstNameRef.current.value,
           lastName: lastNameRef.current.value,
-          libraryId: parseInt(libraryNameRef.current.dataset.libraryid!),
-          libraryName: libraryNameRef.current.value,
+          libraryId: libraryId,
+          libraryName: libraryName
         },
         {headers: {
           'authorization': tokenCookie
