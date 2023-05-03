@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ReadingClub, FormType, ReadingClubForm, School, EntryData, UserEntry } from "../types/types";
+import { ReadingClub, FormType, ReadingClubForm, School, EntryData, UserEntry, ProfileType } from "../types/types";
 import { 
   Box,
   Tag,
@@ -39,7 +39,7 @@ import {
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { BiDotsHorizontalRounded, BiTrash, BiBuildings, BiEdit } from 'react-icons/bi';
 import { AiOutlineLineChart } from 'react-icons/ai';
-import { MdEdit } from 'react-icons/md';
+import { MdEdit, MdFormatListBulleted } from 'react-icons/md';
 import { FaWpforms } from 'react-icons/fa';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -741,6 +741,121 @@ export default function ReadingClubs({server}: {server: string}) {
     updateReadingClubEntryMutation.mutate(e);
   }
 
+
+  const { 
+    isOpen: isOpenManualEntryModal, 
+    onOpen: onOpenManualEntryModal, 
+    onClose: onCloseManualEntryModal 
+  } = useDisclosure()
+  const [manualEntryIsLoading,setManualEntryIsLoading] = useState(false);
+  const [manualEntryReaders,setManualEntryReaders] = useState<ProfileType[] | null>(null);
+  const [manualEntryReadingClubs,setManualEntryReadingClubs] = useState<ReadingClub[] | null>(null);
+  const [manualEntryForms,setManualEntryForms] = useState<ReadingClubForm[] | null>(null);
+  const [manualEntryFormName,setManualEntryFormName] = useState("");
+  async function openManualEntryModal() {
+    onOpenManualEntryModal();
+    setManualEntryIsLoading(true)
+    let tokenCookie: string | null = Cookies.get().token;
+    await axios
+      .get(server + "/api/getmanualentry",
+        {
+          headers: {
+            'authorization': tokenCookie
+          }
+        }
+      )
+      .then((response)=>{
+        const {data} = response;
+        setManualEntryReaders(data.readers)
+        setManualEntryReadingClubs(data.readingClubs)
+        setManualEntryForms(data.forms)
+      })
+      .catch(({response})=>{
+        console.log(response)
+        throw new Error(response.data.message)
+      })
+    setManualEntryIsLoading(false)
+  }
+  function closeManualEntryModal() {
+    setManualEntryReaders(null)
+    setManualEntryReadingClubs(null)
+    setManualEntryForms(null)
+    setManualEntrySelectedForm(null)
+    setManualEntryFormName("")
+    onCloseManualEntryModal();
+  }
+  function selectManualEntryFormCallback(e: any) {
+    if ((e.target as any).options[(e.target as any).selectedIndex].value !== "") {
+      setManualEntrySelectedForm(JSON.parse((e.target as any).options[(e.target as any).selectedIndex].dataset.formfields))
+      setManualEntryFormName((e.target as any).options[(e.target as any).selectedIndex].dataset.formname)
+    }
+    else {
+      setManualEntrySelectedForm(null)
+    }
+  }
+  const manualEntryReaderRef = useRef({} as HTMLSelectElement);
+  const manualEntryReadingClubRef = useRef({} as HTMLSelectElement)
+  const [manualEntrySelectedForm,setManualEntrySelectedForm] = useState(null)
+  const submitManualReadingClubEntryMutation = useMutation({
+    mutationFn: async (e: React.FormEvent<HTMLFormElement>)=>{
+      e.preventDefault();
+      if (manualEntrySelectedForm !== null && manualEntryReadingClubRef.current.value !== "" && manualEntryReaderRef.current.value !== "") {
+        const readingClubId = manualEntryReadingClubRef.current.value;
+        const readerProfileId = manualEntryReaderRef.current.value;
+        const formName = manualEntryFormName;
+        let entryData: EntryData[] = []
+        const entryFields: EventTarget[] = Array.from(e.target as HTMLFormElement);
+        entryFields.forEach((field: any,i: number)=>{
+          entryData.push({
+            id: field.id,
+            type: field.dataset.fieldtype,
+            question: field.dataset.question,
+            answer: field.value,
+            required: field.required,
+            sequence: i
+          })
+        })
+        let tokenCookie: string | null = Cookies.get().token;
+        await axios
+          .post(server + "/api/submitmanualreadingclubentry", 
+          {
+            entryData: JSON.stringify(entryData),
+            readingClubId: parseInt(readingClubId!),
+            readerProfileId: parseInt(readerProfileId),
+            formName: formName
+          },
+          {headers: {
+            'authorization': tokenCookie
+          }}
+          )
+          .then((response)=>{
+            if (response.data.success){
+              toast({
+                description: "Form submitted!",
+                status: "success",
+                duration: 9000,
+                isClosable: true
+              })
+              closeManualEntryModal();
+            }
+          })
+          .catch(({response})=>{
+            console.log(response)
+            throw new Error(response.data.message)
+          })
+        return getReadingClubs()
+      }
+    },
+    onSuccess: (data)=>{
+      queryClient.invalidateQueries({ queryKey: ['readingClubsKey'] })
+      queryClient.resetQueries({queryKey: ['readingClubsKey']})
+      queryClient.setQueryData(["readingClubsKey"],data)
+    }
+  })
+  async function submitManualReadingClubEntry(e: React.FormEvent<HTMLFormElement>) {
+    submitManualReadingClubEntryMutation.mutate(e);
+  }
+
  
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['readingClubsKey'], 
@@ -810,20 +925,29 @@ export default function ReadingClubs({server}: {server: string}) {
                       width="auto"
                       variant="ghost"
                       size="sm"
-                      leftIcon={<FaWpforms size={25} />}
-                      onClick={e=>navigate("/readingclubs/entries")}
+                      leftIcon={<AiOutlineLineChart size={25} />}
+                      onClick={e=>navigate("/readingclubs/milestones")}
                     >
-                      Entries
+                      Milestones
                     </Button>
                     <Divider/>
                     <Button
                       width="auto"
                       variant="ghost"
                       size="sm"
-                      leftIcon={<AiOutlineLineChart size={25} />}
-                      onClick={e=>navigate("/readingclubs/milestones")}
+                      leftIcon={<FaWpforms size={25} />}
+                      onClick={e=>navigate("/readingclubs/entries")}
                     >
-                      Milestones
+                      Entries
+                    </Button>
+                    <Button
+                      width="auto"
+                      variant="ghost"
+                      size="sm"
+                      leftIcon={<BiEdit size={25} />}
+                      onClick={e=>openManualEntryModal()}
+                    >
+                      Manual Entry
                     </Button>
                     <Divider/>
                     <Flex justify="center" w="100%">
@@ -833,7 +957,7 @@ export default function ReadingClubs({server}: {server: string}) {
                         colorScheme="green"
                         onClick={openCreateReadingClubModal}
                       >
-                        <BiEdit size={25} /> Create Reading Club
+                        Create Reading Club
                       </Button>
                     </Flex>
                   </Stack>
@@ -1762,6 +1886,225 @@ export default function ReadingClubs({server}: {server: string}) {
                       Update
                     </Button>
                   </Flex>
+                </ModalFooter>
+              </form>
+            </ModalContent>
+          </Modal>
+
+          <Modal isOpen={isOpenManualEntryModal} onClose={closeManualEntryModal} size="xl" isCentered>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>
+                <Heading as="h3" size="lg">
+                  Manual Entry
+                </Heading>
+              </ModalHeader>
+              <ModalCloseButton />
+              <Flex direction="column" gap={2} px={5}>
+                <Box>
+                  <FormLabel htmlFor="reader" mb={1}>Reader</FormLabel>
+                  <Select 
+                    id="reader"
+                    ref={manualEntryReaderRef}
+                  >
+                    <option value=""></option>
+                    {manualEntryReaders && manualEntryReaders.length ? (
+                      manualEntryReaders.map((reader: ProfileType,i: number)=>{
+                        return (
+                          <option 
+                            key={i}
+                            value={reader.id}
+                          >
+                            {reader.User.last_name + ", " + reader.User.first_name}
+                          </option>
+                        )
+                      })
+                    ) : null}
+                  </Select>
+                </Box>
+                <Box>
+                  <FormLabel htmlFor="reading-clubs" mb={1}>Reading Clubs</FormLabel>
+                  <Select 
+                    id="reading-clubs"
+                    ref={manualEntryReadingClubRef}
+                  >
+                    <option value=""></option>
+                    {manualEntryReadingClubs && manualEntryReadingClubs.length ? (
+                      manualEntryReadingClubs.map((club: ReadingClub,i: number)=>{
+                        return (
+                          <option 
+                            key={i}
+                            value={club.id}
+                          >
+                            {club.name}
+                          </option>
+                        )
+                      })
+                    ) : null}
+                  </Select>
+                </Box>
+                <Box>
+                  <FormLabel htmlFor="form" mb={1}>Form</FormLabel>
+                  <Select 
+                    id="form"
+                    onChange={e=>selectManualEntryFormCallback(e)}
+                  >
+                    <option value=""></option>
+                    {manualEntryForms && manualEntryForms.length ? (
+                      manualEntryForms.map((form,i)=>{
+                        return (
+                          <option 
+                            key={i}
+                            value={form.id}
+                            data-formfields={form.form_fields}
+                            data-formname={form.name}
+                          >
+                            {form.name}
+                          </option>
+                        )
+                      })
+                    ) : null}
+                  </Select>
+                </Box>
+              </Flex>
+              <Divider mt={3} />
+              <form
+                onSubmit={e=>{submitManualReadingClubEntry(e)}}
+              >
+                <ModalBody>
+                 <> 
+                  {manualEntryIsLoading ? (
+                    <Flex justify="center">
+                      <Spinner/>
+                    </Flex>
+                  ) : (
+                  <>
+                    <Flex direction="column" gap={2}>
+                      {manualEntrySelectedForm ? (
+                        (manualEntrySelectedForm as any[]).map((field: any,i: number)=>{
+                          return (
+                            <Box key={i}>
+                              {field.type === "short-text" ? (
+                                <>
+                                  <FormLabel htmlFor={field.id} mb={1}>{field.label}</FormLabel>
+                                  <Input 
+                                    id={field.id} 
+                                    type="text" 
+                                    isRequired={field.required ? true : false}
+                                    data-question={field.label}
+                                    data-fieldtype={field.type}
+                                  />
+                                </>
+                              ) : field.type === "long-text" ? (
+                                <>
+                                  <FormLabel htmlFor={field.id} mb={1}>{field.label}</FormLabel>
+                                  <Textarea 
+                                    id={field.id} 
+                                    isRequired={field.required ? true : false}
+                                    data-question={field.label}
+                                    data-fieldtype={field.type}
+                                  ></Textarea>
+                                </>
+                              ) : field.type === "number" ? (
+                                <>
+                                  <FormLabel htmlFor={field.id} mb={1}>{field.label}</FormLabel>
+                                  <Input 
+                                    id={field.id} 
+                                    type="number" 
+                                    isRequired={field.required ? true : false}
+                                    data-question={field.label}
+                                    data-fieldtype={field.type}
+                                  />
+                                </>
+                              ) : field.type === "checkbox" ? (
+                                <>
+                                  <Checkbox 
+                                    id={field.id}
+                                    data-question={field.label}
+                                    data-fieldtype={field.type}
+                                  >
+                                    {field.label}
+                                  </Checkbox>
+                                </>
+                              ) : field.type === "telephone" ? (
+                                <>
+                                  <FormLabel htmlFor={field.id} mb={1}>{field.label}</FormLabel>
+                                  <Input 
+                                    id={field.id} 
+                                    type="tel" 
+                                    isRequired={field.required ? true : false}
+                                    data-question={field.label}
+                                    data-fieldtype={field.type}
+                                  />
+                                </>
+                              ) : field.type === "email" ? (
+                                <>
+                                  <FormLabel htmlFor={field.id} mb={1}>{field.label}</FormLabel>
+                                  <Input 
+                                    id={field.id} 
+                                    type="email" 
+                                    isRequired={field.required ? true : false}
+                                    data-question={field.label}
+                                    data-fieldtype={field.type}
+                                  />
+                                </>
+                              ) : field.type === "date" ? (
+                                <>
+                                  <FormLabel htmlFor={field.id}>{field.label}</FormLabel>
+                                  <Input 
+                                    id={field.id} 
+                                    type="date"
+                                    isRequired={field.required ? true : false}
+                                    data-question={field.label}
+                                    data-fieldtype={field.type}
+                                  />
+                                </>
+                              ) : field.type === "school" ? (
+                                <>
+                                  <FormLabel 
+                                    htmlFor={field.id}
+                                  >
+                                    {field.label}
+                                  </FormLabel>
+                                  <Select
+                                    id={field.id}
+                                    isRequired={field.required ? true : false}
+                                    data-question={field.label}
+                                    data-fieldtype={field.type}
+                                  >
+                                    {schools?.length ? (
+                                      schools.map((school: School,i: number)=>{
+                                        return (
+                                          <option 
+                                            key={i} 
+                                            value={school.id}
+                                          >
+                                            {school.name}
+                                          </option>
+                                        )
+                                      })
+                                    ) : null}
+                                  </Select>
+                                </>
+                              ) : null}
+                            </Box>
+                          )
+                        })
+                      ) : null}
+                    </Flex>
+                  </>
+                  )}
+                </>
+                </ModalBody>
+                <ModalFooter>
+                  <Button  
+                    mr={3}
+                    type="submit"
+                    colorScheme="green"
+                    isLoading={submitManualReadingClubEntryMutation.isLoading}
+                  >
+                    Submit
+                  </Button>
                 </ModalFooter>
               </form>
             </ModalContent>
