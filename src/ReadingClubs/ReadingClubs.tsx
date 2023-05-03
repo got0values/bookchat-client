@@ -37,9 +37,10 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
-import { BiDotsHorizontalRounded, BiTrash, BiBuildings } from 'react-icons/bi';
+import { BiDotsHorizontalRounded, BiTrash, BiBuildings, BiEdit } from 'react-icons/bi';
 import { AiOutlineLineChart } from 'react-icons/ai';
 import { MdEdit } from 'react-icons/md';
+import { FaWpforms } from 'react-icons/fa';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
@@ -809,10 +810,10 @@ export default function ReadingClubs({server}: {server: string}) {
                       width="auto"
                       variant="ghost"
                       size="sm"
-                      leftIcon={<AiOutlineLineChart size={25} />}
+                      leftIcon={<FaWpforms size={25} />}
                       onClick={e=>navigate("/readingclubs/entries")}
                     >
-                      View entries
+                      Entries
                     </Button>
                     <Divider/>
                     <Button
@@ -822,7 +823,7 @@ export default function ReadingClubs({server}: {server: string}) {
                       leftIcon={<AiOutlineLineChart size={25} />}
                       onClick={e=>navigate("/readingclubs/milestones")}
                     >
-                      Member milestones
+                      Milestones
                     </Button>
                     <Divider/>
                     <Flex justify="center" w="100%">
@@ -832,7 +833,7 @@ export default function ReadingClubs({server}: {server: string}) {
                         colorScheme="green"
                         onClick={openCreateReadingClubModal}
                       >
-                        Create Reading Club
+                        <BiEdit size={25} /> Create Reading Club
                       </Button>
                     </Flex>
                   </Stack>
