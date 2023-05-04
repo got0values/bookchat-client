@@ -336,13 +336,15 @@ export default function ReadingClubMilestones({server}: {server: string}) {
             <Heading as="h3" size="md">
               Milestones
             </Heading>
-            <Flex justify="space-between" gap={5}>
+            <Flex justify="space-between" gap={2} align="center">
             {selectedClubName !== "" && (
               <Fade in={selectedClubName !== ""}>
                 <Button
                   onClick={e=>tableToCsv(selectedClubName)}
                   leftIcon={<BiDownload size={20} />}
                   variant="ghost"
+                  size="sm"
+                  color="gray.700"
                 >
                   Export to CSV
                 </Button>
