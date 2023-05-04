@@ -37,6 +37,7 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import { MdChevronRight } from 'react-icons/md';
+import { FaSort } from 'react-icons/fa';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
@@ -76,7 +77,9 @@ export default function ReadingClubMilestones({server}: {server: string}) {
   const [milestonesNumber,setMilestonesNumber] = useState(0)
   const [entryPeople,setEntryPeople] = useState({} as any)
   const [entriesLoading,setEntriesLoading] = useState(false)
-  async function getMilestonesReadingClubEntries(readingClubId: string) {
+  const [selectedReadingClubId,setSelectedReadingClubId] = useState("")
+  async function getMilestonesReadingClubEntries(readingClubId: string, sortMethod: string) {
+    setSelectedReadingClubId(readingClubId)
     if (readingClubId === "") return;
     setEntriesLoading(true)
     let tokenCookie: string | null = Cookies.get().token;
@@ -92,6 +95,7 @@ export default function ReadingClubMilestones({server}: {server: string}) {
         .then((response)=>{
           const {data} = response;
           setMilestonesNumber(data.milestones)
+          //filter repeats
           let entries = data.readingClubEntries.filter((value: any, index: number, self: any) =>
             index === self.findIndex((t: any) => (
               t.Profile.id === value.Profile.id
@@ -110,6 +114,22 @@ export default function ReadingClubMilestones({server}: {server: string}) {
                 })[0]
               }
             }
+          })
+          //use sort method
+          entries = entries.sort((a: UserEntryWNumOfEntries, b: UserEntryWNumOfEntries)=>{
+            if (sortMethod === "name") {
+              if (a.Profile.User.last_name.toLowerCase() + a.Profile.User.first_name.toLowerCase() < b.Profile.User.last_name.toLowerCase() + b.Profile.User.first_name.toLowerCase()) {
+                return -1
+              }
+              if (a.Profile.User.last_name.toLowerCase() + a.Profile.User.first_name.toLowerCase() > b.Profile.User.last_name.toLowerCase() + b.Profile.User.first_name.toLowerCase()) {
+                return 1;
+              }
+              return 0;
+            }
+            if (sortMethod === "numberEntries") {
+              return b.numOfEntries - a.numOfEntries;
+            }
+            return;
           })
           setEntryPeople(entries)
         })
@@ -230,7 +250,7 @@ export default function ReadingClubMilestones({server}: {server: string}) {
             isClosable: true
           })
         }
-        getMilestonesReadingClubEntries(readerReadingClubId.toString())
+        getMilestonesReadingClubEntries(readerReadingClubId.toString(), "name")
       })
       .catch(({response})=>{
         console.log(response)
@@ -268,7 +288,7 @@ export default function ReadingClubMilestones({server}: {server: string}) {
             </Heading>
             <Select
               width="auto"
-              onClick={e=>getMilestonesReadingClubEntries((e.target as any).value)}
+              onClick={e=>getMilestonesReadingClubEntries((e.target as any).value, "name")}
             >
               <option value="">None</option>
               {readingClubs && readingClubs.length ? (
@@ -305,9 +325,42 @@ export default function ReadingClubMilestones({server}: {server: string}) {
                 }}
               >
                 <Thead>
-                  <Tr>
-                    <Th>Name</Th>
-                    <Th># of entries</Th>
+                  <Tr
+                    sx={{
+                      ".fasort": {
+                        visibility: "hidden"
+                      }
+                    }}
+                  >
+                    <Th>
+                      <Flex
+                        display="inline-flex"
+                        alignItems="center"
+                        onClick={e=>getMilestonesReadingClubEntries(selectedReadingClubId, "name")}
+                        _hover={{
+                          cursor: "pointer",
+                          "& .fasort": {
+                            visibility: "visible"
+                          }
+                        }}
+                      >
+                        Name <FaSort className="fasort" />
+                      </Flex>
+                    </Th>
+                    <Th>
+                      <Flex
+                        alignItems="center"
+                        onClick={e=>getMilestonesReadingClubEntries(selectedReadingClubId, "numberOfEntries")}
+                        _hover={{
+                          cursor: "pointer",
+                          "& .fasort": {
+                            visibility: "visible"
+                          }
+                        }}
+                      >
+                        # of entries <FaSort className="fasort" />
+                      </Flex>
+                    </Th>
                     {milestonesNumber ? (
                       [...Array(milestonesNumber)].map((m,i)=>{
                         return (
@@ -321,15 +374,6 @@ export default function ReadingClubMilestones({server}: {server: string}) {
                 <Tbody>
                 {entryPeople && entryPeople.length ? (
                     entryPeople
-                    .sort((a: UserEntry, b: UserEntry)=>{
-                      if (a.Profile.User.last_name.toLowerCase() + a.Profile.User.first_name.toLowerCase() < b.Profile.User.last_name.toLowerCase() + b.Profile.User.first_name.toLowerCase()) {
-                        return -1
-                      }
-                      if (a.Profile.User.last_name.toLowerCase() + a.Profile.User.first_name.toLowerCase() > b.Profile.User.last_name.toLowerCase() + b.Profile.User.first_name.toLowerCase()) {
-                        return 1;
-                      }
-                      return 0;
-                    })
                     .map((eP: UserEntryWNumOfEntries,index: number)=>{
                       let savedMilestones = eP.Profile.ReaderMilestones;
                       if (savedMilestones !== undefined) {
