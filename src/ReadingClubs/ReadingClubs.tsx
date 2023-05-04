@@ -1002,7 +1002,7 @@ export default function ReadingClubs({server}: {server: string}) {
                 </Stack>
               </Box>
             </Box>
-            <Box className="well" flex="1 1 65%">
+            <Box className="well" height="auto" flex="1 1 65%">
               <Heading as="h3" size="md" mb={3}>
                 Reading Clubs
               </Heading>
