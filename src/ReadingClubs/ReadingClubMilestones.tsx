@@ -37,7 +37,8 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import { MdChevronRight } from 'react-icons/md';
-import { FaSort } from 'react-icons/fa';
+import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti';
+import { tableToCsv } from "../utils/tableToCsv";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
@@ -304,6 +305,12 @@ export default function ReadingClubMilestones({server}: {server: string}) {
       reverse: numberEntriesSortReverse
     })
   }
+
+  const [selectedClubName,setSelectedClubName] = useState("")
+  function selectReadingClubCallback(e: any) {
+    setSelectedClubName((e.target as any).options[(e.target as any).selectedIndex].dataset.clubname !== "" ? (e.target as any).options[(e.target as any).selectedIndex].dataset.clubname : "ReadingClub")
+    getMilestonesReadingClubEntries((e.target as any).value, "name", false)
+  }
   
   return (
     <Box className="main-content">
@@ -327,17 +334,24 @@ export default function ReadingClubMilestones({server}: {server: string}) {
             <Heading as="h3" size="md">
               Milestones
             </Heading>
+            <Flex justify="space-between" gap={5}>
+              <Button
+                onClick={e=>tableToCsv(selectedClubName)}
+              >
+                Export to CSV
+              </Button>
             <Select
               width="auto"
-              onClick={e=>getMilestonesReadingClubEntries((e.target as any).value, "name", false)}
+              onClick={e=>selectReadingClubCallback(e)}
             >
-              <option value="">None</option>
+              <option value="" data-clubname="">None</option>
               {readingClubs && readingClubs.length ? (
                 readingClubs.map((readingClub: ReadingClub)=>{
                   return (
                     <option 
                       key={readingClub.id}
                       value={readingClub.id}
+                      data-clubname={readingClub.name}
                     >
                       {readingClub.name}
                     </option>
@@ -345,6 +359,7 @@ export default function ReadingClubMilestones({server}: {server: string}) {
                 })
               ) : null}
             </Select>
+            </Flex>
           </Flex>
           {entriesLoading ? (
             <Flex justify="center" w="100%">
@@ -385,7 +400,7 @@ export default function ReadingClubMilestones({server}: {server: string}) {
                           }
                         }}
                       >
-                        Name <FaSort className="fasort" />
+                        <Text className="thGet">Name</Text> {nameSortReverse ? <TiArrowSortedUp className="fasort" size={15} /> : <TiArrowSortedDown className="fasort" size={15} />}
                       </Flex>
                     </Th>
                     <Th>
@@ -399,17 +414,17 @@ export default function ReadingClubMilestones({server}: {server: string}) {
                           }
                         }}
                       >
-                        # of entries <FaSort className="fasort" />
+                        <Text  className="thGet"># of entries</Text> {numberEntriesSortReverse ? <TiArrowSortedUp className="fasort" size={15} /> : <TiArrowSortedDown className="fasort" size={15} />}
                       </Flex>
                     </Th>
                     {milestonesNumber ? (
                       [...Array(milestonesNumber)].map((m,i)=>{
                         return (
-                          <Th key={i}>{i + 1}</Th>
+                          <Th key={i}  className="thGet">{i + 1}</Th>
                         )
                       })
                     ) : null}
-                    <Th></Th>
+                    <Th className="thGet"></Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -436,6 +451,7 @@ export default function ReadingClubMilestones({server}: {server: string}) {
                                 data-readerprofileid={eP.Profile.id}
                                 data-readernotesdata={JSON.stringify(eP.Profile.ReaderNotes)}
                                 onClick={e=>openReaderNotesModal(e)}
+                                className="tdGet"
                               >
                                 {eP.Profile.User.last_name + ", " + eP.Profile.User.first_name}
                               </Button>
@@ -443,6 +459,7 @@ export default function ReadingClubMilestones({server}: {server: string}) {
                           <Td
                             maxWidth="125px"
                             whiteSpace="break-spaces"
+                            className="tdGet"
                           >
                             {eP.numOfEntries}
                           </Td>
@@ -452,6 +469,7 @@ export default function ReadingClubMilestones({server}: {server: string}) {
                                 <Td key={j}>
                                   <Checkbox
                                     defaultChecked={savedMilestones && savedMilestones[j] ? (savedMilestones[j] as any).checked : false}
+                                    className="tdGetCheckbox"
                                   >
                                   </Checkbox>
                                 </Td>
