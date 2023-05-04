@@ -10,7 +10,6 @@ export function tableToCsv(clubName: string) {
       for (var j = 0; j < cols.length; j++) {
         if (cols[j].nodeName === "INPUT") {
           if((cols[j] as HTMLInputElement).checked) {
-            console.log()
             csvrow.push("x");
           }
           else {
@@ -24,13 +23,12 @@ export function tableToCsv(clubName: string) {
       csv_data.push(csvrow.join(","));
   }
   csv_data = csv_data.join('\n');
-  console.log(csv_data)
-
+  
   var CSVFile = new Blob([csv_data], {
     type: "text/csv"
   });
   var temp_link = document.createElement('a');
-  temp_link.download = `${clubName.replace(/\s/g,"-").replace(/'/g,"")}_Milestones.csv`;
+  temp_link.download = `${clubName !== "" ? clubName.replace(/\s/g,"-").replace(/'/g,"") : "ReadingClub"}_Milestones.csv`;
   var url = window.URL.createObjectURL(CSVFile);
   temp_link.href = url;
   temp_link.style.display = "none";

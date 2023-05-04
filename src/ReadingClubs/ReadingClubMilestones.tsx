@@ -24,6 +24,7 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   Link,
+  Fade,
   Table,
   Thead,
   Tbody,
@@ -38,6 +39,7 @@ import {
 } from "@chakra-ui/react";
 import { MdChevronRight } from 'react-icons/md';
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti';
+import { BiDownload } from 'react-icons/bi';
 import { tableToCsv } from "../utils/tableToCsv";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -308,7 +310,7 @@ export default function ReadingClubMilestones({server}: {server: string}) {
 
   const [selectedClubName,setSelectedClubName] = useState("")
   function selectReadingClubCallback(e: any) {
-    setSelectedClubName((e.target as any).options[(e.target as any).selectedIndex].dataset.clubname !== "" ? (e.target as any).options[(e.target as any).selectedIndex].dataset.clubname : "ReadingClub")
+    setSelectedClubName((e.target as any).options[(e.target as any).selectedIndex].dataset.clubname)
     getMilestonesReadingClubEntries((e.target as any).value, "name", false)
   }
   
@@ -335,11 +337,17 @@ export default function ReadingClubMilestones({server}: {server: string}) {
               Milestones
             </Heading>
             <Flex justify="space-between" gap={5}>
-              <Button
-                onClick={e=>tableToCsv(selectedClubName)}
-              >
-                Export to CSV
-              </Button>
+            {selectedClubName !== "" && (
+              <Fade in={selectedClubName !== ""}>
+                <Button
+                  onClick={e=>tableToCsv(selectedClubName)}
+                  leftIcon={<BiDownload size={20} />}
+                  variant="ghost"
+                >
+                  Export to CSV
+                </Button>
+              </Fade>
+            )}
             <Select
               width="auto"
               onClick={e=>selectReadingClubCallback(e)}
@@ -366,147 +374,149 @@ export default function ReadingClubMilestones({server}: {server: string}) {
               <Spinner/>
             </Flex>
           ) : (
-            <TableContainer
-              whiteSpace="break-spaces"
-              overflowX="auto"
-              overflowY="auto"
-              display="block"
-              maxH="75vh"
-            >
-              <Table
-                size="sm" 
-                variant="simple"
-                sx={{
-                  tableLayout: "auto"
-                }}
+            <Fade in={!entriesLoading}>
+              <TableContainer
+                whiteSpace="break-spaces"
+                overflowX="auto"
+                overflowY="auto"
+                display="block"
+                maxH="75vh"
               >
-                <Thead>
-                  <Tr
-                    sx={{
-                      ".fasort": {
-                        visibility: "hidden"
-                      }
-                    }}
-                  >
-                    <Th>
-                      <Flex
-                        display="inline-flex"
-                        alignItems="center"
-                        onClick={e=>nameSortCallback()}
-                        _hover={{
-                          cursor: "pointer",
-                          "& .fasort": {
-                            visibility: "visible"
-                          }
-                        }}
-                      >
-                        <Text className="thGet">Name</Text> {nameSortReverse ? <TiArrowSortedUp className="fasort" size={15} /> : <TiArrowSortedDown className="fasort" size={15} />}
-                      </Flex>
-                    </Th>
-                    <Th>
-                      <Flex
-                        alignItems="center"
-                        onClick={e=>numberEntriesSortCallback()}
-                        _hover={{
-                          cursor: "pointer",
-                          "& .fasort": {
-                            visibility: "visible"
-                          }
-                        }}
-                      >
-                        <Text  className="thGet"># of entries</Text> {numberEntriesSortReverse ? <TiArrowSortedUp className="fasort" size={15} /> : <TiArrowSortedDown className="fasort" size={15} />}
-                      </Flex>
-                    </Th>
-                    {milestonesNumber ? (
-                      [...Array(milestonesNumber)].map((m,i)=>{
+                <Table
+                  size="sm" 
+                  variant="simple"
+                  sx={{
+                    tableLayout: "auto"
+                  }}
+                >
+                  <Thead>
+                    <Tr
+                      sx={{
+                        ".fasort": {
+                          visibility: "hidden"
+                        }
+                      }}
+                    >
+                      <Th>
+                        <Flex
+                          display="inline-flex"
+                          alignItems="center"
+                          onClick={e=>nameSortCallback()}
+                          _hover={{
+                            cursor: "pointer",
+                            "& .fasort": {
+                              visibility: "visible"
+                            }
+                          }}
+                        >
+                          <Text className="thGet">Name</Text> {nameSortReverse ? <TiArrowSortedUp className="fasort" size={15} /> : <TiArrowSortedDown className="fasort" size={15} />}
+                        </Flex>
+                      </Th>
+                      <Th>
+                        <Flex
+                          alignItems="center"
+                          onClick={e=>numberEntriesSortCallback()}
+                          _hover={{
+                            cursor: "pointer",
+                            "& .fasort": {
+                              visibility: "visible"
+                            }
+                          }}
+                        >
+                          <Text  className="thGet"># of entries</Text> {numberEntriesSortReverse ? <TiArrowSortedUp className="fasort" size={15} /> : <TiArrowSortedDown className="fasort" size={15} />}
+                        </Flex>
+                      </Th>
+                      {milestonesNumber ? (
+                        [...Array(milestonesNumber)].map((m,i)=>{
+                          return (
+                            <Th key={i}  className="thGet">{i + 1}</Th>
+                          )
+                        })
+                      ) : null}
+                      <Th className="thGet"></Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                  {entryPeople && entryPeople.length ? (
+                      entryPeople
+                      .map((eP: UserEntryWNumOfEntries,index: number)=>{
+                        let savedMilestones = eP.Profile.ReaderMilestones;
+                        if (savedMilestones !== undefined) {
+                          savedMilestones = JSON.parse((savedMilestones as any).milestones)
+                        }
                         return (
-                          <Th key={i}  className="thGet">{i + 1}</Th>
+                          <Tr key={index} id={index + "-" + eP.Profile.User.last_name.replace(/\s/g, '')}>
+                            <Td
+                              maxWidth="125px"
+                              whiteSpace="break-spaces"
+                            >
+                              <Button
+                                  size="xs"
+                                  whiteSpace="break-spaces"
+                                  padding="5px"
+                                  height="auto"
+                                  variant="ghost"
+                                  data-readername={eP.Profile.User.last_name + ", " + eP.Profile.User.first_name}
+                                  data-readerprofileid={eP.Profile.id}
+                                  data-readernotesdata={JSON.stringify(eP.Profile.ReaderNotes)}
+                                  onClick={e=>openReaderNotesModal(e)}
+                                  className="tdGet"
+                                >
+                                  {eP.Profile.User.last_name + ", " + eP.Profile.User.first_name}
+                                </Button>
+                            </Td>
+                            <Td
+                              maxWidth="125px"
+                              whiteSpace="break-spaces"
+                              className="tdGet"
+                            >
+                              {eP.numOfEntries}
+                            </Td>
+                            {milestonesNumber ? (
+                              [...Array(milestonesNumber)].map((m,j)=>{
+                                return (
+                                  <Td key={j}>
+                                    <Checkbox
+                                      defaultChecked={savedMilestones && savedMilestones[j] ? (savedMilestones[j] as any).checked : false}
+                                      className="tdGetCheckbox"
+                                    >
+                                    </Checkbox>
+                                  </Td>
+                                )
+                              })
+                            ) : null}
+                            <Td
+                              maxWidth="125px"
+                              whiteSpace="break-spaces"
+                            >
+                              <Flex
+                                direction="column"
+                                align="center"
+                                justify="center"
+                              >
+                                <Button
+                                  data-readingclubid={eP.reading_club}
+                                  data-profileid={eP.Profile.id}
+                                  data-rowid={index + "-" + eP.Profile.User.last_name.replace(/\s/g, '')}
+                                  onClick={e=>saveMilestones(e,lastSort.method,lastSort.reverse)}
+                                  size="xs"
+                                  mb={1}
+                                >
+                                  Save
+                                </Button>
+                                <Box fontSize="xs">
+                                  {(eP.Profile.ReaderMilestones as any)?.datetime && dayjs((eP.Profile.ReaderMilestones as any).datetime).local().format("MM/DD/YYYY h:mm a")}
+                                </Box>
+                              </Flex>
+                            </Td>
+                          </Tr>
                         )
                       })
                     ) : null}
-                    <Th className="thGet"></Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                {entryPeople && entryPeople.length ? (
-                    entryPeople
-                    .map((eP: UserEntryWNumOfEntries,index: number)=>{
-                      let savedMilestones = eP.Profile.ReaderMilestones;
-                      if (savedMilestones !== undefined) {
-                        savedMilestones = JSON.parse((savedMilestones as any).milestones)
-                      }
-                      return (
-                        <Tr key={index} id={index + "-" + eP.Profile.User.last_name.replace(/\s/g, '')}>
-                          <Td
-                            maxWidth="125px"
-                            whiteSpace="break-spaces"
-                          >
-                            <Button
-                                size="xs"
-                                whiteSpace="break-spaces"
-                                padding="5px"
-                                height="auto"
-                                variant="ghost"
-                                data-readername={eP.Profile.User.last_name + ", " + eP.Profile.User.first_name}
-                                data-readerprofileid={eP.Profile.id}
-                                data-readernotesdata={JSON.stringify(eP.Profile.ReaderNotes)}
-                                onClick={e=>openReaderNotesModal(e)}
-                                className="tdGet"
-                              >
-                                {eP.Profile.User.last_name + ", " + eP.Profile.User.first_name}
-                              </Button>
-                          </Td>
-                          <Td
-                            maxWidth="125px"
-                            whiteSpace="break-spaces"
-                            className="tdGet"
-                          >
-                            {eP.numOfEntries}
-                          </Td>
-                          {milestonesNumber ? (
-                            [...Array(milestonesNumber)].map((m,j)=>{
-                              return (
-                                <Td key={j}>
-                                  <Checkbox
-                                    defaultChecked={savedMilestones && savedMilestones[j] ? (savedMilestones[j] as any).checked : false}
-                                    className="tdGetCheckbox"
-                                  >
-                                  </Checkbox>
-                                </Td>
-                              )
-                            })
-                          ) : null}
-                          <Td
-                            maxWidth="125px"
-                            whiteSpace="break-spaces"
-                          >
-                            <Flex
-                              direction="column"
-                              align="center"
-                              justify="center"
-                            >
-                              <Button
-                                data-readingclubid={eP.reading_club}
-                                data-profileid={eP.Profile.id}
-                                data-rowid={index + "-" + eP.Profile.User.last_name.replace(/\s/g, '')}
-                                onClick={e=>saveMilestones(e,lastSort.method,lastSort.reverse)}
-                                size="xs"
-                                mb={1}
-                              >
-                                Save
-                              </Button>
-                              <Box fontSize="xs">
-                                {(eP.Profile.ReaderMilestones as any)?.datetime && dayjs((eP.Profile.ReaderMilestones as any).datetime).local().format("MM/DD/YYYY h:mm a")}
-                              </Box>
-                            </Flex>
-                          </Td>
-                        </Tr>
-                      )
-                    })
-                  ) : null}
-                </Tbody>
-              </Table>
-            </TableContainer>
+                  </Tbody>
+                </Table>
+              </TableContainer>
+            </Fade>
           )}
         </Box>
 
