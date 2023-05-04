@@ -330,7 +330,17 @@ export default function ReadingClubEntries({server}: {server: string}) {
                     </Thead>
                     <Tbody>
                     {entries && entries.length ? (
-                      entries.map((entry: UserEntry,i: number)=>{
+                      entries
+                      .sort((a: UserEntry, b: UserEntry)=>{
+                        if (a.Profile.User.last_name.toLowerCase() + a.Profile.User.first_name.toLowerCase() < b.Profile.User.last_name.toLowerCase() + b.Profile.User.first_name.toLowerCase()) {
+                          return -1
+                        }
+                        if (a.Profile.User.last_name.toLowerCase() + a.Profile.User.first_name.toLowerCase() > b.Profile.User.last_name.toLowerCase() + b.Profile.User.first_name.toLowerCase()) {
+                          return 1;
+                        }
+                        return 0;
+                      })
+                      .map((entry: UserEntry,i: number)=>{
                         return (
                           <Tr key={i}>
                             <Td

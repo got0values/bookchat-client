@@ -320,7 +320,17 @@ export default function ReadingClubMilestones({server}: {server: string}) {
                 </Thead>
                 <Tbody>
                 {entryPeople && entryPeople.length ? (
-                    entryPeople.map((eP: UserEntryWNumOfEntries,index: number)=>{
+                    entryPeople
+                    .sort((a: UserEntry, b: UserEntry)=>{
+                      if (a.Profile.User.last_name.toLowerCase() + a.Profile.User.first_name.toLowerCase() < b.Profile.User.last_name.toLowerCase() + b.Profile.User.first_name.toLowerCase()) {
+                        return -1
+                      }
+                      if (a.Profile.User.last_name.toLowerCase() + a.Profile.User.first_name.toLowerCase() > b.Profile.User.last_name.toLowerCase() + b.Profile.User.first_name.toLowerCase()) {
+                        return 1;
+                      }
+                      return 0;
+                    })
+                    .map((eP: UserEntryWNumOfEntries,index: number)=>{
                       let savedMilestones = eP.Profile.ReaderMilestones;
                       if (savedMilestones !== undefined) {
                         savedMilestones = JSON.parse((savedMilestones as any).milestones)
