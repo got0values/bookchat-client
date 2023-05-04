@@ -346,6 +346,9 @@ export default function ReadingClubMilestones({server}: {server: string}) {
                   variant="ghost"
                   size="sm"
                   color="gray.700"
+                  _dark={{
+                    color: "white"
+                  }}
                 >
                   Export to CSV
                 </Button>
