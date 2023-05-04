@@ -23,7 +23,6 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  Fade,
   Link,
   Table,
   Thead,
@@ -454,7 +453,13 @@ export default function ReadingClubEntries({server}: {server: string}) {
                     return (
                       <Box key={i} mb={2}>
                         <Text fontWeight="bold">{entry.question}</Text>
-                        <Text>{entry.answer}</Text>
+                        <Text>
+                          {entry.type === "school" ? (
+                            schools?.filter(
+                              (school: School)=>school.id === parseInt(entry.answer)
+                            )[0]?.name
+                          ) : entry.answer}
+                        </Text>
                       </Box>
                     )
                   })) : null}
