@@ -1,8 +1,7 @@
 
 
-export function tableToCsv(clubName: string) {
+export function tableToCsv(fileName: string) {
   var csv_data: any[] | string = [];
- 
   var rows = document.getElementsByTagName('tr');
   for (var i = 0; i < rows.length; i++) {
       var cols = rows[i].querySelectorAll('.tdGet,.thGet, .tdGetCheckbox input[type="checkbox"]');
@@ -23,12 +22,12 @@ export function tableToCsv(clubName: string) {
       csv_data.push(csvrow.join(","));
   }
   csv_data = csv_data.join('\n');
-  
+
   var CSVFile = new Blob([csv_data], {
     type: "text/csv"
   });
   var temp_link = document.createElement('a');
-  temp_link.download = `${clubName !== "" ? clubName.replace(/\s/g,"-").replace(/'/g,"") : "ReadingClub"}_Milestones.csv`;
+  temp_link.download = fileName;
   var url = window.URL.createObjectURL(CSVFile);
   temp_link.href = url;
   temp_link.style.display = "none";

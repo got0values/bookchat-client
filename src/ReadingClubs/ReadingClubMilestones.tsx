@@ -340,7 +340,8 @@ export default function ReadingClubMilestones({server}: {server: string}) {
             {selectedClubName !== "" && (
               <Fade in={selectedClubName !== ""}>
                 <Button
-                  onClick={e=>tableToCsv(selectedClubName)}
+                  onClick={e=>tableToCsv(`${selectedClubName !== "" ? selectedClubName.replace(/\s/g,"-").replace(/'/g,"") : "ReadingClub"}_Milestones.csv`)}
+                  
                   leftIcon={<BiDownload size={20} />}
                   variant="ghost"
                   size="sm"

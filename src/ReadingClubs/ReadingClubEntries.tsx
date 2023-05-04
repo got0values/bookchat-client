@@ -23,6 +23,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
+  Fade,
   Link,
   Table,
   Thead,
@@ -36,6 +37,8 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import { MdChevronRight } from 'react-icons/md';
+import { BiDownload } from 'react-icons/bi';
+import { tableToCsv } from "../utils/tableToCsv";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
@@ -298,9 +301,20 @@ export default function ReadingClubEntries({server}: {server: string}) {
             </Box>
             <Box flex="1 1 auto">
               <Box className="well" height="fit-content">
-                <Heading as="h3" size="md" mb={2}>
-                  Entries
-                </Heading>
+                <Flex align="center" justify="space-between" mb={3}>
+                  <Heading as="h3" size="md" mb={2}>
+                    Entries
+                  </Heading>
+                  <Button
+                    onClick={e=>tableToCsv("ReadingClubEntries")}
+                    leftIcon={<BiDownload size={20} />}
+                    variant="ghost"
+                    size="sm"
+                    color="gray.700"
+                  >
+                    Export to CSV
+                  </Button>
+                </Flex>
                 <TableContainer
                   whiteSpace="break-spaces"
                   overflowX="auto"
@@ -321,11 +335,11 @@ export default function ReadingClubEntries({server}: {server: string}) {
                     </TableCaption>
                     <Thead>
                       <Tr>
-                        <Th>Name</Th>
-                        <Th>Date</Th>
-                        <Th>Club</Th>
-                        <Th>Form</Th>
-                        <Th>School</Th>
+                        <Th className="thGet">Name</Th>
+                        <Th className="thGet">Date</Th>
+                        <Th className="thGet">Club</Th>
+                        <Th className="thGet">Form</Th>
+                        <Th className="thGet">School</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
@@ -357,14 +371,16 @@ export default function ReadingClubEntries({server}: {server: string}) {
                                 data-readerprofileid={entry.Profile.id}
                                 data-readernotesdata={JSON.stringify(entry.Profile.ReaderNotes)}
                                 onClick={e=>openReaderNotesModal(e)}
+                                className="tdGet"
                               >
                                 {entry.Profile.User.last_name + ", " + entry.Profile.User.first_name}
                               </Button>
                             </Td>
-                            <Td>{dayjs(entry.created_on).local().format("MM/DD/YYYY")}</Td>
+                            <Td className="tdGet">{dayjs(entry.created_on).local().format("MM/DD/YYYY")}</Td>
                             <Td 
                               maxWidth="125px"
                               whiteSpace="break-spaces"
+                              className="tdGet"
                             >
                               {entry.ReadingClub?.name}
                             </Td>
@@ -379,6 +395,7 @@ export default function ReadingClubEntries({server}: {server: string}) {
                                 data-entrydate={dayjs(entry.created_on).local().format("MM/DD/YYYY")}
                                 data-entrydata={entry.entry_data}
                                 onClick={e=>openViewEntryModal(e)}
+                                className="tdGet"
                               >
                                 {entry.form_name}
                               </Link>
@@ -386,6 +403,7 @@ export default function ReadingClubEntries({server}: {server: string}) {
                             <Td
                               maxWidth="125px"
                               whiteSpace="break-spaces"
+                              className="tdGet"
                             >
                               {JSON.parse(entry.entry_data as string).filter((data: EntryData)=>data.type === "school") ? 
                               (
