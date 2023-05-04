@@ -127,7 +127,15 @@ export default function ReadingClubMilestones({server}: {server: string}) {
               return 0;
             }
             if (sortMethod === "numberEntries") {
-              return b.numOfEntries - a.numOfEntries;
+              if (a.numOfEntries < b.numOfEntries) {
+                return -1;
+              }
+              if (a.numOfEntries > b.numOfEntries) {
+                return 1;
+              }
+              if (a.numOfEntries === b.numOfEntries) {
+                return 0;
+              }
             }
             return;
           })
