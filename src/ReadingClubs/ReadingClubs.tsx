@@ -1122,7 +1122,7 @@ export default function ReadingClubs({server}: {server: string}) {
                         rounded="md"
                         boxShadow="base"
                         _dark={{
-                          bg: 'gray.600'
+                          backgroundColor: 'gray.600'
                         }}
                         backgroundImage={readingClub.background_image ? `url(${readingClub.background_image})` : "none"}
                         backgroundSize="cover"
@@ -1143,7 +1143,6 @@ export default function ReadingClubs({server}: {server: string}) {
                           <Heading 
                             as="h3" 
                             size="sm"
-                            textShadow="0 1px 1px lightgray"
                             data-readingclubid={readingClub.id}
                             data-form={JSON.stringify(readingClub.ReadingClubForm)}
                             onClick={e=>openFillFormModal(e as any)}
