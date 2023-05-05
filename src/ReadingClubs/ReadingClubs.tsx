@@ -867,15 +867,17 @@ export default function ReadingClubs({server}: {server: string}) {
   const bgUploadRef = useRef({} as HTMLInputElement);
   // const imagePreviewRef = useRef({} as HTMLImageElement);
   const textColorRef = useRef({} as HTMLInputElement);
+  const bgColorRef = useRef({} as HTMLInputElement);
   const [previewImage,setPreviewImage] = useState("");
   const [bgImageFile,setBgImageFile] = useState<Blob | string | ArrayBuffer | null>(null);
   const [textColor,setTextColor] = useState("#000000");
+  const [bgColor,setBgColor] = useState("#000000");
   const [deleteBgImage,setDeleteBgImage] = useState(false);
   function openEditBgModal(e: React.FormEvent<HTMLButtonElement>) {
     setEditBgReadingClubId((e.target as any).dataset.readingclubid)
     setPreviewImage((e.target as any).dataset.bgimage ? (e.target as any).dataset.bgimage : "")
-    console.log(textColorRef.current)
     setTextColor((e.target as any).dataset.textcolor ? (e.target as any).dataset.textcolor : "#000000");
+    setBgColor((e.target as any).dataset.bgcolor ? (e.target as any).dataset.bgcolor : "#000000");
     onOpenEditBgModal();
   }
   function closeEditBgModal() {
@@ -883,6 +885,7 @@ export default function ReadingClubs({server}: {server: string}) {
     setPreviewImage("")
     setBgImageFile(null)
     setTextColor("#000000")
+    setBgColor("#000000")
     setDeleteBgImage(false)
     onCloseEditBgModal();
   }
@@ -900,17 +903,18 @@ export default function ReadingClubs({server}: {server: string}) {
     setDeleteBgImage(true);
   }
 
-  const updateBgPhotoMutation = useMutation({
+  const updateBgMutation = useMutation({
     mutationFn: async () => {
       let tokenCookie = Cookies.get().token;
       const formData = new FormData();
       formData.append("photo", bgImageFile as Blob);
       formData.append("textColor", textColorRef.current.value)
+      formData.append("bgColor", bgColorRef.current.value)
       formData.append("readingClubId", editBgReadingClubId as string | Blob)
       formData.append("deleteBgImage", deleteBgImage.toString() as string | Blob)
       if (tokenCookie) {
         await axios
-          .post(server + "/api/updatereadingclubbgphoto", 
+          .post(server + "/api/updatereadingclubbg", 
           formData,
           {headers: {
             'authorization': tokenCookie,
@@ -950,7 +954,7 @@ export default function ReadingClubs({server}: {server: string}) {
     }
   })
   function updateBgPhoto() {
-    updateBgPhotoMutation.mutate();
+    updateBgMutation.mutate();
   }
 
  
@@ -1123,12 +1127,16 @@ export default function ReadingClubs({server}: {server: string}) {
                         rounded="md"
                         boxShadow="base"
                         _dark={{
-                          backgroundColor: readingClub.background_image ? "rgba(0,0,0,0.0)" : 'gray.600'
+                          backgroundColor: readingClub.background_image ? (
+                            "rgba(0,0,0,0.0)"
+                            ) : (
+                              readingClub.background_color ? readingClub.background_color : 'gray.600'
+                            )
                         }}
                         backgroundImage={readingClub.background_image ? `url(${readingClub.background_image})` : "none"}
                         backgroundSize="cover"
                         backgroundPosition="center"
-                        backgroundColor={readingClub.background_image ? "rgb(0,0,0,.05)" : "white"}
+                        backgroundColor={readingClub.background_color ? readingClub.background_color : "white"}
                       >
                         <Flex  gap={2} align="center" justify="center">
                           <Heading 
@@ -1190,6 +1198,7 @@ export default function ReadingClubs({server}: {server: string}) {
                               <MenuItem 
                                 data-readingclubid={readingClub.id}
                                 data-textcolor={readingClub.text_color}
+                                data-bgcolor={readingClub.background_color}
                                 data-bgimage={readingClub.background_image}
                                 onClick={e=>openEditBgModal(e as React.FormEvent<HTMLButtonElement>)}
                                 icon={<RiImageEditFill size={20} />}
@@ -1662,9 +1671,9 @@ export default function ReadingClubs({server}: {server: string}) {
                         w="35px" 
                         border="none"
                         p={0} 
-                        ref={textColorRef}
-                        value={textColor}
-                        onChange={e=>setTextColor(e.target.value)}
+                        ref={bgColorRef}
+                        value={bgColor}
+                        onChange={e=>setBgColor(e.target.value)}
                       />
                     </Flex>
                     <Box>
@@ -1727,7 +1736,7 @@ export default function ReadingClubs({server}: {server: string}) {
                     mr={3}
                     colorScheme="blue"
                     onClick={e=>updateBgPhoto()}
-                    isLoading={updateBgPhotoMutation.isLoading}
+                    isLoading={updateBgMutation.isLoading}
                   >
                     Submit
                   </Button>

@@ -309,6 +309,7 @@ export interface ReadingClub {
   milestones: number;
   background_image: string;
   text_color: string;
+  background_color: string;
   created_on: string;
 }
 
