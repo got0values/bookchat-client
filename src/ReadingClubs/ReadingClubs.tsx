@@ -41,6 +41,7 @@ import { BiDotsHorizontalRounded, BiTrash, BiBuildings, BiEdit } from 'react-ico
 import { AiOutlineLineChart } from 'react-icons/ai';
 import { MdEdit, MdFormatListBulleted } from 'react-icons/md';
 import { FaWpforms } from 'react-icons/fa';
+import { FiTrash2 } from 'react-icons/fi';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
@@ -66,7 +67,6 @@ export default function ReadingClubs({server}: {server: string}) {
           )
           .then((response)=>{
             const {data} = response;
-            console.log(data)
             return data;
           })
           .catch(({response})=>{
@@ -869,6 +869,7 @@ export default function ReadingClubs({server}: {server: string}) {
   const [previewImage,setPreviewImage] = useState("");
   const [bgImageFile,setBgImageFile] = useState<Blob | string | ArrayBuffer | null>(null);
   const [textColor,setTextColor] = useState("#000000");
+  const [deleteBgImage,setDeleteBgImage] = useState(false);
   function openEditBgModal(e: React.FormEvent<HTMLButtonElement>) {
     setEditBgReadingClubId((e.target as any).dataset.readingclubid)
     setPreviewImage((e.target as any).dataset.bgimage ? (e.target as any).dataset.bgimage : "")
@@ -881,6 +882,7 @@ export default function ReadingClubs({server}: {server: string}) {
     setPreviewImage("")
     setBgImageFile(null)
     setTextColor("#000000")
+    setDeleteBgImage(false)
     onCloseEditBgModal();
   }
   function bgImageChange(e: HTMLInputElement | any) {
@@ -892,6 +894,10 @@ export default function ReadingClubs({server}: {server: string}) {
     let newFile = new File([blob], previewImageFile.name, {type: "image/png"})
     setBgImageFile(newFile)
   }
+  function handleDeleteBgImage() {
+    setPreviewImage("")
+    setDeleteBgImage(true);
+  }
 
   const updateBgPhotoMutation = useMutation({
     mutationFn: async () => {
@@ -900,6 +906,7 @@ export default function ReadingClubs({server}: {server: string}) {
       formData.append("photo", bgImageFile as Blob);
       formData.append("textColor", textColorRef.current.value)
       formData.append("readingClubId", editBgReadingClubId as string | Blob)
+      formData.append("deleteBgImage", deleteBgImage.toString() as string | Blob)
       if (tokenCookie) {
         await axios
           .post(server + "/api/updatereadingclubbgphoto", 
@@ -1674,16 +1681,28 @@ export default function ReadingClubs({server}: {server: string}) {
                         Browse
                       </Button>
                       {previewImage ? (
-                        <Image
-                          src={previewImage ? previewImage : ""} 
-                          objectFit="cover"
-                          boxSize="100%" 
-                          p={5}
-                          maxW="100%"
-                          width="100%"
-                          height="100%"
-                          maxH="200px"
-                        />
+                        <Box>
+                          <Image
+                            src={previewImage ? previewImage : ""} 
+                            objectFit="cover"
+                            boxSize="100%" 
+                            p={5}
+                            maxW="100%"
+                            width="100%"
+                            height="100%"
+                            maxH="200px"
+                            mb={2}
+                          />
+                          <Flex justify="flex-end">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={e=>handleDeleteBgImage()}
+                            >
+                              <FiTrash2/>
+                            </Button>
+                          </Flex>
+                        </Box>
                       ) : null}
                     </Box>
                   </Flex>
