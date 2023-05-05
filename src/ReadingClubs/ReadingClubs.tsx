@@ -871,13 +871,13 @@ export default function ReadingClubs({server}: {server: string}) {
   const [previewImage,setPreviewImage] = useState("");
   const [bgImageFile,setBgImageFile] = useState<Blob | string | ArrayBuffer | null>(null);
   const [textColor,setTextColor] = useState("#000000");
-  const [bgColor,setBgColor] = useState("#000000");
+  const [bgColor,setBgColor] = useState("#ffffff");
   const [deleteBgImage,setDeleteBgImage] = useState(false);
   function openEditBgModal(e: React.FormEvent<HTMLButtonElement>) {
     setEditBgReadingClubId((e.target as any).dataset.readingclubid)
     setPreviewImage((e.target as any).dataset.bgimage ? (e.target as any).dataset.bgimage : "")
     setTextColor((e.target as any).dataset.textcolor ? (e.target as any).dataset.textcolor : "#000000");
-    setBgColor((e.target as any).dataset.bgcolor ? (e.target as any).dataset.bgcolor : "#000000");
+    setBgColor((e.target as any).dataset.bgcolor ? (e.target as any).dataset.bgcolor : "#ffffff");
     onOpenEditBgModal();
   }
   function closeEditBgModal() {
@@ -890,7 +890,6 @@ export default function ReadingClubs({server}: {server: string}) {
     onCloseEditBgModal();
   }
   function bgImageChange(e: HTMLInputElement | any) {
-    // imagePreviewRef.current.style.display = "block";
     let targetFiles = e.target.files as FileList
     let previewImageFile = targetFiles[0];
     setPreviewImage(URL.createObjectURL(previewImageFile))

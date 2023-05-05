@@ -25,7 +25,7 @@ const config = {
       },
       '.main-content': {
         w: "100%",
-        px: "20px",
+        // px: "20px",
         maxW: '1000px'
       },
       '.main-content-smaller': {
