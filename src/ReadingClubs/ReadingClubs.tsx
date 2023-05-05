@@ -1122,7 +1122,7 @@ export default function ReadingClubs({server}: {server: string}) {
                         rounded="md"
                         boxShadow="base"
                         _dark={{
-                          backgroundColor: 'gray.600'
+                          backgroundColor: readingClub.background_image ? "rgba(0,0,0,0.0)" : 'gray.600'
                         }}
                         backgroundImage={readingClub.background_image ? `url(${readingClub.background_image})` : "none"}
                         backgroundSize="cover"
