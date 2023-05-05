@@ -39,7 +39,8 @@ import {
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { BiDotsHorizontalRounded, BiTrash, BiBuildings, BiEdit } from 'react-icons/bi';
 import { AiOutlineLineChart } from 'react-icons/ai';
-import { MdEdit, MdFormatListBulleted } from 'react-icons/md';
+import { MdEdit } from 'react-icons/md';
+import { RiImageEditFill } from 'react-icons/ri';
 import { FaWpforms } from 'react-icons/fa';
 import { FiTrash2 } from 'react-icons/fi';
 import dayjs from "dayjs";
@@ -1115,7 +1116,7 @@ export default function ReadingClubs({server}: {server: string}) {
                         direction="column"
                         align="center"
                         justify="center"
-                        minH="70px"
+                        height="9rem"
                         gap={2}
                         width="100%"
                         p={2}
@@ -1126,29 +1127,18 @@ export default function ReadingClubs({server}: {server: string}) {
                         }}
                         backgroundImage={readingClub.background_image ? `url(${readingClub.background_image})` : "none"}
                         backgroundSize="cover"
+                        backgroundPosition="center"
                         backgroundColor={readingClub.background_image ? "rgb(0,0,0,.05)" : "white"}
-                        _before={readingClub.background_image ? {
-                          content: `" "`,
-                          position: "absolute",
-                          top: "0",
-                          right: "0",
-                          bottom: "0",
-                          left: "0",
-                          backgroundColor: "inherit"
-                        } : {
-                          top: "0"
-                        }}
                       >
                         <Flex  gap={2} align="center" justify="center">
                           <Heading 
                             as="h3" 
-                            size="sm"
+                            size="md"
                             data-readingclubid={readingClub.id}
                             data-form={JSON.stringify(readingClub.ReadingClubForm)}
                             onClick={e=>openFillFormModal(e as any)}
                             _hover={{
-                              cursor: "pointer",
-                              textDecoration: "underline"
+                              cursor: "pointer"
                             }}
                             color={readingClub.text_color ? readingClub.text_color : "black"}
                             _dark={{
@@ -1165,6 +1155,8 @@ export default function ReadingClubs({server}: {server: string}) {
                           _dark={{
                             color: readingClub.text_color ? readingClub.text_color : "white"
                           }}
+                          overflowY="auto"
+                          overflowX="hidden"
                         >
                           {readingClub.description}
                         </Text>
@@ -1193,16 +1185,16 @@ export default function ReadingClubs({server}: {server: string}) {
                                 onClick={e=>openEditReadingClubModal(e as React.FormEvent<HTMLButtonElement>)}
                                 icon={<MdEdit size={20} />}
                               >
-                                Edit
+                                Edit Club
                               </MenuItem>
                               <MenuItem 
                                 data-readingclubid={readingClub.id}
                                 data-textcolor={readingClub.text_color}
                                 data-bgimage={readingClub.background_image}
                                 onClick={e=>openEditBgModal(e as React.FormEvent<HTMLButtonElement>)}
-                                icon={<MdEdit size={20} />}
+                                icon={<RiImageEditFill size={20} />}
                               >
-                                Edit Background
+                                Edit Card
                               </MenuItem>
                               <MenuItem
                                 data-id={readingClub.id}
@@ -1657,30 +1649,31 @@ export default function ReadingClubs({server}: {server: string}) {
                       />
                     </Flex>
                     <Box>
-                      <FormLabel 
-                        htmlFor="bgPhoto" 
-                        fontWeight="bold" 
-                        mb={1}
-                      >
-                        Background Image
-                      </FormLabel>
-                      <Input 
-                        id="bgPhoto" 
-                        type="file" 
-                        accept="image/png, image/jpeg"
-                        display="none"
-                        ref={bgUploadRef}
-                        // isRequired={true} 
-                        onChange={e=>bgImageChange(e)}
-                      />
-                      <Button
-                        onClick={e=>bgUploadRef.current.click()}
-                        mb={2}
-                      >
-                        Browse
-                      </Button>
+                      <Flex align="center">
+                        <FormLabel 
+                          htmlFor="bgPhoto" 
+                          fontWeight="bold" 
+                          mb={1}
+                        >
+                          Background Image
+                        </FormLabel>
+                        <Input 
+                          id="bgPhoto" 
+                          type="file" 
+                          accept="image/png, image/jpeg"
+                          display="none"
+                          ref={bgUploadRef}
+                          onChange={e=>bgImageChange(e)}
+                        />
+                        <Button
+                          onClick={e=>bgUploadRef.current.click()}
+                          mb={2}
+                        >
+                          Browse
+                        </Button>
+                      </Flex>
                       {previewImage ? (
-                        <Box>
+                        <Box position="relative">
                           <Image
                             src={previewImage ? previewImage : ""} 
                             objectFit="cover"
@@ -1692,15 +1685,18 @@ export default function ReadingClubs({server}: {server: string}) {
                             maxH="200px"
                             mb={2}
                           />
-                          <Flex justify="flex-end">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={e=>handleDeleteBgImage()}
-                            >
-                              <FiTrash2/>
-                            </Button>
-                          </Flex>
+                          <Button
+                            size="md"
+                            variant="ghost"
+                            onClick={e=>handleDeleteBgImage()}
+                            p={0}
+                            position="absolute"
+                            right="15px"
+                            bottom="15px"
+                            color="red"
+                          >
+                            <FiTrash2/>
+                          </Button>
                         </Box>
                       ) : null}
                     </Box>
