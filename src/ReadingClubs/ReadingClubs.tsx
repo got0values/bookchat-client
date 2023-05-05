@@ -1648,6 +1648,25 @@ export default function ReadingClubs({server}: {server: string}) {
                         onChange={e=>setTextColor(e.target.value)}
                       />
                     </Flex>
+                    <Flex align="center" justify="flex-start" gap={0}>
+                      <FormLabel 
+                        htmlFor="bgColor" 
+                        fontWeight="bold" 
+                        mb={0}
+                      >
+                        Background Color
+                      </FormLabel>
+                      <Input 
+                        id="bgColor" 
+                        type="color" 
+                        w="35px" 
+                        border="none"
+                        p={0} 
+                        ref={textColorRef}
+                        value={textColor}
+                        onChange={e=>setTextColor(e.target.value)}
+                      />
+                    </Flex>
                     <Box>
                       <Flex align="center">
                         <FormLabel 
@@ -1678,10 +1697,11 @@ export default function ReadingClubs({server}: {server: string}) {
                             src={previewImage ? previewImage : ""} 
                             objectFit="cover"
                             boxSize="100%" 
-                            p={5}
+                            p={0}
+                            rounded="md"
                             maxW="100%"
                             width="100%"
-                            height="100%"
+                            height="9rem"
                             maxH="200px"
                             mb={2}
                           />
