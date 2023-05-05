@@ -307,7 +307,9 @@ export interface ReadingClub {
   hidden: number,
   ReadingClubForm: ReadingClubForm,
   milestones: number;
-  created_on: string
+  background_image: string;
+  text_color: string;
+  created_on: string;
 }
 
 export interface ReadingClubForm {

@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ReadingClub, FormType, ReadingClubForm, School, EntryData, UserEntry, ProfileType } from "../types/types";
 import { 
   Box,
-  Tag,
+  Image,
   Heading,
   Text,
   Spinner,
@@ -66,6 +66,7 @@ export default function ReadingClubs({server}: {server: string}) {
           )
           .then((response)=>{
             const {data} = response;
+            console.log(data)
             return data;
           })
           .catch(({response})=>{
@@ -856,6 +857,94 @@ export default function ReadingClubs({server}: {server: string}) {
     submitManualReadingClubEntryMutation.mutate(e);
   }
 
+  const { 
+    isOpen: isOpenEditBgModal, 
+    onOpen: onOpenEditBgModal, 
+    onClose: onCloseEditBgModal 
+  } = useDisclosure()
+  const [editBgReadingClubId,setEditBgReadingClubId] = useState<string | null>(null);
+  const bgUploadRef = useRef({} as HTMLInputElement);
+  // const imagePreviewRef = useRef({} as HTMLImageElement);
+  const textColorRef = useRef({} as HTMLInputElement);
+  const [previewImage,setPreviewImage] = useState("");
+  const [bgImageFile,setBgImageFile] = useState<Blob | string | ArrayBuffer | null>(null);
+  const [textColor,setTextColor] = useState("#000000");
+  function openEditBgModal(e: React.FormEvent<HTMLButtonElement>) {
+    setEditBgReadingClubId((e.target as any).dataset.readingclubid)
+    setPreviewImage((e.target as any).dataset.bgimage ? (e.target as any).dataset.bgimage : "")
+    console.log(textColorRef.current)
+    setTextColor((e.target as any).dataset.textcolor ? (e.target as any).dataset.textcolor : "#000000");
+    onOpenEditBgModal();
+  }
+  function closeEditBgModal() {
+    setEditBgReadingClubId(null)
+    setPreviewImage("")
+    setBgImageFile(null)
+    setTextColor("#000000")
+    onCloseEditBgModal();
+  }
+  function bgImageChange(e: HTMLInputElement | any) {
+    // imagePreviewRef.current.style.display = "block";
+    let targetFiles = e.target.files as FileList
+    let previewImageFile = targetFiles[0];
+    setPreviewImage(URL.createObjectURL(previewImageFile))
+    let blob = previewImageFile.slice(0,previewImageFile.size,"image/png")
+    let newFile = new File([blob], previewImageFile.name, {type: "image/png"})
+    setBgImageFile(newFile)
+  }
+
+  const updateBgPhotoMutation = useMutation({
+    mutationFn: async () => {
+      let tokenCookie = Cookies.get().token;
+      const formData = new FormData();
+      formData.append("photo", bgImageFile as Blob);
+      formData.append("textColor", textColorRef.current.value)
+      formData.append("readingClubId", editBgReadingClubId as string | Blob)
+      if (tokenCookie) {
+        await axios
+          .post(server + "/api/updatereadingclubbgphoto", 
+          formData,
+          {headers: {
+            'authorization': tokenCookie,
+            'content-type': 'multipart/form-data'
+          }}
+          )
+          .catch(({response})=>{
+            if (axios.isCancel(response)) {
+              console.log("successfully aborted")
+            }
+            console.log(response)
+            toast({
+              description: response.data.message ? response.data.message : "An error has occurred",
+              status: "error",
+              duration: 9000,
+              isClosable: true
+            })
+            throw new Error(response?.data?.message)
+          })
+      }
+      else {
+        throw new Error("Error: BGP200")
+      }
+      return getReadingClubs();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['readingClubsKey'] })
+      queryClient.resetQueries({queryKey: ['readingClubsKey']})
+      queryClient.setQueryData(["readingClubsKey"],data)
+      toast({
+        description: "Background image updated",
+        status: "success",
+        duration: 9000,
+        isClosable: true
+      })
+      closeEditBgModal();
+    }
+  })
+  function updateBgPhoto() {
+    updateBgPhotoMutation.mutate();
+  }
+
  
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['readingClubsKey'], 
@@ -1025,15 +1114,29 @@ export default function ReadingClubs({server}: {server: string}) {
                         p={2}
                         rounded="md"
                         boxShadow="base"
-                        bg="white"
                         _dark={{
                           bg: 'gray.600'
+                        }}
+                        backgroundImage={readingClub.background_image ? `url(${readingClub.background_image})` : "none"}
+                        backgroundSize="cover"
+                        backgroundColor={readingClub.background_image ? "rgb(0,0,0,.05)" : "white"}
+                        _before={readingClub.background_image ? {
+                          content: `" "`,
+                          position: "absolute",
+                          top: "0",
+                          right: "0",
+                          bottom: "0",
+                          left: "0",
+                          backgroundColor: "inherit"
+                        } : {
+                          top: "0"
                         }}
                       >
                         <Flex  gap={2} align="center" justify="center">
                           <Heading 
                             as="h3" 
                             size="sm"
+                            textShadow="0 1px 1px lightgray"
                             data-readingclubid={readingClub.id}
                             data-form={JSON.stringify(readingClub.ReadingClubForm)}
                             onClick={e=>openFillFormModal(e as any)}
@@ -1041,12 +1144,22 @@ export default function ReadingClubs({server}: {server: string}) {
                               cursor: "pointer",
                               textDecoration: "underline"
                             }}
+                            color={readingClub.text_color ? readingClub.text_color : "black"}
+                            _dark={{
+                              color: readingClub.text_color ? readingClub.text_color : "white"
+                            }}
                           >
                             {readingClub.name}
                           </Heading>
                           {readingClub.hidden ? <i>(hidden)</i> : ""}
                         </Flex>
-                        <Text textAlign="center">
+                        <Text 
+                          textAlign="center" 
+                          color={readingClub.text_color ? readingClub.text_color : "black"}
+                          _dark={{
+                            color: readingClub.text_color ? readingClub.text_color : "white"
+                          }}
+                        >
                           {readingClub.description}
                         </Text>
                         {viewer === "admin" ? (
@@ -1075,6 +1188,15 @@ export default function ReadingClubs({server}: {server: string}) {
                                 icon={<MdEdit size={20} />}
                               >
                                 Edit
+                              </MenuItem>
+                              <MenuItem 
+                                data-readingclubid={readingClub.id}
+                                data-textcolor={readingClub.text_color}
+                                data-bgimage={readingClub.background_image}
+                                onClick={e=>openEditBgModal(e as React.FormEvent<HTMLButtonElement>)}
+                                icon={<MdEdit size={20} />}
+                              >
+                                Edit Background
                               </MenuItem>
                               <MenuItem
                                 data-id={readingClub.id}
@@ -1405,7 +1527,13 @@ export default function ReadingClubs({server}: {server: string}) {
                 <ModalBody>
                   <Flex direction="column" gap={2}>
                     <Box mb={2}>
-                      <FormLabel htmlFor="name" mb={1}>Name</FormLabel>
+                      <FormLabel 
+                        htmlFor="name" 
+                        fontWeight="bold" 
+                        mb={1}
+                      >
+                        Name
+                      </FormLabel>
                       <Input
                       type="text"
                       id="name"
@@ -1415,7 +1543,13 @@ export default function ReadingClubs({server}: {server: string}) {
                       />
                     </Box>
                     <Box>
-                      <FormLabel htmlFor="description" mb={1}>Description</FormLabel>
+                      <FormLabel 
+                        htmlFor="description" 
+                        fontWeight="bold" 
+                        mb={1}
+                      >
+                        Description
+                      </FormLabel>
                       <Textarea
                         id="description"
                         ref={editReadingClubDescriptionRef}
@@ -1423,7 +1557,13 @@ export default function ReadingClubs({server}: {server: string}) {
                       ></Textarea>
                     </Box>
                     <Box>
-                      <FormLabel htmlFor="form" mb={1}>Form</FormLabel>
+                      <FormLabel 
+                        htmlFor="form" 
+                        fontWeight="bold" 
+                        mb={1}
+                      >
+                        Form
+                      </FormLabel>
                       <Select 
                         id="form"
                         ref={editReadingClubFormRef as any}
@@ -1440,7 +1580,13 @@ export default function ReadingClubs({server}: {server: string}) {
                       </Select>
                     </Box>
                     <Box>
-                      <FormLabel htmlFor="milestones" mb={1}>Number of milestones</FormLabel>
+                      <FormLabel 
+                        htmlFor="milestones" 
+                        fontWeight="bold" 
+                        mb={1}
+                      >
+                        Number of milestones
+                      </FormLabel>
                       <Input
                         type="number"
                         id="milestones"
@@ -1451,8 +1597,8 @@ export default function ReadingClubs({server}: {server: string}) {
                     <Checkbox 
                       defaultChecked={editHidden.includes("1")}
                       ref={editReadingClubHiddenRef}
-                      onChange={e=>console.log(e)}
                       mt={2}
+                      fontWeight="bold"
                     >
                       Hide?
                     </Checkbox>
@@ -1465,12 +1611,93 @@ export default function ReadingClubs({server}: {server: string}) {
                   <Button  
                     mr={3}
                     type="submit"
-                    colorScheme="green"
+                    colorScheme="blue"
                   >
                     Submit
                   </Button>
                 </ModalFooter>
               </form>
+            </ModalContent>
+            </Modal>
+
+            <Modal isOpen={isOpenEditBgModal} onClose={closeEditBgModal} size="xl" isCentered>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>
+                <Heading as="h3" size="lg">
+                  Edit Background
+                </Heading>
+              </ModalHeader>
+              <ModalCloseButton />
+                <ModalBody>
+                  <Flex direction="column" gap={2}>
+                    <Flex align="center" justify="flex-start" gap={0}>
+                      <FormLabel 
+                        htmlFor="textColor" 
+                        fontWeight="bold" 
+                        mb={0}
+                      >
+                        Text Color
+                      </FormLabel>
+                      <Input 
+                        id="textColor" 
+                        type="color" 
+                        w="35px" 
+                        border="none"
+                        p={0} 
+                        ref={textColorRef}
+                        value={textColor}
+                        onChange={e=>setTextColor(e.target.value)}
+                      />
+                    </Flex>
+                    <Box>
+                      <FormLabel 
+                        htmlFor="bgPhoto" 
+                        fontWeight="bold" 
+                        mb={1}
+                      >
+                        Background Image
+                      </FormLabel>
+                      <Input 
+                        id="bgPhoto" 
+                        type="file" 
+                        accept="image/png, image/jpeg"
+                        display="none"
+                        ref={bgUploadRef}
+                        // isRequired={true} 
+                        onChange={e=>bgImageChange(e)}
+                      />
+                      <Button
+                        onClick={e=>bgUploadRef.current.click()}
+                        mb={2}
+                      >
+                        Browse
+                      </Button>
+                      {previewImage ? (
+                        <Image
+                          src={previewImage ? previewImage : ""} 
+                          objectFit="cover"
+                          boxSize="100%" 
+                          p={5}
+                          maxW="100%"
+                          width="100%"
+                          height="100%"
+                          maxH="200px"
+                        />
+                      ) : null}
+                    </Box>
+                  </Flex>
+                </ModalBody>
+                <ModalFooter>
+                  <Button  
+                    mr={3}
+                    colorScheme="blue"
+                    onClick={e=>updateBgPhoto()}
+                    isLoading={updateBgPhotoMutation.isLoading}
+                  >
+                    Submit
+                  </Button>
+                </ModalFooter>
             </ModalContent>
             </Modal>
 
