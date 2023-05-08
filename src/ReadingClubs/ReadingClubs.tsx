@@ -893,6 +893,7 @@ export default function ReadingClubs({server}: {server: string}) {
     let targetFiles = e.target.files as FileList
     let previewImageFile = targetFiles[0];
     setPreviewImage(URL.createObjectURL(previewImageFile))
+    setDeleteBgImage(false)
     let blob = previewImageFile.slice(0,previewImageFile.size,"image/png")
     let newFile = new File([blob], previewImageFile.name, {type: "image/png"})
     setBgImageFile(newFile)
@@ -1132,7 +1133,7 @@ export default function ReadingClubs({server}: {server: string}) {
                               readingClub.background_color ? readingClub.background_color : 'gray.600'
                             )
                         }}
-                        backgroundImage={readingClub.background_image ? `url(${readingClub.background_image})` : "none"}
+                        backgroundImage={readingClub.background_image ? `url(${readingClub.background_image}?id=${new Date().getSeconds()})` : "none"}
                         backgroundSize="cover"
                         backgroundPosition="center"
                         backgroundColor={readingClub.background_color ? readingClub.background_color : "white"}
@@ -1702,7 +1703,7 @@ export default function ReadingClubs({server}: {server: string}) {
                       {previewImage ? (
                         <Box position="relative">
                           <Image
-                            src={previewImage ? previewImage : ""} 
+                            src={previewImage ? (previewImage.includes("blob") ? previewImage : previewImage + "?id=" + new Date().getSeconds()) : ""} 
                             objectFit="cover"
                             boxSize="100%" 
                             p={0}
