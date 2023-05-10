@@ -39,6 +39,7 @@ import {
 } from "@chakra-ui/react";
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
 import { BsReplyFill } from 'react-icons/bs';
+import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import Comments from "./shared/CurrentlyReadingComments";
 import { useAuth } from './hooks/useAuth';
 import Cookies from "js-cookie";
@@ -249,6 +250,42 @@ export default function Dashboard({server}: DashboardProps) {
   })
   function postCurrentlyReading(e: React.FormEvent) {
     postCurrentlyReadingMutation.mutate(e);
+  }
+
+  const likeUnlikeCurrentlyReadingMutation = useMutation({
+    mutationFn: async (e: React.FormEvent)=>{
+      let tokenCookie: string | null = Cookies.get().token;
+      let currentlyReading = parseInt((e.target as HTMLDivElement).dataset.currentlyreading!);
+      if (tokenCookie) {
+        await axios
+        .post(server + "/api/likeunlikecurrentlyreading",
+        {
+          currentlyReading
+        },
+        {
+          headers: {
+            'authorization': tokenCookie
+          }
+        }
+        )
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.message)
+        })
+      }
+      else {
+        throw new Error("Please login again")
+      }
+      return getDashboard();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['dashboardKey'] })
+      queryClient.resetQueries({queryKey: ['dashboardKey']})
+      queryClient.setQueryData(["dashboardKey"],data)
+    }
+  })
+  function likeUnlikeCurrentlyReading(e: React.FormEvent) {
+    likeUnlikeCurrentlyReadingMutation.mutate(e);
   }
   
   const dashboard = useQuery({
@@ -465,32 +502,72 @@ export default function Dashboard({server}: DashboardProps) {
                         <Text>
                           {reading.author}
                         </Text>
-                        <Text
-                          noOfLines={3}
-                        >
-                          {reading.description}
-                        </Text>
-                        <Center>
-                          <Popover isLazy>
-                            <PopoverTrigger>
-                              <Button 
-                                size="xs" 
-                                variant="ghost" 
-                                m={1}
-                                h="auto"
+                        <Popover isLazy>
+                          <PopoverTrigger>
+                            <Text
+                              noOfLines={3}
+                              cursor="pointer"
+                            >
+                            {reading.description}
+                            </Text>
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverBody>
+                              {reading.description}
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Popover>
+                        <Flex justify="flex-end">
+                          <Flex align="center" gap={0}>
+                            <Button 
+                              px={0}
+                              pb={0.5}
+                              size="xs"
+                              variant="ghost"
+                              data-currentlyreading={reading.id}
+                              onClick={e=>likeUnlikeCurrentlyReading(e)}
+                            >
+                              {reading.CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                            </Button>
+                            {reading.CurrentlyReadingLike?.length ? (
+                              <Popover isLazy size="sm">
+                                <PopoverTrigger>
+                                  <Text
+                                    cursor="pointer"
+                                  >
+                                    {reading.CurrentlyReadingLike?.length ? reading.CurrentlyReadingLike.length.toString() : "0"}
+                                  </Text>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                  <PopoverArrow />
+                                  <PopoverCloseButton />
+                                  <PopoverBody>
+                                    {reading.CurrentlyReadingLike?.length ? (
+                                      reading.CurrentlyReadingLike?.map((like,i)=>{
+                                        return (
+                                          <Link 
+                                            key={i}
+                                            to={`/profile/${like.Profile.username}`}
+                                          >
+                                            {like.Profile.User.first_name}
+                                          </Link>
+                                        )
+                                      })
+                                    ) : null}
+                                  </PopoverBody>
+                                </PopoverContent>
+                              </Popover>
+                            ) : (
+                              <Text
+                                cursor="pointer"
                               >
-                                ...
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent>
-                              <PopoverArrow />
-                              <PopoverCloseButton />
-                              <PopoverBody>
-                                {reading.description}
-                              </PopoverBody>
-                            </PopoverContent>
-                          </Popover>
-                        </Center>
+                                {reading.CurrentlyReadingLike?.length ? reading.CurrentlyReadingLike.length.toString() : "0"}
+                              </Text>
+                            )}
+                          </Flex>
+                        </Flex>
                       </Box>
                     </Flex>
                     <Divider my={3} />

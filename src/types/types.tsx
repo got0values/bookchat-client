@@ -259,6 +259,15 @@ export interface CurrentlyReading {
   created_on: Date;
   Profile: ProfileType;
   CurrentlyReadingComment: CurrentlyReadingComment[];
+  CurrentlyReadingLike: CurrentlyReadingLike[];
+}
+
+export interface CurrentlyReadingLike {
+  id: number;
+  profile: number;
+  Profile: ProfileType;
+  currently_reading: number;
+  datetime: string;
 }
 
 export interface CurrentlyReadingComment {

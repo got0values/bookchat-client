@@ -53,6 +53,7 @@ import { MdEdit } from 'react-icons/md';
 import { BsPlusLg } from 'react-icons/bs';
 import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
 import { BsReplyFill } from 'react-icons/bs';
+import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { useAuth } from '../hooks/useAuth';
 import { FollowProfileButton, CancelRequestButton, UnFollowProfileButton } from "./profileButtons";
 import Comments from "../shared/CurrentlyReadingComments";
@@ -553,12 +554,48 @@ export const useProfile = ({server}: ProfileProps) => {
     onCloseCommentModal()
   }
 
-  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation};
+  const likeUnlikeCurrentlyReadingMutation = useMutation({
+    mutationFn: async (e: React.FormEvent)=>{
+      let tokenCookie: string | null = Cookies.get().token;
+      let currentlyReading = parseInt((e.target as HTMLDivElement).dataset.currentlyreading!);
+      if (tokenCookie) {
+        await axios
+        .post(server + "/api/likeunlikecurrentlyreading",
+        {
+          currentlyReading
+        },
+        {
+          headers: {
+            'authorization': tokenCookie
+          }
+        }
+        )
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.message)
+        })
+      }
+      else {
+        throw new Error("Please login again")
+      }
+      return getProfile();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['profileKey',paramsUsername] })
+      queryClient.resetQueries({queryKey: ['profileKey',paramsUsername]})
+      queryClient.setQueryData(['profileKey',paramsUsername],data)
+    }
+  })
+  function likeUnlikeCurrentlyReading(e: React.FormEvent) {
+    likeUnlikeCurrentlyReadingMutation.mutate(e);
+  }
+
+  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading};
 }
 
 
 export default function Profile({server}: ProfileProps) {
-  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation} = useProfile({server});
+  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading} = useProfile({server});
 
   
 
@@ -812,32 +849,23 @@ export default function Profile({server}: ProfileProps) {
                             <Text>
                               {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
                             </Text>
-                            <Text
-                              noOfLines={2}
-                            >
-                              {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
-                            </Text>
-                            <Center>
-                              <Popover isLazy>
-                                <PopoverTrigger>
-                                  <Button 
-                                    size="xs" 
-                                    variant="ghost" 
-                                    m={1}
-                                    h="auto"
-                                  >
-                                    ...
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                  <PopoverArrow />
-                                  <PopoverCloseButton />
-                                  <PopoverBody>
-                                    {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
-                                  </PopoverBody>
-                                </PopoverContent>
-                              </Popover>
-                            </Center>
+                            <Popover isLazy>
+                              <PopoverTrigger>
+                                <Text
+                                  noOfLines={2}
+                                  cursor="pointer"
+                                >
+                                  {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
+                                </Text>
+                              </PopoverTrigger>
+                              <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody>
+                                  {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
+                                </PopoverBody>
+                              </PopoverContent>
+                            </Popover>
                             <Flex justify="flex-end">
                               <Button 
                                 size="sm"
@@ -950,36 +978,80 @@ export default function Profile({server}: ProfileProps) {
                               .author
                               }
                             </Text>
-                            <Text
-                              noOfLines={2}
-                            >
-                              {
-                                profileData
-                                .CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                .description
-                              }
-                            </Text>
-                            <Center>
-                              <Popover isLazy>
-                                <PopoverTrigger>
-                                  <Button 
-                                    size="xs" 
-                                    variant="ghost" 
-                                    m={1}
-                                    h="auto"
+                            <Popover isLazy>
+                              <PopoverTrigger>
+                                <Text
+                                  noOfLines={2}
+                                  cursor="pointer"
+                                >
+                                  {
+                                    profileData
+                                    .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                    .description
+                                  }
+                                </Text>
+                              </PopoverTrigger>
+                              <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody>
+                                  {
+                                    profileData
+                                    .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                    .description
+                                  }
+                                </PopoverBody>
+                              </PopoverContent>
+                            </Popover>
+                            <Flex justify="flex-end">
+                              <Flex align="center" gap={0}>
+                                <Button 
+                                  px={0}
+                                  pb={0.5}
+                                  size="xs"
+                                  variant="ghost"
+                                  data-currentlyreading={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}
+                                  onClick={e=>likeUnlikeCurrentlyReading(e)}
+                                >
+                                  {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                                </Button>
+                                {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? (
+                                  <Popover isLazy size="sm">
+                                    <PopoverTrigger>
+                                      <Text
+                                        cursor="pointer"
+                                      >
+                                        {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike.length.toString() : "0"}
+                                      </Text>
+                                    </PopoverTrigger>
+                                    <PopoverContent>
+                                      <PopoverArrow />
+                                      <PopoverCloseButton />
+                                      <PopoverBody>
+                                        {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? (
+                                          profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.map((like,i)=>{
+                                            return (
+                                              <Link 
+                                                key={i}
+                                                to={`/profile/${like.Profile.username}`}
+                                              >
+                                                {like.Profile.User.first_name}
+                                              </Link>
+                                            )
+                                          })
+                                        ) : null}
+                                      </PopoverBody>
+                                    </PopoverContent>
+                                  </Popover>
+                                ) : (
+                                  <Text
+                                    cursor="pointer"
                                   >
-                                    ...
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                  <PopoverArrow />
-                                  <PopoverCloseButton />
-                                  <PopoverBody>
-                                    {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].description}
-                                  </PopoverBody>
-                                </PopoverContent>
-                              </Popover>
-                            </Center>
+                                    {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike.length.toString() : "0"}
+                                  </Text>
+                                )}
+                              </Flex>
+                            </Flex>
                           </Box>
                         </Flex>
                         <Divider my={3} />
@@ -1069,36 +1141,80 @@ export default function Profile({server}: ProfileProps) {
                                     .author
                                   }
                                 </Text>
-                                <Text
-                                  noOfLines={2}
-                                >
-                                  {
-                                    profileData
-                                    .CurrentlyReading[0]
-                                    .description
-                                  }
-                                </Text>
-                                <Center>
-                                  <Popover isLazy>
-                                    <PopoverTrigger>
-                                      <Button 
-                                        size="xs" 
-                                        variant="ghost" 
-                                        m={1}
-                                        h="auto"
+                                <Popover isLazy>
+                                  <PopoverTrigger>
+                                    <Text
+                                      noOfLines={2}
+                                      cursor="pointer"
+                                    >
+                                      {
+                                        profileData
+                                        .CurrentlyReading[0]
+                                        .description
+                                      }
+                                    </Text>
+                                  </PopoverTrigger>
+                                  <PopoverContent>
+                                    <PopoverArrow />
+                                    <PopoverCloseButton />
+                                    <PopoverBody>
+                                      {
+                                        profileData
+                                        .CurrentlyReading[0]
+                                        .description
+                                      }
+                                    </PopoverBody>
+                                  </PopoverContent>
+                                </Popover>
+                                <Flex justify="flex-end">
+                                  <Flex align="center" gap={0}>
+                                    <Button 
+                                      px={0}
+                                      pb={0.5}
+                                      size="xs"
+                                      variant="ghost"
+                                      data-currentlyreading={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}
+                                      onClick={e=>likeUnlikeCurrentlyReading(e)}
+                                    >
+                                      {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                                    </Button>
+                                    {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? (
+                                      <Popover isLazy size="sm">
+                                        <PopoverTrigger>
+                                          <Text
+                                            cursor="pointer"
+                                          >
+                                            {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike.length.toString() : "0"}
+                                          </Text>
+                                        </PopoverTrigger>
+                                        <PopoverContent>
+                                          <PopoverArrow />
+                                          <PopoverCloseButton />
+                                          <PopoverBody>
+                                            {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? (
+                                              profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.map((like,i)=>{
+                                                return (
+                                                  <Link 
+                                                    key={i}
+                                                    to={`/profile/${like.Profile.username}`}
+                                                  >
+                                                    {like.Profile.User.first_name}
+                                                  </Link>
+                                                )
+                                              })
+                                            ) : null}
+                                          </PopoverBody>
+                                        </PopoverContent>
+                                      </Popover>
+                                    ) : (
+                                      <Text
+                                        cursor="pointer"
                                       >
-                                        ...
-                                      </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent>
-                                      <PopoverArrow />
-                                      <PopoverCloseButton />
-                                      <PopoverBody>
-                                        {profileData.CurrentlyReading[0].description}
-                                      </PopoverBody>
-                                    </PopoverContent>
-                                  </Popover>
-                                </Center>
+                                        {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike.length.toString() : "0"}
+                                      </Text>
+                                    )}
+                                  </Flex>
+                                </Flex>
                               </Box>
                             </Flex>
                             {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment ? (
@@ -1212,32 +1328,72 @@ export default function Profile({server}: ProfileProps) {
                                       {readBook.title}
                                     </Heading>
                                     <Text>{readBook.author}</Text>
-                                    <Text
-                                      noOfLines={2}
-                                    >
-                                      {readBook.description}
-                                    </Text>
-                                    <Center>
-                                      <Popover isLazy>
-                                        <PopoverTrigger>
-                                          <Button 
-                                            size="xs" 
-                                            variant="ghost" 
-                                            m={1}
-                                            h="auto"
+                                    <Popover isLazy>
+                                      <PopoverTrigger>
+                                        <Text
+                                          noOfLines={2}
+                                          cursor="pointer"
+                                        >
+                                          {readBook.description}
+                                        </Text>
+                                      </PopoverTrigger>
+                                      <PopoverContent>
+                                        <PopoverArrow />
+                                        <PopoverCloseButton />
+                                        <PopoverBody>
+                                          {readBook.description}
+                                        </PopoverBody>
+                                      </PopoverContent>
+                                    </Popover>
+                                    <Flex justify="flex-end">
+                                      <Flex align="center" gap={0}>
+                                        <Button 
+                                          px={0}
+                                          pb={0.5}
+                                          size="xs"
+                                          variant="ghost"
+                                          data-currentlyreading={readBook.id}
+                                          onClick={e=>likeUnlikeCurrentlyReading(e)}
+                                        >
+                                          {readBook.CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                                        </Button>
+                                        {readBook.CurrentlyReadingLike?.length ? (
+                                          <Popover isLazy size="sm">
+                                            <PopoverTrigger>
+                                              <Text
+                                                cursor="pointer"
+                                              >
+                                                {readBook.CurrentlyReadingLike?.length ? readBook.CurrentlyReadingLike.length.toString() : "0"}
+                                              </Text>
+                                            </PopoverTrigger>
+                                            <PopoverContent>
+                                              <PopoverArrow />
+                                              <PopoverCloseButton />
+                                              <PopoverBody>
+                                                {readBook.CurrentlyReadingLike?.length ? (
+                                                  readBook.CurrentlyReadingLike?.map((like,i)=>{
+                                                    return (
+                                                      <Link 
+                                                        key={i}
+                                                        to={`/profile/${like.Profile.username}`}
+                                                      >
+                                                        {like.Profile.User.first_name}
+                                                      </Link>
+                                                    )
+                                                  })
+                                                ) : null}
+                                              </PopoverBody>
+                                            </PopoverContent>
+                                          </Popover>
+                                        ) : (
+                                          <Text
+                                            cursor="pointer"
                                           >
-                                            ...
-                                          </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent>
-                                          <PopoverArrow />
-                                          <PopoverCloseButton />
-                                          <PopoverBody>
-                                            {readBook.description}
-                                          </PopoverBody>
-                                        </PopoverContent>
-                                      </Popover>
-                                    </Center>
+                                            {readBook.CurrentlyReadingLike?.length ? readBook.CurrentlyReadingLike.length.toString() : "0"}
+                                          </Text>
+                                        )}
+                                      </Flex>
+                                    </Flex>
                                   </Box>
                                 </Flex>
                                 <Divider my={3} />
