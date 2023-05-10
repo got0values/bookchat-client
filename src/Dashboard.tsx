@@ -552,7 +552,7 @@ export default function Dashboard({server}: DashboardProps) {
                                               key={i}
                                               to={`/profile/${like.Profile.username}`}
                                             >
-                                              {like.Profile.User.first_name}
+                                              {like.Profile.User.first_name + " " + like.Profile.User.last_name}
                                             </Link>
                                           </Box>
                                         )
