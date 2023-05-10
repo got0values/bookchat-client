@@ -873,6 +873,8 @@ export default function ReadingClubs({server}: {server: string}) {
   const [textColor,setTextColor] = useState("#000000");
   const [bgColor,setBgColor] = useState("#ffffff");
   const [deleteBgImage,setDeleteBgImage] = useState(false);
+  const [showTextColor,setShowTextColor] = useState(true)
+  const [showBgColor,setShowBgColor] = useState(true)
   function openEditBgModal(e: React.FormEvent<HTMLButtonElement>) {
     setEditBgReadingClubId((e.target as any).dataset.readingclubid)
     setPreviewImage((e.target as any).dataset.bgimage ? (e.target as any).dataset.bgimage : "")
@@ -908,8 +910,8 @@ export default function ReadingClubs({server}: {server: string}) {
       let tokenCookie = Cookies.get().token;
       const formData = new FormData();
       formData.append("photo", bgImageFile as Blob);
-      formData.append("textColor", textColorRef.current.value)
-      formData.append("bgColor", bgColorRef.current.value)
+      formData.append("textColor", showTextColor ? textColorRef.current.value : "")
+      formData.append("bgColor", showBgColor ? bgColorRef.current.value : "")
       formData.append("readingClubId", editBgReadingClubId as string | Blob)
       formData.append("deleteBgImage", deleteBgImage.toString() as string | Blob)
       if (tokenCookie) {
@@ -1646,6 +1648,13 @@ export default function ReadingClubs({server}: {server: string}) {
                       >
                         Text Color
                       </FormLabel>
+                      <Checkbox 
+                        me={2}
+                        onChange={e=>setShowTextColor(prev=>!prev)}
+                        isChecked={showTextColor}
+                      >
+                      </Checkbox>
+                      {showTextColor && (
                       <Input 
                         id="textColor" 
                         type="color" 
@@ -1656,6 +1665,7 @@ export default function ReadingClubs({server}: {server: string}) {
                         value={textColor}
                         onChange={e=>setTextColor(e.target.value)}
                       />
+                      )}
                     </Flex>
                     <Flex align="center" justify="flex-start" gap={0}>
                       <FormLabel 
@@ -1665,6 +1675,13 @@ export default function ReadingClubs({server}: {server: string}) {
                       >
                         Background Color
                       </FormLabel>
+                      <Checkbox 
+                        me={2}
+                        onChange={e=>setShowBgColor(prev=>!prev)}
+                        isChecked={showBgColor}
+                      >
+                      </Checkbox>
+                      {showBgColor && (
                       <Input 
                         id="bgColor" 
                         type="color" 
@@ -1675,6 +1692,7 @@ export default function ReadingClubs({server}: {server: string}) {
                         value={bgColor}
                         onChange={e=>setBgColor(e.target.value)}
                       />
+                      )}
                     </Flex>
                     <Box>
                       <Flex align="center">
