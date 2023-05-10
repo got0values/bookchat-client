@@ -547,12 +547,14 @@ export default function Dashboard({server}: DashboardProps) {
                                     {reading.CurrentlyReadingLike?.length ? (
                                       reading.CurrentlyReadingLike?.map((like,i)=>{
                                         return (
-                                          <Link 
-                                            key={i}
-                                            to={`/profile/${like.Profile.username}`}
-                                          >
-                                            {like.Profile.User.first_name}
-                                          </Link>
+                                          <Box mb={1}>
+                                            <Link 
+                                              key={i}
+                                              to={`/profile/${like.Profile.username}`}
+                                            >
+                                              {like.Profile.User.first_name}
+                                            </Link>
+                                          </Box>
                                         )
                                       })
                                     ) : null}

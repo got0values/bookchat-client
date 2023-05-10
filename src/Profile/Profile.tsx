@@ -1031,12 +1031,14 @@ export default function Profile({server}: ProfileProps) {
                                         {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? (
                                           profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.map((like,i)=>{
                                             return (
-                                              <Link 
-                                                key={i}
-                                                to={`/profile/${like.Profile.username}`}
-                                              >
-                                                {like.Profile.User.first_name}
-                                              </Link>
+                                              <Box mb={1}>
+                                                <Link 
+                                                  key={i}
+                                                  to={`/profile/${like.Profile.username}`}
+                                                >
+                                                  {like.Profile.User.first_name}
+                                                </Link>
+                                              </Box>
                                             )
                                           })
                                         ) : null}
@@ -1194,12 +1196,14 @@ export default function Profile({server}: ProfileProps) {
                                             {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? (
                                               profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.map((like,i)=>{
                                                 return (
-                                                  <Link 
-                                                    key={i}
-                                                    to={`/profile/${like.Profile.username}`}
-                                                  >
-                                                    {like.Profile.User.first_name}
-                                                  </Link>
+                                                  <Box mb={1}>
+                                                    <Link 
+                                                      key={i}
+                                                      to={`/profile/${like.Profile.username}`}
+                                                    >
+                                                      {like.Profile.User.first_name}
+                                                    </Link>
+                                                  </Box>
                                                 )
                                               })
                                             ) : null}
@@ -1373,12 +1377,14 @@ export default function Profile({server}: ProfileProps) {
                                                 {readBook.CurrentlyReadingLike?.length ? (
                                                   readBook.CurrentlyReadingLike?.map((like,i)=>{
                                                     return (
-                                                      <Link 
-                                                        key={i}
-                                                        to={`/profile/${like.Profile.username}`}
-                                                      >
-                                                        {like.Profile.User.first_name}
-                                                      </Link>
+                                                      <Box mb={1}>
+                                                        <Link 
+                                                          key={i}
+                                                          to={`/profile/${like.Profile.username}`}
+                                                        >
+                                                          {like.Profile.User.first_name}
+                                                        </Link>
+                                                      </Box>
                                                     )
                                                   })
                                                 ) : null}
