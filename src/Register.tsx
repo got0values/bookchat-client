@@ -21,7 +21,6 @@ import {FaRegQuestionCircle} from 'react-icons/fa';
 import { ImInfo } from 'react-icons/im';
 import logo from './assets/community-book-club-logo3.png';
 import logoWhite from './assets/community-book-club-logo3-white.png';
-import { getLibraryFromSubdomain } from './utils/getLibraryFromSubdomain';
 import passwordValidator from "password-validator";
 import axios from "axios";
 
@@ -61,7 +60,6 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
   const [error, setError] = useState("");
 
   const subdomain = window.location.hostname.split(".")[0];
-  const {libraryFromSubdomain} = getLibraryFromSubdomain({subdomain,server});  const toast = useToast();
 
   function handleTermsChecked(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.checked) {
@@ -106,7 +104,6 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
         email: email, 
         password: password,
         confirmPassword: confirmPassword,
-        libraryId: libraryFromSubdomain.id,
         role: role
       })
       .then((response)=>{
@@ -129,14 +126,6 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
     }
   };
 
-  if (!libraryFromSubdomain) {
-    return (
-      <Flex h="100vh" align="center" justify="center">
-          <Heading as="h1" size="2xl">404</Heading>
-      </Flex>
-    )
-  }
-
   return (
     <Flex
       minH={'100vh'}
@@ -146,15 +135,12 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
     >
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align="center">
-          {libraryFromSubdomain ? (
-            <Text>{libraryFromSubdomain.name}</Text>
-          ): null}
           <Image src={colorMode === "light" ? logo : logoWhite} maxH="75px"/>
         </Stack>
         <Stack align={'center'}>
           <Heading fontSize={'4xl'}>Register for an account</Heading>
           <Text fontSize={'lg'} color={'gray.600'}>
-            to enjoy all of our cool <Link href="https://communitybookclub.com" color={'blue.400'}>features</Link> ✌️
+            to enjoy all of our cool <Link href="https://bookchat.com" color={'blue.400'}>features</Link> ✌️
           </Text>
         </Stack>
         <Box
@@ -243,7 +229,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                   onChange={e=>handleTermsChecked(e)}
                 >
                   <Text>
-                    I agree to the <Link color="blue.400" href="/terms" target="_blank">Community Book Club Terms</Link>
+                    I agree to the <Link color="blue.400" href="/terms" target="_blank">Book Chat Terms</Link>
                   </Text>
                 </Checkbox>
               </FormControl>

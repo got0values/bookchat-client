@@ -60,8 +60,7 @@ interface LinkItemProps {
 
 const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', linkTo: "/", icon: <AiFillHome size="20"/>},
-  { name: 'Book Clubs', linkTo: "/bookclubs" },
-  { name: 'Reading Clubs', linkTo: "/readingclubs" }
+  { name: 'Book Clubs', linkTo: "/bookclubs" }
 ];
 
 export default function TopNav({server,onLogout}: TopNavProps) {
@@ -525,18 +524,11 @@ export default function TopNav({server,onLogout}: TopNavProps) {
             ))}
           </HStack>
           <Flex alignItems={'center'} justify="space-between" gap={3}>
-            {user?.Library ? (
-              <Heading 
-                as="h6" 
-                size="xs"
-                // maxW="25%"
-                textTransform="uppercase"
-                whiteSpace="break-spaces"
-                display={["none","none","block"]}
-              >
-                {user.Library.name}
-              </Heading>
-            ) : null}
+            <Text
+              fontWeight="bold"
+            >
+            {`${user?.first_name} ${user?.last_name}`}
+            </Text>
             <Menu>
               <MenuButton
                 as={Button}
@@ -583,7 +575,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                   fontSize="lg"
                   fontWeight="600"
                 >
-                  {`${user?.first_name} ${user?.last_name}`}
+                  Profile
                 </MenuItem>
                 <MenuDivider/>
                 <MenuItem

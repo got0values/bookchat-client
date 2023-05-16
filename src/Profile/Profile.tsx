@@ -70,7 +70,7 @@ export const useProfile = ({server}: ProfileProps) => {
   const profileData: any = queryClient.getQueryData(["profileKey",paramsUsername])
   dayjs.extend(utc)
 
-  //self, unauthorized (differentLibrary), nonFollower, requesting, follower
+  //self, nonFollower, requesting, follower
   const [ viewer, setViewer ] = useState("nonFollower");
   async function getProfile() {
     const tokenCookie = Cookies.get().token;
@@ -467,7 +467,6 @@ export const useProfile = ({server}: ProfileProps) => {
             {
               profileId: parseInt((e.target as any).dataset.profileid),
               currentlyReadingId: parseInt((e.target as any).dataset.currentlyreadingid),
-              libraryId: parseInt((e.target as any).dataset.libraryid),
               uri: window.location.pathname,
               comment: (commentRef.current as any).value
             },
@@ -1714,7 +1713,6 @@ export default function Profile({server}: ProfileProps) {
                   <Button
                     colorScheme="green"
                     data-profileid={profileData.id}
-                    data-libraryid={user.Library.id}
                     data-currentlyreadingid={commentBookData?.id}
                     ref={commentCurrentlyReadingButton}
                     onClick={e=>commentCurrentlyReading(e)}

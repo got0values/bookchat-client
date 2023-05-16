@@ -26,7 +26,6 @@ import {
 } from "@chakra-ui/react";
 import logo from './assets/community-book-club-logo3.png';
 import logoWhite from './assets/community-book-club-logo3-white.png';
-import { getLibraryFromSubdomain } from './utils/getLibraryFromSubdomain';
 import Cookies from "js-cookie";
 import { useAuth } from "./hooks/useAuth";
 import axios from "axios";
@@ -39,22 +38,6 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
   const { user,getUser } = useAuth();
   const toast = useToast();
   const {colorMode} = useColorMode()
-
-  const subdomain = window.location.hostname.split(".")[0];
-  const {libraryFromSubdomain} = getLibraryFromSubdomain({subdomain,server});
-
-  useEffect(()=>{
-    const tokenCookie = Cookies.get().token;
-    // getUser()
-    if (user && user !== null && tokenCookie) {
-      let protocol = window.location.protocol;
-      let slicedHost = window.location.host.split(".").slice(1);
-      let domain = slicedHost.join(".");
-      let newLocation = `${user.Library.subdomain}.${domain}`;
-      Cookies.remove("token", { path: ''});
-      window.location.href = `${protocol}//${newLocation}/`;
-    }
-  },[user])
 
   const handleSubmitMutation = useMutation({
     mutationFn: async (e: React.FormEvent<HTMLFormElement>) => {
@@ -77,14 +60,6 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
   });
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     handleSubmitMutation.mutate(e);
-  }
-
-  if (!libraryFromSubdomain) {
-    return (
-      <Flex h="100vh" align="center" justify="center">
-          <Heading as="h1" size="2xl">404</Heading>
-      </Flex>
-    )
   }
 
   const { 
@@ -141,9 +116,6 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align={'center'}>
           <Stack align="center">
-            {libraryFromSubdomain ? (
-              <Text>{libraryFromSubdomain.name}</Text>
-            ): null}
             <Image src={colorMode === "light" ? logo : logoWhite} maxH="75px"/>
           </Stack>
           <Heading fontSize={'4xl'}>Sign in to your account</Heading>

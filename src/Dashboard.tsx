@@ -144,7 +144,6 @@ export default function Dashboard({server}: DashboardProps) {
             {
               profileId: parseInt((e.target as any).dataset.profileid),
               currentlyReadingId: parseInt((e.target as any).dataset.currentlyreadingid),
-              libraryId: parseInt((e.target as any).dataset.libraryid),
               uri: window.location.pathname,
               comment: (commentRef.current as any).value
             },
@@ -612,7 +611,6 @@ export default function Dashboard({server}: DashboardProps) {
               <Button
                 colorScheme="green"
                 data-profileid={commentBookData?.Profile?.id}
-                data-libraryid={user?.Library.id}
                 data-currentlyreadingid={commentBookData?.id}
                 ref={commentCurrentlyReadingButton}
                 onClick={e=>commentCurrentlyReading(e)}

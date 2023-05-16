@@ -25,20 +25,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
       }
     })
     .then((response)=>{
-      const responseData = response.data;
-      const responseUser = responseData.message;
-      // change the subdomain if it doesn't match the user Library subdomain
-      const subdomain = window.location.host.split(".")[0];
-      const librarySubdomain = responseUser.Library.subdomain;
-      if (subdomain !== librarySubdomain) {
-        let protocol = window.location.protocol;
-        let slicedHost = window.location.host.split(".").slice(1);
-        let domain = slicedHost.join(".");
-        let newLocation = `${librarySubdomain}.${domain}`;
-        Cookies.remove("token", { path: ''});
-        window.location.href = `${protocol}//${newLocation}/`;
-      }
-        return response;
+      return response;
     })
     .then((response)=>{
       const responseData = response.data;

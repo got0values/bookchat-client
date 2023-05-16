@@ -85,7 +85,7 @@ export default function SideNav({onLogout}: SideNavProps) {
           <Stack align="center">
             <Box position="relative">
               <Image src={colorMode === "light" ? logo : logoWhite}/>
-              {user && user.role === "admin" && user.Library.version === "free" ? (
+              {user && user.role === "admin" ? (
               <Text  
                 fontSize="xs" 
                 position="absolute"
@@ -104,16 +104,6 @@ export default function SideNav({onLogout}: SideNavProps) {
               </Text>
               ) : null}
             </Box>
-            {user.Library ? (
-              <Heading 
-                as="h4" 
-                size="xs"
-                textTransform="uppercase"
-                whiteSpace="break-spaces"
-              >
-                {user.Library.name}
-              </Heading>
-            ) : null}
             <Flex 
               align="center" 
               gap={2} 

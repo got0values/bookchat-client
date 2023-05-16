@@ -18,7 +18,6 @@ import {
 import { ImInfo } from 'react-icons/im';
 import logo from './assets/community-book-club-logo3.png';
 import logoWhite from './assets/community-book-club-logo3-white.png';
-import { getLibraryFromSubdomain } from './utils/getLibraryFromSubdomain';
 import passwordValidator from "password-validator";
 import axios from "axios";
 
@@ -56,7 +55,6 @@ const ResetPassword: React.FC<ResetPasswordFormProps> = ({ server }) => {
   const [error, setError] = useState("");
 
   const subdomain = window.location.hostname.split(".")[0];
-  const {libraryFromSubdomain} = getLibraryFromSubdomain({subdomain,server});
   const toast = useToast();
 
   function confirmPasswordCheck(text: string) {
@@ -90,8 +88,7 @@ const ResetPassword: React.FC<ResetPasswordFormProps> = ({ server }) => {
       userId: parseInt(userId as string),
       password: password,
       confirmPassword: confirmPassword,
-      token: token,
-      libraryId: libraryFromSubdomain.id
+      token: token
     })
     .then((response)=>{
       navigate("/login")
@@ -108,14 +105,6 @@ const ResetPassword: React.FC<ResetPasswordFormProps> = ({ server }) => {
     })
   };
 
-  if (!libraryFromSubdomain) {
-    return (
-      <Flex h="100vh" align="center" justify="center">
-          <Heading as="h1" size="2xl">404</Heading>
-      </Flex>
-    )
-  }
-
   return (
     <Flex
       minH={'100vh'}
@@ -125,9 +114,6 @@ const ResetPassword: React.FC<ResetPasswordFormProps> = ({ server }) => {
     >
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align="center">
-          {libraryFromSubdomain ? (
-            <Text>{libraryFromSubdomain.name}</Text>
-          ): null}
           <Image src={colorMode === "light" ? logo : logoWhite} maxH="75px"/>
         </Stack>
         <Stack align={'center'}>

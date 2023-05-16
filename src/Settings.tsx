@@ -91,19 +91,14 @@ export default function Settings({server}: SettingsProps) {
 
   const firstNameRef = useRef({} as HTMLInputElement);
   const lastNameRef = useRef({} as HTMLInputElement);
-  const libraryNameRef = useRef({} as HTMLInputElement);
   const updateSettingsMutation = useMutation({
     mutationFn: async ()=>{
       let tokenCookie: string | null = Cookies.get().token;
-      const libraryId = role === "admin" ? parseInt(libraryNameRef.current.dataset.libraryid!) : null;
-      const libraryName = role === "admin" ? libraryNameRef.current.value : null;
       await axios
         .put(server + "/api/settings", 
         {
           firstName: firstNameRef.current.value,
-          lastName: lastNameRef.current.value,
-          libraryId: libraryId,
-          libraryName: libraryName
+          lastName: lastNameRef.current.value
         },
         {headers: {
           'authorization': tokenCookie
@@ -144,13 +139,13 @@ export default function Settings({server}: SettingsProps) {
   const role = settings?.role;
   const firstName = settings?.first_name;
   const lastName = settings?.last_name;
-  const libraryId = settings?.library_id;
-  const libraryName = settings?.library_name;
 
   if (isError) {
-    return <Flex align="center" justify="center" minH="90vh">
-      <Heading as="h1" size="xl">Error: {(error as Error).message}</Heading>
-    </Flex>
+    return (
+      <Flex align="center" justify="center" minH="90vh">
+        <Heading as="h1" size="xl">Error: {(error as Error).message}</Heading>
+      </Flex>
+    )
   }
 
   return (
@@ -159,35 +154,6 @@ export default function Settings({server}: SettingsProps) {
         isLoaded={!isLoading}
       >
         <Stack>
-          {role === "admin" ? (
-          <Flex className="well" direction="column">
-            <Stack>
-              <Heading as="h4" size="md">
-                Library 
-                <Badge
-                  colorScheme="green"
-                  rounded="lg"
-                  pt={.5}
-                  ml={2}
-                >
-                  Admin
-                </Badge>
-              </Heading>
-              <Flex w="100%" gap={5} flexWrap="wrap" justify="space-between">
-                <Box flex="1 1 45%" minW="150px">
-                  <FormLabel htmlFor="first-name" mb={1}>Name</FormLabel>
-                  <Input 
-                    id="first-name" 
-                    type="text"
-                    data-libraryid={libraryId}
-                    defaultValue={libraryName}
-                    ref={libraryNameRef}
-                  />
-                </Box>
-              </Flex>
-            </Stack>
-          </Flex>
-          ) : null}
 
           <Flex className="well" direction="column">
             <Stack>

@@ -10,9 +10,6 @@ import BookClubs from './BookClubs/BookClubs';
 import BookClub from './BookClubs/BookClub';
 import BookClubBook from './BookClubs/BookClubBook';
 import Profile from './Profile/Profile';
-import ReadingClubs from './ReadingClubs/ReadingClubs';
-import ReadingClubEntries from "./ReadingClubs/ReadingClubEntries";
-import ReadingClubMilestones from "./ReadingClubs/ReadingClubMilestones";
 import Settings from './Settings';
 import ResetPassword from "./ResetPassword";
 import Terms from "./Terms";
@@ -81,22 +78,6 @@ function App() {
               element={ <BookClubBook server={server} /> }
             />
           </Route>
-        </Route>
-        <Route 
-          path="readingclubs" 
-        >
-          <Route
-            index
-            element={ <ReadingClubs server={server} /> }
-          />
-          <Route
-            path="entries"
-            element={ <ReadingClubEntries server={server}/> }
-          />
-          <Route
-            path="milestones"
-            element={ <ReadingClubMilestones server={server}/> }
-          />
         </Route>
         <Route 
           path="settings" 

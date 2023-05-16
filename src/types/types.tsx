@@ -59,8 +59,6 @@ export interface ProfileType {
   Interests?: Interests[];
   User: User;
   BookClubs: BookClubsType[];
-  ReaderNotes: ReaderNotes;
-  ReaderMilestones: ReaderMilestones[];
   CurrentlyReading: CurrentlyReading[];
   Following_Following_self_profile_idToProfile?: Following_Following_self_profile_idToProfile[];
   Following_Following_following_profile_idToProfile?: Following_Following_following_profile_idToProfile[];
@@ -304,82 +302,5 @@ export interface OtherNotificationsType {
   from_data: ProfileType;
   subject: any;
   read: number | any;
-  datetime: string;
-}
-
-//Reading Clubs
-export interface ReadingClub {
-  id: number,
-  name: string,
-  description: string,
-  library: number,
-  hidden: number,
-  ReadingClubForm: ReadingClubForm,
-  milestones: number;
-  background_image: string;
-  text_color: string;
-  background_color: string;
-  created_on: string;
-}
-
-export interface ReadingClubForm {
-  id: number;
-  name: string;
-  form_fields: string;
-  library: number;
-  created_on: string;
-}
-
-export interface FormType {
-  id: string;
-  type: string;
-  label: string;
-  required: boolean;
-  sequence: number;
-}
-
-export interface School {
-  id: number;
-  name: string;
-  library: number;
-}
-
-export interface EntryData {
-  id: string;
-  type: string;
-  question: string;
-  answer: string;
-  required: string;
-  sequence: number;
-}
-
-export interface UserEntry {
-  id: number;
-  profile: number;
-  reading_club: number;
-  ReadingClub: ReadingClub;
-  library: number;
-  Profile: ProfileType;
-  entry_data: EntryData | string;
-  created_on: string;
-  form_name: string;
-}
-
-export interface UserEntryWNumOfEntries extends UserEntry {
-  numOfEntries: number;
-}
-
-export interface ReaderNotes {
-  id: number;
-  profile: number;
-  notes: string;
-  datetime: string;
-}
-
-export interface ReaderMilestones {
-  id: number;
-  profile: number;
-  reading_club: number;
-  milestones: string;
   datetime: string;
 }
