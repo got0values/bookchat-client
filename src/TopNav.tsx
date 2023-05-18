@@ -60,7 +60,8 @@ interface LinkItemProps {
 
 const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', linkTo: "/", icon: <AiFillHome size="20"/>},
-  { name: 'Book Clubs', linkTo: "/bookclubs" }
+  { name: 'Book Clubs', linkTo: "/bookclubs" },
+  { name: 'Chat', linkTo: "/chat" }
 ];
 
 export default function TopNav({server,onLogout}: TopNavProps) {
