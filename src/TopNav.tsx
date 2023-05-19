@@ -525,11 +525,18 @@ export default function TopNav({server,onLogout}: TopNavProps) {
             ))}
           </HStack>
           <Flex alignItems={'center'} justify="space-between" gap={3}>
-            <Text
-              fontWeight="bold"
-            >
-            {`${user?.first_name} ${user?.last_name}`}
-            </Text>
+            <Box>
+              <Text
+                fontWeight="bold"
+              >
+              {`${user?.first_name} ${user?.last_name}`}
+              </Text>
+              <Text
+                fontSize="xs"
+              >
+                {`@${user?.Profile.username}`}
+              </Text>
+            </Box>
             <Menu>
               <MenuButton
                 as={Button}

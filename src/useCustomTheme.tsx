@@ -36,7 +36,7 @@ const config = {
       '.well': {
         bg: 'gray.50',
         p: 4,
-        m: '0.5rem!important',
+        m: '0.25rem!important',
         boxShadow: "base",
         borderRadius: 10,
         _dark: {
@@ -46,7 +46,7 @@ const config = {
       '.profile-card': {
         bg: 'white',
         p: 4,
-        m: '0.5rem!important',
+        m: '0.25rem!important',
         borderRadius: 10,
         _dark: {
           bg: 'gray.900'

@@ -158,7 +158,7 @@ export default function BookClub({server}: {server: string}) {
         <Skeleton 
           isLoaded={!bookClubBookQuery.isLoading}
         >
-          <Stack flex="1 1 65%" maxW="100%">
+          <Stack flex="1 1 65%" maxW="100%" gap={1}>
             <Box className="well">
 
               <Box>

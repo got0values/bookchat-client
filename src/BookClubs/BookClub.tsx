@@ -994,8 +994,8 @@ export default function BookClub({server}: {server: string}) {
           isLoaded={!bookClubQuery.isLoading}
         >
           {bookClub ? (
-            <Flex flexWrap="wrap" w="100%" align="start" justify="space-between">
-              <Stack flex="1 1 30%" top="0">
+            <Flex flexWrap="wrap" w="100%" align="start" justify="space-between" gap={1}>
+              <Stack flex="1 1 30%" top="0" gap={1}>
                 <Flex className="well" direction="column" align="center" gap={2}>
                   <Heading as="h4" size="md">{bookClub.name}</Heading>
                   <Text>{bookClub.about}</Text>
@@ -1155,7 +1155,7 @@ export default function BookClub({server}: {server: string}) {
                 </Flex>
               </Stack>
 
-              <Stack flex="1 1 65%" maxW="100%">
+              <Stack flex="1 1 65%" maxW="100%" gap={1}>
                 {memberStatus === 2 || isBookClubCreator ? (
                   <>
                     <Flex className="well" direction="column" gap={2}>

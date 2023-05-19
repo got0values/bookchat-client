@@ -475,6 +475,14 @@ export default function Dashboard({server}: DashboardProps) {
                             >
                               Comment
                             </MenuItem>
+                            <MenuItem 
+                              data-book={JSON.stringify(reading)}
+                              onClick={e=>navigate(`/chat/room?title=${reading.title}&author=${reading.author}`)}
+                              fontWeight="bold"
+                              icon={<BsReplyFill size={20} />}
+                            >
+                              Chat Room
+                            </MenuItem>
                             {reading.Profile.id === user?.Profile.id ? (
                               <MenuItem
                                 color="tomato"

@@ -83,10 +83,9 @@ function App() {
         </Route>
         <Route
           path="chat"
-          element={ <Chat chatserver={chatserver} /> }
         >
           <Route
-            path=":paramsRoom"
+            path="room"
             element={ <Chat chatserver={chatserver} /> }
           />
         </Route>

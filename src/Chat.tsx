@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate, Link, useParams } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { DashboardProps, Following_Following_self_profile_idToProfile, CurrentlyReading, CurrentlyReadingComment } from './types/types';
 import { 
@@ -51,11 +51,13 @@ export default function Chat({chatserver}: {chatserver: string}) {
   const { user, getUser } = useAuth();
   const queryClient = useQueryClient();
   const socket = io(chatserver)
-  const { paramsRoom } = useParams();
+  let [searchParams] = useSearchParams();
+  let bookTitle = searchParams.get("title");
+  let bookAuthor = searchParams.get("author")
 
   const chatBoxRef = useRef();
   const [isConnected,setIsConnected] = useState(socket.connected);
-  const [room,setRoom] = useState<string>(paramsRoom ? paramsRoom : "coolchat");
+  const [room,setRoom] = useState<string>(bookTitle && bookAuthor ? bookTitle + bookAuthor : "coolchat");
   const [chatMessages,setChatMessages] = useState<any[]>([]);
   useEffect(()=>{
     function onConnect() {
@@ -88,7 +90,15 @@ export default function Chat({chatserver}: {chatserver: string}) {
   const chatTextRef = useRef();
   function submitChat() {
     const chatText = (chatTextRef as any).current.value;
-    socket.emit("send-message", {userName: user.Profile.username, text: chatText}, room);
+    socket.emit(
+      "send-message", 
+      {
+        userName: user.Profile.username, 
+        text: chatText,
+        time: new Date()
+      }, 
+      room
+      );
     (chatTextRef as any).current.value = "";
   }
 
@@ -96,6 +106,12 @@ export default function Chat({chatserver}: {chatserver: string}) {
     <>
       <Box className="main-content-smaller">
         <Skeleton isLoaded={true}>
+          <Heading as="h1" size="lg" textAlign="center">
+            {bookTitle}
+          </Heading>
+          <Heading as="h2" size="md" mb={2} textAlign="center">
+            {bookAuthor}
+          </Heading>
           <Box className="well">
             <Heading as="h2" size="md" mb={2}>Chat</Heading>
             <Box
@@ -124,9 +140,18 @@ export default function Chat({chatserver}: {chatserver: string}) {
                 </Flex>
                 {chatMessages?.map((message,i)=>{
                   return (
-                    <Flex key={i} gap={2} m={1}>
-                      <Text fontWeight="bold">
-                        @{message.userName + ":"}
+                    <Flex key={i} gap={1} m={1}>
+                      <Text 
+                        fontWeight="bold" 
+                        whiteSpace="nowrap"
+                      >
+                        {`@${message.userName}`}
+                        <Text
+                          as="span"
+                          fontSize="xs"
+                        >
+                          {` (${dayjs(message.time).local().format('H:mm a')}):`}
+                        </Text>
                       </Text>
                       <Text>
                         {message.text}

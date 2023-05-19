@@ -621,9 +621,9 @@ export default function Profile({server}: ProfileProps) {
       <Skeleton isLoaded={!isLoading}>
         {profileData ? (
         <>
-          <Flex flexWrap="wrap" w="100%" align="start" justify="space-between">
+          <Flex flexWrap="wrap" gap={2} w="100%" align="start" justify="space-between">
 
-            <Stack flex="1 1 30%">
+            <Stack flex="1 1 30%" gap={1}>
               <Center
                 flexDirection="column"
                 className="profile-card"
@@ -793,7 +793,7 @@ export default function Profile({server}: ProfileProps) {
               </Box>
             </Stack>
 
-            <Stack flex="1 1 65%">
+            <Stack flex="1 1 65%" gap={1}>
 
               <Box className="well">
                 {viewer === "self" ? (
