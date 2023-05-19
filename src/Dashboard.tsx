@@ -40,6 +40,7 @@ import {
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
 import { BsReplyFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
+import { MdOutlineChat } from 'react-icons/md';
 import Comments from "./shared/CurrentlyReadingComments";
 import { useAuth } from './hooks/useAuth';
 import Cookies from "js-cookie";
@@ -479,7 +480,7 @@ export default function Dashboard({server}: DashboardProps) {
                               data-book={JSON.stringify(reading)}
                               onClick={e=>navigate(`/chat/room?title=${reading.title}&author=${reading.author}`)}
                               fontWeight="bold"
-                              icon={<BsReplyFill size={20} />}
+                              icon={<MdOutlineChat size={20} />}
                             >
                               Chat Room
                             </MenuItem>

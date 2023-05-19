@@ -508,9 +508,6 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                   bg: activeLinkBg,
                   color: activeLinkColor
                 }}
-                // style={({isActive}: {isActive: boolean})=>({
-                //   backgroundColor: isActive ? "#E2E8F0" : ""
-                // })}
                 sx={{
                   bg: window.location.pathname === linkItem.linkTo ? activeLinkBg : "",
                   color: window.location.pathname === linkItem.linkTo ? activeLinkColor : ""
@@ -525,7 +522,9 @@ export default function TopNav({server,onLogout}: TopNavProps) {
             ))}
           </HStack>
           <Flex alignItems={'center'} justify="space-between" gap={3}>
-            <Box>
+            <Box
+              display={["none","block","block"]}
+            >
               <Text
                 fontWeight="bold"
               >

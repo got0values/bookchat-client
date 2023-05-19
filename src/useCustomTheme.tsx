@@ -30,7 +30,7 @@ const config = {
       },
       '.main-content-smaller': {
         w: "100%",
-        px: "20px",
+        // px: "20px",
         maxW: '700px'
       },
       '.well': {

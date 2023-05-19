@@ -169,6 +169,7 @@ export default function Chat({chatserver}: {chatserver: string}) {
               />
               <Button
                 onClick={e=>submitChat()}
+                colorScheme="purple"
               >
                 Submit
               </Button>
