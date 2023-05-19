@@ -493,6 +493,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
           <HStack
             as={'nav'}
             spacing={4}
+            pr="175px"
             display={{ base: 'none', md: 'flex' }}>
             {LinkItems.map((linkItem, index) => (
               <Box

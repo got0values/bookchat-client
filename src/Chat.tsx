@@ -27,6 +27,9 @@ import {
   ModalBody,
   ModalCloseButton,
   Input,
+  InputGroup,
+  InputRightElement,
+  Portal,
   Popover,
   PopoverTrigger,
   PopoverCloseButton,
@@ -35,10 +38,13 @@ import {
   PopoverArrow,
   Stack,
   Center,
+  useColorMode,
   useDisclosure
 } from "@chakra-ui/react";
 import { useAuth } from './hooks/useAuth';
+import { BsReplyFill, BsEmojiSmile } from 'react-icons/bs';
 import Cookies from "js-cookie";
+import Picker from '@emoji-mart/react';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import axios from "axios";
@@ -51,6 +57,7 @@ export default function Chat({chatserver}: {chatserver: string}) {
   const { user, getUser } = useAuth();
   const queryClient = useQueryClient();
   const socket = io(chatserver)
+  const {colorMode} = useColorMode();
   let [searchParams] = useSearchParams();
   let bookTitle = searchParams.get("title");
   let bookAuthor = searchParams.get("author")
@@ -87,9 +94,9 @@ export default function Chat({chatserver}: {chatserver: string}) {
     };
   },[])
 
-  const chatTextRef = useRef();
+  const chatTextRef = useRef({} as HTMLInputElement);
   function submitChat() {
-    const chatText = (chatTextRef as any).current.value;
+    const chatText = chatTextRef.current.value;
     socket.emit(
       "send-message", 
       {
@@ -99,7 +106,15 @@ export default function Chat({chatserver}: {chatserver: string}) {
       }, 
       room
       );
-    (chatTextRef as any).current.value = "";
+    chatTextRef.current.value = "";
+  }
+
+  function pickEmoji(e: {unified: string}) {
+    let unifiedSplit = e.unified.split("-");
+    let unifiedArray: any[] = []
+    unifiedSplit.forEach((us)=>unifiedArray.push("0x" + us))
+    const unifiedString = String.fromCodePoint(...unifiedArray);
+    chatTextRef.current.value += unifiedString;
   }
 
   return (
@@ -161,12 +176,39 @@ export default function Chat({chatserver}: {chatserver: string}) {
                 })}
               </>
             </Box>
-            <Flex gap={2}>
-              <Input
-                type="text"
-                ref={chatTextRef as any}
-                onKeyDown={e=> e.key === "Enter" ? submitChat() : null}
-              />
+            <Flex
+              align="center" 
+              justify="space-between"
+              gap={1}
+            >
+              <InputGroup>
+                <Input
+                  type="text"
+                  ref={chatTextRef as any}
+                  onKeyDown={e=> e.key === "Enter" ? submitChat() : null}
+                />
+                <InputRightElement display={["none","none","inline-flex"]}>
+                  <Popover>
+                    <PopoverTrigger>
+                      <Button variant="ghost" p={0}>
+                        <BsEmojiSmile size={15}/>
+                      </Button>
+                    </PopoverTrigger>
+                    <Portal>
+                      <PopoverContent>
+                        <Box 
+                          as={Picker} 
+                          set="twitter"
+                          // data={openMojiData}
+                          previewPosition="none"
+                          theme={colorMode === 'dark' ? 'dark' : 'light'}
+                          onEmojiSelect={(e: any)=>pickEmoji(e)} 
+                        />
+                      </PopoverContent>
+                    </Portal>
+                  </Popover>
+                </InputRightElement>
+              </InputGroup>
               <Button
                 onClick={e=>submitChat()}
                 colorScheme="purple"
