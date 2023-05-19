@@ -39,6 +39,7 @@ import {
   Stack,
   Center,
   useColorMode,
+  useToast,
   useDisclosure
 } from "@chakra-ui/react";
 import { useAuth } from './hooks/useAuth';
@@ -54,24 +55,41 @@ import { io } from "socket.io-client";
 export default function Chat({chatserver}: {chatserver: string}) {
   dayjs.extend(utc);
   const navigate = useNavigate();
+  const toast = useToast();
   const { user, getUser } = useAuth();
   const queryClient = useQueryClient();
   const socket = io(chatserver)
   const {colorMode} = useColorMode();
   let [searchParams] = useSearchParams();
-  let bookTitle = searchParams.get("title");
-  let bookAuthor = searchParams.get("author")
 
+  const [bookTitle,setBookTitle] = useState(searchParams.get("title"))
+  const [bookAuthor,setBookAuthor] = useState(searchParams.get("author"))
   const chatBoxRef = useRef();
   const [isConnected,setIsConnected] = useState(socket.connected);
   const [room,setRoom] = useState<string>(bookTitle && bookAuthor ? bookTitle + bookAuthor : "coolchat");
   const [chatMessages,setChatMessages] = useState<any[]>([]);
+  const [roomUsers,setRoomUsers] = useState([] as any[]);
   useEffect(()=>{
+    if (!searchParams.get("title") || !searchParams.get("author")) {
+      navigate("/")
+      toast({
+        description: "Chat Room does not exist",
+        status: "error",
+        duration: 9000,
+        isClosable: true
+      })
+    }
+
     function onConnect() {
       setIsConnected(true)
+      socket.emit("get-users",room)
     }
     function onDisconnect() {
       setIsConnected(false)
+      socket.emit("get-users",room)
+    }
+    function onReceiveUsers(users: string[]) {
+      setRoomUsers(prev=>[...new Set(users)])
     }
     function onReceiveMessage(message: {userName: string, text: string}) {
       setChatMessages(prev=>[...prev,message])
@@ -82,7 +100,11 @@ export default function Chat({chatserver}: {chatserver: string}) {
     }
 
     socket.on("connect", onConnect)
-    socket.emit("join-room",room);
+    socket.emit("join-room",{room: room, user: user.Profile.username});
+    socket.on("receive-users", (users)=>{
+      console.log(users)
+      onReceiveUsers(users)
+    })
     socket.on("receive-message", (message)=>{
       onReceiveMessage(message)
     });
@@ -216,6 +238,18 @@ export default function Chat({chatserver}: {chatserver: string}) {
                 Submit
               </Button>
             </Flex>
+
+            <Box>
+              {roomUsers ? (
+                roomUsers.map((roomUser,i)=>{
+                return (
+                  <Box key={i}>
+                    @{roomUser.user}
+                  </Box>
+                )
+              })): null}
+            </Box>
+
           </Box>
         </Skeleton>
       </Box>

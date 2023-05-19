@@ -49,7 +49,7 @@ import {
 } from "@chakra-ui/react";
 import collectionToArray from "../utils/collectionToArray";
 import { FiFile } from 'react-icons/fi';
-import { MdEdit } from 'react-icons/md';
+import { MdEdit, MdOutlineChat } from 'react-icons/md';
 import { BsPlusLg } from 'react-icons/bs';
 import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
 import { BsReplyFill } from 'react-icons/bs';
@@ -936,6 +936,13 @@ export default function Profile({server}: ProfileProps) {
                                         >
                                           Comment
                                         </MenuItem>
+                                        <MenuItem 
+                                          onClick={e=>navigate(`/chat/room?title=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title}&author=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author}`)}
+                                          fontWeight="bold"
+                                          icon={<MdOutlineChat size={20} />}
+                                        >
+                                          Chat Room
+                                        </MenuItem>
                                         {viewer === "self" ? (
                                         <>
                                           <MenuItem
@@ -1126,6 +1133,13 @@ export default function Profile({server}: ProfileProps) {
                                         >
                                           Comment
                                         </MenuItem>
+                                        <MenuItem 
+                                          onClick={e=>navigate(`/chat/room?title=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title}&author=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author}`)}
+                                          fontWeight="bold"
+                                          icon={<MdOutlineChat size={20} />}
+                                        >
+                                          Chat Room
+                                        </MenuItem>
                                       </MenuList>
                                     </Menu>
                                   </Box>
@@ -1301,6 +1315,13 @@ export default function Profile({server}: ProfileProps) {
                                                 >
                                                   Comment
                                                 </MenuItem>
+                                                <MenuItem 
+                                                  onClick={e=>navigate(`/chat/room?title=${readBook.title}&author=${readBook.author}`)}
+                                                  fontWeight="bold"
+                                                  icon={<MdOutlineChat size={20} />}
+                                                >
+                                                  Chat Room
+                                                </MenuItem>
                                                 {viewer === "self" ? (
                                                 <>
                                                   <MenuItem
@@ -1376,7 +1397,7 @@ export default function Profile({server}: ProfileProps) {
                                                 {readBook.CurrentlyReadingLike?.length ? (
                                                   readBook.CurrentlyReadingLike?.map((like,i)=>{
                                                     return (
-                                                      <Box mb={1}>
+                                                      <Box mb={1} key={i}>
                                                         <Link 
                                                           key={i}
                                                           to={`/profile/${like.Profile.username}`}

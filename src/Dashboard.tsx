@@ -477,7 +477,6 @@ export default function Dashboard({server}: DashboardProps) {
                               Comment
                             </MenuItem>
                             <MenuItem 
-                              data-book={JSON.stringify(reading)}
                               onClick={e=>navigate(`/chat/room?title=${reading.title}&author=${reading.author}`)}
                               fontWeight="bold"
                               icon={<MdOutlineChat size={20} />}
