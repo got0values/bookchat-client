@@ -64,7 +64,7 @@ export default function Chat({chatserver}: {chatserver: string}) {
 
   const [bookTitle,setBookTitle] = useState(searchParams.get("title"))
   const [bookAuthor,setBookAuthor] = useState(searchParams.get("author"))
-  const chatBoxRef = useRef();
+  const chatBoxRef = useRef({} as HTMLInputElement);
   const [isConnected,setIsConnected] = useState(socket.connected);
   const [roomId,setRoomId] = useState<string>(bookTitle && bookAuthor ? (bookTitle + bookAuthor).replace(/\s+/g,'') : "coolchat");
   const [chatMessages,setChatMessages] = useState<any[]>([]);
@@ -93,11 +93,12 @@ export default function Chat({chatserver}: {chatserver: string}) {
       setRoomUsers(prev=>[...new Set(users)])
     }
     function onReceiveMessage(message: {userName: string, text: string}) {
-      console.log("yo")
       setChatMessages(prev=>[...prev,message])
       setTimeout(()=>{
-        (chatBoxRef as any).current.scroll();
-        (chatBoxRef as any).current.scrollTop = (chatBoxRef as any).current.scrollHeight;
+        if (chatBoxRef.current) {
+          chatBoxRef.current.scroll();
+          chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+        }
       },500)
     }
 
@@ -111,11 +112,23 @@ export default function Chat({chatserver}: {chatserver: string}) {
       onReceiveMessage(message)
     });
     socket.on("disconnect", onDisconnect)
+    function handleUnload() {
+      alert("are you sure?")
+      socket.disconnect();
+      toast({
+        description: "Left room",
+        status: "error",
+        duration: 9000,
+        isClosable: true
+      })
+    }
+    window.addEventListener("beforeunload",handleUnload)
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
       socket.off('receive-users', onReceiveUsers);
       socket.off('receive-message', onReceiveMessage);
+      window.removeEventListener("beforeunload",handleUnload)
     };
   },[searchParams])
 
@@ -144,7 +157,7 @@ export default function Chat({chatserver}: {chatserver: string}) {
 
   return (
     <>
-      <Box className="main-content-smaller">
+      <Box className="main-content">
         <Skeleton isLoaded={true}>
           <Heading as="h1" size="lg" textAlign="center">
             {bookTitle}
@@ -152,108 +165,133 @@ export default function Chat({chatserver}: {chatserver: string}) {
           <Heading as="h2" size="md" mb={2} textAlign="center">
             {bookAuthor}
           </Heading>
-          <Box className="well">
-            <Heading as="h2" size="md" mb={2}>Chat</Heading>
-            <Box
-              minH="500px"
-              maxH="500px"
-              overflow="auto"
-              h="100%"
-              border="1px solid"
-              rounded="md"
-              mb={2}
-              ref={chatBoxRef as any}
+          <Flex flexWrap="wrap" gap={2} w="100%" align="start" justify="space-between">
+            <Box 
+              flex="1 1 65%"
+              className="well"
             >
-              <>
-                <Flex 
-                  justify="center"
-                  bg="gray.200"
-                  _dark={{
-                    bg: "gray.800"
-                  }}
-                  position="sticky"
-                  top="0"
-                  left="0"
-                  right="0"
-                >
-                  <Text size="sm">{isConnected ? "connected" : "disconnected"}</Text>
-                </Flex>
-                {chatMessages?.map((message,i)=>{
-                  return (
-                    <Flex key={i} gap={1} m={1}>
-                      <Text 
-                        fontWeight="bold" 
-                        whiteSpace="nowrap"
-                      >
-                        {`@${message.userName}`}
-                        <Text
-                          as="span"
-                          fontSize="xs"
-                        >
-                          {` (${dayjs(message.time).local().format('H:mm a')}):`}
-                        </Text>
-                      </Text>
-                      <Text>
-                        {message.text}
-                      </Text>
-                    </Flex>
-                  )
-                })}
-              </>
-            </Box>
-            <Flex
-              align="center" 
-              justify="space-between"
-              gap={1}
-            >
-              <InputGroup>
-                <Input
-                  type="text"
-                  ref={chatTextRef as any}
-                  onKeyDown={e=> e.key === "Enter" ? submitChat() : null}
-                />
-                <InputRightElement display={["none","none","inline-flex"]}>
-                  <Popover>
-                    <PopoverTrigger>
-                      <Button variant="ghost" p={0}>
-                        <BsEmojiSmile size={15}/>
-                      </Button>
-                    </PopoverTrigger>
-                    <Portal>
-                      <PopoverContent>
-                        <Box 
-                          as={Picker} 
-                          set="twitter"
-                          // data={openMojiData}
-                          previewPosition="none"
-                          theme={colorMode === 'dark' ? 'dark' : 'light'}
-                          onEmojiSelect={(e: any)=>pickEmoji(e)} 
-                        />
-                      </PopoverContent>
-                    </Portal>
-                  </Popover>
-                </InputRightElement>
-              </InputGroup>
-              <Button
-                onClick={e=>submitChat()}
-                colorScheme="purple"
+              <Heading as="h3" size="md" mb={2}>Chat</Heading>
+              <Box
+                minH="500px"
+                maxH="500px"
+                overflow="auto"
+                h="100%"
+                border="1px solid"
+                rounded="md"
+                mb={2}
+                ref={chatBoxRef as any}
               >
-                Submit
-              </Button>
-            </Flex>
-
-            <Box>
-              {roomUsers ? (
-                roomUsers.map((roomUser,i)=>{
-                return (
-                  <Box key={i}>
-                    @{roomUser.userName}
-                  </Box>
-                )
-              })): null}
+                <>
+                  <Flex 
+                    justify="center"
+                    bg="gray.200"
+                    _dark={{
+                      bg: "gray.800"
+                    }}
+                    position="sticky"
+                    top="0"
+                    left="0"
+                    right="0"
+                  >
+                    <Text size="sm">{isConnected ? "connected" : "disconnected"}</Text>
+                  </Flex>
+                  {chatMessages?.map((message,i)=>{
+                    return (
+                      <Flex key={i} gap={1} m={1}>
+                        <Text 
+                          fontWeight="bold" 
+                          whiteSpace="nowrap"
+                        >
+                          {`@${message.userName}`}
+                          <Text
+                            as="span"
+                            fontSize="xs"
+                          >
+                            {` (${dayjs(message.time).local().format('H:mm a')}):`}
+                          </Text>
+                        </Text>
+                        <Text>
+                          {message.text}
+                        </Text>
+                      </Flex>
+                    )
+                  })}
+                </>
+              </Box>
+              <Flex
+                align="center" 
+                justify="space-between"
+                gap={1}
+              >
+                <InputGroup>
+                  <Input
+                    type="text"
+                    ref={chatTextRef as any}
+                    onKeyDown={e=> e.key === "Enter" ? submitChat() : null}
+                  />
+                  <InputRightElement display={["none","none","inline-flex"]}>
+                    <Popover>
+                      <PopoverTrigger>
+                        <Button variant="ghost" p={0}>
+                          <BsEmojiSmile size={15}/>
+                        </Button>
+                      </PopoverTrigger>
+                      <Portal>
+                        <PopoverContent>
+                          <Box 
+                            as={Picker} 
+                            set="twitter"
+                            // data={openMojiData}
+                            previewPosition="none"
+                            theme={colorMode === 'dark' ? 'dark' : 'light'}
+                            onEmojiSelect={(e: any)=>pickEmoji(e)} 
+                          />
+                        </PopoverContent>
+                      </Portal>
+                    </Popover>
+                  </InputRightElement>
+                </InputGroup>
+                <Button
+                  onClick={e=>submitChat()}
+                  colorScheme="purple"
+                >
+                  Submit
+                </Button>
+              </Flex>
             </Box>
-
-          </Box>
+            <Box
+              flex="1 1 30%"
+              className="well"
+            >
+              <Heading as="h3" size="md" mb={2}>People</Heading>
+              <Box 
+                h="300px" 
+                maxH="300px" 
+                overflowY="auto"
+                p={1}
+                rounded="md"
+                boxShadow="base"
+                bg="gray.100"
+                _dark={{
+                  bg: "gray.600"
+                }}
+              >
+                {roomUsers ? (
+                  roomUsers.map((roomUser,i)=>{
+                  return (
+                    <Box key={i}>
+                      <Link to={`/profiles/${roomUser.userName}`}/>
+                      @{roomUser.userName}
+                    </Box>
+                  )
+                })): null}
+              </Box>
+              <Button onClick={e=>{
+                console.log(socket);
+                socket.disconnect()
+              }}>Disconnect</Button>
+            </Box>
+          </Flex>
         </Skeleton>
       </Box>
 
