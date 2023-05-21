@@ -66,7 +66,7 @@ export default function Chat({chatserver}: {chatserver: string}) {
   const [bookAuthor,setBookAuthor] = useState(searchParams.get("author"))
   const chatBoxRef = useRef();
   const [isConnected,setIsConnected] = useState(socket.connected);
-  const [room,setRoom] = useState<string>(bookTitle && bookAuthor ? bookTitle + bookAuthor : "coolchat");
+  const [roomId,setRoomId] = useState<string>(bookTitle && bookAuthor ? (bookTitle + bookAuthor).replace(/\s+/g,'') : "coolchat");
   const [chatMessages,setChatMessages] = useState<any[]>([]);
   const [roomUsers,setRoomUsers] = useState([] as any[]);
   useEffect(()=>{
@@ -82,16 +82,18 @@ export default function Chat({chatserver}: {chatserver: string}) {
 
     function onConnect() {
       setIsConnected(true)
-      socket.emit("get-users",room)
+      socket.emit("get-users",roomId)
     }
     function onDisconnect() {
       setIsConnected(false)
-      socket.emit("get-users",room)
+      socket.emit("get-users",roomId)
     }
     function onReceiveUsers(users: string[]) {
+      console.log([...new Set(users)])
       setRoomUsers(prev=>[...new Set(users)])
     }
     function onReceiveMessage(message: {userName: string, text: string}) {
+      console.log("yo")
       setChatMessages(prev=>[...prev,message])
       setTimeout(()=>{
         (chatBoxRef as any).current.scroll();
@@ -100,7 +102,7 @@ export default function Chat({chatserver}: {chatserver: string}) {
     }
 
     socket.on("connect", onConnect)
-    socket.emit("join-room",{room: room, user: user.Profile.username});
+    socket.emit("join-room",{room: roomId, userName: user.Profile.username});
     socket.on("receive-users", (users)=>{
       console.log(users)
       onReceiveUsers(users)
@@ -112,9 +114,10 @@ export default function Chat({chatserver}: {chatserver: string}) {
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
+      socket.off('receive-users', onReceiveUsers);
       socket.off('receive-message', onReceiveMessage);
     };
-  },[])
+  },[searchParams])
 
   const chatTextRef = useRef({} as HTMLInputElement);
   function submitChat() {
@@ -126,7 +129,7 @@ export default function Chat({chatserver}: {chatserver: string}) {
         text: chatText,
         time: new Date()
       }, 
-      room
+      roomId
       );
     chatTextRef.current.value = "";
   }
@@ -244,7 +247,7 @@ export default function Chat({chatserver}: {chatserver: string}) {
                 roomUsers.map((roomUser,i)=>{
                 return (
                   <Box key={i}>
-                    @{roomUser.user}
+                    @{roomUser.userName}
                   </Box>
                 )
               })): null}
