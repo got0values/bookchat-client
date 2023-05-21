@@ -28,6 +28,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
   const{colorMode} = useColorMode();
   const [searchParams] = useSearchParams();
   const [role,setRole] = useState("user");
+  const toast = useToast();
   var schema = new passwordValidator();
   schema
   .is().min(8)// Minimum length 8
