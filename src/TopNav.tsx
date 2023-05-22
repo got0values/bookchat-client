@@ -961,11 +961,11 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                         align="center"
                       >
                         <Text fontStyle="italic">{book.volumeInfo?.title}</Text>
-                        <Text>{book.volumeInfo.authors.length ? book.volumeInfo.authors[0] : ""}</Text>
+                        <Text>{book.volumeInfo.authors ? book.volumeInfo.authors[0] : ""}</Text>
                         <Button
                           size="xs"
                           onClick={e=>{
-                            navigate(`/chat/room?title=${book.volumeInfo.title}&author=${book.volumeInfo.authors.length ? book.volumeInfo.authors[0] : ""}`)
+                            navigate(`/chat/room?title=${book.volumeInfo.title}&author=${book.volumeInfo.authors ? book.volumeInfo.authors[0] : ""}`)
                             closeSearchModal()
                           }}
                         >
