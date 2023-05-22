@@ -210,6 +210,7 @@ export interface DashboardProps {
 export interface SearchData {
   profiles: ProfileType[];
   bookClubs: BookClubsType[];
+  books: any[];
 }
 
 //Comments

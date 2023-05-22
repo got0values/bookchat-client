@@ -79,6 +79,11 @@ export default function Chat({chatserver}: {chatserver: string}) {
         isClosable: true
       })
     }
+    else {
+      setBookTitle(searchParams.get("title"))
+      setBookAuthor(searchParams.get("author"))
+      setRoomId(bookTitle && bookAuthor ? (bookTitle + bookAuthor).replace(/\s+/g,'') : "coolchat")
+    }
 
     function onConnect() {
       setIsConnected(true)
@@ -89,7 +94,6 @@ export default function Chat({chatserver}: {chatserver: string}) {
       socket.emit("get-users",roomId)
     }
     function onReceiveUsers(users: string[]) {
-      console.log([...new Set(users)])
       setRoomUsers(prev=>[...new Set(users)])
     }
     function onReceiveMessage(message: {userName: string, text: string}) {
@@ -122,7 +126,12 @@ export default function Chat({chatserver}: {chatserver: string}) {
         isClosable: true
       })
     }
-    window.addEventListener("beforeunload",handleUnload)
+    window.addEventListener("beforeunload",(e)=>{
+      e.preventDefault()
+      console.log(e)
+      handleUnload()
+      return e.returnValue = '';
+    })
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
@@ -272,6 +281,7 @@ export default function Chat({chatserver}: {chatserver: string}) {
                 rounded="md"
                 boxShadow="base"
                 bg="gray.100"
+                mb={2}
                 _dark={{
                   bg: "gray.600"
                 }}
@@ -289,7 +299,9 @@ export default function Chat({chatserver}: {chatserver: string}) {
               <Button onClick={e=>{
                 console.log(socket);
                 socket.disconnect()
-              }}>Disconnect</Button>
+              }}>
+                Disconnect
+              </Button>
             </Box>
           </Flex>
         </Skeleton>

@@ -60,8 +60,7 @@ interface LinkItemProps {
 
 const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', linkTo: "/", icon: <AiFillHome size="20"/>},
-  { name: 'Book Clubs', linkTo: "/bookclubs" },
-  { name: 'Chat', linkTo: "/chat" }
+  { name: 'Book Clubs', linkTo: "/bookclubs" }
 ];
 
 export default function TopNav({server,onLogout}: TopNavProps) {
@@ -414,6 +413,16 @@ export default function TopNav({server,onLogout}: TopNavProps) {
         .catch(({response})=>{
           console.log(response)
           throw new Error(response.data.message)
+        })
+      await axios
+        .get("https://www.googleapis.com/books/v1/volumes?q=" + navSearchRef.current.value)
+        .then((response)=>{
+          setSearchData(prev=>{
+            return {...prev,books: response.data.items }
+          })
+        })
+        .catch((error)=>{
+          console.log(error)
         })
     }
   })
@@ -933,6 +942,41 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                 })
               ) : (
                 <i>No book clubs based on the search term</i>
+              )}
+            </Box>
+            <Box my={2}>
+              <Heading as="h3" size="md">Books</Heading>
+              {searchData && searchData.books?.length > 0 ? (
+                searchData.books?.map((book,i)=>{
+                  return (
+                    <Box
+                      key={i}
+                      my={1}
+                    >
+                      <Flex 
+                        gap={1} 
+                        flexWrap="wrap" 
+                        rowGap={0} 
+                        fontSize="sm"
+                        align="center"
+                      >
+                        <Text fontStyle="italic">{book.volumeInfo?.title}</Text>
+                        <Text>{book.volumeInfo.authors[0]}</Text>
+                        <Button
+                          size="xs"
+                          onClick={e=>{
+                            navigate(`/chat/room?title=${book.volumeInfo.title}&author=${book.volumeInfo.authors[0]}`)
+                            closeSearchModal()
+                          }}
+                        >
+                          Chat
+                        </Button>
+                      </Flex>
+                    </Box>
+                  )
+                })
+              ) : (
+                <i>No books based on the search term</i>
               )}
             </Box>
           </ModalBody>
