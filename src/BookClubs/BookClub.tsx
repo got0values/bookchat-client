@@ -1297,7 +1297,7 @@ export default function BookClub({server}: {server: string}) {
                         ) : null}
                       </Flex>
                       <Stack>
-                        {bookClub.next_meeting_location || bookClub.next_meeting_start || bookClub.next_meeting_end ? (
+                        {bookClub.next_meeting_start || bookClub.next_meeting_end ? (
                         <Box
                           bg="white"
                           rounded="md"
@@ -1306,7 +1306,7 @@ export default function BookClub({server}: {server: string}) {
                             bg: "gray.600"
                           }}
                         >
-                        {bookClub.next_meeting_location || bookClub.next_meeting_start || bookClub.next_meeting_end ? (
+                        {bookClub.next_meeting_start || bookClub.next_meeting_end ? (
                         <> 
                           <Flex 
                             gap={2} 

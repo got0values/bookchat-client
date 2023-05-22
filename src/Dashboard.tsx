@@ -536,7 +536,7 @@ export default function Dashboard({server}: DashboardProps) {
                               data-currentlyreading={reading.id}
                               onClick={e=>likeUnlikeCurrentlyReading(e)}
                             >
-                              {reading.CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                              {reading.CurrentlyReadingLike?.filter((like)=>like.profile===user?.Profile?.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
                             </Button>
                             {reading.CurrentlyReadingLike?.length ? (
                               <Popover isLazy size="sm">
