@@ -70,7 +70,7 @@ export default function Chat({chatserver}: {chatserver: string}) {
   const [chatMessages,setChatMessages] = useState<any[]>([]);
   const [roomUsers,setRoomUsers] = useState([] as any[]);
   useEffect(()=>{
-    if (!searchParams.get("title") || !searchParams.get("author")) {
+    if (!searchParams.get("title")) {
       navigate("/")
       toast({
         description: "Chat Room does not exist",
@@ -237,6 +237,7 @@ export default function Chat({chatserver}: {chatserver: string}) {
                     type="text"
                     ref={chatTextRef as any}
                     onKeyDown={e=> e.key === "Enter" ? submitChat() : null}
+                    maxLength={50}
                   />
                   <InputRightElement display={["none","none","inline-flex"]}>
                     <Popover>
