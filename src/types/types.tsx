@@ -144,7 +144,6 @@ export interface BookClubsType {
   name: string;
   about: string;
   visibility: number;
-  next_meeting_location: string;
   next_meeting_start: Date;
   next_meeting_end: Date;
   groups: string;
