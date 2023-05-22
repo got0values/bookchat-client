@@ -6,7 +6,7 @@ import {
   Tag,
   Heading,
   Text,
-  Spinner,
+  Image,
   Fade,
   Stack,
   HStack,
@@ -229,16 +229,33 @@ export default function BookClubs({server}: {server: string}) {
                         key={i}
                       >
                         <Flex
-                          align="center" 
+                          align="start" 
                           justify="space-between" 
                           wrap="wrap"
                           rowGap={2}
                         >
-                          <Link to={`/bookclubs/${bookClub.id}`}>
-                            <Heading as="h4" size="sm">
-                              {bookClub.name}
-                            </Heading>
-                          </Link>
+                          <Flex direction="column" gap={1}>
+                            <Link to={`/bookclubs/${bookClub.id}`}>
+                              <Heading as="h4" size="sm">
+                                {bookClub.name}
+                              </Heading>
+                            </Link>
+                            {bookClub.BookClubBook[0] ? (
+                            <Flex gap={2}>
+                              <Box>
+                                <Image 
+                                  src={bookClub.BookClubBook[0].image}
+                                  alt={bookClub.BookClubBook[0].title}
+                                  maxH="50px"
+                                />
+                              </Box>
+                              <Box>
+                                <Text fontStyle="italic">{bookClub.BookClubBook[0].title}</Text>
+                                <Text>{bookClub.BookClubBook[0].author}</Text>
+                              </Box>
+                            </Flex>
+                            ) : null}
+                          </Flex>
                           <Flex align="center" gap={1}>
                             <Avatar
                               onClick={e=>navigate(`/profile/${bookClub.Profile.username}`)} 
@@ -335,11 +352,28 @@ export default function BookClubs({server}: {server: string}) {
                             wrap="wrap"
                             rowGap={2}
                           >
-                            <Link to={`/bookclubs/${bookClub.id}`}>
-                              <Heading as="h4" size="sm">
-                                {bookClub.name}
-                              </Heading>
-                            </Link>
+                            <Flex direction="column" gap={1}>
+                              <Link to={`/bookclubs/${bookClub.id}`}>
+                                <Heading as="h4" size="sm">
+                                  {bookClub.name}
+                                </Heading>
+                              </Link>
+                              {bookClub.BookClubBook[0] ? (
+                              <Flex gap={2}>
+                                <Box>
+                                  <Image 
+                                    src={bookClub.BookClubBook[0].image}
+                                    alt={bookClub.BookClubBook[0].title}
+                                    maxH="50px"
+                                  />
+                                </Box>
+                                <Box>
+                                  <Text fontStyle="italic">{bookClub.BookClubBook[0].title}</Text>
+                                  <Text>{bookClub.BookClubBook[0].author}</Text>
+                                </Box>
+                              </Flex>
+                              ) : null}
+                            </Flex>
                             <Flex align="center" gap={1}>
                               <Avatar
                                 onClick={e=>navigate(`/profile/${bookClub.Profile.username}`)} 
@@ -438,16 +472,33 @@ export default function BookClubs({server}: {server: string}) {
                           key={i}
                         >
                           <Flex
-                            align="center" 
+                            align="start" 
                             justify="space-between" 
                             wrap="wrap"
                             rowGap={2}
                           >
-                            <Link to={`/bookclubs/${bookClub.id}`}>
-                              <Heading as="h4" size="sm">
-                                {bookClub.name}
-                              </Heading>
-                            </Link>
+                            <Flex direction="column" gap={1}>
+                              <Link to={`/bookclubs/${bookClub.id}`}>
+                                <Heading as="h4" size="sm">
+                                  {bookClub.name}
+                                </Heading>
+                              </Link>
+                              {bookClub.BookClubBook[0] ? (
+                              <Flex gap={2}>
+                                <Box>
+                                  <Image 
+                                    src={bookClub.BookClubBook[0].image}
+                                    alt={bookClub.BookClubBook[0].title}
+                                    maxH="50px"
+                                  />
+                                </Box>
+                                <Box>
+                                  <Text fontStyle="italic">{bookClub.BookClubBook[0].title}</Text>
+                                  <Text>{bookClub.BookClubBook[0].author}</Text>
+                                </Box>
+                              </Flex>
+                              ) : null}
+                            </Flex>
                             <Flex align="center" gap={1}>
                               <Avatar
                                 onClick={e=>navigate(`/profile/${bookClub.Profile.username}`)} 
