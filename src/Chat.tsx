@@ -64,13 +64,34 @@ export default function Chat({chatserver}: {chatserver: string}) {
 
   const [bookTitle,setBookTitle] = useState(searchParams.get("title"))
   const [bookAuthor,setBookAuthor] = useState(searchParams.get("author"))
+  const [bookClub,setBookClub] = useState(searchParams.get("bookclub"))
   const chatBoxRef = useRef({} as HTMLInputElement);
   const [isConnected,setIsConnected] = useState(socket.connected);
   const [roomId,setRoomId] = useState<string>(bookTitle && bookAuthor ? (bookTitle + bookAuthor).replace(/\s+/g,'') : "coolchat");
   const [chatMessages,setChatMessages] = useState<any[]>([]);
   const [roomUsers,setRoomUsers] = useState([] as any[]);
   useEffect(()=>{
-    if (!searchParams.get("title")) {
+    if (!searchParams.get("bookclub")) {
+      if (!searchParams.get("title")) {
+        navigate("/")
+        toast({
+          description: "Chat Room does not exist",
+          status: "error",
+          duration: 9000,
+          isClosable: true
+        })
+      }
+      else {
+        setBookTitle(searchParams.get("title"))
+        setBookAuthor(searchParams.get("author"))
+        setRoomId(bookTitle && bookAuthor ? (bookTitle + bookAuthor).replace(/\s+/g,'') : "coolchat")
+      }
+    }
+    else if (searchParams.get("bookclub")) {
+      setBookClub(searchParams.get("bookclub"))
+      setRoomId(searchParams.get("bookclub")!)
+    }
+    else {
       navigate("/")
       toast({
         description: "Chat Room does not exist",
@@ -78,11 +99,6 @@ export default function Chat({chatserver}: {chatserver: string}) {
         duration: 9000,
         isClosable: true
       })
-    }
-    else {
-      setBookTitle(searchParams.get("title"))
-      setBookAuthor(searchParams.get("author"))
-      setRoomId(bookTitle && bookAuthor ? (bookTitle + bookAuthor).replace(/\s+/g,'') : "coolchat")
     }
 
     function onConnect() {
@@ -168,12 +184,20 @@ export default function Chat({chatserver}: {chatserver: string}) {
     <>
       <Box className="main-content">
         <Skeleton isLoaded={true}>
-          <Heading as="h1" size="lg" textAlign="center">
-            {bookTitle}
-          </Heading>
-          <Heading as="h2" size="md" mb={2} textAlign="center">
-            {bookAuthor}
-          </Heading>
+          {!bookClub ? (
+            <>
+              <Heading as="h1" size="lg" textAlign="center">
+              { bookTitle}
+              </Heading>
+              <Heading as="h2" size="md" mb={2} textAlign="center">
+                {bookAuthor}
+              </Heading>
+            </>
+          ) : (
+            <Heading as="h1" size="lg" textAlign="center">
+              {bookClub} Book Club
+            </Heading>
+          )}
           <Flex flexWrap="wrap" gap={2} w="100%" align="start" justify="space-between">
             <Box 
               flex="1 1 65%"

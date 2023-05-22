@@ -530,7 +530,6 @@ export default function BookClub({server}: {server: string}) {
     clearRsvpsCallbackMutation.reset();
   }
 
-  const meetingLocationRef = useRef({} as ReactQuill);
   const meetingStartRef = useRef({} as HTMLInputElement);
   const meetingEndRef = useRef({} as HTMLInputElement);
   const updateBookClubMeetingMutation = useMutation({
@@ -542,7 +541,6 @@ export default function BookClub({server}: {server: string}) {
           .put(server + "/api/updatebookclubmeeting",
             {
               bookClubId: bookClub?.id,
-              bookClubMeetingLocation: meetingLocationRef.current.value,
               bookClubMeetingStart: dayjs(meetingStartRef.current.value).utc(),
               bookClubMeetingEnd: dayjs(meetingEndRef.current.value).utc()
             },
@@ -1218,6 +1216,7 @@ export default function BookClub({server}: {server: string}) {
                           </Flex>
                           <Center flexDirection="column">
                             <Button 
+                              variant="ghost"
                               colorScheme="teal"
                               leftIcon={<BsCardText size={20} />}
                               onClick={e=>navigate(`${currentBook?.id}`)}
@@ -1285,7 +1284,7 @@ export default function BookClub({server}: {server: string}) {
 
                     <Flex className="well" direction="column" gap={2}>
                       <Flex align="center" justify="space-between">
-                        <Heading as="h4" size="md">Next Meeting</Heading>
+                        <Heading as="h4" size="md">Next Chat Meeting</Heading>
                         {isBookClubCreator ? (
                           <Button
                             variant="ghost"
@@ -1299,48 +1298,42 @@ export default function BookClub({server}: {server: string}) {
                       </Flex>
                       <Stack>
                         {bookClub.next_meeting_location || bookClub.next_meeting_start || bookClub.next_meeting_end ? (
-                        <>
-                          {bookClub.next_meeting_location || bookClub.next_meeting_start || bookClub.next_meeting_end ? (
-                            <Box
-                              bg="white"
-                              rounded="md"
-                              boxShadow="base"
-                              _dark={{
-                                bg: "gray.600"
-                              }}
+                        <Box
+                          bg="white"
+                          rounded="md"
+                          boxShadow="base"
+                          _dark={{
+                            bg: "gray.600"
+                          }}
+                        >
+                        {bookClub.next_meeting_location || bookClub.next_meeting_start || bookClub.next_meeting_end ? (
+                        <> 
+                          <Flex 
+                            gap={2} 
+                            fontWeight="bold" 
+                            justify="center"
+                            p={2}
+                            mb={2}
+                          >
+                            <Text>{bookClub.next_meeting_start ? dayjs(bookClub.next_meeting_start).local().format('MMM DD, hh:mm a') : null}</Text>
+                            <Text>-</Text>
+                            <Text>{bookClub.next_meeting_end ? dayjs(bookClub.next_meeting_end).local().format('MMM DD, hh:mm a'): null}</Text>
+                          </Flex>
+                          {dayjs(new Date()) < dayjs(bookClub.next_meeting_end) && dayjs(new Date()) > dayjs(bookClub.next_meeting_start) ? (
+                          <Center>
+                            <Button
+                              mb={2}
+                              variant="ghost"
+                              colorScheme="teal"
+                              onClick={e=>navigate(`/chat/room?bookclub=${bookClub.name}`)}
                             >
-                              {bookClub.next_meeting_location ? ( 
-                                <Box 
-                                  p={2}
-                                >
-                                  <Box 
-                                    as={ReactQuill} 
-                                    theme="snow"
-                                    modules={{
-                                      toolbar: ''
-                                    }}
-                                    readOnly={true}
-                                    defaultValue={bookClub.next_meeting_location}
-                                    sx={{
-                                      '.ql-container': {
-                                        borderRadius: '5px'
-                                      }
-                                    }}
-                                  />
-                                </Box>
-                              ) : null}
-                              <Flex 
-                                gap={2} 
-                                fontWeight="bold" 
-                                justify="center"
-                                p={2}
-                              >
-                                <Text>{bookClub.next_meeting_start ? dayjs(bookClub.next_meeting_start).local().format('MMM DD, hh:mm a') : null}</Text>
-                                <Text>-</Text>
-                                <Text>{bookClub.next_meeting_end ? dayjs(bookClub.next_meeting_end).local().format('MMM DD, hh:mm a'): null}</Text>
-                              </Flex>
-                            </Box>
+                              Join
+                            </Button>
+                          </Center>
                           ) : null}
+
+                        </>
+                        ) : null}
                           <Center flexDirection="column">
                             <>
                               {rsvpCallbackMutation.error && (
@@ -1394,8 +1387,8 @@ export default function BookClub({server}: {server: string}) {
                               </Popover>
                             </>
                           </Center>
-                        </>
-                        ) : null}
+                        </Box>
+                      ) : null}
                       </Stack>
                     </Flex>
 
@@ -1798,51 +1791,27 @@ export default function BookClub({server}: {server: string}) {
           <ModalCloseButton />
             <Flex as="form" direction="column" w="100%" onSubmit={e=>updateBookClubMeeting(e)}>
               <ModalBody>
-                <Stack gap={2}>
-                  <Box>
-                    <FormLabel htmlFor="location">Location/About</FormLabel>
-                    <ReactQuill 
-                      id="location" 
-                      theme="snow"
-                      modules={{
-                        toolbar: [
-                          [{ 'header': []}],
-                          ['bold', 'italic', 'underline'],
-                          [{'list': 'ordered'}, {'list': 'bullet'}],
-                          ['link'],
-                          [{'align': []}],
-                          ['clean']
-                        ]
-                      }}
-                      formats={[
-                        'header','bold', 'italic', 'underline','list', 'bullet', 'align','link'
-                      ]}
-                      ref={meetingLocationRef}
-                      value={bookClub?.next_meeting_location}
+                <Flex gap={1} justify="space-between" flexWrap="wrap">
+                  <Flex direction="column">
+                    <FormLabel htmlFor="from">From</FormLabel>
+                    <Input
+                      id="from"
+                      type="datetime-local"
+                      defaultValue={bookClub?.next_meeting_start ? dayjs(bookClub?.next_meeting_start).format('YYYY-MM-DD hh:mm') :  ""}
+                      ref={meetingStartRef}
                     />
-                  </Box>
-                  <Flex gap={1} justify="space-between" flexWrap="wrap">
-                    <Flex direction="column">
-                      <FormLabel htmlFor="from">From</FormLabel>
-                      <Input
-                        id="from"
-                        type="datetime-local"
-                        defaultValue={bookClub?.next_meeting_start ? dayjs(bookClub?.next_meeting_start).format('YYYY-MM-DD hh:mm') :  ""}
-                        ref={meetingStartRef}
-                      />
-                    </Flex>
-                    <Flex direction="column">
-                      <FormLabel htmlFor="to">To</FormLabel>
-                      <Input
-                        id="to"
-                        type="datetime-local"
-                        defaultValue={bookClub?.next_meeting_end ? dayjs(bookClub?.next_meeting_end).format('YYYY-MM-DD hh:mm') :  ""}
-                        ref={meetingEndRef}
-                      />
-                    </Flex>
                   </Flex>
-                </Stack>
-                </ModalBody>
+                  <Flex direction="column">
+                    <FormLabel htmlFor="to">To</FormLabel>
+                    <Input
+                      id="to"
+                      type="datetime-local"
+                      defaultValue={bookClub?.next_meeting_end ? dayjs(bookClub?.next_meeting_end).format('YYYY-MM-DD hh:mm') :  ""}
+                      ref={meetingEndRef}
+                    />
+                  </Flex>
+                </Flex>
+              </ModalBody>
               <ModalFooter flexDirection="column">
                 <>
                   {updateBookClubMeetingMutation.error && (
