@@ -224,8 +224,10 @@ export default function BookClubs({server}: {server: string}) {
                           bg: "gray.600"
                         }}
                         _hover={{
-                          bg: "gray.200"
+                          bg: "gray.200",
+                          cursor: "pointer"
                         }}
+                        onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
                         key={i}
                       >
                         <Flex
@@ -235,11 +237,9 @@ export default function BookClubs({server}: {server: string}) {
                           rowGap={2}
                         >
                           <Flex direction="column" gap={1}>
-                            <Link to={`/bookclubs/${bookClub.id}`}>
-                              <Heading as="h4" size="sm">
-                                {bookClub.name}
-                              </Heading>
-                            </Link>
+                            <Heading as="h4" size="sm">
+                              {bookClub.name}
+                            </Heading>
                             {bookClub.BookClubBook[0] ? (
                             <Flex gap={2}>
                               <Box>
@@ -258,18 +258,15 @@ export default function BookClubs({server}: {server: string}) {
                           </Flex>
                           <Flex align="center" gap={1}>
                             <Avatar
-                              onClick={e=>navigate(`/profile/${bookClub.Profile.username}`)} 
                               size="xs"
                               cursor="pointer"
                               src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
                               border="2px solid gray"
                               title={`@${bookClub.Profile.username}`}
                             />
-                            <Link to={`/profile/${bookClub.Profile.username}`} title={`@${bookClub.Profile.username}`}>
-                              <Text fontWeight="bold">
-                                @{bookClub.Profile.username}
-                              </Text>
-                            </Link>
+                            <Text fontWeight="bold">
+                              @{bookClub.Profile.username}
+                            </Text>
                           </Flex>
                         </Flex>
                         <Text>
@@ -343,8 +340,10 @@ export default function BookClubs({server}: {server: string}) {
                             bg: "gray.600"
                           }}
                           _hover={{
-                            bg: "gray.200"
+                            bg: "gray.200",
+                            cursor: "pointer"
                           }}
+                          onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
                         >
                           <Flex 
                             align="start" 
@@ -353,11 +352,9 @@ export default function BookClubs({server}: {server: string}) {
                             rowGap={2}
                           >
                             <Flex direction="column" gap={1}>
-                              <Link to={`/bookclubs/${bookClub.id}`}>
-                                <Heading as="h4" size="sm">
-                                  {bookClub.name}
-                                </Heading>
-                              </Link>
+                              <Heading as="h4" size="sm">
+                                {bookClub.name}
+                              </Heading>
                               {bookClub.BookClubBook[0] ? (
                               <Flex gap={2}>
                                 <Box>
@@ -376,18 +373,15 @@ export default function BookClubs({server}: {server: string}) {
                             </Flex>
                             <Flex align="center" gap={1}>
                               <Avatar
-                                onClick={e=>navigate(`/profile/${bookClub.Profile.username}`)} 
                                 size="xs"
                                 cursor="pointer"
                                 src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
                                 border="2px solid gray"
                                 title={`@${bookClub.Profile.username}`}
                               />
-                              <Link to={`/profile/${bookClub.Profile.username}`} title={`@${bookClub.Profile.username}`}>
                                 <Text fontWeight="bold">
                                   @{bookClub.Profile.username}
                                 </Text>
-                              </Link>
                             </Flex>
                           </Flex>
                           <Flex align="center" justify="space-between" flexWrap="wrap">
@@ -467,8 +461,10 @@ export default function BookClubs({server}: {server: string}) {
                             bg: "gray.600"
                           }}
                           _hover={{
-                            bg: "gray.200"
+                            bg: "gray.200",
+                            cursor: "pointer"
                           }}
+                          onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
                           key={i}
                         >
                           <Flex
@@ -478,11 +474,9 @@ export default function BookClubs({server}: {server: string}) {
                             rowGap={2}
                           >
                             <Flex direction="column" gap={1}>
-                              <Link to={`/bookclubs/${bookClub.id}`}>
-                                <Heading as="h4" size="sm">
-                                  {bookClub.name}
-                                </Heading>
-                              </Link>
+                              <Heading as="h4" size="sm">
+                                {bookClub.name}
+                              </Heading>
                               {bookClub.BookClubBook[0] ? (
                               <Flex gap={2}>
                                 <Box>
@@ -500,19 +494,16 @@ export default function BookClubs({server}: {server: string}) {
                               ) : null}
                             </Flex>
                             <Flex align="center" gap={1}>
-                              <Avatar
-                                onClick={e=>navigate(`/profile/${bookClub.Profile.username}`)} 
+                              <Avatar 
                                 size="xs"
                                 cursor="pointer"
                                 src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
                                 border="2px solid gray"
                                 title={`@${bookClub.Profile.username}`}
                               />
-                              <Link to={`/profile/${bookClub.Profile.username}`} title={`@${bookClub.Profile.username}`}>
-                                <Text fontWeight="bold">
-                                  @{bookClub.Profile.username}
-                                </Text>
-                              </Link>
+                              <Text fontWeight="bold">
+                                @{bookClub.Profile.username}
+                              </Text>
                             </Flex>
                           </Flex>
                           <Flex align="center" justify="space-between" flexWrap="wrap">
