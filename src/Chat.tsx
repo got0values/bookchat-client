@@ -322,12 +322,27 @@ export default function Chat({chatserver}: {chatserver: string}) {
                   )
                 })): null}
               </Box>
-              <Button onClick={e=>{
-                console.log(socket);
-                socket.disconnect()
-              }}>
+              {isConnected ? (
+              <Button 
+                size="md"
+                onClick={e=>{
+                  console.log(socket);
+                  socket.connect()
+                }}
+              >
                 Disconnect
               </Button>
+              ) : (
+              <Button 
+                size="md"
+                onClick={e=>{
+                  console.log(socket);
+                  socket.disconnect()
+                }}
+              >
+                Connect
+              </Button>
+              )}
             </Flex>
           </Flex>
         </Skeleton>
