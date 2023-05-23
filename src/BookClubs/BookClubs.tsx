@@ -267,7 +267,7 @@ export default function BookClubs({server}: {server: string}) {
                             />
                             <Link to={`/profile/${bookClub.Profile.username}`} title={`@${bookClub.Profile.username}`}>
                               <Text fontWeight="bold">
-                                {bookClub.Profile.User.first_name + " " + bookClub.Profile.User.last_name}
+                                @{bookClub.Profile.username}
                               </Text>
                             </Link>
                           </Flex>
@@ -347,7 +347,7 @@ export default function BookClubs({server}: {server: string}) {
                           }}
                         >
                           <Flex 
-                            align="center" 
+                            align="start" 
                             justify="space-between" 
                             wrap="wrap"
                             rowGap={2}
@@ -385,7 +385,7 @@ export default function BookClubs({server}: {server: string}) {
                               />
                               <Link to={`/profile/${bookClub.Profile.username}`} title={`@${bookClub.Profile.username}`}>
                                 <Text fontWeight="bold">
-                                  {bookClub.Profile.User.first_name + " " + bookClub.Profile.User.last_name}
+                                  @{bookClub.Profile.username}
                                 </Text>
                               </Link>
                             </Flex>
@@ -510,7 +510,7 @@ export default function BookClubs({server}: {server: string}) {
                               />
                               <Link to={`/profile/${bookClub.Profile.username}`} title={`@${bookClub.Profile.username}`}>
                                 <Text fontWeight="bold">
-                                  {bookClub.Profile.User.first_name + " " + bookClub.Profile.User.last_name}
+                                  @{bookClub.Profile.username}
                                 </Text>
                               </Link>
                             </Flex>
