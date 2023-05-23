@@ -1,67 +1,51 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { DashboardProps, Following_Following_self_profile_idToProfile, CurrentlyReading, CurrentlyReadingComment } from './types/types';
+import { DashboardProps, Following_Following_self_profile_idToProfile, CurrentlyReading, CurrentlyReadingComment } from '../types/types';
 import { 
   Box,
   Heading,
   Flex,
-  Spinner,
-  CloseButton,
   Text,
   Link,
-  Image,
-  HStack,
-  Avatar,
   Button,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Divider,
   Skeleton,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
   Input,
   InputGroup,
   InputRightElement,
   Portal,
   Popover,
   PopoverTrigger,
-  PopoverCloseButton,
   PopoverContent,
-  PopoverBody,
-  PopoverArrow,
-  Stack,
-  Center,
   useColorMode,
-  useToast,
-  useDisclosure
+  useToast
 } from "@chakra-ui/react";
-import { useAuth } from './hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
 import { BsReplyFill, BsEmojiSmile } from 'react-icons/bs';
-import Cookies from "js-cookie";
 import Picker from '@emoji-mart/react';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import axios from "axios";
-import { io } from "socket.io-client";
+import {socket, socketId} from "./customSocket";
 
 
-export default function Chat({chatserver}: {chatserver: string}) {
+export default function Chat() {
   dayjs.extend(utc);
   const navigate = useNavigate();
   const toast = useToast();
   const { user, getUser } = useAuth();
   const queryClient = useQueryClient();
-  const socket = io(chatserver)
+  // const {socket} = useCustomSocket()
   const {colorMode} = useColorMode();
   let [searchParams] = useSearchParams();
+
+  function disconnectSocket() {
+    socket.disconnect()
+  }
+  function connectSocket() {
+    socket
+    .connect()
+    .emit("join-room",{room: roomId, userName: user.Profile.username})
+  }
 
   const [bookTitle,setBookTitle] = useState(searchParams.get("title"))
   const [bookAuthor,setBookAuthor] = useState(searchParams.get("author"))
@@ -104,13 +88,13 @@ export default function Chat({chatserver}: {chatserver: string}) {
 
     function onConnect() {
       setIsConnected(true)
-      socket.emit("get-users",roomId)
     }
     function onDisconnect() {
       setIsConnected(false)
       socket.emit("get-users",roomId)
     }
     function onReceiveUsers(users: string[]) {
+      console.log(users)
       setRoomUsers(prev=>[...new Set(users)])
     }
     function onReceiveMessage(message: {userName: string, text: string}) {
@@ -126,37 +110,19 @@ export default function Chat({chatserver}: {chatserver: string}) {
     socket.on("connect", onConnect)
     socket.emit("join-room",{room: roomId, userName: user.Profile.username});
     socket.on("receive-users", (users)=>{
-      console.log(users)
       onReceiveUsers(users)
     })
     socket.on("receive-message", (message)=>{
       onReceiveMessage(message)
     });
     socket.on("disconnect", onDisconnect)
-    function handleUnload() {
-      alert("are you sure?")
-      socket.disconnect();
-      toast({
-        description: "Left room",
-        status: "error",
-        duration: 9000,
-        isClosable: true
-      })
-    }
-    window.addEventListener("beforeunload",(e)=>{
-      e.preventDefault()
-      console.log(e)
-      handleUnload()
-      return e.returnValue = '';
-    })
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
       socket.off('receive-users', onReceiveUsers);
       socket.off('receive-message', onReceiveMessage);
-      window.removeEventListener("beforeunload",handleUnload)
     };
-  },[searchParams])
+  },[searchParams,socket])
 
   const chatTextRef = useRef({} as HTMLInputElement);
   function submitChat() {
@@ -312,33 +278,31 @@ export default function Chat({chatserver}: {chatserver: string}) {
                 {roomUsers ? (
                   roomUsers.map((roomUser,i)=>{
                   return (
-                    <Link 
-                      href={`/profile/${roomUser.userName}`} 
-                      key={i} 
-                      fontSize={["sm","md","md"]}
+                    <Box 
+                      key={i}
+                      fontStyle={!isConnected ? "italic" : ""}
                     >
-                    @{roomUser.userName}
-                    </Link>
+                      <Link 
+                        href={`/profile/${roomUser.userName}`} 
+                        fontSize={["sm","md","md"]}
+                      >
+                      @{roomUser.userName}
+                      </Link>
+                    </Box>
                   )
                 })): null}
               </Box>
               {isConnected ? (
               <Button 
                 size="md"
-                onClick={e=>{
-                  console.log(socket);
-                  socket.connect()
-                }}
+                onClick={e=>disconnectSocket()}
               >
                 Disconnect
               </Button>
               ) : (
               <Button 
                 size="md"
-                onClick={e=>{
-                  console.log(socket);
-                  socket.disconnect()
-                }}
+                onClick={e=>connectSocket()}
               >
                 Connect
               </Button>

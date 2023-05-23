@@ -10,7 +10,7 @@ import BookClubs from './BookClubs/BookClubs';
 import BookClub from './BookClubs/BookClub';
 import BookClubBook from './BookClubs/BookClubBook';
 import Profile from './Profile/Profile';
-import Chat from './Chat';
+import Chat from './Chat/Chat';
 import Settings from './Settings';
 import ResetPassword from "./ResetPassword";
 import Terms from "./Terms";
@@ -86,7 +86,7 @@ function App() {
         >
           <Route
             path="room"
-            element={ <Chat chatserver={chatserver} /> }
+            element={ <Chat /> }
           />
         </Route>
         <Route 
