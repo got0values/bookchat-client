@@ -36,6 +36,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Tooltip,
   useToast,
   Link as ChakraLink,
 } from '@chakra-ui/react';
@@ -46,6 +47,7 @@ import { FiSettings, FiMail } from 'react-icons/fi';
 import { RxDotFilled } from 'react-icons/rx';
 import { AiOutlineBell, AiFillHome } from 'react-icons/ai';
 import { FaSearch } from 'react-icons/fa';
+import { ImBooks } from 'react-icons/im';
 import logoIcon from './assets/community-book-club-logo-logo-only.png';
 import logoIconWhite from './assets/community-book-club-logo-logo-only-white.png';
 import Cookies from "js-cookie";
@@ -56,11 +58,12 @@ interface LinkItemProps {
   name: string;
   linkTo: string;
   icon?: ReactJSXElement;
+  tooltip: string;
 }
 
 const LinkItems: Array<LinkItemProps> = [
-  { name: 'Home', linkTo: "/", icon: <AiFillHome size="20"/>},
-  { name: 'Book Clubs', linkTo: "/bookclubs" }
+  { name: 'Home', linkTo: "/", icon: <AiFillHome size="25"/>, tooltip: "Home"},
+  { name: 'Book Clubs', linkTo: "/bookclubs", icon: <ImBooks size="25"/>, tooltip: "Book Clubs" }
 ];
 
 export default function TopNav({server,onLogout}: TopNavProps) {
@@ -523,11 +526,13 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                   color: window.location.pathname === linkItem.linkTo ? activeLinkColor : ""
                 }}
               >
-                <Flex align="center" gap={2}>
-                  {linkItem.icon ? (
-                    linkItem.icon
-                  ): linkItem.name}
-                </Flex>
+                <Tooltip hasArrow label={linkItem.tooltip}>
+                  <Flex align="center" gap={2}>
+                    {linkItem.icon ? (
+                      linkItem.icon
+                    ): linkItem.name}
+                  </Flex>
+                </Tooltip>
               </Box>
             ))}
           </HStack>
