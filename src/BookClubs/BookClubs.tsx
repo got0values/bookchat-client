@@ -151,188 +151,73 @@ export default function BookClubs({server}: {server: string}) {
   }
   
   return (
-    <Box className="main-content-smaller">
+    <Box className="main-content">
       <Skeleton 
         isLoaded={!isLoading}
       >
-          <Stack flex="1 1 65%">
-            <Box className="well">
-              <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
-                <Flex align="center" justify="space-between" gap={2}>
-                  <FaBookReader size={25} />
-                  <Heading as="h3" size="md">
-                    My Book Clubs
-                  </Heading>
+          <Flex flexWrap="wrap">
+            <Stack flex="1 1 30%">
+              <Box className="well">
+                <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
+                  <Flex align="center" justify="space-between" gap={2}>
+                    <FaBookReader size={25} />
+                    <Heading as="h3" size="md">
+                      My Book Clubs
+                    </Heading>
+                  </Flex>
+                  <Button
+                    variant="ghost"
+                    leftIcon={<IoIosAdd size={25} />}
+                    onClick={createBookClubModalOpen}
+                  >
+                    Create a book club
+                  </Button>
                 </Flex>
-                <Button
-                  variant="ghost"
-                  leftIcon={<IoIosAdd size={25} />}
-                  onClick={createBookClubModalOpen}
-                >
-                  Create a book club
-                </Button>
-              </Flex>
 
-              <Box>
-                {bookClubsOwned ? (
-                  (bookClubsOwned as BookClubsType[]).map((bookClub, i)=>{
-                    return (
-                      <Box 
-                        p={5} 
-                        bg="white"
-                        boxShadow="base"
-                        m={2} 
-                        rounded="md"
-                        _dark={{
-                          bg: "gray.600"
-                        }}
-                        key={i}
-                      >
-                        <Link to={`/bookclubs/${bookClub.id}`}>
-                          <Heading as="h4" size="sm">
-                            {bookClub.name}
-                          </Heading>
-                        </Link>
-                        <Text>
-                            {bookClub.about}
-                        </Text>
-                      </Box>
-                    )
-                  })
-                ) : null}
-              </Box>
-            </Box>
-
-            <Box className="well">
-              <Flex align="center" justify="space-between" gap={2} mb={2}>
-                <Heading as="h3" size="md">
-                  Joined
-                </Heading>
-              </Flex>
-
-              <Box>
-                {bookClubsJoined && bookClubsJoined.length ? (
-                  (bookClubsJoined as BookClubsType[]).map((bookClub, i)=>{
-                    return (
-                      <Box 
-                        p={5} 
-                        bg="white" 
-                        m={2} 
-                        rounded="md"
-                        boxShadow="base"
-                        _dark={{
-                          bg: "gray.600"
-                        }}
-                        _hover={{
-                          bg: "gray.200",
-                          cursor: "pointer"
-                        }}
-                        onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
-                        key={i}
-                      >
-                        <Flex
-                          align="start" 
-                          justify="space-between" 
-                          wrap="wrap"
-                          rowGap={2}
-                        >
-                          <Flex direction="column" gap={1}>
-                            <Heading as="h4" size="sm">
-                              {bookClub.name}
-                            </Heading>
-                            {bookClub.BookClubBook[0] ? (
-                            <Flex gap={2}>
-                              <Box>
-                                <Image 
-                                  src={bookClub.BookClubBook[0].image}
-                                  alt={bookClub.BookClubBook[0].title}
-                                  maxH="50px"
-                                />
-                              </Box>
-                              <Box>
-                                <Text fontStyle="italic">{bookClub.BookClubBook[0].title}</Text>
-                                <Text>{bookClub.BookClubBook[0].author}</Text>
-                              </Box>
-                            </Flex>
-                            ) : null}
-                          </Flex>
-                          <Flex align="center" gap={1}>
-                            <Avatar
-                              size="xs"
-                              cursor="pointer"
-                              src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
-                              border="2px solid gray"
-                              title={`@${bookClub.Profile.username}`}
-                            />
-                            <Text fontWeight="bold">
-                              @{bookClub.Profile.username}
-                            </Text>
-                          </Flex>
-                        </Flex>
-                        <Text>
-                            {bookClub.about}
-                        </Text>
-                      </Box>
-                    )
-                  })
-                ) : (
-                  <Text>You are not a member of any book clubs at the moment.</Text>
-                )}
-              </Box>
-            </Box>
-
-            <Divider/>
-
-            <Box>
-              <Flex justify="center" flexWrap="wrap">
-                <RadioGroup 
-                  onChange={e=>filterBookClubsByGroup(e)}
-                >
-                  <Stack direction='row' flexWrap="wrap" justify="center">
-                    <Radio 
-                      value=''
-                    >
-                      All
-                    </Radio>
-                    <Radio 
-                      value='0'
-                    >
-                      1st-4th
-                    </Radio>
-                    <Radio 
-                      value='1'
-                    >
-                      5th-8th
-                    </Radio>
-                    <Radio 
-                      value='2'
-                    >
-                      9th-12th
-                    </Radio>
-                    <Radio 
-                      value='3'
-                    >
-                      Adult
-                    </Radio>
-                  </Stack>
-                </RadioGroup>
-              </Flex>
-            </Box>
-
-            <Box className="well">
-              <Flex align="center" justify="space-between" gap={2} mb={2}>
-                <Heading as="h3" size="md">
-                  Friends
-                </Heading>
-              </Flex>
-              <Box>
-                {bookClubsFriends && bookClubsFriends.length? (
-                  (bookClubsFriends as BookClubsType[]).map((bookClub,i)=>{
-                    return (
-                      <Fade in={true} key={i}>
+                <Box>
+                  {bookClubsOwned ? (
+                    (bookClubsOwned as BookClubsType[]).map((bookClub, i)=>{
+                      return (
                         <Box 
                           p={5} 
                           bg="white"
+                          boxShadow="base"
+                          m={2} 
+                          rounded="md"
+                          _dark={{
+                            bg: "gray.600"
+                          }}
+                          key={i}
+                        >
+                          <Link to={`/bookclubs/${bookClub.id}`}>
+                            <Heading as="h4" size="sm">
+                              {bookClub.name}
+                            </Heading>
+                          </Link>
+                          <Text>
+                              {bookClub.about}
+                          </Text>
+                        </Box>
+                      )
+                    })
+                  ) : null}
+                </Box>
+              </Box>
+
+              <Box className="well">
+                <Flex align="center" justify="space-between" gap={2} mb={2}>
+                  <Heading as="h3" size="md">
+                    Joined
+                  </Heading>
+                </Flex>
+
+                <Box>
+                  {bookClubsJoined && bookClubsJoined.length ? (
+                    (bookClubsJoined as BookClubsType[]).map((bookClub, i)=>{
+                      return (
+                        <Box 
+                          p={5} 
+                          bg="white" 
                           m={2} 
                           rounded="md"
                           boxShadow="base"
@@ -344,8 +229,9 @@ export default function BookClubs({server}: {server: string}) {
                             cursor: "pointer"
                           }}
                           onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
+                          key={i}
                         >
-                          <Flex 
+                          <Flex
                             align="start" 
                             justify="space-between" 
                             wrap="wrap"
@@ -379,67 +265,182 @@ export default function BookClubs({server}: {server: string}) {
                                 border="2px solid gray"
                                 title={`@${bookClub.Profile.username}`}
                               />
-                                <Text fontWeight="bold">
-                                  @{bookClub.Profile.username}
-                                </Text>
+                              <Text fontWeight="bold">
+                                @{bookClub.Profile.username}
+                              </Text>
                             </Flex>
                           </Flex>
-                          <Flex align="center" justify="space-between" flexWrap="wrap">
-                            <Text>
+                          <Text>
                               {bookClub.about}
-                            </Text>
-                            <Flex align="center" flexWrap="wrap">
-                              {JSON.parse(bookClub.groups).length ? (
-                                JSON.parse(bookClub.groups).map((group: string,i: number)=>{
-                                  return (
-                                    <Flex 
-                                      align="center" 
-                                      my={1} 
-                                      key={i}
-                                    >
-                                      <Tag 
-                                        colorScheme={group == "0" ? "teal" : (
-                                            group == "1" ? "green" : (
-                                              group == "2" ? "blue" : (
-                                                group == "3" ? "purple" : "red"
+                          </Text>
+                        </Box>
+                      )
+                    })
+                  ) : (
+                    <Text>You are not a member of any book clubs at the moment.</Text>
+                  )}
+                </Box>
+              </Box>
+            </Stack>
+
+            <Stack flex="1 1 65%">
+              <Box className="well">
+                <Flex justify="center" flexWrap="wrap">
+                  <RadioGroup 
+                    onChange={e=>filterBookClubsByGroup(e)}
+                  >
+                    <Stack direction='row' flexWrap="wrap" justify="center">
+                      <Radio 
+                        value=''
+                      >
+                        All
+                      </Radio>
+                      <Radio 
+                        value='0'
+                      >
+                        1st-4th
+                      </Radio>
+                      <Radio 
+                        value='1'
+                      >
+                        5th-8th
+                      </Radio>
+                      <Radio 
+                        value='2'
+                      >
+                        9th-12th
+                      </Radio>
+                      <Radio 
+                        value='3'
+                      >
+                        Adult
+                      </Radio>
+                    </Stack>
+                  </RadioGroup>
+                </Flex>
+              </Box>
+
+              <Box className="well">
+                <Flex align="center" justify="space-between" gap={2} mb={2}>
+                  <Heading as="h3" size="md">
+                    Friends
+                  </Heading>
+                </Flex>
+                <Box>
+                  {bookClubsFriends && bookClubsFriends.length? (
+                    (bookClubsFriends as BookClubsType[]).map((bookClub,i)=>{
+                      return (
+                        <Fade in={true} key={i}>
+                          <Box 
+                            p={5} 
+                            bg="white"
+                            m={2} 
+                            rounded="md"
+                            boxShadow="base"
+                            _dark={{
+                              bg: "gray.600"
+                            }}
+                            _hover={{
+                              bg: "gray.200",
+                              cursor: "pointer"
+                            }}
+                            onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
+                          >
+                            <Flex 
+                              align="start" 
+                              justify="space-between" 
+                              wrap="wrap"
+                              rowGap={2}
+                            >
+                              <Flex direction="column" gap={1}>
+                                <Heading as="h4" size="sm">
+                                  {bookClub.name}
+                                </Heading>
+                                {bookClub.BookClubBook[0] ? (
+                                <Flex gap={2}>
+                                  <Box>
+                                    <Image 
+                                      src={bookClub.BookClubBook[0].image}
+                                      alt={bookClub.BookClubBook[0].title}
+                                      maxH="50px"
+                                    />
+                                  </Box>
+                                  <Box>
+                                    <Text fontStyle="italic">{bookClub.BookClubBook[0].title}</Text>
+                                    <Text>{bookClub.BookClubBook[0].author}</Text>
+                                  </Box>
+                                </Flex>
+                                ) : null}
+                              </Flex>
+                              <Flex align="center" gap={1}>
+                                <Avatar
+                                  size="xs"
+                                  cursor="pointer"
+                                  src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
+                                  border="2px solid gray"
+                                  title={`@${bookClub.Profile.username}`}
+                                />
+                                  <Text fontWeight="bold">
+                                    @{bookClub.Profile.username}
+                                  </Text>
+                              </Flex>
+                            </Flex>
+                            <Flex align="center" justify="space-between" flexWrap="wrap">
+                              <Text>
+                                {bookClub.about}
+                              </Text>
+                              <Flex align="center" flexWrap="wrap">
+                                {JSON.parse(bookClub.groups).length ? (
+                                  JSON.parse(bookClub.groups).map((group: string,i: number)=>{
+                                    return (
+                                      <Flex 
+                                        align="center" 
+                                        my={1} 
+                                        key={i}
+                                      >
+                                        <Tag 
+                                          colorScheme={group == "0" ? "teal" : (
+                                              group == "1" ? "green" : (
+                                                group == "2" ? "blue" : (
+                                                  group == "3" ? "purple" : "red"
+                                                )
+                                              )
+                                            )}
+                                          size="sm"
+                                          fontWeight="bold"
+                                          marginLeft={i > 0 ? 1 : 0}
+                                        >
+                                          {group == "0" ? "1st-4th" : (
+                                            group == "1" ? "5th-8th" : (
+                                              group == "2" ? "9th-12th" : (
+                                                group == "3" ? "Adult" : null
                                               )
                                             )
                                           )}
-                                        size="sm"
-                                        fontWeight="bold"
-                                        marginLeft={i > 0 ? 1 : 0}
-                                      >
-                                        {group == "0" ? "1st-4th" : (
-                                          group == "1" ? "5th-8th" : (
-                                            group == "2" ? "9th-12th" : (
-                                              group == "3" ? "Adult" : null
-                                            )
-                                          )
-                                        )}
-                                      </Tag>
-                                    </Flex>
-                                  )
-                                })
-                              ) : (
-                                <Tag
-                                  colorScheme="yellow"
-                                  size="sm"
-                                  fontWeight="bold"
-                                >
-                                  All groups
-                                </Tag>
-                              )}
+                                        </Tag>
+                                      </Flex>
+                                    )
+                                  })
+                                ) : (
+                                  <Tag
+                                    colorScheme="yellow"
+                                    size="sm"
+                                    fontWeight="bold"
+                                  >
+                                    All groups
+                                  </Tag>
+                                )}
+                              </Flex>
                             </Flex>
-                          </Flex>
-                        </Box>
-                      </Fade>
-                    )
-                  })
-                ) : null}
+                          </Box>
+                        </Fade>
+                      )
+                    })
+                  ) : null}
+                </Box>
               </Box>
-            </Box>
 
-            <Box className="well">
+              <Box className="well">
               <Flex align="center" justify="space-between" gap={2} mb={2}>
                 <Heading as="h3" size="md">
                   Public
@@ -562,7 +563,8 @@ export default function BookClubs({server}: {server: string}) {
                 )}
               </Box>
             </Box>
-          </Stack>
+            </Stack>
+          </Flex>
 
         <Modal isOpen={isOpenCreateBookClubModal} onClose={closeCreateBookClubModal} size="xl">
           <ModalOverlay />
