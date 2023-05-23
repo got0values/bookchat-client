@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate, Link, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { DashboardProps, Following_Following_self_profile_idToProfile, CurrentlyReading, CurrentlyReadingComment } from './types/types';
 import { 
@@ -9,6 +9,7 @@ import {
   Spinner,
   CloseButton,
   Text,
+  Link,
   Image,
   HStack,
   Avatar,
@@ -182,33 +183,34 @@ export default function Chat({chatserver}: {chatserver: string}) {
 
   return (
     <>
-      <Box className="main-content">
+      <Box className="chat-content">
         <Skeleton isLoaded={true}>
-          {!bookClub ? (
-            <>
-              <Heading as="h1" size="lg" textAlign="center">
-              { bookTitle}
-              </Heading>
-              <Heading as="h2" size="md" mb={2} textAlign="center">
-                {bookAuthor}
-              </Heading>
-            </>
-          ) : (
-            <Heading as="h1" size="lg" textAlign="center">
-              {bookClub} Book Club
-            </Heading>
-          )}
-          <Flex flexWrap="wrap" gap={2} w="100%" align="start" justify="space-between">
-            <Box 
-              flex="1 1 65%"
-              className="well"
+          <Flex 
+            flexWrap="wrap" 
+            gap={3} w="99%" 
+            align="start" 
+            justify="space-between"
+            className="well"
+          >
+            <Flex 
+              flex="1 1 80%"
+              height="85vh"
+              direction="column"
             >
-              <Heading as="h3" size="md" mb={2}>Chat</Heading>
+              {!bookClub ? (
+                <>
+                  <Heading as="h1" size="md" textAlign="center" mb={2}>
+                  {bookTitle} - {bookAuthor}
+                  </Heading>
+                </>
+              ) : (
+                <Heading as="h1" size="lg" textAlign="center">
+                  {bookClub} Book Club
+                </Heading>
+              )}
               <Box
-                minH="500px"
-                maxH="500px"
-                overflow="auto"
                 h="100%"
+                overflow="auto"
                 border="1px solid"
                 rounded="md"
                 mb={2}
@@ -230,7 +232,7 @@ export default function Chat({chatserver}: {chatserver: string}) {
                   </Flex>
                   {chatMessages?.map((message,i)=>{
                     return (
-                      <Flex key={i} gap={1} m={1}>
+                      <Flex key={i} gap={1} m={1} fontSize={["sm","md","md"]}>
                         <Text 
                           fontWeight="bold" 
                           whiteSpace="nowrap"
@@ -292,32 +294,31 @@ export default function Chat({chatserver}: {chatserver: string}) {
                   Submit
                 </Button>
               </Flex>
-            </Box>
-            <Box
-              flex="1 1 30%"
-              className="well"
+            </Flex>
+            <Flex
+              flex="1 1 15%"
+              height="85vh"
+              direction="column"
             >
               <Heading as="h3" size="md" mb={2}>People</Heading>
               <Box 
-                h="300px" 
-                maxH="300px" 
+                h="100%" 
                 overflowY="auto"
                 p={1}
+                border="1px solid"
                 rounded="md"
-                boxShadow="base"
-                bg="gray.100"
                 mb={2}
-                _dark={{
-                  bg: "gray.600"
-                }}
               >
                 {roomUsers ? (
                   roomUsers.map((roomUser,i)=>{
                   return (
-                    <Box key={i}>
-                      <Link to={`/profiles/${roomUser.userName}`}/>
-                      @{roomUser.userName}
-                    </Box>
+                    <Link 
+                      href={`/profile/${roomUser.userName}`} 
+                      key={i} 
+                      fontSize={["sm","md","md"]}
+                    >
+                    @{roomUser.userName}
+                    </Link>
                   )
                 })): null}
               </Box>
@@ -327,7 +328,7 @@ export default function Chat({chatserver}: {chatserver: string}) {
               }}>
                 Disconnect
               </Button>
-            </Box>
+            </Flex>
           </Flex>
         </Skeleton>
       </Box>
