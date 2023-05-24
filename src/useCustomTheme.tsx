@@ -70,6 +70,25 @@ const config = {
         _dark: {
           bg: 'blackAlpha.500'
         }
+      },
+      '.chakra-menu__menu-list': {
+        // bg: "white",
+        _dark: {
+          bg: "black"
+        },
+        'button': {
+          _dark: {
+            bg: "black",
+            "&:hover": {
+              bg: "whiteAlpha.300"
+            }
+          }
+        }
+      },
+      '.chakra-modal__content': {
+        _dark: {
+          bg: "black"
+        }
       }
     },
   },

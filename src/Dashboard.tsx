@@ -450,7 +450,7 @@ export default function Dashboard({server}: DashboardProps) {
                         />
                         <Flex direction="column">
                           <Text fontWeight="bold">
-                            {reading.Profile.User.first_name + " " + reading.Profile.User.last_name}
+                            {reading.Profile.username}
                           </Text>
                           <Text fontStyle="italic">
                             {dayjs(reading.created_on).local().format('MMM DD, hh:mm a')}
@@ -559,7 +559,7 @@ export default function Dashboard({server}: DashboardProps) {
                                             <Link 
                                               to={`/profile/${like.Profile.username}`}
                                             >
-                                              {like.Profile.User.first_name + " " + like.Profile.User.last_name}
+                                              {like.Profile.username}
                                             </Link>
                                           </Box>
                                         )

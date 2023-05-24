@@ -126,7 +126,7 @@ const Comments: Function = (
                     fontWeight="bold"
                     to={`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}`}
                   >
-                    {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.User?.first_name + " " + comment.Profile_CurrentlyReadingComment_commenter_idToProfile.User?.last_name}
+                    {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}
                   </Text>
                   <Text fontStyle="italic">
                     {dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}

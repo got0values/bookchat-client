@@ -1029,7 +1029,7 @@ export default function Profile({server}: ProfileProps) {
                                                   key={i}
                                                   to={`/profile/${like.Profile.username}`}
                                                 >
-                                                  {like.Profile.User.first_name + " " + like.Profile.User.last_name}
+                                                  {like.Profile.username}
                                                 </Link>
                                               </Box>
                                             )
@@ -1195,7 +1195,7 @@ export default function Profile({server}: ProfileProps) {
                                                       key={i}
                                                       to={`/profile/${like.Profile.username}`}
                                                     >
-                                                      {like.Profile.User.first_name + " " + like.Profile.User.last_name}
+                                                      {like.Profile.username}
                                                     </Link>
                                                   </Box>
                                                 )
@@ -1377,7 +1377,7 @@ export default function Profile({server}: ProfileProps) {
                                                           key={i}
                                                           to={`/profile/${like.Profile.username}`}
                                                         >
-                                                          {like.Profile.User.first_name + " " + like.Profile.User.last_name}
+                                                          {like.Profile.username}
                                                         </Link>
                                                       </Box>
                                                     )

@@ -332,7 +332,7 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                               <Flex align="flex-start" justify="space-between">
                                 <Flex columnGap={2} align="center" flexWrap="wrap">
                                   <Text as="span" fontWeight="bold">
-                                    {comment.Profile.User.first_name} {comment.Profile.User.last_name}
+                                    {comment.Profile.username}
                                   </Text>
                                   <Flex align="center" gap={1}>
                                     <Text as="span" fontSize="sm">@{comment.Profile.username}</Text>
@@ -416,7 +416,7 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                                       <Flex align="flex-start" justify="space-between">
                                         <Flex columnGap={2} align="center" flexWrap="wrap">
                                           <Text as="span" fontWeight="bold">
-                                            {reply.Profile.User.first_name} {reply.Profile.User.last_name}
+                                            {reply.Profile.username}
                                           </Text>
                                           <Flex align="center" gap={1}>
                                             <Text as="span" fontSize="sm">@{reply.Profile.username}</Text>
@@ -519,7 +519,7 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                       <Flex align="flex-start" justify="space-between">
                         <Flex columnGap={2} align="center" flexWrap="wrap">
                           <Text as="span" fontWeight="bold">
-                            {commentReplyData.Profile.User.first_name} {commentReplyData.Profile.User.last_name}
+                            {commentReplyData.Profile.username}
                           </Text>
                           <Flex align="center" gap={1}>
                             <Text as="span" fontSize="sm">@{commentReplyData.Profile.username}</Text>
@@ -566,7 +566,7 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                             <Flex align="flex-start" justify="space-between">
                               <Flex columnGap={2} align="center" flexWrap="wrap">
                                 <Text as="span" fontWeight="bold">
-                                  {reply.Profile.User.first_name} {reply.Profile.User.last_name}
+                                  {reply.Profile.username}
                                 </Text>
                                 <Flex align="center" gap={1}>
                                   <Text as="span" fontSize="sm">@{reply.Profile.username}</Text>
