@@ -111,7 +111,6 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
       minH={'100vh'}
       align={'center'}
       justify={'center'}
-      bg={colorMode === "light" ? "gray.50" : "gray.800"}
     >
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align={'center'}>
@@ -122,8 +121,8 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
         </Stack>
         <Box
           rounded={'lg'}
-          bg={colorMode === "light" ? "white" : "gray.700"}
-          boxShadow={'lg'}
+          bg={colorMode === "light" ? "white" : "blackAlpha.300"}
+          boxShadow="base"
           p={8}
         >
           <Stack spacing={4}></Stack>

@@ -4,7 +4,7 @@ import '@fontsource/open-sans/700.css'
 import '@fontsource/inter/700.css'
 
 const config = {
-  initialColorMode: 'light',
+  initialColorMode: 'dark',
   useSystemColorMode: false,
   fonts: {
     heading: 'Inter, Open Sans, sans-serif',
