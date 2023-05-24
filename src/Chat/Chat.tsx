@@ -13,15 +13,18 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  Avatar,
   Portal,
   Popover,
   PopoverTrigger,
   PopoverContent,
+  IconButton,
   useColorMode,
   useToast
 } from "@chakra-ui/react";
 import { useAuth } from '../hooks/useAuth';
 import { BsReplyFill, BsEmojiSmile } from 'react-icons/bs';
+import { FiSend } from "react-icons/fi";
 import Picker from '@emoji-mart/react';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -94,7 +97,6 @@ export default function Chat() {
       socket.emit("get-users",roomId)
     }
     function onReceiveUsers(users: string[]) {
-      console.log(users)
       setRoomUsers(prev=>[...new Set(users)])
     }
     function onReceiveMessage(message: {userName: string, text: string}) {
@@ -108,7 +110,11 @@ export default function Chat() {
     }
 
     socket.on("connect", onConnect)
-    socket.emit("join-room",{room: roomId, userName: user.Profile.username});
+    socket.emit("join-room",{
+      room: roomId, 
+      userName: user.Profile.username,
+      profilePhoto: user.Profile.profile_photo
+    });
     socket.on("receive-users", (users)=>{
       onReceiveUsers(users)
     })
@@ -203,12 +209,12 @@ export default function Chat() {
                           fontWeight="bold" 
                           whiteSpace="nowrap"
                         >
-                          {`@${message.userName}`}
+                          {`${message.userName}`}
                           <Text
                             as="span"
                             fontSize="xs"
                           >
-                            {` (${dayjs(message.time).local().format('H:mm a')}):`}
+                            {` (${dayjs(message.time).local().format('hh:mm a')}):`}
                           </Text>
                         </Text>
                         <Text>
@@ -253,12 +259,12 @@ export default function Chat() {
                     </Popover>
                   </InputRightElement>
                 </InputGroup>
-                <Button
+                <IconButton
                   onClick={e=>submitChat()}
-                  colorScheme="purple"
-                >
-                  Submit
-                </Button>
+                  colorScheme="gray"
+                  aria-label="submit"
+                  icon={<FiSend/>}
+                />
               </Flex>
             </Flex>
             <Flex
@@ -278,17 +284,23 @@ export default function Chat() {
                 {roomUsers ? (
                   roomUsers.map((roomUser,i)=>{
                   return (
-                    <Box 
+                    <Flex 
                       key={i}
                       fontStyle={!isConnected ? "italic" : ""}
+                      onClick={e=>navigate(`/profile/${roomUser.userName}`)}
+                      cursor={"pointer"}
+                      align="center"
+                      gap={1}
                     >
-                      <Link 
-                        href={`/profile/${roomUser.userName}`} 
-                        fontSize={["sm","md","md"]}
-                      >
-                      @{roomUser.userName}
-                      </Link>
-                    </Box>
+                      <Avatar
+                        size="xs"
+                        src={roomUser.profilePhoto}
+                        border="2px solid gray"
+                      />
+                      <Text>
+                        {roomUser.userName}
+                      </Text>
+                    </Flex>
                   )
                 })): null}
               </Box>

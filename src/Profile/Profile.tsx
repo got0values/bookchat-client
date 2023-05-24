@@ -1024,7 +1024,7 @@ export default function Profile({server}: ProfileProps) {
                                         {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? (
                                           profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.map((like,i)=>{
                                             return (
-                                              <Box mb={1}>
+                                              <Box mb={1} key={i}>
                                                 <Link 
                                                   key={i}
                                                   to={`/profile/${like.Profile.username}`}
@@ -1190,7 +1190,7 @@ export default function Profile({server}: ProfileProps) {
                                             {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? (
                                               profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.map((like,i)=>{
                                                 return (
-                                                  <Box mb={1}>
+                                                  <Box mb={1} key={i}>
                                                     <Link 
                                                       key={i}
                                                       to={`/profile/${like.Profile.username}`}
