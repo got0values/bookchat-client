@@ -324,22 +324,29 @@ export default function Dashboard({server}: DashboardProps) {
         <Skeleton isLoaded={!dashboard.isLoading}>
           <Box 
             m={0}
-            className="well"
+            p={2}
+            // className="well"
           >
             <Flex gap={2} align="center">
               <Input 
                 type="text" 
                 placeholder="What i'm reading"
-                borderRadius="25px" 
+                rounded="2xl" 
+                size="md"
                 border="transparent"
                 bg="white" 
                 _dark={{
-                  bg: "gray.500"
+                  bg: "whiteAlpha.50"
                 }}
                 ref={whatImReadingRef}
                 onKeyDown={e=>e.key === 'Enter' ? searchBook() : null}
               />
-              <Button onClick={searchBook}>Search</Button>
+              <Button 
+                colorScheme="purple"
+                onClick={searchBook}
+              >
+                Search
+              </Button>
             </Flex>
             {selectedBook ? (
               <Box
@@ -422,15 +429,9 @@ export default function Dashboard({server}: DashboardProps) {
                   null
                 ) : (
                   <Box
-                    my={5}
-                    mx=".5rem"
-                    p={3}
-                    rounded="md"
-                    boxShadow="base"
-                    bg="white"
-                    _dark={{
-                      bg: 'gray.700'
-                    }}
+                    my={3}
+                    // mx=".5rem"
+                    className="well-card"
                     key={i}
                   >
                     <Flex

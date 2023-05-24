@@ -1173,13 +1173,7 @@ export default function BookClub({server}: {server: string}) {
                       {currentBook ? (
                       <>
                         <Box
-                          bg="white"
-                          p={2}
-                          rounded="md"
-                          boxShadow="base"
-                          _dark={{
-                            bg: "gray.600"
-                          }}
+                          className="well-card"
                         >
                           <Flex  
                             gap={5}
@@ -1299,12 +1293,7 @@ export default function BookClub({server}: {server: string}) {
                       <Stack>
                         {bookClub.next_meeting_start || bookClub.next_meeting_end ? (
                         <Box
-                          bg="white"
-                          rounded="md"
-                          boxShadow="base"
-                          _dark={{
-                            bg: "gray.600"
-                          }}
+                          className="well-card"
                         >
                         {bookClub.next_meeting_start || bookClub.next_meeting_end ? (
                         <> 
@@ -1418,13 +1407,7 @@ export default function BookClub({server}: {server: string}) {
                               <Flex
                                 flexDirection="column" 
                                 flex="0 1 175px"
-                                bg="white"
-                                boxShadow="base"
-                                p={2}
-                                rounded="md"
-                                _dark={{
-                                  bg: 'gray.600'
-                                }}
+                                className="well-card"
                               >
                                 <Box>
                                   <Heading as="h5" size="sm" textAlign="center">1</Heading>
@@ -1491,13 +1474,7 @@ export default function BookClub({server}: {server: string}) {
                               <Flex
                                 flexDirection="column" 
                                 flex="0 1 175px"
-                                bg="white"
-                                boxShadow="base"
-                                p={2}
-                                rounded="md"
-                                _dark={{
-                                  bg: 'gray.600'
-                                }}
+                                className="well-card"
                               >
                                 <Box>
                                   <Heading as="h5" size="sm" textAlign="center">2</Heading>
@@ -1563,13 +1540,7 @@ export default function BookClub({server}: {server: string}) {
                               <Flex
                                 flexDirection="column" 
                                 flex="0 1 175px"
-                                bg="white"
-                                boxShadow="base"
-                                p={2}
-                                rounded="md"
-                                _dark={{
-                                  bg: 'gray.600'
-                                }}
+                                className="well-card"
                               >
                                 <Box>
                                   <Heading as="h5" size="sm" textAlign="center">3</Heading>

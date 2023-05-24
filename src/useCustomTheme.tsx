@@ -15,7 +15,9 @@ const config = {
       body: {
         bg: 'gray.100',
         _dark: {
-          bg: 'gray.800'
+          bg: 'blackAlpha.50',
+          // bgGradient: 'linear(to-r, blackAlpha.100, whiteAlpha.100, blackAlpha.100)'
+          color: 'whiteAlpha.700'
         }
       },
       '#main': {
@@ -46,16 +48,27 @@ const config = {
         boxShadow: "base",
         borderRadius: 10,
         _dark: {
-          bg: 'gray.700'
+          bg: 'blackAlpha.300'
+        }
+      },
+      '.well-card': {
+        padding: 4, 
+        boxShadow: "base",
+        m: 1, 
+        rounded: "md",
+        bg: "white",
+        _dark: {
+          bg: 'blackAlpha.300'
         }
       },
       '.profile-card': {
-        bg: 'white',
-        p: 4,
-        m: '0.25rem!important',
-        borderRadius: 10,
+        padding: 4, 
+        boxShadow: "base",
+        m: 1, 
+        rounded: "md",
+        bg: "white",
         _dark: {
-          bg: 'gray.900'
+          bg: 'blackAlpha.500'
         }
       }
     },

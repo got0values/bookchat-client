@@ -179,14 +179,7 @@ export default function BookClubs({server}: {server: string}) {
                     (bookClubsOwned as BookClubsType[]).map((bookClub, i)=>{
                       return (
                         <Box 
-                          p={5} 
-                          bg="white"
-                          boxShadow="base"
-                          m={2} 
-                          rounded="md"
-                          _dark={{
-                            bg: "gray.600"
-                          }}
+                          className="well-card"
                           key={i}
                         >
                           <Link to={`/bookclubs/${bookClub.id}`}>
@@ -216,14 +209,7 @@ export default function BookClubs({server}: {server: string}) {
                     (bookClubsJoined as BookClubsType[]).map((bookClub, i)=>{
                       return (
                         <Box 
-                          p={5} 
-                          bg="white" 
-                          m={2} 
-                          rounded="md"
-                          boxShadow="base"
-                          _dark={{
-                            bg: "gray.600"
-                          }}
+                          className="well-card"
                           _hover={{
                             bg: "gray.200",
                             cursor: "pointer"
@@ -332,14 +318,7 @@ export default function BookClubs({server}: {server: string}) {
                       return (
                         <Fade in={true} key={i}>
                           <Box 
-                            p={5} 
-                            bg="white"
-                            m={2} 
-                            rounded="md"
-                            boxShadow="base"
-                            _dark={{
-                              bg: "gray.600"
-                            }}
+                            className="well-card"
                             _hover={{
                               bg: "gray.200",
                               cursor: "pointer"
@@ -453,14 +432,7 @@ export default function BookClubs({server}: {server: string}) {
                     return (
                       <Fade in={true} key={i}>
                         <Box 
-                          p={5} 
-                          bg="white"
-                          boxShadow="base"
-                          m={2} 
-                          rounded="md"
-                          _dark={{
-                            bg: "gray.600"
-                          }}
+                          className="well-card"
                           _hover={{
                             bg: "gray.200",
                             cursor: "pointer"

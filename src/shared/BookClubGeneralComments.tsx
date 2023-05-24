@@ -316,14 +316,7 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                       (
                         <Box 
                           key={i}
-                          my={1}
-                          p={2}
-                          bg="white"
-                          boxShadow="base"
-                          rounded="md"
-                          _dark={{
-                            bg: "gray.600"
-                          }}
+                          className="well-card"
                         >
                           <HStack 
                             align="flex-start" 

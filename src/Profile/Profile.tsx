@@ -809,7 +809,7 @@ export default function Profile({server}: ProfileProps) {
                         border="transparent"
                         bg="white" 
                         _dark={{
-                          bg: "gray.500"
+                          bg: "blackAlpha.400"
                         }}
                         ref={whatImReadingRef}
                         onKeyDown={e=>e.key === 'Enter' ? searchBook() : null}
@@ -818,14 +818,7 @@ export default function Profile({server}: ProfileProps) {
                     </Flex>
                     {selectedBook ? (
                       <Box
-                        my={2}
-                        p={2}
-                        rounded="md"
-                        bg="white"
-                        boxShadow="base"
-                        _dark={{
-                          bg: 'gray.600'
-                        }}
+                        className="well-card"
                         position="relative"
                       >
                         <Flex>
@@ -885,13 +878,7 @@ export default function Profile({server}: ProfileProps) {
                     {profileData?.CurrentlyReading?.length ? (
                       <Box
                         my={2}
-                        p={2}
-                        rounded="md"
-                        boxShadow="base"
-                        bg="white"
-                        _dark={{
-                          bg: 'gray.600'
-                        }}
+                        className="well-card"
                         position="relative"
                       >
                         <Flex>
@@ -1087,13 +1074,7 @@ export default function Profile({server}: ProfileProps) {
                         {profileData?.CurrentlyReading?.length ? (
                           <Box
                             my={2}
-                            p={2}
-                            rounded="md"
-                            boxShadow="base"
-                            bg="white"
-                            _dark={{
-                              bg: 'gray.600'
-                            }}
+                            className="well-card"
                             position="relative"
                           >
                             <Flex>
@@ -1272,13 +1253,7 @@ export default function Profile({server}: ProfileProps) {
                               <Box 
                                 key={i}
                                 my={2}
-                                p={2}
-                                rounded="md"
-                                boxShadow="base"
-                                bg="white"
-                                _dark={{
-                                  bg: 'gray.600'
-                                }}
+                                className="well-card"
                                 position="relative"
                               >
                                 <Flex>

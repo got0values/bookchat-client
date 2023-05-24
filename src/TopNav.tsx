@@ -73,7 +73,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
   const toast = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const activeLinkBg = useColorModeValue("gray.200","gray.500");
+  const activeLinkBg = useColorModeValue("gray.200","whiteAlpha.200");
   const activeLinkColor = useColorModeValue("black","white");
 
   async function getNotifications() {
@@ -440,7 +440,16 @@ export default function TopNav({server,onLogout}: TopNavProps) {
 
   return (
     <>
-      <Box as="nav" bg={useColorModeValue('white', 'gray.900')} overflow="hidden" px={4} boxShadow="1px 1px 6px lightgray" _dark={{boxShadow: "0 0 0"}}>
+      <Box 
+        as="nav" 
+        bg="white" 
+        overflow="hidden" px={4} 
+        boxShadow="1px 1px 6px lightgray" 
+        _dark={{
+          boxShadow: "0 0 0",
+          bg: "blackAlpha.700"
+        }}
+      >
         <Flex py={2} flexWrap="nowrap" alignItems={'center'} justifyContent={'space-between'}>
           <IconButton
             size={'md'}
@@ -491,7 +500,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                 placeholder="Search"
                 bg="gray.100"
                 _dark={{
-                  bg: "gray.600"
+                  bg: "whiteAlpha.50"
                 }}
                 ref={navSearchRef}
                 onKeyUp={e=>e.key === 'Enter' ? navSearch() : null}
@@ -525,6 +534,11 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                   bg: window.location.pathname === linkItem.linkTo ? activeLinkBg : "",
                   color: window.location.pathname === linkItem.linkTo ? activeLinkColor : ""
                 }}
+                // _dark={{
+                //   '&:hover': {
+                //     bg: 'whiteAlpha.50'
+                //   }
+                // }}
               >
                 <Tooltip hasArrow label={linkItem.tooltip}>
                   <Flex align="center" gap={2}>
