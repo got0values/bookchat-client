@@ -19,8 +19,8 @@ import {
 } from "@chakra-ui/react";
 import {FaRegQuestionCircle} from 'react-icons/fa';
 import { ImInfo } from 'react-icons/im';
-import logo from './assets/community-book-club-logo3.png';
-import logoWhite from './assets/community-book-club-logo3-white.png';
+import logo from './assets/BookChatNoirLogoBlack.png';
+import logoWhite from './assets/BookChatNoirLogoWhite.png';
 import passwordValidator from "password-validator";
 import axios from "axios";
 

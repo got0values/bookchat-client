@@ -12,8 +12,8 @@ import {
   useColorMode,
   OrderedList
 } from "@chakra-ui/react";
-import logo from './assets/community-book-club-logo3.png';
-import logoWhite from './assets/community-book-club-logo3-white.png';
+import logo from './assets/BookChatNoirLogoBlack.png';
+import logoWhite from './assets/BookChatNoirLogoWhite.png';
 
 const Terms = () => {
   const {colorMode} = useColorMode()

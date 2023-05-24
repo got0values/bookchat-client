@@ -24,8 +24,8 @@ import {
   useToast,
   useDisclosure
 } from "@chakra-ui/react";
-import logo from './assets/community-book-club-logo3.png';
-import logoWhite from './assets/community-book-club-logo3-white.png';
+import logo from './assets/BookChatNoirLogoBlack.png';
+import logoWhite from './assets/BookChatNoirLogoWhite.png';
 import Cookies from "js-cookie";
 import { useAuth } from "./hooks/useAuth";
 import axios from "axios";
@@ -115,7 +115,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align={'center'}>
           <Stack align="center">
-            <Image src={colorMode === "light" ? logo : logoWhite} maxH="75px"/>
+            <Image src={colorMode === "light" ? logo : logoWhite} maxH="150px"/>
           </Stack>
           <Heading fontSize={'4xl'}>Sign in to your account</Heading>
         </Stack>

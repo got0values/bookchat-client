@@ -48,8 +48,8 @@ import { RxDotFilled } from 'react-icons/rx';
 import { AiOutlineBell, AiFillHome } from 'react-icons/ai';
 import { FaSearch } from 'react-icons/fa';
 import { ImBooks } from 'react-icons/im';
-import logoIcon from './assets/community-book-club-logo-logo-only.png';
-import logoIconWhite from './assets/community-book-club-logo-logo-only-white.png';
+import logoIcon from './assets/BookChatNoirCatBlackSmall.png';
+import logoIconWhite from './assets/BookChatNoirCatWhiteSmall.png';
 import Cookies from "js-cookie";
 import axios from "axios";
 import { ReactJSXElement } from '@emotion/react/types/jsx-namespace';
@@ -468,7 +468,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
               <Link to="/">
                 <Image 
                   src={colorMode === "light" ? logoIcon : logoIconWhite}
-                  h="45px"
+                  h="40px"
                   onClick={e=>navigate("/")}
                   border="1px solid transparent"
                   borderRadius="4px"
