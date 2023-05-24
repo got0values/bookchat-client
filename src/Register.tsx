@@ -229,7 +229,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                   onChange={e=>handleTermsChecked(e)}
                 >
                   <Text>
-                    I agree to the <Link color="blue.400" href="/terms" target="_blank">Book Chat Terms</Link>
+                    I agree to the <Link color="blue.400" href="/terms" target="_blank">Book Chat Noir Terms</Link>
                   </Text>
                 </Checkbox>
               </FormControl>
