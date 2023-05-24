@@ -51,7 +51,7 @@ const Terms = () => {
             The Book Chat Noir Product enables people to connect with each other and build communities. These Terms govern your use of Book Chat Noir.
           </Text>
           <Text>
-            We don't charge you to use Book Chat Noir. Instead, we get commissions for purchases made through links to products and/or get paid to show you ads. By using Book Chat Noir, you agree that we can show you ads that we think may be relevant to you and your interests. Protecting people's privacy is central to how we've designed our ad system. We don't sell your personal data.
+            We don't charge you to use Book Chat Noir. Instead, we get commissions for purchases made through links to products and/or get paid to show you ads. As an Amazon Associate, we earn from qualifying purchases. By using Book Chat Noir, you agree that we can show you ads that we think may be relevant to you and your interests. Protecting people's privacy is central to how we've designed our ad system. We don't sell your personal data.
           </Text>
           <Heading as="h2" size="md">
             Your commitments to Book Chat Noir and our community
