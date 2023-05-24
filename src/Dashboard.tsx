@@ -352,11 +352,11 @@ export default function Dashboard({server}: DashboardProps) {
             {selectedBook ? (
               <Box
                 my={2}
-                p={2}
+                p={4}
                 rounded="md"
                 bg="gray.200"
                 _dark={{
-                  bg: 'gray.600'
+                  bg: 'blackAlpha.600'
                 }}
                 position="relative"
               >
@@ -454,7 +454,7 @@ export default function Dashboard({server}: DashboardProps) {
                             {reading.Profile.username}
                           </Text>
                           <Text fontStyle="italic">
-                            {dayjs(reading.created_on).local().format('MMM DD, hh:mm a')}
+                            {dayjs(reading.created_on).local().format('MMM DD, h:mm a')}
                           </Text>
                         </Flex>
                       </HStack>

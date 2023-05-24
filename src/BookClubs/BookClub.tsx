@@ -1304,9 +1304,9 @@ export default function BookClub({server}: {server: string}) {
                             p={2}
                             mb={2}
                           >
-                            <Text>{bookClub.next_meeting_start ? dayjs(bookClub.next_meeting_start).local().format('MMM DD, hh:mm a') : null}</Text>
+                            <Text>{bookClub.next_meeting_start ? dayjs(bookClub.next_meeting_start).local().format('MMM DD, h:mm a') : null}</Text>
                             <Text>-</Text>
-                            <Text>{bookClub.next_meeting_end ? dayjs(bookClub.next_meeting_end).local().format('MMM DD, hh:mm a'): null}</Text>
+                            <Text>{bookClub.next_meeting_end ? dayjs(bookClub.next_meeting_end).local().format('MMM DD, h:mm a'): null}</Text>
                           </Flex>
                           {dayjs(new Date()) < dayjs(bookClub.next_meeting_end) && dayjs(new Date()) > dayjs(bookClub.next_meeting_start) ? (
                           <Center>
@@ -1768,7 +1768,7 @@ export default function BookClub({server}: {server: string}) {
                     <Input
                       id="from"
                       type="datetime-local"
-                      defaultValue={bookClub?.next_meeting_start ? dayjs(bookClub?.next_meeting_start).format('YYYY-MM-DD hh:mm') :  ""}
+                      defaultValue={bookClub?.next_meeting_start ? dayjs(bookClub?.next_meeting_start).format('YYYY-MM-DD h:mm') :  ""}
                       ref={meetingStartRef}
                     />
                   </Flex>
@@ -1777,7 +1777,7 @@ export default function BookClub({server}: {server: string}) {
                     <Input
                       id="to"
                       type="datetime-local"
-                      defaultValue={bookClub?.next_meeting_end ? dayjs(bookClub?.next_meeting_end).format('YYYY-MM-DD hh:mm') :  ""}
+                      defaultValue={bookClub?.next_meeting_end ? dayjs(bookClub?.next_meeting_end).format('YYYY-MM-DD h:mm') :  ""}
                       ref={meetingEndRef}
                     />
                   </Flex>

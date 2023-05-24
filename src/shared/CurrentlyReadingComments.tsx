@@ -129,7 +129,7 @@ const Comments: Function = (
                     {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}
                   </Text>
                   <Text fontStyle="italic">
-                    {dayjs(comment.datetime).local().format('MMM DD, hh:mm a')}
+                    {dayjs(comment.datetime).local().format('MMM DD, h:mm a')}
                   </Text>
                 </Flex>
                 {comment.Profile_CurrentlyReadingComment_commenter_idToProfile.id === user?.Profile.id ? (

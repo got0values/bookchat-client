@@ -896,7 +896,7 @@ export default function Profile({server}: ProfileProps) {
                                 {
                                   dayjs(profileData
                                     .CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                    .created_on).local().format('MMM DD, hh:mm a')
+                                    .created_on).local().format('MMM DD, h:mm a')
                                 }
                               </Text>
                               <HStack>
@@ -1091,7 +1091,7 @@ export default function Profile({server}: ProfileProps) {
                                       dayjs(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
                                         .created_on)
                                         .local()
-                                        .format('MMM DD, hh:mm a')
+                                        .format('MMM DD, m a')
                                     }
                                   </Text>
                                   <Box>
@@ -1264,7 +1264,7 @@ export default function Profile({server}: ProfileProps) {
                                   <Box mx={2} w="100%">
                                     <Flex justify="space-between">
                                       <Text>
-                                        {dayjs(readBook.created_on).local().format('MMM DD, hh:mm a')}
+                                        {dayjs(readBook.created_on).local().format('MMM DD, h:mm a')}
                                       </Text>
                                       <HStack>
                                         <Text>

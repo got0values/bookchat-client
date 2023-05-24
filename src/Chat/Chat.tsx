@@ -219,7 +219,7 @@ export default function Chat() {
                             as="span"
                             fontSize="xs"
                           >
-                            {` (${dayjs(message.time).local().format('hh:mm a')}):`}
+                            {` (${dayjs(message.time).local().format('h:mm a')}):`}
                           </Text>
                         </Text>
                         <Text>
