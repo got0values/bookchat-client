@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { DashboardProps, Following_Following_self_profile_idToProfile, CurrentlyReading, CurrentlyReadingComment } from '../types/types';
@@ -110,6 +110,7 @@ export default function Chat() {
     }
 
     socket.on("connect", onConnect)
+    socket.connect();
     socket.emit("join-room",{
       room: roomId, 
       userName: user.Profile.username,
@@ -122,11 +123,15 @@ export default function Chat() {
       onReceiveMessage(message)
     });
     socket.on("disconnect", onDisconnect)
+    window.addEventListener("beforeunload", disconnectSocket)
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
       socket.off('receive-users', onReceiveUsers);
       socket.off('receive-message', onReceiveMessage);
+
+      window.removeEventListener("beforeunload",disconnectSocket)
+      disconnectSocket();
     };
   },[searchParams,socket])
 
@@ -272,14 +277,16 @@ export default function Chat() {
               height="85vh"
               direction="column"
             >
-              <Heading as="h3" size="md" mb={2}>People</Heading>
-              <Box 
+              <Heading as="h3" size="md" mb={2}>Users</Heading>
+              <Flex 
                 h="100%" 
                 overflowY="auto"
                 p={1}
                 border="1px solid"
                 rounded="md"
-                mb={2}
+                mb={3}
+                direction="column"
+                gap={1}
               >
                 {roomUsers ? (
                   roomUsers.map((roomUser,i)=>{
@@ -303,7 +310,7 @@ export default function Chat() {
                     </Flex>
                   )
                 })): null}
-              </Box>
+              </Flex>
               {isConnected ? (
               <Button 
                 size="md"
