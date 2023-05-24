@@ -342,7 +342,8 @@ export default function Dashboard({server}: DashboardProps) {
                 onKeyDown={e=>e.key === 'Enter' ? searchBook() : null}
               />
               <Button 
-                colorScheme="purple"
+                colorScheme="white"
+                variant="outline"
                 onClick={searchBook}
               >
                 Search
