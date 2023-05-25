@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, Suspense } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { DashboardProps, Following_Following_self_profile_idToProfile, CurrentlyReading, CurrentlyReadingComment } from './types/types';
@@ -55,11 +55,13 @@ export default function Dashboard({server}: DashboardProps) {
   const { user, getUser } = useAuth();
   const queryClient = useQueryClient();
 
+  const [items,setItems] = useState(5);
+  const [followingSorted,setFollowingSorted] = useState([] as any)
   async function getDashboard() {
     const tokenCookie = Cookies.get().token
     if (tokenCookie) {
       const dash = await axios
-        .get(server + "/api/dashboard",
+        .get(server + "/api/dashboard?items=" + items,
         {
           headers: {
             Authorization: tokenCookie
@@ -68,6 +70,8 @@ export default function Dashboard({server}: DashboardProps) {
         )
         .then((response)=>{
           getUser();
+          setItems(items + 5)
+          setFollowingSorted(response.data.message.followingCurrentlyReadingSorted)
           return response.data.message
         })
         .catch(({response})=>{
@@ -79,6 +83,26 @@ export default function Dashboard({server}: DashboardProps) {
     else {
       throw new Error("An error occurred")
     }
+  }
+
+  //lazy loading
+  const [isFetching,setIsFetching] = useState(false)
+  function handleScroll() {
+    if (Math.ceil(window.innerHeight + document.documentElement.scrollTop) !== document.documentElement.offsetHeight || isFetching) {
+      return;
+    }
+    setIsFetching(true);
+  }
+  useEffect(()=>{
+    window.addEventListener("scroll",handleScroll)
+  },[])
+  useEffect(()=>{
+    if (!isFetching) return;
+    getMoreDashboard()
+  },[isFetching])
+  function getMoreDashboard() {
+    getDashboard();
+    setIsFetching(false)
   }
 
   const deleteReadingMutation = useMutation({
@@ -288,20 +312,11 @@ export default function Dashboard({server}: DashboardProps) {
     likeUnlikeCurrentlyReadingMutation.mutate(e);
   }
   
+  
   const dashboard = useQuery({
     queryKey: ["dashboardKey"],
     queryFn: getDashboard
   })
-  let followingCurrentlyReading = dashboard?.data?.followingProfiles.map((following: Following_Following_self_profile_idToProfile)=>{
-    return following.Profile_Following_following_profile_idToProfile.CurrentlyReading;
-  })
-  followingCurrentlyReading = followingCurrentlyReading?.flat()
-  user?.Profile?.CurrentlyReading?.forEach((book)=>{
-    followingCurrentlyReading?.push(book)
-  })
-  let followingCurrentlyReadingSorted = followingCurrentlyReading?.sort((a: CurrentlyReading,b: CurrentlyReading)=>{
-    return (new Date(a.created_on) as any) - (new Date(b.created_on) as any);
-  }).reverse()
 
   if (dashboard.isLoading) {
     return (
@@ -320,7 +335,7 @@ export default function Dashboard({server}: DashboardProps) {
 
   return (
     <>
-      <Box className="main-content-smaller">
+      <Box className="main-content-smaller" pb={5}>
         <Skeleton isLoaded={!dashboard.isLoading}>
           <Box 
             m={0}
@@ -424,7 +439,7 @@ export default function Dashboard({server}: DashboardProps) {
             ) : null}
           </Box>
 
-          {followingCurrentlyReadingSorted.map((reading: CurrentlyReading,i: number)=>{
+          {followingSorted.map((reading: CurrentlyReading,i: number)=>{
               return (
                 reading.hidden ? (
                   null
@@ -435,6 +450,9 @@ export default function Dashboard({server}: DashboardProps) {
                     className="well-card"
                     key={i}
                   >
+                    <Suspense
+                      fallback={<Box>Hey</Box>}
+                    />
                     <Flex
                       align="flex-start"
                       justify="space-between"
@@ -594,6 +612,11 @@ export default function Dashboard({server}: DashboardProps) {
               )
             })
           }
+          {isFetching && (
+            <Flex justify="center">
+              <Spinner size="xl"/>
+            </Flex>
+          )}
         </Skeleton>
       </Box>
 
