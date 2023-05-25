@@ -320,9 +320,9 @@ export default function BookClubs({server}: {server: string}) {
                 <AccordionItem
                   border={0}
                 >
-                  <AccordionButton>
+                  <Flex as={AccordionButton} justify="flex-end">
                     <AccordionIcon/>
-                  </AccordionButton>
+                  </Flex>
                   <AccordionPanel>
                     <Flex 
                         flexWrap="wrap"
