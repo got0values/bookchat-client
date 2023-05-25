@@ -150,14 +150,24 @@ export default function BookClubs({server}: {server: string}) {
       setBookClubsFriends(prev=>{
         return (
           allBookClubsFriends.filter((bcf: BookClubsType)=>{
-            return !checkedValues.some((cV)=>bcf.groups.indexOf(cV) == -1)
+            if (JSON.parse(bcf.groups).length) {
+              return !checkedValues.some((cV)=>JSON.parse(bcf.groups).indexOf(cV) == -1)
+            }
+            else {
+              return true;
+            }
           })
         )
       })
       setBookClubsPublic(prev=>{
         return (
           allBookClubsPublic.filter((bcp: BookClubsType)=>{
-            return !checkedValues.some((cV)=>bcp.groups.indexOf(cV) == -1)
+            if(JSON.parse(bcp.groups).length) { //if not all genres
+              return !checkedValues.some((cV)=>JSON.parse(bcp.groups).indexOf(cV) == -1)
+            }
+            else {
+              return true;
+            }
           })
         )
       })
@@ -227,8 +237,11 @@ export default function BookClubs({server}: {server: string}) {
                 {bookClubsJoined && bookClubsJoined.length ? (
                   (bookClubsJoined as BookClubsType[]).map((bookClub, i)=>{
                     return (
-                      <Box 
+                      <Flex 
                         className="well-card"
+                        direction="column"
+                        justify="space-between"
+                        minH="110px"
                         mx={0}
                         _hover={{
                           bg: "gray.200",
@@ -279,7 +292,7 @@ export default function BookClubs({server}: {server: string}) {
                         <Text>
                             {bookClub.about}
                         </Text>
-                      </Box>
+                      </Flex>
                     )
                   })
                 ) : (
@@ -333,8 +346,11 @@ export default function BookClubs({server}: {server: string}) {
                   (bookClubsFriends as BookClubsType[]).map((bookClub,i)=>{
                     return (
                       <Fade in={true} key={i}>
-                        <Box 
+                        <Flex 
                           className="well-card"
+                          direction="column"
+                          justify="space-between"
+                          minH="125px"
                           mx={0}
                           _hover={{
                             bg: "gray.200",
@@ -425,7 +441,7 @@ export default function BookClubs({server}: {server: string}) {
                               )}
                             </Flex>
                           </Flex>
-                        </Box>
+                        </Flex>
                       </Fade>
                     )
                   })
@@ -445,14 +461,17 @@ export default function BookClubs({server}: {server: string}) {
                 (bookClubsPublic as BookClubsType[]).map((bookClub, i)=>{
                   return (
                     <Fade in={true} key={i}>
-                      <Box 
+                      <Flex 
                         className="well-card"
+                        direction="column"
+                        justify="space-between"
                         mx={0}
                         _hover={{
                           bg: "gray.200",
                           cursor: "pointer"
                         }}
                         onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
+                        minH="125px"
                         key={i}
                       >
                         <Flex
@@ -538,7 +557,7 @@ export default function BookClubs({server}: {server: string}) {
                             )}
                           </Flex>
                         </Flex>
-                      </Box>
+                      </Flex>
                     </Fade>
                   )
                 })
