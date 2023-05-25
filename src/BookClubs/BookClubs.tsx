@@ -156,60 +156,168 @@ export default function BookClubs({server}: {server: string}) {
       <Skeleton 
         isLoaded={!isLoading}
       >
-          <Flex flexWrap="wrap">
-            <Stack flex="1 1 30%">
-              <Box className="well">
-                <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
-                  <Flex align="center" justify="space-between" gap={2}>
-                    <FaBookReader size={25} />
-                    <Heading as="h3" size="md">
-                      My Book Clubs
-                    </Heading>
-                  </Flex>
-                  <Button
-                    variant="ghost"
-                    onClick={createBookClubModalOpen}
-                  >
-                    <IoIosAdd size={25} /> New
-                  </Button>
-                </Flex>
+        <Flex flexWrap="wrap">
+          <Stack flex="1 1 30%" minW="200px">
+            <Box className="well">
+              <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
+                <Heading as="h3" size="md">
+                  My Book Clubs
+                </Heading>
+                <Button
+                  variant="ghost"
+                  onClick={createBookClubModalOpen}
+                >
+                  <IoIosAdd size={25} /> New
+                </Button>
+              </Flex>
+              <Box>
+                {bookClubsOwned ? (
+                  (bookClubsOwned as BookClubsType[]).map((bookClub, i)=>{
+                    return (
+                      <Box 
+                        className="well-card"
+                        onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
+                        _hover={{
+                          cursor: "pointer"
+                        }}
+                        key={i}
+                      >
+                        <Heading as="h4" size="sm">
+                          {bookClub.name}
+                        </Heading>
+                        <Text>
+                            {bookClub.about}
+                        </Text>
+                      </Box>
+                    )
+                  })
+                ) : null}
+              </Box>
+            </Box>
+          </Stack>
+          <Stack flex="1 1 65%">
+            <Box className="well">
+              <Flex align="center" justify="space-between" gap={2} mb={2}>
+                <Heading as="h3" size="md">
+                  Joined
+                </Heading>
+              </Flex>
 
-                <Box>
-                  {bookClubsOwned ? (
-                    (bookClubsOwned as BookClubsType[]).map((bookClub, i)=>{
+              <Box>
+                {bookClubsJoined && bookClubsJoined.length ? (
+                  (bookClubsJoined as BookClubsType[]).map((bookClub, i)=>{
+                    return (
+                      <Box 
+                        className="well-card"
+                        _hover={{
+                          bg: "gray.200",
+                          cursor: "pointer"
+                        }}
+                        onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
+                        key={i}
+                      >
+                        <Flex
+                          align="start" 
+                          justify="space-between" 
+                          wrap="wrap"
+                          rowGap={2}
+                        >
+                          <Flex direction="column" gap={1}>
+                            <Heading as="h4" size="sm">
+                              {bookClub.name}
+                            </Heading>
+                            {bookClub.BookClubBook[0] ? (
+                            <Flex gap={2}>
+                              <Box>
+                                <Image 
+                                  src={bookClub.BookClubBook[0].image}
+                                  alt={bookClub.BookClubBook[0].title}
+                                  maxH="50px"
+                                />
+                              </Box>
+                              <Box>
+                                <Text fontStyle="italic">{bookClub.BookClubBook[0].title}</Text>
+                                <Text>{bookClub.BookClubBook[0].author}</Text>
+                              </Box>
+                            </Flex>
+                            ) : null}
+                          </Flex>
+                          <Flex align="center" gap={1}>
+                            <Avatar
+                              size="xs"
+                              cursor="pointer"
+                              src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
+                              border="2px solid gray"
+                              title={`${bookClub.Profile.username}`}
+                            />
+                            <Text fontWeight="bold">
+                              {bookClub.Profile.username}
+                            </Text>
+                          </Flex>
+                        </Flex>
+                        <Text>
+                            {bookClub.about}
+                        </Text>
+                      </Box>
+                    )
+                  })
+                ) : (
+                  <Text>You are not a member of any book clubs at the moment.</Text>
+                )}
+              </Box>
+            </Box>
+          </Stack>
+        </Flex>
+        <Flex flexWrap="wrap">
+          <Stack flex="1 1 30%" minW="200px">
+            <Box className="well">
+              <Heading as="h3" size="md">
+                Filter
+              </Heading>
+              <Flex 
+                flexWrap="wrap"
+              >
+                <RadioGroup 
+                  onChange={e=>filterBookClubsByGroup(e)}
+                >
+                  <Flex
+                    direction="column"
+                    wrap="wrap"
+                    p={2}
+                    gap={1}
+                  >
+                    <Radio 
+                      value=''
+                    >
+                      All
+                    </Radio>
+                    {genres.map((genre,i)=>{
                       return (
-                        <Box 
-                          className="well-card"
-                          onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
-                          _hover={{
-                            cursor: "pointer"
-                          }}
+                        <Radio 
+                          value={genre.value}
                           key={i}
                         >
-                          <Heading as="h4" size="sm">
-                            {bookClub.name}
-                          </Heading>
-                          <Text>
-                              {bookClub.about}
-                          </Text>
-                        </Box>
-                      )
-                    })
-                  ) : null}
-                </Box>
-              </Box>
-
-              <Box className="well">
-                <Flex align="center" justify="space-between" gap={2} mb={2}>
-                  <Heading as="h3" size="md">
-                    Joined
-                  </Heading>
-                </Flex>
-
-                <Box>
-                  {bookClubsJoined && bookClubsJoined.length ? (
-                    (bookClubsJoined as BookClubsType[]).map((bookClub, i)=>{
-                      return (
+                          <Text fontSize="xs">{genre.name}</Text>
+                        </Radio>
+                          )
+                    })}
+                  </Flex>
+                </RadioGroup>
+              </Flex>
+            </Box>
+          </Stack>
+          <Stack flex="1 1 65%">
+            <Box className="well">
+              <Flex align="center" justify="space-between" gap={2} mb={2}>
+                <Heading as="h3" size="md">
+                  Friends
+                </Heading>
+              </Flex>
+              <Box>
+                {bookClubsFriends && bookClubsFriends.length? (
+                  (bookClubsFriends as BookClubsType[]).map((bookClub,i)=>{
+                    return (
+                      <Fade in={true} key={i}>
                         <Box 
                           className="well-card"
                           _hover={{
@@ -217,9 +325,8 @@ export default function BookClubs({server}: {server: string}) {
                             cursor: "pointer"
                           }}
                           onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
-                          key={i}
                         >
-                          <Flex
+                          <Flex 
                             align="start" 
                             justify="space-between" 
                             wrap="wrap"
@@ -253,227 +360,21 @@ export default function BookClubs({server}: {server: string}) {
                                 border="2px solid gray"
                                 title={`${bookClub.Profile.username}`}
                               />
-                              <Text fontWeight="bold">
-                                {bookClub.Profile.username}
-                              </Text>
-                            </Flex>
-                          </Flex>
-                          <Text>
-                              {bookClub.about}
-                          </Text>
-                        </Box>
-                      )
-                    })
-                  ) : (
-                    <Text>You are not a member of any book clubs at the moment.</Text>
-                  )}
-                </Box>
-              </Box>
-            </Stack>
-
-            <Stack flex="1 1 65%">
-              <Box className="well">
-                <Flex justify="center" flexWrap="wrap">
-                  <RadioGroup 
-                    onChange={e=>filterBookClubsByGroup(e)}
-                  >
-                    <Stack direction='row' flexWrap="wrap" justify="center">
-                      <Radio 
-                        value=''
-                      >
-                        All
-                      </Radio>
-                      {genres.map((genre)=>{
-                        return (
-                          <Radio 
-                            value={genre.value}
-                          >
-                            {genre.name}
-                          </Radio>
-                            )
-                      })}
-                    </Stack>
-                  </RadioGroup>
-                </Flex>
-              </Box>
-
-              <Box className="well">
-                <Flex align="center" justify="space-between" gap={2} mb={2}>
-                  <Heading as="h3" size="md">
-                    Friends
-                  </Heading>
-                </Flex>
-                <Box>
-                  {bookClubsFriends && bookClubsFriends.length? (
-                    (bookClubsFriends as BookClubsType[]).map((bookClub,i)=>{
-                      return (
-                        <Fade in={true} key={i}>
-                          <Box 
-                            className="well-card"
-                            _hover={{
-                              bg: "gray.200",
-                              cursor: "pointer"
-                            }}
-                            onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
-                          >
-                            <Flex 
-                              align="start" 
-                              justify="space-between" 
-                              wrap="wrap"
-                              rowGap={2}
-                            >
-                              <Flex direction="column" gap={1}>
-                                <Heading as="h4" size="sm">
-                                  {bookClub.name}
-                                </Heading>
-                                {bookClub.BookClubBook[0] ? (
-                                <Flex gap={2}>
-                                  <Box>
-                                    <Image 
-                                      src={bookClub.BookClubBook[0].image}
-                                      alt={bookClub.BookClubBook[0].title}
-                                      maxH="50px"
-                                    />
-                                  </Box>
-                                  <Box>
-                                    <Text fontStyle="italic">{bookClub.BookClubBook[0].title}</Text>
-                                    <Text>{bookClub.BookClubBook[0].author}</Text>
-                                  </Box>
-                                </Flex>
-                                ) : null}
-                              </Flex>
-                              <Flex align="center" gap={1}>
-                                <Avatar
-                                  size="xs"
-                                  cursor="pointer"
-                                  src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
-                                  border="2px solid gray"
-                                  title={`${bookClub.Profile.username}`}
-                                />
-                                  <Text fontWeight="bold">
-                                    {bookClub.Profile.username}
-                                  </Text>
-                              </Flex>
-                            </Flex>
-                            <Flex align="center" justify="space-between" flexWrap="wrap">
-                              <Text>
-                                {bookClub.about}
-                              </Text>
-                              <Flex align="center" flexWrap="wrap">
-                                {JSON.parse(bookClub.groups).length ? (
-                                  JSON.parse(bookClub.groups).map((group: string,i: number, array: any[])=>{
-                                    const cScheme = genres.filter((genre)=>genre.value === group)[0].color;
-                                    const genreName = genres.filter((genre)=>genre.value === group)[0].name;
-                                    if (i < 3 ) {
-                                      return (
-                                        <Flex 
-                                          align="center" 
-                                          my={1}
-                                          key={i}
-                                        >
-                                          <Tag 
-                                            colorScheme={cScheme}
-                                            size="sm"
-                                            fontWeight="bold"
-                                          >
-                                            {genreName}
-                                          </Tag>
-                                        </Flex>
-                                      )
-                                    }
-                                    else if (i === array.length - 1) {
-                                      return "..."
-                                    }
-                                  })
-                                ) : (
-                                  <Tag
-                                    colorScheme="yellow"
-                                    size="sm"
-                                    fontWeight="bold"
-                                  >
-                                    All groups
-                                  </Tag>
-                                )}
-                              </Flex>
-                            </Flex>
-                          </Box>
-                        </Fade>
-                      )
-                    })
-                  ) : null}
-                </Box>
-              </Box>
-
-              <Box className="well">
-              <Flex align="center" justify="space-between" gap={2} mb={2}>
-                <Heading as="h3" size="md">
-                  Public
-                </Heading>
-              </Flex>
-
-              <Box>
-                {bookClubsPublic && bookClubsPublic.length ? (
-                  (bookClubsPublic as BookClubsType[]).map((bookClub, i)=>{
-                    return (
-                      <Fade in={true} key={i}>
-                        <Box 
-                          className="well-card"
-                          _hover={{
-                            bg: "gray.200",
-                            cursor: "pointer"
-                          }}
-                          onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
-                          key={i}
-                        >
-                          <Flex
-                            align="start" 
-                            justify="space-between" 
-                            wrap="wrap"
-                            rowGap={2}
-                          >
-                            <Flex direction="column" gap={1}>
-                              <Heading as="h4" size="sm">
-                                {bookClub.name}
-                              </Heading>
-                              {bookClub.BookClubBook[0] ? (
-                              <Flex gap={2}>
-                                <Box>
-                                  <Image 
-                                    src={bookClub.BookClubBook[0].image}
-                                    alt={bookClub.BookClubBook[0].title}
-                                    maxH="50px"
-                                  />
-                                </Box>
-                                <Box>
-                                  <Text fontStyle="italic">{bookClub.BookClubBook[0].title}</Text>
-                                  <Text>{bookClub.BookClubBook[0].author}</Text>
-                                </Box>
-                              </Flex>
-                              ) : null}
-                            </Flex>
-                            <Flex align="center" gap={1}>
-                              <Avatar 
-                                size="xs"
-                                cursor="pointer"
-                                src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
-                                border="2px solid gray"
-                                title={`${bookClub.Profile.username}`}
-                              />
-                              <Text fontWeight="bold">
-                                {bookClub.Profile.username}
-                              </Text>
+                                <Text fontWeight="bold">
+                                  {bookClub.Profile.username}
+                                </Text>
                             </Flex>
                           </Flex>
                           <Flex align="center" justify="space-between" flexWrap="wrap">
                             <Text>
                               {bookClub.about}
                             </Text>
-                            <Flex align="center" flexWrap="wrap" gap={1}>
+                            <Flex align="center" flexWrap="wrap">
                               {JSON.parse(bookClub.groups).length ? (
-                                JSON.parse(bookClub.groups).map((group: string, i: number, array: any[])=>{
+                                JSON.parse(bookClub.groups).map((group: string,i: number, array: any[])=>{
                                   const cScheme = genres.filter((genre)=>genre.value === group)[0].color;
                                   const genreName = genres.filter((genre)=>genre.value === group)[0].name;
-                                  if (i < 3) {
+                                  if (i < 3 ) {
                                     return (
                                       <Flex 
                                         align="center" 
@@ -500,7 +401,7 @@ export default function BookClubs({server}: {server: string}) {
                                   size="sm"
                                   fontWeight="bold"
                                 >
-                                  All genres
+                                  All groups
                                 </Tag>
                               )}
                             </Flex>
@@ -509,13 +410,122 @@ export default function BookClubs({server}: {server: string}) {
                       </Fade>
                     )
                   })
-                ) : (
-                  <Text>There are no public book clubs at this time.</Text>
-                )}
+                ) : null}
               </Box>
             </Box>
-            </Stack>
-          </Flex>
+
+            <Box className="well">
+            <Flex align="center" justify="space-between" gap={2} mb={2}>
+              <Heading as="h3" size="md">
+                Public
+              </Heading>
+            </Flex>
+
+            <Box>
+              {bookClubsPublic && bookClubsPublic.length ? (
+                (bookClubsPublic as BookClubsType[]).map((bookClub, i)=>{
+                  return (
+                    <Fade in={true} key={i}>
+                      <Box 
+                        className="well-card"
+                        _hover={{
+                          bg: "gray.200",
+                          cursor: "pointer"
+                        }}
+                        onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
+                        key={i}
+                      >
+                        <Flex
+                          align="start" 
+                          justify="space-between" 
+                          wrap="wrap"
+                          rowGap={2}
+                        >
+                          <Flex direction="column" gap={1}>
+                            <Heading as="h4" size="sm">
+                              {bookClub.name}
+                            </Heading>
+                            {bookClub.BookClubBook[0] ? (
+                            <Flex gap={2}>
+                              <Box>
+                                <Image 
+                                  src={bookClub.BookClubBook[0].image}
+                                  alt={bookClub.BookClubBook[0].title}
+                                  maxH="50px"
+                                />
+                              </Box>
+                              <Box>
+                                <Text fontStyle="italic">{bookClub.BookClubBook[0].title}</Text>
+                                <Text>{bookClub.BookClubBook[0].author}</Text>
+                              </Box>
+                            </Flex>
+                            ) : null}
+                          </Flex>
+                          <Flex align="center" gap={1}>
+                            <Avatar 
+                              size="xs"
+                              cursor="pointer"
+                              src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
+                              border="2px solid gray"
+                              title={`${bookClub.Profile.username}`}
+                            />
+                            <Text fontWeight="bold">
+                              {bookClub.Profile.username}
+                            </Text>
+                          </Flex>
+                        </Flex>
+                        <Flex align="center" justify="space-between" flexWrap="wrap">
+                          <Text>
+                            {bookClub.about}
+                          </Text>
+                          <Flex align="center" flexWrap="wrap" gap={1}>
+                            {JSON.parse(bookClub.groups).length ? (
+                              JSON.parse(bookClub.groups).map((group: string, i: number, array: any[])=>{
+                                const cScheme = genres.filter((genre)=>genre.value === group)[0].color;
+                                const genreName = genres.filter((genre)=>genre.value === group)[0].name;
+                                if (i < 3) {
+                                  return (
+                                    <Flex 
+                                      align="center" 
+                                      my={1}
+                                      key={i}
+                                    >
+                                      <Tag 
+                                        colorScheme={cScheme}
+                                        size="sm"
+                                        fontWeight="bold"
+                                      >
+                                        {genreName}
+                                      </Tag>
+                                    </Flex>
+                                  )
+                                }
+                                else if (i === array.length - 1) {
+                                  return "..."
+                                }
+                              })
+                            ) : (
+                              <Tag
+                                colorScheme="yellow"
+                                size="sm"
+                                fontWeight="bold"
+                              >
+                                All genres
+                              </Tag>
+                            )}
+                          </Flex>
+                        </Flex>
+                      </Box>
+                    </Fade>
+                  )
+                })
+              ) : (
+                <Text>There are no public book clubs at this time.</Text>
+              )}
+            </Box>
+          </Box>
+          </Stack>
+        </Flex>
 
         <Modal isOpen={isOpenCreateBookClubModal} onClose={closeCreateBookClubModal} size="xl">
           <ModalOverlay />
