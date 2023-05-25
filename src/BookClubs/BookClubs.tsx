@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent, HTMLInputTypeAttribute } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { 
@@ -29,7 +29,8 @@ import {
   Checkbox,
   CheckboxGroup,
   Divider,
-  HTMLChakraComponents
+  HTMLChakraComponents,
+  ChakraComponent
 } from "@chakra-ui/react";
 import { IoIosAdd } from 'react-icons/io';
 import { FaBookReader } from 'react-icons/fa';
@@ -140,11 +141,27 @@ export default function BookClubs({server}: {server: string}) {
   const allBookClubsFriends = data?.bookClubsFriends;
   const allBookClubsPublic = data?.bookClubsPublic;
 
-  function filterBookClubsByGroup(e: React.HTMLInputTypeAttribute) {
-    setBookClubsFriends(allBookClubsFriends);
-    setBookClubsFriends(prev=>prev.filter((bcf: BookClubsType)=>bcf.groups.includes(e)))
-    setBookClubsPublic(allBookClubsPublic)
-    setBookClubsPublic(prev=>prev.filter((bcp: BookClubsType)=>bcp.groups.includes(e)))
+  function filterBookClubsByGroup(checkedValues: string[]) {
+    if (!checkedValues.length) {
+      setBookClubsFriends(allBookClubsFriends);
+      setBookClubsPublic(allBookClubsPublic);
+    }
+    else {
+      setBookClubsFriends(prev=>{
+        return (
+          allBookClubsFriends.filter((bcf: BookClubsType)=>{
+            return !checkedValues.some((cV)=>bcf.groups.indexOf(cV) == -1)
+          })
+        )
+      })
+      setBookClubsPublic(prev=>{
+        return (
+          allBookClubsPublic.filter((bcp: BookClubsType)=>{
+            return !checkedValues.some((cV)=>bcp.groups.indexOf(cV) == -1)
+          })
+        )
+      })
+    }
   }
   
   if (isError) {
@@ -282,18 +299,13 @@ export default function BookClubs({server}: {server: string}) {
                 flexWrap="wrap"
               >
                 <CheckboxGroup 
-                  onChange={e=>filterBookClubsByGroup(e)}
+                  onChange={e=>filterBookClubsByGroup(e as string[])}
                 >
                   <Flex
                     direction="column"
                     wrap="wrap"
                     gap={1}
                   >
-                    <Checkbox 
-                      value=''
-                    >
-                      <Text fontSize="xs">All</Text>
-                    </Checkbox>
                     {genres.map((genre,i)=>{
                       return (
                         <Checkbox 
@@ -395,6 +407,7 @@ export default function BookClubs({server}: {server: string}) {
                                       <Tag
                                         size="sm"
                                         fontWeight="bold"
+                                        key={i}
                                       >
                                         {`+${(array.length - 3).toString()} more`}
                                       </Tag>
@@ -507,6 +520,7 @@ export default function BookClubs({server}: {server: string}) {
                                     <Tag
                                       size="sm"
                                       fontWeight="bold"
+                                      key={i}
                                     >
                                       {`+${(array.length - 3).toString()} more`}
                                     </Tag>

@@ -86,13 +86,23 @@ export const genres = [
     color: "red"
   },
   {
-    name: "YA",
+    name: "Graphic Novels",
     value: "17",
+    color: "purple"
+  },
+  {
+    name: "YA",
+    value: "18",
+    color: "cyan"
+  },
+  {
+    name: "Manga",
+    value: "19",
     color: "yellow"
   },
   {
     name: "Children's",
-    value: "18",
+    value: "20",
     color: "orange"
   },
 ]
