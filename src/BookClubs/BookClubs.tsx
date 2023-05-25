@@ -24,8 +24,11 @@ import {
   useToast,
   useDisclosure,
   Avatar,
-  Radio,
-  RadioGroup,
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Checkbox,
   CheckboxGroup,
   Divider,
@@ -308,30 +311,47 @@ export default function BookClubs({server}: {server: string}) {
               <Heading as="h3" size="md" mb={2}>
                 Filter
               </Heading>
-              <Flex 
-                flexWrap="wrap"
+              <Accordion
+                className="well-card"
+                p={0}
+                defaultIndex={[1]} 
+                allowMultiple
               >
-                <CheckboxGroup 
-                  onChange={e=>filterBookClubsByGroup(e as string[])}
+                <AccordionItem
+                  border={0}
                 >
-                  <Flex
-                    direction="column"
-                    wrap="wrap"
-                    gap={1}
-                  >
-                    {genres.map((genre,i)=>{
-                      return (
-                        <Checkbox 
-                          value={genre.value}
-                          key={i}
+                  <AccordionButton>
+                    <AccordionIcon/>
+                  </AccordionButton>
+                  <AccordionPanel>
+                    <Flex 
+                        flexWrap="wrap"
+                      >
+                        <CheckboxGroup 
+                          onChange={e=>filterBookClubsByGroup(e as string[])}
                         >
-                          <Text fontSize="xs">{genre.name}</Text>
-                        </Checkbox>
-                          )
-                    })}
-                  </Flex>
-                </CheckboxGroup>
-              </Flex>
+                          <Flex
+                            direction="column"
+                            wrap="wrap"
+                            gap={1}
+                          >
+                            {genres.map((genre,i)=>{
+                              return (
+                                <Checkbox 
+                                  value={genre.value}
+                                  key={i}
+                                >
+                                  <Text fontSize="xs">{genre.name}</Text>
+                                </Checkbox>
+                                  )
+                            })}
+                          </Flex>
+                        </CheckboxGroup>
+                      </Flex>
+                  </AccordionPanel>
+                </AccordionItem>
+              </Accordion>
+
             </Box>
           </Stack>
           <Stack flex="1 1 65%">
