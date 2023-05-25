@@ -55,7 +55,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-
+import {genres} from "./genres";
 
 export default function BookClub({server}: {server: string}) {
   const toast = useToast();
@@ -1000,26 +1000,16 @@ export default function BookClub({server}: {server: string}) {
                   <Flex align="center" justify="center" flexWrap="wrap" gap={1}>
                     {bookClubGroups && bookClubGroups.length ? (
                       bookClubGroups.sort().map((group,i)=>{
+                        const cScheme = genres.filter((genre)=>genre.value === group)[0].color;
+                        const genreName = genres.filter((genre)=>genre.value === group)[0].name;
                         return (
                           <Flex align="center" key={i}>
                             <Tag 
-                              colorScheme={group == "0" ? "teal" : (
-                                  group == "1" ? "green" : (
-                                    group == "2" ? "blue" : (
-                                      group == "3" ? "purple" : "red"
-                                    )
-                                  )
-                                )}
+                              colorScheme={cScheme}
                               size="sm"
                               fontWeight="bold"
                             >
-                              {group == "0" ? "1st-4th" : (
-                                group == "1" ? "5th-8th" : (
-                                  group == "2" ? "9th-12th" : (
-                                    group == "3" ? "Adult" : null
-                                  )
-                                )
-                              )}
+                              {genreName}
                             </Tag>
                           </Flex>
                         )
@@ -1676,38 +1666,18 @@ export default function BookClub({server}: {server: string}) {
                   rowGap={2}
                   my={3}
                 >
-                  <Checkbox
-                    value={0}
-                    onChange={e=>handleGroupCheckbox(e)}
-                    defaultChecked={bookClubGroups.includes("0")}
-                    className="group-check"
-                  >
-                    1st - 4th grade
-                  </Checkbox>
-                  <Checkbox
-                    value={1}
-                    onChange={e=>handleGroupCheckbox(e)}
-                    defaultChecked={bookClubGroups.includes("1")}
-                    className="group-check"
-                  >
-                    5th - 8th grade
-                  </Checkbox>
-                  <Checkbox
-                    value={2}
-                    onChange={e=>handleGroupCheckbox(e)}
-                    defaultChecked={bookClubGroups.includes("2")}
-                    className="group-check"
-                  >
-                    9th - 12th grade
-                  </Checkbox>
-                  <Checkbox
-                    value={3}
-                    onChange={e=>handleGroupCheckbox(e)}
-                    defaultChecked={bookClubGroups.includes("3")}
-                    className="group-check"
-                  >
-                    Adult
-                  </Checkbox>
+                  {genres.map((genre)=>{
+                    return (
+                      <Checkbox
+                        value={genre.value}
+                        onChange={e=>handleGroupCheckbox(e)}
+                        defaultChecked={bookClubGroups.includes(genre.value)}
+                        className="group-check"
+                      >
+                        {genre.name}
+                      </Checkbox>
+                    )
+                  })}
                 </Stack>
                 <Flex direction="column" align="center" justify="center" mt={2}>
                   <Text>{switchVisibility === true ? "public" : "private (friends only)"}</Text>

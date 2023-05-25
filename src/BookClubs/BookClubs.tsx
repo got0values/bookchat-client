@@ -35,6 +35,7 @@ import { BsDot } from 'react-icons/bs';
 import Cookies from "js-cookie";
 import axios from "axios";
 import { BookClubsType } from "../types/types";
+import {genres} from "./genres";
 
 
 export default function BookClubs({server}: {server: string}) {
@@ -282,26 +283,15 @@ export default function BookClubs({server}: {server: string}) {
                       >
                         All
                       </Radio>
-                      <Radio 
-                        value='0'
-                      >
-                        1st-4th
-                      </Radio>
-                      <Radio 
-                        value='1'
-                      >
-                        5th-8th
-                      </Radio>
-                      <Radio 
-                        value='2'
-                      >
-                        9th-12th
-                      </Radio>
-                      <Radio 
-                        value='3'
-                      >
-                        Adult
-                      </Radio>
+                      {genres.map((genre)=>{
+                        return (
+                          <Radio 
+                            value={genre.value}
+                          >
+                            {genre.name}
+                          </Radio>
+                            )
+                      })}
                     </Stack>
                   </RadioGroup>
                 </Flex>
@@ -371,35 +361,29 @@ export default function BookClubs({server}: {server: string}) {
                               </Text>
                               <Flex align="center" flexWrap="wrap">
                                 {JSON.parse(bookClub.groups).length ? (
-                                  JSON.parse(bookClub.groups).map((group: string,i: number)=>{
-                                    return (
-                                      <Flex 
-                                        align="center" 
-                                        my={1} 
-                                        key={i}
-                                      >
-                                        <Tag 
-                                          colorScheme={group == "0" ? "teal" : (
-                                              group == "1" ? "green" : (
-                                                group == "2" ? "blue" : (
-                                                  group == "3" ? "purple" : "red"
-                                                )
-                                              )
-                                            )}
-                                          size="sm"
-                                          fontWeight="bold"
-                                          marginLeft={i > 0 ? 1 : 0}
+                                  JSON.parse(bookClub.groups).map((group: string,i: number, array: any[])=>{
+                                    const cScheme = genres.filter((genre)=>genre.value === group)[0].color;
+                                    const genreName = genres.filter((genre)=>genre.value === group)[0].name;
+                                    if (i < 3 ) {
+                                      return (
+                                        <Flex 
+                                          align="center" 
+                                          my={1}
+                                          key={i}
                                         >
-                                          {group == "0" ? "1st-4th" : (
-                                            group == "1" ? "5th-8th" : (
-                                              group == "2" ? "9th-12th" : (
-                                                group == "3" ? "Adult" : null
-                                              )
-                                            )
-                                          )}
-                                        </Tag>
-                                      </Flex>
-                                    )
+                                          <Tag 
+                                            colorScheme={cScheme}
+                                            size="sm"
+                                            fontWeight="bold"
+                                          >
+                                            {genreName}
+                                          </Tag>
+                                        </Flex>
+                                      )
+                                    }
+                                    else if (i === array.length - 1) {
+                                      return "..."
+                                    }
                                   })
                                 ) : (
                                   <Tag
@@ -484,37 +468,31 @@ export default function BookClubs({server}: {server: string}) {
                             <Text>
                               {bookClub.about}
                             </Text>
-                            <Flex align="center" flexWrap="wrap">
+                            <Flex align="center" flexWrap="wrap" gap={1}>
                               {JSON.parse(bookClub.groups).length ? (
-                                JSON.parse(bookClub.groups).map((group: string, i: number)=>{
-                                  return (
-                                    <Flex 
-                                      align="center" 
-                                      my={1}
-                                      key={i}
-                                    >
-                                      {i > 0 ? <BsDot/> : null}
-                                      <Tag 
-                                        colorScheme={group == "0" ? "teal" : (
-                                            group == "1" ? "green" : (
-                                              group == "2" ? "blue" : (
-                                                group == "3" ? "purple" : "red"
-                                              )
-                                            )
-                                          )}
-                                        size="sm"
-                                        fontWeight="bold"
+                                JSON.parse(bookClub.groups).map((group: string, i: number, array: any[])=>{
+                                  const cScheme = genres.filter((genre)=>genre.value === group)[0].color;
+                                  const genreName = genres.filter((genre)=>genre.value === group)[0].name;
+                                  if (i < 3) {
+                                    return (
+                                      <Flex 
+                                        align="center" 
+                                        my={1}
+                                        key={i}
                                       >
-                                        {group == "0" ? "1st-4th" : (
-                                          group == "1" ? "5th-8th" : (
-                                            group == "2" ? "9th-12th" : (
-                                              group == "3" ? "Adult" : null
-                                            )
-                                          )
-                                        )}
-                                      </Tag>
-                                    </Flex>
-                                  )
+                                        <Tag 
+                                          colorScheme={cScheme}
+                                          size="sm"
+                                          fontWeight="bold"
+                                        >
+                                          {genreName}
+                                        </Tag>
+                                      </Flex>
+                                    )
+                                  }
+                                  else if (i === array.length - 1) {
+                                    return "..."
+                                  }
                                 })
                               ) : (
                                 <Tag
@@ -522,7 +500,7 @@ export default function BookClubs({server}: {server: string}) {
                                   size="sm"
                                   fontWeight="bold"
                                 >
-                                  All groups
+                                  All genres
                                 </Tag>
                               )}
                             </Flex>
