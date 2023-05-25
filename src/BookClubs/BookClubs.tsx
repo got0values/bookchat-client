@@ -289,7 +289,7 @@ export default function BookClubs({server}: {server: string}) {
                     <Radio 
                       value=''
                     >
-                      All
+                      <Text fontSize="xs">All</Text>
                     </Radio>
                     {genres.map((genre,i)=>{
                       return (
@@ -371,28 +371,30 @@ export default function BookClubs({server}: {server: string}) {
                             </Text>
                             <Flex align="center" flexWrap="wrap">
                               {JSON.parse(bookClub.groups).length ? (
-                                JSON.parse(bookClub.groups).map((group: string,i: number, array: any[])=>{
+                                JSON.parse(bookClub.groups).map((group: string, i: number, array: any[])=>{
                                   const cScheme = genres.filter((genre)=>genre.value === group)[0].color;
                                   const genreName = genres.filter((genre)=>genre.value === group)[0].name;
-                                  if (i < 3 ) {
+                                  if (i < 3) {
                                     return (
-                                      <Flex 
-                                        align="center" 
-                                        my={1}
+                                      <Tag 
+                                        colorScheme={cScheme}
+                                        size="sm"
+                                        fontWeight="bold"
                                         key={i}
                                       >
-                                        <Tag 
-                                          colorScheme={cScheme}
-                                          size="sm"
-                                          fontWeight="bold"
-                                        >
-                                          {genreName}
-                                        </Tag>
-                                      </Flex>
+                                        {genreName}
+                                      </Tag>
                                     )
                                   }
                                   else if (i === array.length - 1) {
-                                    return "..."
+                                    return (
+                                      <Tag
+                                        size="sm"
+                                        fontWeight="bold"
+                                      >
+                                        {`+${(array.length - 3).toString()} more`}
+                                      </Tag>
+                                    )
                                   }
                                 })
                               ) : (
@@ -401,7 +403,7 @@ export default function BookClubs({server}: {server: string}) {
                                   size="sm"
                                   fontWeight="bold"
                                 >
-                                  All groups
+                                  All genres
                                 </Tag>
                               )}
                             </Flex>
@@ -485,23 +487,25 @@ export default function BookClubs({server}: {server: string}) {
                                 const genreName = genres.filter((genre)=>genre.value === group)[0].name;
                                 if (i < 3) {
                                   return (
-                                    <Flex 
-                                      align="center" 
-                                      my={1}
+                                    <Tag 
+                                      colorScheme={cScheme}
+                                      size="sm"
+                                      fontWeight="bold"
                                       key={i}
                                     >
-                                      <Tag 
-                                        colorScheme={cScheme}
-                                        size="sm"
-                                        fontWeight="bold"
-                                      >
-                                        {genreName}
-                                      </Tag>
-                                    </Flex>
+                                      {genreName}
+                                    </Tag>
                                   )
                                 }
                                 else if (i === array.length - 1) {
-                                  return "..."
+                                  return (
+                                    <Tag
+                                      size="sm"
+                                      fontWeight="bold"
+                                    >
+                                      {`+${(array.length - 3).toString()} more`}
+                                    </Tag>
+                                  )
                                 }
                               })
                             ) : (
