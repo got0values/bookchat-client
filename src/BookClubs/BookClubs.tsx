@@ -167,10 +167,9 @@ export default function BookClubs({server}: {server: string}) {
                   </Flex>
                   <Button
                     variant="ghost"
-                    leftIcon={<IoIosAdd size={25} />}
                     onClick={createBookClubModalOpen}
                   >
-                    Create a book club
+                    <IoIosAdd size={25} /> New
                   </Button>
                 </Flex>
 
@@ -180,13 +179,15 @@ export default function BookClubs({server}: {server: string}) {
                       return (
                         <Box 
                           className="well-card"
+                          onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
+                          _hover={{
+                            cursor: "pointer"
+                          }}
                           key={i}
                         >
-                          <Link to={`/bookclubs/${bookClub.id}`}>
-                            <Heading as="h4" size="sm">
-                              {bookClub.name}
-                            </Heading>
-                          </Link>
+                          <Heading as="h4" size="sm">
+                            {bookClub.name}
+                          </Heading>
                           <Text>
                               {bookClub.about}
                           </Text>
@@ -249,10 +250,10 @@ export default function BookClubs({server}: {server: string}) {
                                 cursor="pointer"
                                 src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
                                 border="2px solid gray"
-                                title={`@${bookClub.Profile.username}`}
+                                title={`${bookClub.Profile.username}`}
                               />
                               <Text fontWeight="bold">
-                                @{bookClub.Profile.username}
+                                {bookClub.Profile.username}
                               </Text>
                             </Flex>
                           </Flex>
@@ -357,10 +358,10 @@ export default function BookClubs({server}: {server: string}) {
                                   cursor="pointer"
                                   src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
                                   border="2px solid gray"
-                                  title={`@${bookClub.Profile.username}`}
+                                  title={`${bookClub.Profile.username}`}
                                 />
                                   <Text fontWeight="bold">
-                                    @{bookClub.Profile.username}
+                                    {bookClub.Profile.username}
                                   </Text>
                               </Flex>
                             </Flex>
@@ -472,10 +473,10 @@ export default function BookClubs({server}: {server: string}) {
                                 cursor="pointer"
                                 src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
                                 border="2px solid gray"
-                                title={`@${bookClub.Profile.username}`}
+                                title={`${bookClub.Profile.username}`}
                               />
                               <Text fontWeight="bold">
-                                @{bookClub.Profile.username}
+                                {bookClub.Profile.username}
                               </Text>
                             </Flex>
                           </Flex>
