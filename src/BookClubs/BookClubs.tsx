@@ -26,6 +26,8 @@ import {
   Avatar,
   Radio,
   RadioGroup,
+  Checkbox,
+  CheckboxGroup,
   Divider,
   HTMLChakraComponents
 } from "@chakra-ui/react";
@@ -176,6 +178,7 @@ export default function BookClubs({server}: {server: string}) {
                     return (
                       <Box 
                         className="well-card"
+                        mx={0}
                         onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
                         _hover={{
                           cursor: "pointer"
@@ -209,6 +212,7 @@ export default function BookClubs({server}: {server: string}) {
                     return (
                       <Box 
                         className="well-card"
+                        mx={0}
                         _hover={{
                           bg: "gray.200",
                           cursor: "pointer"
@@ -271,38 +275,37 @@ export default function BookClubs({server}: {server: string}) {
         <Flex flexWrap="wrap">
           <Stack flex="1 1 30%" minW="200px">
             <Box className="well">
-              <Heading as="h3" size="md">
+              <Heading as="h3" size="md" mb={2}>
                 Filter
               </Heading>
               <Flex 
                 flexWrap="wrap"
               >
-                <RadioGroup 
+                <CheckboxGroup 
                   onChange={e=>filterBookClubsByGroup(e)}
                 >
                   <Flex
                     direction="column"
                     wrap="wrap"
-                    p={2}
                     gap={1}
                   >
-                    <Radio 
+                    <Checkbox 
                       value=''
                     >
                       <Text fontSize="xs">All</Text>
-                    </Radio>
+                    </Checkbox>
                     {genres.map((genre,i)=>{
                       return (
-                        <Radio 
+                        <Checkbox 
                           value={genre.value}
                           key={i}
                         >
                           <Text fontSize="xs">{genre.name}</Text>
-                        </Radio>
+                        </Checkbox>
                           )
                     })}
                   </Flex>
-                </RadioGroup>
+                </CheckboxGroup>
               </Flex>
             </Box>
           </Stack>
@@ -320,6 +323,7 @@ export default function BookClubs({server}: {server: string}) {
                       <Fade in={true} key={i}>
                         <Box 
                           className="well-card"
+                          mx={0}
                           _hover={{
                             bg: "gray.200",
                             cursor: "pointer"
@@ -430,6 +434,7 @@ export default function BookClubs({server}: {server: string}) {
                     <Fade in={true} key={i}>
                       <Box 
                         className="well-card"
+                        mx={0}
                         _hover={{
                           bg: "gray.200",
                           cursor: "pointer"
