@@ -42,7 +42,7 @@ import {
 } from '@chakra-ui/react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { MdClose, MdLogout } from 'react-icons/md';
-import { BsFillMoonFill, BsFillSunFill } from 'react-icons/bs';
+import { BsFillMoonFill, BsFillSunFill, BsFillChatFill } from 'react-icons/bs';
 import { FiSettings, FiMail } from 'react-icons/fi';
 import { RxDotFilled } from 'react-icons/rx';
 import { AiOutlineBell, AiFillHome } from 'react-icons/ai';
@@ -63,7 +63,8 @@ interface LinkItemProps {
 
 const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', linkTo: "/", icon: <AiFillHome size="25"/>, tooltip: "Home"},
-  { name: 'Book Clubs', linkTo: "/bookclubs", icon: <ImBooks size="25"/>, tooltip: "Book Clubs" }
+  { name: 'Book Clubs', linkTo: "/bookclubs", icon: <ImBooks size="25"/>, tooltip: "Book Clubs" },
+  { name: 'Chat Rooms', linkTo: "/chat", icon: <BsFillChatFill size="25"/>, tooltip: "Chat Rooms" }
 ];
 
 export default function TopNav({server,onLogout}: TopNavProps) {
@@ -513,7 +514,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
           </HStack>
           <HStack
             as={'nav'}
-            spacing={4}
+            spacing={2}
             pr="175px"
             display={{ base: 'none', md: 'flex' }}>
             {LinkItems.map((linkItem, index) => (

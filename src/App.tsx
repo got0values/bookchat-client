@@ -10,7 +10,8 @@ import BookClubs from './BookClubs/BookClubs';
 import BookClub from './BookClubs/BookClub';
 import BookClubBook from './BookClubs/BookClubBook';
 import Profile from './Profile/Profile';
-import Chat from './Chat/Chat';
+import Chat from "./Chat/Chat";
+import ChatRoom from './Chat/ChatRoom';
 import Settings from './Settings';
 import ResetPassword from "./ResetPassword";
 import Terms from "./Terms";
@@ -18,7 +19,6 @@ import { useAuth } from './hooks/useAuth';
 
 function App() {
   const server = import.meta.env.VITE_SERVER;
-  const chatserver = import.meta.env.VITE_CHATSERVER;
   const { onLogin, onLogout } = useAuth() as AuthContextProps;
 
   return (
@@ -85,8 +85,12 @@ function App() {
           path="chat"
         >
           <Route
+            index
+            element={<Chat/>}
+          />
+          <Route
             path="room"
-            element={ <Chat /> }
+            element={ <ChatRoom /> }
           />
         </Route>
         <Route 

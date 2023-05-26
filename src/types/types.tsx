@@ -304,3 +304,11 @@ export interface OtherNotificationsType {
   read: number | any;
   datetime: string;
 }
+
+//Chat Rooms
+export interface ActiveRoom {
+  roomId: string;
+  bookTitle: string;
+  bookAuthor: string;
+  numberOfUsers?: number;
+}
