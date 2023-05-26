@@ -1500,6 +1500,7 @@ export default function Profile({server}: ProfileProps) {
                       id="userName"
                       ref={profileUserNameRef}
                       defaultValue={user.Profile.username}
+                      maxLength={15}
                       size="lg"
                     />
                   </FormControl>
