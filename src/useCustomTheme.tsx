@@ -6,6 +6,20 @@ import '@fontsource/inter/700.css'
 const config = {
   initialColorMode: 'dark',
   useSystemColorMode: false,
+  // colors: {
+  //   gray: {
+  //     "50": "#F2F3F3",
+  //     "100": "#DADCDC",
+  //     "200": "#C2C6C6",
+  //     "300": "#ABB0B0",
+  //     "400": "#939A9A",
+  //     "500": "#7B8484",
+  //     "600": "#636969",
+  //     "700": "#4A4F4F",
+  //     "800": "#313535",
+  //     "900": "#191A1A"
+  //   }
+  // },
   fonts: {
     heading: 'Inter, Open Sans, sans-serif',
     body: 'Roboto, Raleway, sans-serif'
