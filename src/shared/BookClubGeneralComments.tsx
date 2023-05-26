@@ -334,13 +334,10 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                                   <Text as="span" fontWeight="bold">
                                     {comment.Profile.username}
                                   </Text>
-                                  <Flex align="center" gap={1}>
-                                    <Text as="span" fontSize="sm">@{comment.Profile.username}</Text>
                                     ·
-                                    <Text fontSize="sm" title={new Date(comment.datetime).toLocaleDateString()}>
-                                      {dayjs(comment.datetime).format('MMM D')}
-                                    </Text>
-                                  </Flex>
+                                  <Text fontSize="sm" title={new Date(comment.datetime).toLocaleDateString()}>
+                                    {dayjs(comment.datetime).format('MMM D')}
+                                  </Text>
                                 </Flex>
 
                                 <Menu>
@@ -394,14 +391,6 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                                     align="flex-start"
                                     p={2}
                                     rounded="md"
-                                    _hover={{
-                                      bg: "gray.300"
-                                    }}
-                                    _dark={{
-                                      '&:hover': {
-                                        bg: "gray.500"
-                                      }
-                                    }}
                                   >
                                     <Box pe={2}>
                                       <Avatar
@@ -418,13 +407,10 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                                           <Text as="span" fontWeight="bold">
                                             {reply.Profile.username}
                                           </Text>
-                                          <Flex align="center" gap={1}>
-                                            <Text as="span" fontSize="sm">@{reply.Profile.username}</Text>
-                                            ·
-                                            <Text fontSize="sm" title={new Date(reply.datetime).toLocaleDateString()}>
-                                              {dayjs(reply.datetime).format('MMM D')}
-                                            </Text>
-                                          </Flex>
+                                          ·
+                                          <Text fontSize="sm" title={new Date(reply.datetime).toLocaleDateString()}>
+                                            {dayjs(reply.datetime).format('MMM D')}
+                                          </Text>
                                         </Flex>
                                         {reply.Profile.id === user.Profile.id || isBookClubCreator ? (
                                           <Menu>
@@ -521,13 +507,10 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                           <Text as="span" fontWeight="bold">
                             {commentReplyData.Profile.username}
                           </Text>
-                          <Flex align="center" gap={1}>
-                            <Text as="span" fontSize="sm">@{commentReplyData.Profile.username}</Text>
-                            ·
-                            <Text fontSize="sm" title={new Date(commentReplyData.datetime).toLocaleDateString()}>
-                              {dayjs(commentReplyData.datetime).format('MMM D')}
-                            </Text>
-                          </Flex>
+                          ·
+                          <Text fontSize="sm" title={new Date(commentReplyData.datetime).toLocaleDateString()}>
+                            {dayjs(commentReplyData.datetime).format('MMM D')}
+                          </Text>
                         </Flex>
                       </Flex>
                       <Text>
@@ -568,13 +551,10 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                                 <Text as="span" fontWeight="bold">
                                   {reply.Profile.username}
                                 </Text>
-                                <Flex align="center" gap={1}>
-                                  <Text as="span" fontSize="sm">@{reply.Profile.username}</Text>
-                                  ·
-                                  <Text fontSize="sm" title={new Date(reply.datetime).toLocaleDateString()}>
-                                    {dayjs(reply.datetime).format('MMM D')}
-                                  </Text>
-                                </Flex>
+                                ·
+                                <Text fontSize="sm" title={new Date(reply.datetime).toLocaleDateString()}>
+                                  {dayjs(reply.datetime).format('MMM D')}
+                                </Text>
                               </Flex>
                               {reply.Profile.id === user.Profile.id || isBookClubCreator ? (
                                 <Menu>

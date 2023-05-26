@@ -1103,7 +1103,7 @@ export default function BookClub({server}: {server: string}) {
                         color: "teal"
                       }}
                     >
-                      @{bookClub.Profile.username}
+                      {bookClub.Profile.username}
                       <Text as="span" fontSize="sm" fontStyle="italic">
                         {" "}admin
                       </Text>
@@ -1123,7 +1123,7 @@ export default function BookClub({server}: {server: string}) {
                                 color: "teal"
                               }}
                             >
-                              @{member.Profile.username}
+                              {member.Profile.username}
                             </Link>
                             {isBookClubCreator ? (
                               <Button 
@@ -1356,7 +1356,7 @@ export default function BookClub({server}: {server: string}) {
                                           <Link
                                             href={`/profile/${rsvp.Profile.username}`}
                                           >
-                                            @{rsvp.Profile.username}
+                                            {rsvp.Profile.username}
                                           </Link>
                                         </Text>
                                       )

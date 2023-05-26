@@ -44,18 +44,20 @@ export default function Chat() {
   useEffect(()=>{
     socket.connect()
     socket.on("receive-active-rooms",(rooms)=>{
-      setActiveRooms(prev=>{
-        const roomsWithNumberOfUsers = rooms.map((room: ActiveRoom,i: number,arr: ActiveRoom[])=>{
-          return {
-            ...room,
-            numberOfUsers: arr.filter((r)=>r.roomId === room.roomId).length
-          }
+      if (rooms.length) {
+        setActiveRooms(prev=>{
+          const roomsWithNumberOfUsers = rooms.map((room: ActiveRoom,i: number,arr: ActiveRoom[])=>{
+            return {
+              ...room,
+              numberOfUsers: arr.filter((r)=>r.roomId === room.roomId).length
+            }
+          })
+          const noDuplicatRooms = roomsWithNumberOfUsers.filter((room: ActiveRoom,index: number)=>{
+            return roomsWithNumberOfUsers.findIndex((r: ActiveRoom)=>r.roomId === room.roomId) === index;
+          })
+          return noDuplicatRooms;
         })
-        const noDuplicatRooms = roomsWithNumberOfUsers.filter((room: ActiveRoom,index: number)=>{
-          return roomsWithNumberOfUsers.findIndex((r: ActiveRoom)=>r.roomId === room.roomId) === index;
-        })
-        return noDuplicatRooms;
-      })
+      }
     })
     socket.emit("get-active-rooms",socket.id)
     setInterval(()=>{
