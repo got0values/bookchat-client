@@ -1522,6 +1522,7 @@ export default function Profile({server}: ProfileProps) {
                         id="interests"
                         ref={interestsInputRef}
                         size="lg"
+                        maxLength={15}
                         onKeyDown={e=>e.key==='Enter' ? handleAddInterest() : null}
                       />
                       <Button
