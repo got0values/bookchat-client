@@ -16,8 +16,14 @@ import {
   PopoverTrigger,
   PopoverContent,
   IconButton,
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   useColorMode,
-  useToast
+  useToast,
+  useMediaQuery
 } from "@chakra-ui/react";
 import { useAuth } from '../hooks/useAuth';
 import { BsEmojiSmile } from 'react-icons/bs';
@@ -35,6 +41,7 @@ export default function ChatRoom() {
   const { user } = useAuth();
   const {colorMode} = useColorMode();
   let [searchParams] = useSearchParams();
+  const [isLargerThan650] = useMediaQuery('(min-width: 650px)');
 
   function disconnectSocket() {
     socket.disconnect()
@@ -163,6 +170,45 @@ export default function ChatRoom() {
     chatTextRef.current.value += unifiedString;
   }
 
+  const UsersBox = () => {
+    return (
+      <Flex 
+        h="100%" 
+        overflowY="auto"
+        p={1}
+        border="1px solid"
+        rounded="md"
+        mb={3}
+        direction="column"
+        maxH="85vh"
+        gap={1}
+      >
+        {roomUsers ? (
+          roomUsers.map((roomUser,i)=>{
+          return (
+            <Flex 
+              key={i}
+              fontStyle={!isConnected ? "italic" : ""}
+              onClick={e=>navigate(`/profile/${roomUser.userName}`)}
+              cursor={"pointer"}
+              align="center"
+              gap={1}
+            >
+              <Avatar
+                size="xs"
+                src={roomUser.profilePhoto}
+                border="2px solid gray"
+              />
+              <Text>
+                {roomUser.userName}
+              </Text>
+            </Flex>
+          )
+        })): null}
+      </Flex>
+    )
+  }
+
   return (
     <>
       <Box className="chat-content">
@@ -281,47 +327,36 @@ export default function ChatRoom() {
             </Flex>
             <Flex
               flex="1 1 15%"
-              height="85vh"
+              height={isLargerThan650 ? "85vh" : "auto"}
               direction="column"
             >
-              <Heading as="h3" size="md" mb={2}>Users</Heading>
-              <Flex 
-                h="100%" 
-                overflowY="auto"
-                p={1}
-                border="1px solid"
-                rounded="md"
-                mb={3}
-                direction="column"
-                gap={1}
-              >
-                {roomUsers ? (
-                  roomUsers.map((roomUser,i)=>{
-                  return (
-                    <Flex 
-                      key={i}
-                      fontStyle={!isConnected ? "italic" : ""}
-                      onClick={e=>navigate(`/profile/${roomUser.userName}`)}
-                      cursor={"pointer"}
-                      align="center"
-                      gap={1}
-                    >
-                      <Avatar
-                        size="xs"
-                        src={roomUser.profilePhoto}
-                        border="2px solid gray"
-                      />
-                      <Text>
-                        {roomUser.userName}
-                      </Text>
+              <Heading as="h3" size="md" mb={1} mt={2}>Users</Heading>
+              {isLargerThan650 ? (
+                <UsersBox/>
+              ) : (
+                <Accordion
+                  className="well-card"
+                  p={0}
+                  defaultIndex={[0]} 
+                  mb={3}
+                  allowMultiple
+                >
+                  <AccordionItem border={0}>
+                    <Flex as={AccordionButton} justify="flex-end">
+                      <AccordionIcon/>
                     </Flex>
-                  )
-                })): null}
-              </Flex>
+                    <AccordionPanel>
+                      <UsersBox/>
+                    </AccordionPanel>
+                  </AccordionItem>
+                </Accordion>
+              )}
+
               {isConnected ? (
               <Button 
                 size="md"
                 onClick={e=>disconnectSocket()}
+                mt="auto"
               >
                 Disconnect
               </Button>
@@ -337,27 +372,6 @@ export default function ChatRoom() {
           </Flex>
         </Skeleton>
       </Box>
-
-      {/* <Modal 
-        isOpen={isOpenCommentModal} 
-        onClose={closeCommentModal}
-        isCentered
-      >
-        <ModalOverlay />
-        <ModalContent maxH="80vh">
-          <ModalHeader>
-            
-          </ModalHeader>
-          <ModalCloseButton />
-            <ModalBody h="auto" maxH="75vh" overflow="auto">
-
-            </ModalBody>
-            <ModalFooter flexDirection="column">
-
-            </ModalFooter>
-        </ModalContent>
-      </Modal> */}
-
     </>
   );
 };

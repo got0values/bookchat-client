@@ -662,15 +662,14 @@ export default function TopNav({server,onLogout}: TopNavProps) {
 
         {isOpen ? (
           <Box pb={4} display={{ md: 'none' }}>
-            <Stack as={'nav'} spacing={4}>
+            <Stack as={'nav'} spacing={1}>
               {LinkItems.map((linkItem,index) => (
                 <Box
                   as={NavLink} 
                   key={index} 
                   to={linkItem.linkTo}
                   onClick={onClose}
-                  px={2}
-                  py={1}
+                  p={2}
                   rounded={'md'}
                   _hover={{
                     textDecoration: 'none',
@@ -678,7 +677,10 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                     bg: 'gray.200'
                   }}
                   _dark={{
-                    bg: 'gray.700'
+                    '&:hover': {
+                      bg: 'blackAlpha.700',
+                      color: 'white'
+                    }
                   }}
                 >
                   {linkItem.name}
