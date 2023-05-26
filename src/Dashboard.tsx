@@ -463,7 +463,7 @@ export default function Dashboard({server}: DashboardProps) {
                           onClick={e=>navigate(`/profile/${reading.Profile.username}`)} 
                           size="md"
                           cursor="pointer"
-                          src={`${reading.Profile.profile_photo}?x=${new Date().getTime()}`}
+                          src={`${reading.Profile.profile_photo}`}
                           border="2px solid gray"
                           title={`@${reading.Profile.username}`}
                         />
