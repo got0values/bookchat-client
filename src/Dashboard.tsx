@@ -451,7 +451,7 @@ export default function Dashboard({server}: DashboardProps) {
                     key={i}
                   >
                     <Suspense
-                      fallback={<Box>Hey</Box>}
+                      fallback={<Box>...</Box>}
                     />
                     <Flex
                       align="flex-start"
