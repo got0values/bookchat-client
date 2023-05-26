@@ -129,7 +129,7 @@ const Terms = () => {
             We can remove or restrict access to content that is in violation of these provisions. We can also suspend or disable your account for conduct that violates these provisions.
           </Text>
           <Text>
-            To help support our community, we encourage you to report content or conduct that you believe violates your rights (including intellectual property rights) or our terms and policies to admin@bookchat.com, if this feature exists in your jurisdiction.
+            To help support our community, we encourage you to report content or conduct that you believe violates your rights (including intellectual property rights) or our terms and policies to admin@bookchatnoir.com, if this feature exists in your jurisdiction.
           </Text>
           <Text>
             We also can remove or restrict access to content features, services, or information if we determine that doing so is reasonably necessary to avoid or mitigate misuse of our services or adverse legal or regulatory impacts to Book Chat Noir.

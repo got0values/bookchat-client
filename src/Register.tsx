@@ -140,7 +140,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
         <Stack align={'center'}>
           <Heading fontSize={'4xl'}>Register for an account</Heading>
           <Text fontSize={'lg'} color={'gray.600'}>
-            to enjoy all of our cool <Link href="https://bookchat.com" color={'blue.400'}>features</Link> ✌️
+            to enjoy all of our cool <Link href="https://bookchatnoir.com" color={'blue.400'}>features</Link> ✌️
           </Text>
         </Stack>
         <Box
