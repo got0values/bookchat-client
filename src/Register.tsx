@@ -26,8 +26,6 @@ import axios from "axios";
 
 const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
   const{colorMode} = useColorMode();
-  const [searchParams] = useSearchParams();
-  const [role,setRole] = useState("user");
   const toast = useToast();
   var schema = new passwordValidator();
   schema
@@ -38,18 +36,6 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
   .has().digits(2)// Must have at least 2 digits
   .has().symbols(1)
   .has().not().spaces()// Should not have spaces
-
-  useEffect(()=>{
-    if (searchParams.get("role")) {
-      let paramsRole = searchParams.get("role");
-      if (paramsRole === "admin") {
-        setRole(paramsRole)
-      }
-      else {
-        setRole("user");
-      }
-    }
-  },[searchParams])
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -97,15 +83,13 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("")
-    if (role === "user" || role === "admin"){
-      await axios
+    await axios
       .post(server + "/api/register", { 
         firstName: firstName,
         lastName: lastName,
         email: email, 
         password: password,
-        confirmPassword: confirmPassword,
-        role: role
+        confirmPassword: confirmPassword
       })
       .then((response)=>{
         onLogin(response.data.token);
@@ -121,10 +105,6 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
         console.log(response.data)
         setError(response.data.message ? response.data.message : response.data.error)
       })
-    }
-    else {
-      setError("An error has occurred")
-    }
   };
 
   return (
