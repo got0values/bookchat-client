@@ -18,8 +18,8 @@ import {
   useToast
 } from "@chakra-ui/react";
 import { ImInfo } from 'react-icons/im';
-import logo from './assets/BookChatNoirLogoBlack2.png';
-import logoWhite from './assets/BookChatNoirLogoWhite2.png';
+import logo from './assets/BookChatNoirLogoSquare2Black.png';
+import logoWhite from './assets/BookChatNoirLogoSquare2White.png';
 import passwordValidator from "password-validator";
 import axios from "axios";
 

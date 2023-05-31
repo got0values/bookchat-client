@@ -24,8 +24,8 @@ import {
   useToast,
   useDisclosure
 } from "@chakra-ui/react";
-import logo from './assets/BookChatNoirLogoBlack2.png';
-import logoWhite from './assets/BookChatNoirLogoWhite2.png';
+import logo from './assets/BookChatNoirLogoSquare2Black.png';
+import logoWhite from './assets/BookChatNoirLogoSquare2White.png';
 import Cookies from "js-cookie";
 import { useAuth } from "./hooks/useAuth";
 import axios from "axios";
