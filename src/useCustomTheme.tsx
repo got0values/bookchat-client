@@ -3,9 +3,11 @@ import '@fontsource/raleway/400.css'
 import '@fontsource/open-sans/700.css'
 import '@fontsource/inter/700.css'
 
-const config = {
-  initialColorMode: 'dark',
-  useSystemColorMode: false,
+const customTheme = {
+  config: {
+    initialColorMode: 'dark',
+    useSystemColorMode: false
+  },
   // colors: {
   //   gray: {
   //     "50": "#F2F3F3",
@@ -108,4 +110,4 @@ const config = {
   },
 }
 
-export const theme = extendTheme( config )
+export const theme = extendTheme( customTheme )
