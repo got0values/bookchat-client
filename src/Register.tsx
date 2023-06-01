@@ -15,12 +15,14 @@ import {
   Heading,
   useColorMode,
   Checkbox,
+  Center,
   useToast
 } from "@chakra-ui/react";
 import { ImInfo } from 'react-icons/im';
 import logo from './assets/BookChatNoirLogoSquare2Black.png';
 import logoWhite from './assets/BookChatNoirLogoSquare2White.png';
 import passwordValidator from "password-validator";
+import { GoogleLogin } from '@react-oauth/google';
 import axios from "axios";
 
 const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
@@ -79,16 +81,19 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
     return
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent | any, googleRegister: boolean) => {
+    if (!googleRegister) {
+      e.preventDefault();
+    }
     setError("")
     await axios
       .post(server + "/api/register", { 
-        firstName: firstName,
-        lastName: lastName,
-        email: email, 
-        password: password,
-        confirmPassword: confirmPassword
+        firstName: googleRegister ? null : firstName,
+        lastName: googleRegister ? null : lastName,
+        email: googleRegister ? null : email, 
+        password: googleRegister ? null : password,
+        confirmPassword: googleRegister ? null : confirmPassword,
+        googleCredential: googleRegister ? e.credential : null
       })
       .then((response)=>{
         onLogin(response.data.token);
@@ -129,7 +134,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
           p={8}
         >
           <Stack spacing={4}></Stack>
-          <form onSubmit={e=>handleSubmit(e)}>
+          <form onSubmit={e=>handleSubmit(e, false)}>
             <Box>
               {error && (
                 <Text color="red" mb={4}>
@@ -232,6 +237,9 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
         <Text fontSize={'lg'} color={'gray.600'} textAlign="center">
           Already have an account? <Link href="/login" color={'blue.400'}>Login</Link>
         </Text>
+        <Center>
+          <GoogleLogin onSuccess={(e)=>handleSubmit(e, true)} onError={()=>setError("error")} />
+        </Center>
       </Stack>
     </Flex>
   );

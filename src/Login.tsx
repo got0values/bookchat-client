@@ -20,13 +20,14 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Center,
   useColorMode,
   useToast,
   useDisclosure
 } from "@chakra-ui/react";
 import logo from './assets/BookChatNoirLogoSquare2Black.png';
 import logoWhite from './assets/BookChatNoirLogoSquare2White.png';
-import Cookies from "js-cookie";
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from "./hooks/useAuth";
 import axios from "axios";
 
@@ -39,13 +40,39 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
   const toast = useToast();
   const {colorMode} = useColorMode()
 
-  const handleSubmitMutation = useMutation({
-    mutationFn: async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
+  // const handleSubmitMutation = useMutation({
+  //   mutationFn: async (e,googleRegister) => {
+  //     console.log(googleRegister)
+  //     if (!googleRegister) {
+  //       e.preventDefault();
+  //     }
+  //     await axios
+  //     .post(server + "/api/login", { 
+  //       email: googleRegister ? null : email, 
+  //       password: googleRegister ? null : password,
+  //       googleCredentials: googleRegister ? e.credential : null
+  //     })
+  //     .then((response)=>{
+  //       if (response.data.success) {
+  //         onLogin(response.data.token);
+  //       }
+  //     })
+  //     .catch(({response})=>{
+  //       console.log(response?.data)
+  //       setError(response?.data?.message)
+  //     })
+  //   }
+  // });
+  async function handleSubmit(e: React.FormEvent | any, googleRegister: boolean) {
+    console.log(googleRegister)
+      if (!googleRegister) {
+        e.preventDefault();
+      }
       await axios
       .post(server + "/api/login", { 
-        email: email, 
-        password: password 
+        email: googleRegister ? null : email, 
+        password: googleRegister ? null : password,
+        googleCredential: googleRegister ? e.credential : null
       })
       .then((response)=>{
         if (response.data.success) {
@@ -56,10 +83,6 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
         console.log(response?.data)
         setError(response?.data?.message)
       })
-    }
-  });
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    handleSubmitMutation.mutate(e);
   }
 
   const { 
@@ -126,7 +149,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
           p={8}
         >
           <Stack spacing={4}></Stack>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={e=>handleSubmit(e,false)}>
             {error && (
               <Text color="red" mb={4}>
                 {error}
@@ -180,6 +203,9 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
         <Text fontSize={'lg'} color={'gray.600'} textAlign="center">
           Don't have an account? <Link href="/register" color={'blue.400'}>Register</Link>
         </Text>
+        <Center>
+          <GoogleLogin onSuccess={(e)=>handleSubmit(e,true)} onError={()=>setError("error")} />
+        </Center>
       </Stack>
 
       <Modal 
