@@ -202,9 +202,9 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
         <Text fontSize={'lg'} color={'gray.600'} textAlign="center">
           Don't have an account? <Link href="/register" color={'blue.400'}>Register</Link>
         </Text>
-        {/* <Center>
+        <Center>
           <GoogleLogin onSuccess={(e)=>handleSubmit(e,true)} onError={()=>setError("error")} />
-        </Center> */}
+        </Center>
       </Stack>
 
       <Modal 

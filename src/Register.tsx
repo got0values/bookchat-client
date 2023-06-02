@@ -237,9 +237,9 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
         <Text fontSize={'lg'} color={'gray.600'} textAlign="center">
           Already have an account? <Link href="/login" color={'blue.400'}>Login</Link>
         </Text>
-        {/* <Center>
+        <Center>
           <GoogleLogin onSuccess={(e)=>handleSubmit(e, true)} onError={()=>setError("error")} />
-        </Center> */}
+        </Center>
       </Stack>
     </Flex>
   );
