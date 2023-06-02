@@ -1540,15 +1540,22 @@ export default function Profile({server}: ProfileProps) {
                       ref={countrySelectRef}
                       defaultValue={user.Profile.country}
                     >
-                      {Object.entries(countries).map((country,i)=>{
-                        return (
-                          <option
-                            value={country[1]}
-                            key={i}
-                          >
-                            {capitalizeLetters(country[0])}
-                          </option>
-                        )
+                      <option
+                        value="US"
+                      >
+                        United States of America
+                      </option>
+                      {Object.entries(countries)
+                        .filter((country)=>country[1] !== "US")
+                        .map((country,i)=>{
+                          return (
+                            <option
+                              value={country[1]}
+                              key={i}
+                            >
+                              {capitalizeLetters(country[0])}
+                            </option>
+                          )
                       })}
                     </Select>
                   </FormControl>
