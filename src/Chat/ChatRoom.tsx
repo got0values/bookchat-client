@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { ChatUser } from "../types/types";
 import { 
   Box,
   Heading,
@@ -29,6 +30,7 @@ import { useAuth } from '../hooks/useAuth';
 import { BsEmojiSmile } from 'react-icons/bs';
 import { FiSend } from "react-icons/fi";
 import Picker from '@emoji-mart/react';
+import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import {socket} from "./customSocket";
@@ -105,7 +107,17 @@ export default function ChatRoom() {
       setIsConnected(false)
       socket.emit("get-users",roomId)
     }
-    function onReceiveUsers(users: string[]) {
+    function onReceiveUsers(users: ChatUser[]) {
+      users = users.map((user)=>{
+        if (user.country) {
+          return (
+            {...user,Flag: (countryFlagIconsReact as any)[user.country]}
+          )
+        }
+        else {
+          return user
+        }
+      })
       setRoomUsers(prev=>[...new Set(users)])
     }
     function onReceiveMessage(message: {userName: string, text: string}) {
@@ -124,6 +136,7 @@ export default function ChatRoom() {
       roomId: roomId, 
       userName: user.Profile.username,
       profilePhoto: user.Profile.profile_photo,
+      country: user.Profile.country,
       bookTitle: bookTitle,
       bookAuthor: bookAuthor,
       typeOfRoom: bookClub ? "bookClub" : "book"
@@ -193,6 +206,7 @@ export default function ChatRoom() {
               cursor={"pointer"}
               align="center"
               gap={1}
+              m={1}
             >
               <Avatar
                 size="xs"
@@ -202,6 +216,11 @@ export default function ChatRoom() {
               <Text>
                 {roomUser.userName}
               </Text>
+              {roomUser.Flag ? (
+                <Box w="1.4rem">
+                  <roomUser.Flag/>
+                </Box>
+              ):null}
             </Flex>
           )
         })): null}

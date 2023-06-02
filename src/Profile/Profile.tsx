@@ -656,7 +656,7 @@ export default function Profile({server}: ProfileProps) {
                 <Flex align="center" wrap="nowrap" gap={2} mb={4}>
                   <Box w="1.4rem">
                     {profileData?.country ? (
-                      <Flag/>
+                      <Flag alt={profileData.country} title={profileData.country}/>
                     ):null}
                   </Box>
                   <Text fontWeight={600} color={'gray.500'}>

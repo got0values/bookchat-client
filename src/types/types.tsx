@@ -313,3 +313,13 @@ export interface ActiveRoom {
   bookAuthor: string;
   numberOfUsers?: number;
 }
+
+export interface ChatUser {
+  roomId: string; 
+  userName: string;
+  profilePhoto: string;
+  country: string;
+  bookTitle: string;
+  bookAuthor: string;
+  typeOfRoom: string;
+}
