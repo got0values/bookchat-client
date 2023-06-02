@@ -495,7 +495,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
             </Box>
             <Box marginInlineStart="2!important" position="relative">
               <Input 
-                type="text"
+                type="search"
                 rounded="2xl"
                 width="100%"
                 placeholder="Search"
