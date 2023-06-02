@@ -654,11 +654,11 @@ export default function Profile({server}: ProfileProps) {
                   {`${profileData.User?.first_name} ${profileData.User?.last_name}`}
                 </Heading>
                 <Flex align="center" wrap="nowrap" gap={2} mb={4}>
-                  <Box w="1.4rem">
-                    {profileData?.country ? (
+                  {profileData?.country ? (
+                    <Box w="1.4rem">
                       <Flag alt={profileData.country} title={profileData.country}/>
-                    ):null}
-                  </Box>
+                    </Box>
+                  ):null}
                   <Text fontWeight={600} color={'gray.500'}>
                     {`@${profileData.username}`}
                   </Text>
