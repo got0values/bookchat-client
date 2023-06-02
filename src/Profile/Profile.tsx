@@ -24,6 +24,7 @@ import {
   Center,
   FormControl,
   FormLabel,
+  Select,
   Badge,
   Icon,
   Tag,
@@ -57,6 +58,8 @@ import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { useAuth } from '../hooks/useAuth';
 import { FollowProfileButton, CancelRequestButton, UnFollowProfileButton } from "./profileButtons";
 import Comments from "../shared/CurrentlyReadingComments";
+import { capitalizeLetters } from "../utils/capitalizeLetters";
+import countryList from 'country-list';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
@@ -68,6 +71,7 @@ export const useProfile = ({server}: ProfileProps) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const profileData: any = queryClient.getQueryData(["profileKey",paramsUsername])
+  const countries = countryList.getNameList();
   dayjs.extend(utc)
 
   //self, nonFollower, requesting, follower
@@ -192,6 +196,7 @@ export const useProfile = ({server}: ProfileProps) => {
   }
   const profileUserNameRef = useRef({} as HTMLInputElement);
   const profileAboutRef = useRef({} as HTMLInputElement);
+  const countrySelectRef = useRef({} as HTMLSelectElement);
   const profileDataMutation = useMutation({
     mutationFn: async () => {
       let tokenCookie: string | null = Cookies.get().token;
@@ -205,7 +210,8 @@ export const useProfile = ({server}: ProfileProps) => {
         {
           username: profileUserNameRef.current.value,
           about: profileAboutRef.current.value,
-          interests: profileInterests
+          interests: profileInterests,
+          country: countrySelectRef.current.value
         },
         {headers: {
           'authorization': tokenCookie
@@ -589,12 +595,12 @@ export const useProfile = ({server}: ProfileProps) => {
     likeUnlikeCurrentlyReadingMutation.mutate(e);
   }
 
-  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading};
+  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef};
 }
 
 
 export default function Profile({server}: ProfileProps) {
-  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading} = useProfile({server});
+  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef} = useProfile({server});
 
   
 
@@ -1513,6 +1519,25 @@ export default function Profile({server}: ProfileProps) {
                       defaultValue={user.Profile.about}
                       size="lg"
                     />
+                  </FormControl>
+                  <FormControl mt="5%">
+                    <FormLabel htmlFor="country">Country</FormLabel>
+                    <Select
+                      id="country"
+                      placeholder="Select"
+                      ref={countrySelectRef}
+                    >
+                      {Object.entries(countries).map((country,i)=>{
+                        return (
+                          <option
+                            value={country[1]}
+                            key={i}
+                          >
+                            {capitalizeLetters(country[0])}
+                          </option>
+                        )
+                      })}
+                    </Select>
                   </FormControl>
                   <FormControl mt="5%">
                     <FormLabel htmlFor="interests">Interests</FormLabel>
