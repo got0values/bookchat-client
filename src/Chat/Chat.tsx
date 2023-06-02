@@ -79,7 +79,6 @@ export default function Chat() {
     await axios
       .get("https://www.googleapis.com/books/v1/volumes?q=" + searchChatRoomRef.current.value)
       .then((response)=>{
-        console.log(response.data.items)
         setChatRoomResults(response.data.items)
         setChatSearchIsLoading(false)
       })
@@ -155,13 +154,14 @@ export default function Chat() {
                       justify="space-between"
                       gap={3}
                     >
-                      {chatRoomResults?.map((result)=>{
+                      {chatRoomResults?.map((result,i)=>{
                         return (
                           <Flex
                             direction="column"
                             gap={1}
                             maxW="150px"
                             flex="1 1 50%"
+                            key={i}
                           >
                             <Image 
                               w="100%"
