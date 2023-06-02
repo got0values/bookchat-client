@@ -55,6 +55,7 @@ export interface ProfileType {
   user: number;
   profile_photo?: string;
   username: string;
+  country: string;
   about?: string;
   Interests?: Interests[];
   User: User;

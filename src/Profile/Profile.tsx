@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent, Key, ReactComponentElement } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ProfileProps, HTMLInputEvent, ProfileType, Following_Following_following_profile_idToProfile } from '../types/types';
@@ -60,6 +60,7 @@ import { FollowProfileButton, CancelRequestButton, UnFollowProfileButton } from 
 import Comments from "../shared/CurrentlyReadingComments";
 import { capitalizeLetters } from "../utils/capitalizeLetters";
 import countryList from 'country-list';
+import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
@@ -609,6 +610,10 @@ export default function Profile({server}: ProfileProps) {
     queryFn: getProfile 
   });
   const profileData: ProfileType = data;
+  let Flag: any | null = null;
+  if (profileData?.country) {
+    Flag = (countryFlagIconsReact as any)[profileData?.country];
+  }
   if (isLoading) {
     return (
       <Flex align="center" justify="center" minH="80vh">
@@ -648,9 +653,16 @@ export default function Profile({server}: ProfileProps) {
                 <Heading fontSize={'3xl'}>
                   {`${profileData.User?.first_name} ${profileData.User?.last_name}`}
                 </Heading>
-                <Text fontWeight={600} color={'gray.500'} mb={4}>
-                  {`@${profileData.username}`}
-                </Text>
+                <Flex align="center" wrap="nowrap" gap={2} mb={4}>
+                  <Box w="1.4rem">
+                    {profileData?.country ? (
+                      <Flag/>
+                    ):null}
+                  </Box>
+                  <Text fontWeight={600} color={'gray.500'}>
+                    {`@${profileData.username}`}
+                  </Text>
+                </Flex>
                 {profileData?.about ? (
                   <Text
                     textAlign={'center'}
@@ -1526,6 +1538,7 @@ export default function Profile({server}: ProfileProps) {
                       id="country"
                       placeholder="Select"
                       ref={countrySelectRef}
+                      defaultValue={user.Profile.country}
                     >
                       {Object.entries(countries).map((country,i)=>{
                         return (
