@@ -493,7 +493,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                 ) : null}
               </Link>
             </Box>
-            <InputGroup marginInlineStart="2!important">
+            <Box marginInlineStart="2!important" position="relative">
               <Input 
                 type="text"
                 rounded="2xl"
@@ -506,17 +506,14 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                 ref={navSearchRef}
                 onKeyDown={e=>e.key === 'Enter' ? navSearch() : null}
               />
-              <InputRightElement
+              <Box
                 pointerEvents="none"
-                children={<FaSearch/>}
+                as={FaSearch}
+                position="absolute"
+                top={3}
+                right={3}
               />
-              <Button
-                display="none"
-                onClick={e=>navSearch()}
-              >
-                Search
-              </Button>
-            </InputGroup>
+            </Box>
           </HStack>
           <HStack
             as={'nav'}
