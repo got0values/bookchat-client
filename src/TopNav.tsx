@@ -504,12 +504,18 @@ export default function TopNav({server,onLogout}: TopNavProps) {
                   bg: "whiteAlpha.50"
                 }}
                 ref={navSearchRef}
-                onKeyUp={e=>e.key === 'Enter' ? navSearch() : null}
+                onKeyDown={e=>e.key === 'Enter' ? navSearch() : null}
               />
               <InputRightElement
                 pointerEvents="none"
                 children={<FaSearch/>}
               />
+              <Button
+                display="none"
+                onClick={e=>navSearch()}
+              >
+                Search
+              </Button>
             </InputGroup>
           </HStack>
           <HStack
