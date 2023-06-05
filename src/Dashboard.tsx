@@ -344,7 +344,7 @@ export default function Dashboard({server}: DashboardProps) {
           >
             <Flex gap={2} align="center">
               <Input 
-                type="text" 
+                type="search" 
                 placeholder="What i'm reading"
                 rounded="2xl" 
                 size="md"
