@@ -410,7 +410,7 @@ export default function BookClubs({server}: {server: string}) {
                       </Heading>
                     </Flex>
                     <Box>
-                      {bookClubsFriends && bookClubsFriends.length? (
+                      {bookClubsFriends && bookClubsFriends.length ? (
                         (bookClubsFriends as BookClubsType[]).map((bookClub,i)=>{
                           return (
                             <Fade in={true} key={i}>
@@ -469,7 +469,7 @@ export default function BookClubs({server}: {server: string}) {
                                   <Text>
                                     {bookClub.about}
                                   </Text>
-                                  <Flex align="center" flexWrap="wrap">
+                                  <Flex align="center" flexWrap="wrap" gap={1}>
                                     {JSON.parse(bookClub.groups).length ? (
                                       JSON.parse(bookClub.groups).map((group: string, i: number, array: any[])=>{
                                         const cScheme = genres.filter((genre)=>genre.value === group)[0].color;
