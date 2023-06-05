@@ -134,7 +134,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
       align={'center'}
       justify={'center'}
     >
-      <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
+      <Stack spacing={5} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align={'center'}>
           <Stack align="center">
             <Image src={colorMode === "light" ? logo : logoWhite} maxH="150px"/>
@@ -199,12 +199,15 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
             </Link>
           </Text>
         </Box>
-        <Text fontSize={'lg'} color={'gray.600'} textAlign="center">
-          Don't have an account? <Link href="/register" color={'blue.400'}>Register</Link>
-        </Text>
+        <Center>
+          <Text>OR</Text>
+        </Center>
         <Center>
           <GoogleLogin onSuccess={(e)=>handleSubmit(e,true)} onError={()=>setError("error")} />
         </Center>
+        <Text fontSize={'lg'} color={'gray.600'} textAlign="center">
+          Don't have an account? <Link href="/register" color={'blue.400'}>Register</Link>
+        </Text>
       </Stack>
 
       <Modal 

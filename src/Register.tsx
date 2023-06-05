@@ -117,7 +117,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
       align={'center'}
       justify={'center'}
     >
-      <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
+      <Stack spacing={5} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align="center">
           <Image src={colorMode === "light" ? logo : logoWhite} maxH="75px"/>
         </Stack>
@@ -234,12 +234,19 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
             </Box>
           </form>
         </Box>
+        <Center>
+          <Text>OR</Text>
+        </Center>
+        <Center>
+          <GoogleLogin 
+            onSuccess={(e)=>handleSubmit(e, true)} 
+            onError={()=>setError("error")} 
+            text="signup_with"
+          />
+        </Center>
         <Text fontSize={'lg'} color={'gray.600'} textAlign="center">
           Already have an account? <Link href="/login" color={'blue.400'}>Login</Link>
         </Text>
-        <Center>
-          <GoogleLogin onSuccess={(e)=>handleSubmit(e, true)} onError={()=>setError("error")} />
-        </Center>
       </Stack>
     </Flex>
   );
