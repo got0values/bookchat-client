@@ -792,22 +792,28 @@ export default function Profile({server}: ProfileProps) {
               </Center>
 
               <Box className="well">
-                <Heading as="h2" size="md">{profileData?.User.first_name}'s Book Clubs</Heading>
-                <UnorderedList my={1}>
-                  {profileData.BookClubs.length ? profileData.BookClubs.map((bookClub,i)=>{
-                    return (
-                      <ListItem key={i}>
-                        <Link
-                          to={`/bookclubs/${bookClub.id}`}
-                        >
-                          {bookClub.name}
-                        </Link>
-                      </ListItem>
-                    )
-                  }) : (
-                    <i>No book clubs yet</i>
-                  )}
-                </UnorderedList>
+                {viewer === "following" || viewer === "self" ? (
+                  <>
+                    <Heading as="h2" size="md">{profileData?.User.first_name}'s Book Clubs</Heading>
+                    <UnorderedList my={1}>
+                      {profileData.BookClubs.length ? profileData.BookClubs.map((bookClub,i)=>{
+                        return (
+                          <ListItem key={i}>
+                            <Link
+                              to={`/bookclubs/${bookClub.id}`}
+                            >
+                              {bookClub.name}
+                            </Link>
+                          </ListItem>
+                        )
+                      }) : (
+                        <i>No book clubs yet</i>
+                      )}
+                    </UnorderedList>
+                  </>
+                ) : (
+                  <Text fontStyle="italic">Follow to see more</Text>
+                )}
               </Box>
             </Stack>
 
