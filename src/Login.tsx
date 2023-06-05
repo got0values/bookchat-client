@@ -25,8 +25,8 @@ import {
   useToast,
   useDisclosure
 } from "@chakra-ui/react";
-import logo from './assets/BookChatNoirLogoSquare2Black.png';
-import logoWhite from './assets/BookChatNoirLogoSquare2White.png';
+import logo from './assets/BookChatNoirNewBlack.png';
+import logoWhite from './assets/BookChatNoirNewWhite.png';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from "./hooks/useAuth";
 import axios from "axios";
