@@ -79,6 +79,7 @@ export default function BookClub({server}: {server: string}) {
         .then((response)=>{
           if (response.data.success) {
             let responseBookClub = response.data.message
+            let isCreatorsFriend = response.data.isCreatorsFriend
             const currentBook1 = responseBookClub.BookClubBook.reverse()[0]
 
             let pollBookOneRcvd;
@@ -128,8 +129,9 @@ export default function BookClub({server}: {server: string}) {
             }
 
             return {
-              bookClub:  responseBookClub,
+              bookClub: responseBookClub,
               groups: responseBookClub.groups,
+              isCreatorsFriend: isCreatorsFriend,
               currentBook: currentBook1,
               pollBookOneReceived: pollBookOneRcvd,
               pollBookTwoReceived: pollBookTwoRcvd,
@@ -949,6 +951,7 @@ export default function BookClub({server}: {server: string}) {
   });
   const bookClubData = bookClubQuery.data;
   const bookClub: BookClubsType = bookClubData?.bookClub;
+  const isCreatorsFriend = bookClubData?.isCreatorsFriend;
   const currentBook = bookClubData?.currentBook;
   const pollBookOneReceived = bookClubData?.pollBookOneReceived;
   const pollBookTwoReceived = bookClubData?.pollBookTwoReceived;
@@ -1038,109 +1041,113 @@ export default function BookClub({server}: {server: string}) {
                     </Flex>
                   ): null}
                 </Flex>
-                <Flex className="well" direction="column" gap={2}>
-                  <Flex align="center" justify="space-between">
-                    <Heading as="h4" size="md">
-                      Members ({
-                        bookClub.BookClubMembers
-                        .filter((bcm)=>bcm.status === 2)
-                        .length + 1
-                      })
-                    </Heading>
-                    {isBookClubCreator ? null : (
-                      memberStatus && memberStatus > 0 ? (
-                        !unJoinBookClubMutation.error ? (
-                          memberStatus === 1 ? (
-                            <Button 
-                              size="xs"
-                              value={bookClub.id}
-                              onClick={e=>unJoinBookClub(e)}
-                            >
-                              Cancel Request
-                            </Button>
-                          ) : memberStatus === 2 ? (
-                            <Button 
-                              size="xs"
-                              value={bookClub.id}
-                              onClick={e=>unJoinBookClub(e)}
-                            >
-                              Unjoin
-                            </Button>
-                          ) : null
-                        ) : (
-                          <Button 
-                            size="xs"
-                            colorScheme="red"
-                          >
-                            {(unJoinBookClubMutation.error as Error).message}
-                          </Button>
-                        )
-                      ) : (
-                      !joinBookClubMutation.error ? (
-                      <Button 
-                        size="xs"
-                        value={bookClub.id}
-                        onClick={e=>joinBookClub(e)}
-                      >
-                        Join
-                      </Button>
-                        ) : (
-                          <Button 
-                            size="xs"
-                            colorScheme="red"
-                          >
-                            {(joinBookClubMutation.error as Error).message}
-                          </Button>
-                        )
-                      )
-                    )}
-                  </Flex>
-                  <Box>
-                    <Link
-                      href={`/profile/${bookClub.Profile.username}`}
-                      _hover={{
-                        textDecoration: "none",
-                        color: "teal"
-                      }}
-                    >
-                      {bookClub.Profile.username}
-                      <Text as="span" fontSize="sm" fontStyle="italic">
-                        {" "}admin
-                      </Text>
-                    </Link>
-                    {bookClub.BookClubMembers.length ? bookClub.BookClubMembers.map((member,i)=>{
-                      return (
-                        member.status === 2 ? (
-                          <Flex 
-                            key={i} 
-                            align="center" 
-                            justify="space-between"
-                          >
-                            <Link 
-                              href={`/profile/${member.Profile.username}`}
-                              _hover={{
-                                textDecoration: "none",
-                                color: "teal"
-                              }}
-                            >
-                              {member.Profile.username}
-                            </Link>
-                            {isBookClubCreator ? (
+                {bookClub.visibility === 0 && !isCreatorsFriend ? (
+                  null
+                ) : (
+                  <Flex className="well" direction="column" gap={2}>
+                    <Flex align="center" justify="space-between">
+                      <Heading as="h4" size="md">
+                        Members ({
+                          bookClub.BookClubMembers
+                          .filter((bcm)=>bcm.status === 2)
+                          .length + 1
+                        })
+                      </Heading>
+                      {isBookClubCreator ? null : (
+                        memberStatus && memberStatus > 0 ? (
+                          !unJoinBookClubMutation.error ? (
+                            memberStatus === 1 ? (
                               <Button 
-                                size="xs" 
-                                variant="ghost"
-                                color="red"
-                                onClick={e=>removeMember(member.Profile.id)}
+                                size="xs"
+                                value={bookClub.id}
+                                onClick={e=>unJoinBookClub(e)}
                               >
-                                Remove
+                                Cancel Request
                               </Button>
-                            ) : null}
-                          </Flex>
-                        ) : null
-                      )
-                    }) : null}
-                  </Box>
-                </Flex>
+                            ) : memberStatus === 2 ? (
+                              <Button 
+                                size="xs"
+                                value={bookClub.id}
+                                onClick={e=>unJoinBookClub(e)}
+                              >
+                                Unjoin
+                              </Button>
+                            ) : null
+                          ) : (
+                            <Button 
+                              size="xs"
+                              colorScheme="red"
+                            >
+                              {(unJoinBookClubMutation.error as Error).message}
+                            </Button>
+                          )
+                        ) : (
+                        !joinBookClubMutation.error ? (
+                        <Button 
+                          size="xs"
+                          value={bookClub.id}
+                          onClick={e=>joinBookClub(e)}
+                        >
+                          Join
+                        </Button>
+                          ) : (
+                            <Button 
+                              size="xs"
+                              colorScheme="red"
+                            >
+                              {(joinBookClubMutation.error as Error).message}
+                            </Button>
+                          )
+                        )
+                      )}
+                    </Flex>
+                    <Box>
+                      <Link
+                        href={`/profile/${bookClub.Profile.username}`}
+                        _hover={{
+                          textDecoration: "none",
+                          color: "teal"
+                        }}
+                      >
+                        {bookClub.Profile.username}
+                        <Text as="span" fontSize="sm" fontStyle="italic">
+                          {" "}admin
+                        </Text>
+                      </Link>
+                      {bookClub.BookClubMembers.length ? bookClub.BookClubMembers.map((member,i)=>{
+                        return (
+                          member.status === 2 ? (
+                            <Flex 
+                              key={i} 
+                              align="center" 
+                              justify="space-between"
+                            >
+                              <Link 
+                                href={`/profile/${member.Profile.username}`}
+                                _hover={{
+                                  textDecoration: "none",
+                                  color: "teal"
+                                }}
+                              >
+                                {member.Profile.username}
+                              </Link>
+                              {isBookClubCreator ? (
+                                <Button 
+                                  size="xs" 
+                                  variant="ghost"
+                                  color="red"
+                                  onClick={e=>removeMember(member.Profile.id)}
+                                >
+                                  Remove
+                                </Button>
+                              ) : null}
+                            </Flex>
+                          ) : null
+                        )
+                      }) : null}
+                    </Box>
+                  </Flex>
+                )}
               </Stack>
 
               <Stack flex="1 1 65%" maxW="100%" gap={1}>
