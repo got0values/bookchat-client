@@ -235,6 +235,7 @@ export default function Dashboard({server}: DashboardProps) {
     closeReadingModal();
   }
 
+  const thoughtsRef = useRef({} as HTMLInputElement);
   const postCurrentlyReadingMutation = useMutation({
     mutationFn: async (e: React.FormEvent)=>{
       let tokenCookie: string | null = Cookies.get().token;
@@ -245,7 +246,8 @@ export default function Dashboard({server}: DashboardProps) {
           image: (e.target as HTMLDivElement).dataset.image,
           title: (e.target as HTMLDivElement).dataset.title,
           author: (e.target as HTMLDivElement).dataset.author,
-          description: (e.target as HTMLDivElement).dataset.description
+          description: (e.target as HTMLDivElement).dataset.description,
+          thoughts: thoughtsRef.current.value
         },
         {
           headers: {
@@ -311,6 +313,62 @@ export default function Dashboard({server}: DashboardProps) {
   function likeUnlikeCurrentlyReading(e: React.FormEvent) {
     likeUnlikeCurrentlyReadingMutation.mutate(e);
   }
+
+
+  function editCurrentlyReadingThoughts(bookId: number) {
+    const currentlyReadingText = document.getElementById(`currently-reading-text-${bookId}`);
+    const currentlyReadingInputDiv = document.getElementById(`currently-reading-input-div-${bookId}`);
+    currentlyReadingText!.style.display = "none";
+    currentlyReadingInputDiv!.style.display = "flex";
+  }
+  function cancelEditCurrentlyReadingThoughts(bookId: number) {
+    const currentlyReadingText = document.getElementById(`currently-reading-text-${bookId}`);
+    const currentlyReadingInputDiv = document.getElementById(`currently-reading-input-div-${bookId}`);
+    currentlyReadingText!.style.display = "block";
+    currentlyReadingInputDiv!.style.display = "none";
+  }
+  const updateCurrentlyReadingThoughtsMutation = useMutation({
+    mutationFn: async (bookId: number)=>{
+      const currentlyReadingText = document.getElementById(`currently-reading-text-${bookId}`);
+      const currentlyReadingInputDiv = document.getElementById(`currently-reading-input-div-${bookId}`);
+      const currentlyReadingInput = document.getElementById(`currently-reading-input-${bookId}`);
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+        .put(server + "/api/updatecurrentlyreadingthoughts",
+        {
+          currentlyReadingId: bookId,
+          thoughts: (currentlyReadingInput as HTMLInputElement)!.value
+        },
+        {
+          headers: {
+            'authorization': tokenCookie
+          }
+        }
+        )
+        .then((response)=>{
+          currentlyReadingText!.style.display = "block";
+          currentlyReadingInputDiv!.style.display = "none";
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.message)
+        })
+      }
+      else {
+        throw new Error("Please login again")
+      }
+      return getDashboard();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ["dashboardKey"] })
+      queryClient.resetQueries({queryKey: ["dashboardKey"]})
+      queryClient.setQueryData(["dashboardKey"],data)
+    }
+  })
+  function updateCurrentlyReadingThoughts(bookId: number) {
+    updateCurrentlyReadingThoughtsMutation.mutate(bookId)
+  }
   
   
   const dashboard = useQuery({
@@ -375,13 +433,21 @@ export default function Dashboard({server}: DashboardProps) {
                 }}
                 position="relative"
               >
+                <CloseButton
+                  position="absolute"
+                  top="0"
+                  right="0"
+                  onClick={e=>setSelectedBook(null)}
+                />
+                <Input
+                  type="text"
+                  mt={3}
+                  mb={2}
+                  placeholder="Thoughts?"
+                  maxLength={300}
+                  ref={thoughtsRef}
+                />
                 <Flex>
-                  <CloseButton
-                    position="absolute"
-                    top="0"
-                    right="0"
-                    onClick={e=>setSelectedBook(null)}
-                  />
                   <Image 
                     src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
                     maxH="125px"
@@ -516,6 +582,43 @@ export default function Dashboard({server}: DashboardProps) {
                           </MenuList>
                         </Menu>
                       </Box>
+                    </Flex>
+                    <Text 
+                      my={2}
+                      rounded="md"
+                      p={1}
+                      _hover={{
+                        cursor: reading.Profile.id === user?.Profile.id ? "pointer" : "default",
+                        backgroundColor: reading.Profile.id === user?.Profile.id ? "gray" : "unset"
+                      }}
+                      id={`currently-reading-text-${reading.id}`}
+                      onClick={e=> reading.Profile.id === user?.Profile.id ? editCurrentlyReadingThoughts(reading.id) : null}
+                    >
+                      {reading.thoughts ? reading.thoughts : null}
+                    </Text>
+                    <Flex 
+                      align="center" 
+                      gap={1}
+                      display="none"
+                      id={`currently-reading-input-div-${reading.id}`}
+                    >
+                      <Input
+                        my={2}
+                        type="text"
+                        defaultValue={reading.thoughts ? reading.thoughts : ""}
+                        id={`currently-reading-input-${reading.id}`}
+                      />
+                      <Button
+                        onClick={e=>updateCurrentlyReadingThoughts(reading.id)}
+                        disabled={updateCurrentlyReadingThoughtsMutation.isLoading}
+                      >
+                        Update
+                      </Button>
+                      <Button
+                        onClick={e=>cancelEditCurrentlyReadingThoughts(reading.id)}
+                      >
+                        Cancel
+                      </Button>
                     </Flex>
                     <Flex>
                       <Image 
