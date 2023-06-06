@@ -34,9 +34,11 @@ import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import {socket} from "./customSocket";
+import Cookies from "js-cookie";
+import axios from "axios";
 
 
-export default function ChatRoom() {
+export default function ChatRoom({server}: {server: string}) {
   dayjs.extend(utc);
   const navigate = useNavigate();
   const toast = useToast();
@@ -161,18 +163,42 @@ export default function ChatRoom() {
   },[searchParams,socket])
 
   const chatTextRef = useRef({} as HTMLInputElement);
-  function submitChat() {
+  const [chatError,setChatError] = useState("")
+  async function submitChat() {
     const chatText = chatTextRef.current.value;
-    socket.emit(
-      "send-message", 
+    let tokenCookie: string | null = Cookies.get().token;
+    if (tokenCookie) {
+      await axios
+      .post(server + "/api/chat",
       {
-        userName: user.Profile.username, 
-        text: chatText,
-        time: new Date()
-      }, 
-      roomId
-      );
-    chatTextRef.current.value = "";
+        chatText: chatText,
+        uri: window.location.pathname + window.location.search
+      },
+      {
+        headers: {
+          'authorization': tokenCookie
+        }
+      }
+      )
+      .then((response)=>{
+        socket.emit(
+          "send-message", 
+          {
+            userName: user.Profile.username, 
+            text: chatText,
+            time: new Date()
+          }, 
+          roomId
+        );
+        chatTextRef.current.value = "";
+        setChatError("")
+      })
+      .catch(({response})=>{
+        console.log(response)
+        setChatError(response.data.message)
+        throw new Error(response.data.message)
+      })
+    }
   }
 
   function pickEmoji(e: {unified: string}) {
@@ -302,6 +328,11 @@ export default function ChatRoom() {
                   })}
                 </>
               </Box>
+              {chatError && (
+                <Text color="red">
+                  {chatError}
+                </Text>
+              )}
               <Flex
                 align="center" 
                 justify="space-between"

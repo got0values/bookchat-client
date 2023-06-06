@@ -90,7 +90,7 @@ function App() {
           />
           <Route
             path="room"
-            element={ <ChatRoom /> }
+            element={ <ChatRoom server={server} /> }
           />
         </Route>
         <Route 
