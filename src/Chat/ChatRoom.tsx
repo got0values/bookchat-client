@@ -74,7 +74,7 @@ export default function ChatRoom({server}: {server: string}) {
   const [roomUsers,setRoomUsers] = useState([] as any[]);
   useEffect(()=>{
     async function getIp() {
-      const resIp = await axios.get("https://api.ipify.org/?format=json")
+      const resIp = await axios.get("https://ipapi.co/json")
       setIp(resIp.data.ip)
     }
     getIp()
