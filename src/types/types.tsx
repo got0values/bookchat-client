@@ -249,6 +249,7 @@ export interface BookClubGeneralReply {
 export interface CurrentlyReading {
   id: number;
   profile: number;
+  thoughts: string;
   image: string;
   title: string;
   author: string;

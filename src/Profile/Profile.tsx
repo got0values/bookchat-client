@@ -80,7 +80,7 @@ export const useProfile = ({server}: ProfileProps) => {
   async function getProfile() {
     const tokenCookie = Cookies.get().token;
     if (tokenCookie) {
-      const profileData = await axios
+      const getProfileData = await axios
         .post(server + "/api/getprofile", 
         {
           profileUsername: paramsUsername
@@ -92,7 +92,7 @@ export const useProfile = ({server}: ProfileProps) => {
         .then((response)=>{
           if (response.data.success){
             const message = response.data.message;
-            const responseProfileData = response.data.profileData
+            const responseProfileData = response.data.profileData;
             switch(message) {
               case "self":
                 setViewer("self")
@@ -117,7 +117,7 @@ export const useProfile = ({server}: ProfileProps) => {
         console.log(response)
         throw new Error(response.data.message)
       })
-      return profileData;
+      return getProfileData;
     }
     else {
       throw new Error("TCP102")
@@ -351,6 +351,7 @@ export const useProfile = ({server}: ProfileProps) => {
     closeReadingModal();
   }
 
+  const thoughtsRef = useRef({} as HTMLInputElement);
   const postCurrentlyReadingMutation = useMutation({
     mutationFn: async (e: React.FormEvent)=>{
       let tokenCookie: string | null = Cookies.get().token;
@@ -361,7 +362,8 @@ export const useProfile = ({server}: ProfileProps) => {
           image: (e.target as HTMLDivElement).dataset.image,
           title: (e.target as HTMLDivElement).dataset.title,
           author: (e.target as HTMLDivElement).dataset.author,
-          description: (e.target as HTMLDivElement).dataset.description
+          description: (e.target as HTMLDivElement).dataset.description,
+          thoughts: thoughtsRef.current.value
         },
         {
           headers: {
@@ -596,12 +598,69 @@ export const useProfile = ({server}: ProfileProps) => {
     likeUnlikeCurrentlyReadingMutation.mutate(e);
   }
 
-  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef};
+  function editCurrentlyReadingThoughts(bookId: number) {
+    if (viewer === "self") {
+      const currentlyReadingText = document.getElementById(`currently-reading-text-${bookId}`);
+      const currentlyReadingInputDiv = document.getElementById(`currently-reading-input-div-${bookId}`);
+      currentlyReadingText!.style.display = "none";
+      currentlyReadingInputDiv!.style.display = "flex";
+    }
+  }
+  function cancelEditCurrentlyReadingThoughts(bookId: number) {
+    const currentlyReadingText = document.getElementById(`currently-reading-text-${bookId}`);
+    const currentlyReadingInputDiv = document.getElementById(`currently-reading-input-div-${bookId}`);
+    currentlyReadingText!.style.display = "block";
+    currentlyReadingInputDiv!.style.display = "none";
+  }
+  const updateCurrentlyReadingThoughtsMutation = useMutation({
+    mutationFn: async (bookId: number)=>{
+      const currentlyReadingText = document.getElementById(`currently-reading-text-${bookId}`);
+      const currentlyReadingInputDiv = document.getElementById(`currently-reading-input-div-${bookId}`);
+      const currentlyReadingInput = document.getElementById(`currently-reading-input-${bookId}`);
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+        .put(server + "/api/updatecurrentlyreadingthoughts",
+        {
+          currentlyReadingId: bookId,
+          thoughts: (currentlyReadingInput as HTMLInputElement)!.value
+        },
+        {
+          headers: {
+            'authorization': tokenCookie
+          }
+        }
+        )
+        .then((response)=>{
+          currentlyReadingText!.style.display = "block";
+          currentlyReadingInputDiv!.style.display = "none";
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.message)
+        })
+      }
+      else {
+        throw new Error("Please login again")
+      }
+      return getProfile();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['profileKey',paramsUsername] })
+      queryClient.resetQueries({queryKey: ['profileKey',paramsUsername]})
+      queryClient.setQueryData(['profileKey',paramsUsername],data)
+    }
+  })
+  function updateCurrentlyReadingThoughts(bookId: number) {
+    updateCurrentlyReadingThoughtsMutation.mutate(bookId)
+  }
+
+  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation};
 }
 
 
 export default function Profile({server}: ProfileProps) {
-  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef} = useProfile({server});
+  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation} = useProfile({server});
 
   
 
@@ -845,13 +904,21 @@ export default function Profile({server}: ProfileProps) {
                         className="well-card"
                         position="relative"
                       >
+                        <CloseButton
+                          position="absolute"
+                          top="0"
+                          right="0"
+                          onClick={e=>setSelectedBook(null)}
+                        />
+                        <Input
+                          type="text"
+                          mt={3}
+                          mb={2}
+                          placeholder="Thoughts?"
+                          maxLength={300}
+                          ref={thoughtsRef}
+                        />
                         <Flex>
-                          <CloseButton
-                            position="absolute"
-                            top="0"
-                            right="0"
-                            onClick={e=>setSelectedBook(null)}
-                          />
                           <Image 
                             src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
                             maxH="125px"
@@ -905,6 +972,98 @@ export default function Profile({server}: ProfileProps) {
                         className="well-card"
                         position="relative"
                       >
+                        <Box
+                          position="absolute"
+                          top={2}
+                          right={0}
+                        >
+                          <Menu>
+                            <MenuButton 
+                              as={Button}
+                              size="md"
+                              variant="ghost"
+                              rounded="full"
+                              height="25px"
+                            >
+                              <BiDotsHorizontalRounded/>
+                            </MenuButton>
+                            <MenuList>
+                              <MenuItem 
+                                data-book={JSON.stringify(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1])}
+                                onClick={e=>openCommentModal(e)}
+                                fontWeight="bold"
+                                icon={<BsReplyFill size={20} />}
+                              >
+                                Comment
+                              </MenuItem>
+                              <MenuItem 
+                                onClick={e=>navigate(`/chat/room?title=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title}&author=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author}`)}
+                                fontWeight="bold"
+                                icon={<MdOutlineChat size={20} />}
+                              >
+                                Chat Room
+                              </MenuItem>
+                              {viewer === "self" ? (
+                              <>
+                                <MenuItem
+                                  data-readingid={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}
+                                  data-hide={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? false : true}
+                                  onClick={e=>hideReading(e as any)}
+                                  fontWeight="bold"
+                                  icon={<BiHide size={20} />}
+                                >
+                                  {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? "Unhide" : "Hide"}
+                                </MenuItem>
+                                <MenuItem
+                                  color="tomato"
+                                  onClick={e=>deleteReading(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
+                                  fontWeight="bold"
+                                  icon={<BiTrash size={20} />}
+                                >
+                                  Delete
+                                </MenuItem>
+                              </>
+                              ): null}
+                            </MenuList>
+                          </Menu>
+                        </Box>
+                        <Text 
+                          my={2}
+                          rounded="md"
+                          p={1}
+                          _hover={{
+                            cursor: viewer === "self" ? "pointer" : "default",
+                            backgroundColor: viewer === "self" ? "gray" : "unset"
+                          }}
+                          id={`currently-reading-text-${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}`}
+                          onClick={e=>editCurrentlyReadingThoughts(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
+                        >
+                          {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].thoughts ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].thoughts : null}
+                        </Text>
+                        <Flex 
+                          align="center" 
+                          gap={1}
+                          display="none"
+                          id={`currently-reading-input-div-${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}`}
+                        >
+                          <Input
+                            my={2}
+                            type="text"
+                            defaultValue={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].thoughts ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].thoughts : ""}
+                            id={`currently-reading-input-${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}`}
+                          />
+                          <Button
+                            onClick={e=>updateCurrentlyReadingThoughts(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
+                            disabled={updateCurrentlyReadingThoughtsMutation.isLoading}
+                          >
+                            Update
+                          </Button>
+                          <Button
+                            onClick={e=>cancelEditCurrentlyReadingThoughts(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
+                          >
+                            Cancel
+                          </Button>
+                        </Flex>
                         <Flex>
                           <Image 
                             src={
@@ -923,62 +1082,9 @@ export default function Profile({server}: ProfileProps) {
                                     .created_on).local().format('MMM DD, h:mm a')
                                 }
                               </Text>
-                              <HStack>
-                                <Text>
-                                  {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? <i>hidden</i> : ""}
-                                </Text>
-                                <Box>
-                                    <Menu>
-                                      <MenuButton 
-                                        as={Button}
-                                        size="md"
-                                        variant="ghost"
-                                        rounded="full"
-                                        height="25px"
-                                      >
-                                        <BiDotsHorizontalRounded/>
-                                      </MenuButton>
-                                      <MenuList>
-                                        <MenuItem 
-                                          data-book={JSON.stringify(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1])}
-                                          onClick={e=>openCommentModal(e)}
-                                          fontWeight="bold"
-                                          icon={<BsReplyFill size={20} />}
-                                        >
-                                          Comment
-                                        </MenuItem>
-                                        <MenuItem 
-                                          onClick={e=>navigate(`/chat/room?title=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title}&author=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author}`)}
-                                          fontWeight="bold"
-                                          icon={<MdOutlineChat size={20} />}
-                                        >
-                                          Chat Room
-                                        </MenuItem>
-                                        {viewer === "self" ? (
-                                        <>
-                                          <MenuItem
-                                            data-readingid={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}
-                                            data-hide={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? false : true}
-                                            onClick={e=>hideReading(e as any)}
-                                            fontWeight="bold"
-                                            icon={<BiHide size={20} />}
-                                          >
-                                            {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? "Unhide" : "Hide"}
-                                          </MenuItem>
-                                          <MenuItem
-                                            color="tomato"
-                                            onClick={e=>deleteReading(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
-                                            fontWeight="bold"
-                                            icon={<BiTrash size={20} />}
-                                          >
-                                            Delete
-                                          </MenuItem>
-                                        </>
-                                        ): null}
-                                      </MenuList>
-                                    </Menu>
-                                </Box>
-                              </HStack>
+                              <Text>
+                                {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? <i>hidden</i> : ""}
+                              </Text>
                             </Flex>
                             <Heading as="h5" size="sm" me={3}>
                               {
@@ -1101,6 +1207,47 @@ export default function Profile({server}: ProfileProps) {
                             className="well-card"
                             position="relative"
                           >
+                            <Box
+                              position="absolute"
+                              top={2}
+                              right={0}
+                            >
+                              <Menu>
+                                <MenuButton 
+                                  as={Button}
+                                  size="md"
+                                  variant="ghost"
+                                  rounded="full"
+                                  height="25px"
+                                >
+                                  <BiDotsHorizontalRounded/>
+                                </MenuButton>
+                                <MenuList>
+                                  <MenuItem 
+                                    data-book={JSON.stringify(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1])}
+                                    onClick={e=>openCommentModal(e)}
+                                    fontWeight="bold"
+                                    icon={<BsReplyFill size={20} />}
+                                  >
+                                    Comment
+                                  </MenuItem>
+                                  <MenuItem 
+                                    onClick={e=>navigate(`/chat/room?title=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title}&author=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author}`)}
+                                    fontWeight="bold"
+                                    icon={<MdOutlineChat size={20} />}
+                                  >
+                                    Chat Room
+                                  </MenuItem>
+                                </MenuList>
+                              </Menu>
+                            </Box>
+                            <Text 
+                              my={2}
+                              rounded="md"
+                              p={1}
+                            >
+                              {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].thoughts ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].thoughts : null}
+                            </Text>
                             <Flex>
                               <Image 
                                 src={
@@ -1109,46 +1256,14 @@ export default function Profile({server}: ProfileProps) {
                                 maxH="125px"
                               />
                               <Box mx={2}>
-                                <HStack justify="space-between">
-                                  <Text>
-                                    {
-                                      dayjs(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                        .created_on)
-                                        .local()
-                                        .format('MMM DD, m a')
-                                    }
-                                  </Text>
-                                  <Box>
-                                    <Menu>
-                                      <MenuButton 
-                                        as={Button}
-                                        size="md"
-                                        variant="ghost"
-                                        rounded="full"
-                                        height="25px"
-                                      >
-                                        <BiDotsHorizontalRounded/>
-                                      </MenuButton>
-                                      <MenuList>
-                                        <MenuItem 
-                                          data-book={JSON.stringify(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1])}
-                                          onClick={e=>openCommentModal(e)}
-                                          fontWeight="bold"
-                                          icon={<BsReplyFill size={20} />}
-                                        >
-                                          Comment
-                                        </MenuItem>
-                                        <MenuItem 
-                                          onClick={e=>navigate(`/chat/room?title=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title}&author=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author}`)}
-                                          fontWeight="bold"
-                                          icon={<MdOutlineChat size={20} />}
-                                        >
-                                          Chat Room
-                                        </MenuItem>
-                                      </MenuList>
-                                    </Menu>
-                                  </Box>
-                                </HStack>
+                                <Text>
+                                  {
+                                    dayjs(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                      .created_on)
+                                      .local()
+                                      .format('MMM DD, m a')
+                                  }
+                                </Text>
                                 <Heading as="h5" size="sm" me={3}>
                                   {
                                     profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
@@ -1280,6 +1395,98 @@ export default function Profile({server}: ProfileProps) {
                                 className="well-card"
                                 position="relative"
                               >
+                                <Box
+                                  position="absolute"
+                                  top={2}
+                                  right={0}
+                                >
+                                  <Menu>
+                                    <MenuButton 
+                                      as={Button}
+                                      size="md"
+                                      variant="ghost"
+                                      rounded="full"
+                                      height="25px"
+                                    >
+                                      <BiDotsHorizontalRounded/>
+                                    </MenuButton>
+                                    <MenuList>
+                                      <MenuItem 
+                                        data-book={JSON.stringify(readBook)}
+                                        onClick={e=>openCommentModal(e)}
+                                        fontWeight="bold"
+                                        icon={<BsReplyFill size={20} />}
+                                      >
+                                        Comment
+                                      </MenuItem>
+                                      <MenuItem 
+                                        onClick={e=>navigate(`/chat/room?title=${readBook.title}&author=${readBook.author}`)}
+                                        fontWeight="bold"
+                                        icon={<MdOutlineChat size={20} />}
+                                      >
+                                        Chat Room
+                                      </MenuItem>
+                                      {viewer === "self" ? (
+                                      <>
+                                        <MenuItem
+                                          data-readingid={readBook.id}
+                                          data-hide={readBook.hidden ? false : true}
+                                          onClick={e=>hideReading(e as any)}
+                                          fontWeight="bold"
+                                          icon={<BiHide size={20} />}
+                                        >
+                                          {readBook.hidden ? "Unhide" : "Hide"}
+                                        </MenuItem>
+                                        <MenuItem
+                                          color="tomato"
+                                          onClick={e=>deleteReading(readBook.id)}
+                                          fontWeight="bold"
+                                          icon={<BiTrash size={20} />}
+                                        >
+                                          Delete
+                                        </MenuItem>
+                                      </>
+                                      ): null}
+                                    </MenuList>
+                                  </Menu>
+                              </Box>
+                                <Text 
+                                  my={2}
+                                  rounded="md"
+                                  p={1}
+                                  _hover={{
+                                    cursor: viewer === "self" ? "pointer" : "default",
+                                    backgroundColor: viewer === "self" ? "gray" : "unset"
+                                  }}
+                                  id={`currently-reading-text-${readBook.id}`}
+                                  onClick={e=>editCurrentlyReadingThoughts(readBook.id)}
+                                >
+                                  {readBook.thoughts ? readBook.thoughts : null}
+                                </Text>
+                                <Flex 
+                                  align="center" 
+                                  gap={1}
+                                  display="none"
+                                  id={`currently-reading-input-div-${readBook.id}`}
+                                >
+                                  <Input
+                                    my={2}
+                                    type="text"
+                                    defaultValue={readBook.thoughts ? readBook.thoughts : ""}
+                                    id={`currently-reading-input-${readBook.id}`}
+                                  />
+                                  <Button
+                                    onClick={e=>updateCurrentlyReadingThoughts(readBook.id)}
+                                    disabled={updateCurrentlyReadingThoughtsMutation.isLoading}
+                                  >
+                                    Update
+                                  </Button>
+                                  <Button
+                                    onClick={e=>cancelEditCurrentlyReadingThoughts(readBook.id)}
+                                  >
+                                    Cancel
+                                  </Button>
+                                </Flex>
                                 <Flex>
                                   <Image 
                                     src={readBook.image}
@@ -1290,62 +1497,9 @@ export default function Profile({server}: ProfileProps) {
                                       <Text>
                                         {dayjs(readBook.created_on).local().format('MMM DD, h:mm a')}
                                       </Text>
-                                      <HStack>
-                                        <Text>
-                                          {viewer === "self" && readBook.hidden ? <i>hidden</i> : ""}
-                                        </Text>
-                                        <Box>
-                                            <Menu>
-                                              <MenuButton 
-                                                as={Button}
-                                                size="md"
-                                                variant="ghost"
-                                                rounded="full"
-                                                height="25px"
-                                              >
-                                                <BiDotsHorizontalRounded/>
-                                              </MenuButton>
-                                              <MenuList>
-                                                <MenuItem 
-                                                  data-book={JSON.stringify(readBook)}
-                                                  onClick={e=>openCommentModal(e)}
-                                                  fontWeight="bold"
-                                                  icon={<BsReplyFill size={20} />}
-                                                >
-                                                  Comment
-                                                </MenuItem>
-                                                <MenuItem 
-                                                  onClick={e=>navigate(`/chat/room?title=${readBook.title}&author=${readBook.author}`)}
-                                                  fontWeight="bold"
-                                                  icon={<MdOutlineChat size={20} />}
-                                                >
-                                                  Chat Room
-                                                </MenuItem>
-                                                {viewer === "self" ? (
-                                                <>
-                                                  <MenuItem
-                                                    data-readingid={readBook.id}
-                                                    data-hide={readBook.hidden ? false : true}
-                                                    onClick={e=>hideReading(e as any)}
-                                                    fontWeight="bold"
-                                                    icon={<BiHide size={20} />}
-                                                  >
-                                                    {readBook.hidden ? "Unhide" : "Hide"}
-                                                  </MenuItem>
-                                                  <MenuItem
-                                                    color="tomato"
-                                                    onClick={e=>deleteReading(readBook.id)}
-                                                    fontWeight="bold"
-                                                    icon={<BiTrash size={20} />}
-                                                  >
-                                                    Delete
-                                                  </MenuItem>
-                                                </>
-                                                ): null}
-                                              </MenuList>
-                                            </Menu>
-                                        </Box>
-                                      </HStack>
+                                      <Text>
+                                        {viewer === "self" && readBook.hidden ? <i>hidden</i> : ""}
+                                      </Text>
                                     </Flex>
                                     <Heading as="h5" size="sm" me={3}>
                                       {readBook.title}
