@@ -118,7 +118,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
         })
       })
       .catch(({response})=>{
-        setPwResetError("Error: PWR200")
+        setPwResetError(response.data.message)
         console.log(response.data.message)
         throw new Error("An error has occurred")
       })
