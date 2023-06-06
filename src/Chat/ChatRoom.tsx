@@ -63,6 +63,7 @@ export default function ChatRoom({server}: {server: string}) {
     socket.emit("get-users",roomId)
   }
 
+  const [ip,setIp] = useState("");
   const [bookTitle,setBookTitle] = useState(searchParams.get("title"))
   const [bookAuthor,setBookAuthor] = useState(searchParams.get("author"))
   const [bookClub,setBookClub] = useState(searchParams.get("bookclub"))
@@ -72,6 +73,11 @@ export default function ChatRoom({server}: {server: string}) {
   const [chatMessages,setChatMessages] = useState<any[]>([]);
   const [roomUsers,setRoomUsers] = useState([] as any[]);
   useEffect(()=>{
+    async function getIp() {
+      const resIp = await axios.get("https://api.ipify.org/?format=json")
+      setIp(resIp.data.ip)
+    }
+    getIp()
     if (!searchParams.get("bookclub")) {
       if (!searchParams.get("title")) {
         navigate("/")
@@ -172,7 +178,8 @@ export default function ChatRoom({server}: {server: string}) {
       .post(server + "/api/chat",
       {
         chatText: chatText,
-        uri: window.location.pathname + window.location.search
+        uri: window.location.pathname + window.location.search,
+        ip: ip
       },
       {
         headers: {

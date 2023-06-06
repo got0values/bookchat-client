@@ -1673,13 +1673,14 @@ export default function BookClub({server}: {server: string}) {
                   rowGap={2}
                   my={3}
                 >
-                  {genres.map((genre)=>{
+                  {genres.map((genre,i)=>{
                     return (
                       <Checkbox
                         value={genre.value}
                         onChange={e=>handleGroupCheckbox(e)}
                         defaultChecked={bookClubGroups.includes(genre.value)}
                         className="group-check"
+                        key={i}
                       >
                         {genre.name}
                       </Checkbox>

@@ -39,8 +39,6 @@ import {
   useColorMode
 } from "@chakra-ui/react";
 import { IoIosAdd } from 'react-icons/io';
-import { FaBookReader } from 'react-icons/fa';
-import { BsDot } from 'react-icons/bs';
 import Cookies from "js-cookie";
 import axios from "axios";
 import { BookClubsType } from "../types/types";
