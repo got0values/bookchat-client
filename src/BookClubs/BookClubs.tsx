@@ -259,7 +259,7 @@ export default function BookClubs({server}: {server: string}) {
                               }}
                               key={i}
                             >
-                              <Heading as="h4" size="sm">
+                              <Heading as="h4" size="sm" noOfLines={1}>
                                 {bookClub.name}
                               </Heading>
                               <Text>
@@ -272,7 +272,7 @@ export default function BookClubs({server}: {server: string}) {
                     </Box>
                   </Box>
                 </Stack>
-                <Stack flex="1 1 65%">
+                <Stack flex="1 1 65%" maxW="100%">
                   <Box className="well">
                     <Flex align="center" justify="space-between" gap={2} mb={2}>
                       <Heading as="h3" size="md">
@@ -294,6 +294,7 @@ export default function BookClubs({server}: {server: string}) {
                                 bg: "gray.200",
                                 cursor: "pointer"
                               }}
+                              overflowX="auto"
                               onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
                               key={i}
                             >
@@ -304,7 +305,7 @@ export default function BookClubs({server}: {server: string}) {
                                 rowGap={2}
                               >
                                 <Flex direction="column" gap={1}>
-                                  <Heading as="h4" size="sm">
+                                  <Heading as="h4" size="sm" noOfLines={1}>
                                     {bookClub.name}
                                   </Heading>
                                   {bookClub.BookClubBook[0] ? (
@@ -323,7 +324,7 @@ export default function BookClubs({server}: {server: string}) {
                                   </Flex>
                                   ) : null}
                                 </Flex>
-                                <Flex align="center" gap={1}>
+                                <Flex align="center" gap={1} marginLeft="auto">
                                   <Avatar
                                     size="xs"
                                     cursor="pointer"
@@ -402,7 +403,7 @@ export default function BookClubs({server}: {server: string}) {
 
                   </Box>
                 </Stack>
-                <Stack flex="1 1 65%">
+                <Stack flex="1 1 65%" maxW="100%">
                   <Box className="well">
                     <Flex align="center" justify="space-between" gap={2} mb={2}>
                       <Heading as="h3" size="md">
@@ -424,6 +425,7 @@ export default function BookClubs({server}: {server: string}) {
                                   bg: "gray.200",
                                   cursor: "pointer"
                                 }}
+                                overflowX="auto"
                                 onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
                               >
                                 <Flex 
@@ -433,7 +435,7 @@ export default function BookClubs({server}: {server: string}) {
                                   rowGap={2}
                                 >
                                   <Flex direction="column" gap={1}>
-                                    <Heading as="h4" size="sm">
+                                    <Heading as="h4" size="sm" noOfLines={1}>
                                       {bookClub.name}
                                     </Heading>
                                     {bookClub.BookClubBook[0] ? (
@@ -452,7 +454,7 @@ export default function BookClubs({server}: {server: string}) {
                                     </Flex>
                                     ) : null}
                                   </Flex>
-                                  <Flex align="center" gap={1}>
+                                  <Flex align="center" gap={1} marginLeft="auto">
                                     <Avatar
                                       size="xs"
                                       cursor="pointer"
@@ -538,6 +540,7 @@ export default function BookClubs({server}: {server: string}) {
                                 bg: "gray.200",
                                 cursor: "pointer"
                               }}
+                              overflowX="auto"
                               onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
                               minH="125px"
                               key={i}
@@ -549,7 +552,7 @@ export default function BookClubs({server}: {server: string}) {
                                 rowGap={2}
                               >
                                 <Flex direction="column" gap={1}>
-                                  <Heading as="h4" size="sm">
+                                  <Heading as="h4" size="sm" noOfLines={1}>
                                     {bookClub.name}
                                   </Heading>
                                   {bookClub.BookClubBook[0] ? (
@@ -568,7 +571,7 @@ export default function BookClubs({server}: {server: string}) {
                                   </Flex>
                                   ) : null}
                                 </Flex>
-                                <Flex align="center" gap={1}>
+                                <Flex align="center" gap={1} marginLeft="auto">
                                   <Avatar 
                                     size="xs"
                                     cursor="pointer"
@@ -656,6 +659,7 @@ export default function BookClubs({server}: {server: string}) {
               <Input
               type="text"
               ref={createBookClubNameRef}
+              maxLength={100}
               required
               />
             </ModalBody>
