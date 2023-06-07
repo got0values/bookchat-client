@@ -888,8 +888,7 @@ export default function Profile({server}: ProfileProps) {
                       <Input 
                         type="text" 
                         placeholder="What i'm reading"
-                        borderRadius="25px" 
-                        border="transparent"
+                        variant="ghost"
                         bg="white" 
                         _dark={{
                           bg: "blackAlpha.400"
