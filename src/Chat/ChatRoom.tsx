@@ -81,6 +81,10 @@ export default function ChatRoom({server}: {server: string}) {
       setIp(resIp.data.ip)
     }
     getIp()
+    
+    // let typeOfRoomVar = searchParams.get("generaltype") ? "generaltype" : searchParams.get("bookclub") ? "bookclub" : "book";
+    let typeOfRoomVar;
+    let roomIdVar;
     if (!searchParams.get("bookclub") && !searchParams.get("generaltype")) {
       if (!searchParams.get("title")) {
         navigate("/")
@@ -92,21 +96,33 @@ export default function ChatRoom({server}: {server: string}) {
         })
       }
       else {
-        setTypeOfRoom(prev=>"book")
-        setBookTitle(searchParams.get("title"))
-        setBookAuthor(searchParams.get("author"))
-        setRoomId(bookTitle && bookAuthor ? (bookTitle + bookAuthor).replace(/\s+/g,'') : "coolchat")
+        typeOfRoomVar = "book";
+        setTypeOfRoom(typeOfRoomVar)
+
+        setBookTitle(prev=>searchParams.get("title"))
+        setBookAuthor(prev=>searchParams.get("author"))
+
+        roomIdVar = bookTitle && bookAuthor ? (bookTitle + bookAuthor).replace(/\s+/g,'') : "coolchat";
+        setRoomId(roomIdVar)
       }
     }
     else if (searchParams.get("bookclub")) {
-      setTypeOfRoom(prev=>"bookClub");
-      setBookClub(searchParams.get("bookclub"))
-      setRoomId(searchParams.get("bookclub")!)
+      typeOfRoomVar = "bookClub";
+      setTypeOfRoom(typeOfRoomVar);
+
+      setBookClub(prev=>searchParams.get("bookclub"))
+
+      roomIdVar = searchParams.get("bookclub")!;
+      setRoomId(roomIdVar);
     }
     else if (searchParams.get("generaltype")) {
-      setTypeOfRoom(prev=>"generalType");
-      setGeneralType(searchParams.get("generaltype"))
-      setRoomId(searchParams.get("generaltype")!)
+      typeOfRoomVar = "generalType";
+      setTypeOfRoom(typeOfRoomVar);
+
+      setGeneralType(prev=>searchParams.get("generaltype"))
+
+      roomIdVar = searchParams.get("generaltype")!;
+      setRoomId(roomIdVar);
     }
     else {
       navigate("/")
@@ -149,18 +165,16 @@ export default function ChatRoom({server}: {server: string}) {
     }
 
     socket.on("connect", onConnect)
-    setTimeout(()=>{
-      socket.connect();
-      socket.emit("join-room",{
-        roomId: roomId, 
-        userName: user.Profile.username,
-        profilePhoto: user.Profile.profile_photo,
-        country: user.Profile.country,
-        bookTitle: bookTitle,
-        bookAuthor: bookAuthor,
-        typeOfRoom: typeOfRoom
-      });
-    },2000)
+    socket.connect();
+    socket.emit("join-room",{
+      roomId: roomIdVar, 
+      userName: user.Profile.username,
+      profilePhoto: user.Profile.profile_photo,
+      country: user.Profile.country,
+      bookTitle: bookTitle,
+      bookAuthor: bookAuthor,
+      typeOfRoom: typeOfRoomVar
+    });
     socket.on("receive-users", (users)=>{
       onReceiveUsers(users)
     })
@@ -176,7 +190,7 @@ export default function ChatRoom({server}: {server: string}) {
       socket.off('receive-message', onReceiveMessage);
 
       window.removeEventListener("beforeunload",disconnectSocket)
-      // disconnectSocket();
+      disconnectSocket();
     };
   },[searchParams,socket])
 
@@ -466,6 +480,7 @@ export default function ChatRoom({server}: {server: string}) {
                 size="md"
                 onClick={e=>disconnectSocket()}
                 mt="auto"
+                id="disconnectRef"
               >
                 Disconnect
               </Button>
@@ -473,6 +488,7 @@ export default function ChatRoom({server}: {server: string}) {
               <Button 
                 size="md"
                 onClick={e=>connectSocket()}
+                id="connectRef"
               >
                 Connect
               </Button>
