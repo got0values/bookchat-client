@@ -313,6 +313,7 @@ export interface ActiveRoom {
   bookTitle: string;
   bookAuthor: string;
   numberOfUsers?: number;
+  typeOfRoom: string;
 }
 
 export interface ChatUser {

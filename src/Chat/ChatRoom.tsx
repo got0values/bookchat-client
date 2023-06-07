@@ -59,7 +59,7 @@ export default function ChatRoom({server}: {server: string}) {
       profilePhoto: user.Profile.profile_photo,
       bookTitle: bookTitle,
       bookAuthor: bookAuthor,
-      typeOfRoom: bookClub ? "bookClub" : "book"
+      typeOfRoom: typeOfRoom
     })
     socket.emit("get-users",roomId)
   }
@@ -74,6 +74,7 @@ export default function ChatRoom({server}: {server: string}) {
   const [roomId,setRoomId] = useState<string>(bookTitle && bookAuthor ? (bookTitle + bookAuthor).replace(/\s+/g,'') : "coolchat");
   const [chatMessages,setChatMessages] = useState<any[]>([]);
   const [roomUsers,setRoomUsers] = useState([] as any[]);
+  const [typeOfRoom,setTypeOfRoom] = useState("");
   useEffect(()=>{
     async function getIp() {
       const resIp = await axios.get("https://ipapi.co/json")
@@ -91,16 +92,19 @@ export default function ChatRoom({server}: {server: string}) {
         })
       }
       else {
+        setTypeOfRoom(prev=>"book")
         setBookTitle(searchParams.get("title"))
         setBookAuthor(searchParams.get("author"))
         setRoomId(bookTitle && bookAuthor ? (bookTitle + bookAuthor).replace(/\s+/g,'') : "coolchat")
       }
     }
     else if (searchParams.get("bookclub")) {
+      setTypeOfRoom(prev=>"bookClub");
       setBookClub(searchParams.get("bookclub"))
       setRoomId(searchParams.get("bookclub")!)
     }
     else if (searchParams.get("generaltype")) {
+      setTypeOfRoom(prev=>"generalType");
       setGeneralType(searchParams.get("generaltype"))
       setRoomId(searchParams.get("generaltype")!)
     }
@@ -153,7 +157,7 @@ export default function ChatRoom({server}: {server: string}) {
       country: user.Profile.country,
       bookTitle: bookTitle,
       bookAuthor: bookAuthor,
-      typeOfRoom: bookClub ? "bookClub" : "book"
+      typeOfRoom: typeOfRoom
     });
     socket.on("receive-users", (users)=>{
       onReceiveUsers(users)

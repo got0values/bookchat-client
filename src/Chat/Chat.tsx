@@ -39,15 +39,20 @@ export default function Chat() {
   }
 
   const [activeRooms,setActiveRooms] = useState<ActiveRoom[]>([]);
+  const [generalNumberOfPeople,setGeneralNumberOfPeople] = useState(0)
+  const [recommendationsNumberOfPeople,setRecommendationsNumberOfPeople] = useState(0)
   useEffect(()=>{
     socket.connect()
     socket.on("receive-active-rooms",(rooms)=>{
       if (rooms.length) {
+        setGeneralNumberOfPeople(rooms.filter((room:ActiveRoom)=>room.roomId === "General").length)
+        setRecommendationsNumberOfPeople(rooms.filter((room:ActiveRoom)=>room.roomId === "Recommendations").length)
         setActiveRooms(prev=>{
           const roomsWithNumberOfUsers = rooms.map((room: ActiveRoom,i: number,arr: ActiveRoom[])=>{
+            const numberOfUsers = arr.filter((r)=>r.roomId === room.roomId && r.typeOfRoom !== "generalType").length
             return {
               ...room,
-              numberOfUsers: arr.filter((r)=>r.roomId === room.roomId).length
+              numberOfUsers: numberOfUsers
             }
           })
           const noDuplicatRooms = roomsWithNumberOfUsers.filter((room: ActiveRoom,index: number)=>{
@@ -218,8 +223,9 @@ export default function Chat() {
                       onClick={e=>navigate("/chat/room?generaltype=General")}
                     >
                       <Flex
-                        gap={1}
-                        direction="column"
+                        justify="space-between"
+                        align="center"
+                        w="100%"
                         wrap="wrap"
                       >
                         <Heading
@@ -228,6 +234,9 @@ export default function Chat() {
                         >
                           General
                         </Heading>
+                        <Text>
+                          {generalNumberOfPeople}
+                        </Text>
                       </Flex>
                     </Flex>
                     <Flex 
@@ -239,8 +248,9 @@ export default function Chat() {
                       onClick={e=>navigate("/chat/room?generaltype=Recommendations")}
                     >
                       <Flex
-                        gap={1}
-                        direction="column"
+                        justify="space-between"
+                        align="center"
+                        w="100%"
                         wrap="wrap"
                       >
                         <Heading
@@ -249,6 +259,9 @@ export default function Chat() {
                         >
                           Recommendations
                         </Heading>
+                        <Text>
+                          {recommendationsNumberOfPeople}
+                        </Text>
                       </Flex>
                     </Flex>
                   </Flex>
@@ -265,26 +278,28 @@ export default function Chat() {
                   {activeRooms.length ? (
                     activeRooms.map((room,i,arr)=>{
                       return (
-                        <Flex 
-                          className="well-card"
-                          justify="space-between"
-                          _hover={{
-                            cursor: "pointer"
-                          }}
-                          onClick={e=>navigate(`/chat/room?title=${room?.bookTitle ? room.bookTitle : ""}&author=${room?.bookAuthor ? room.bookAuthor : ""}`)}
-                          key={i}
-                        >
-                          <Flex
-                            gap={1}
-                            wrap="wrap"
+                        room.typeOfRoom !== "generalType" ? (
+                          <Flex 
+                            className="well-card"
+                            justify="space-between"
+                            _hover={{
+                              cursor: "pointer"
+                            }}
+                            onClick={e=>navigate(`/chat/room?title=${room?.bookTitle ? room.bookTitle : ""}&author=${room?.bookAuthor ? room.bookAuthor : ""}`)}
+                            key={i}
                           >
-                            <Text fontStyle="italic">{room?.bookTitle ? room?.bookTitle : ""} </Text>
-                            <Text>{room?.bookAuthor ? room?.bookAuthor : ""}</Text>
+                            <Flex
+                              gap={1}
+                              wrap="wrap"
+                            >
+                              <Text fontStyle="italic">{room?.bookTitle ? room?.bookTitle : ""} </Text>
+                              <Text>{room?.bookAuthor ? room?.bookAuthor : ""}</Text>
+                            </Flex>
+                            <Text>
+                              {room?.numberOfUsers ? room.numberOfUsers : "0"}
+                            </Text>
                           </Flex>
-                          <Text>
-                            {room?.numberOfUsers ? room.numberOfUsers : "0"}
-                          </Text>
-                        </Flex>
+                        ) : null
                       )
                     })
                   ) : (
