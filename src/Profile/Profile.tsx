@@ -920,7 +920,7 @@ export default function Profile({server}: ProfileProps) {
                         <Flex>
                           <Image 
                             src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
-                            maxH="125px"
+                            maxH="100px"
                           />
                           <Box 
                             mx={2}
@@ -928,14 +928,15 @@ export default function Profile({server}: ProfileProps) {
                             <Heading as="h5" size="sm" me={3}>
                               {selectedBook.volumeInfo.title}
                             </Heading>
-                            <Text>
+                            <Text fontSize="sm">
                               {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
                             </Text>
                             <Popover isLazy>
                               <PopoverTrigger>
                                 <Text
-                                  noOfLines={2}
+                                  noOfLines={3}
                                   cursor="pointer"
+                                  fontSize="sm"
                                 >
                                   {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
                                 </Text>
@@ -943,7 +944,7 @@ export default function Profile({server}: ProfileProps) {
                               <PopoverContent>
                                 <PopoverArrow />
                                 <PopoverCloseButton />
-                                <PopoverBody>
+                                <PopoverBody fontSize="sm">
                                   {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
                                 </PopoverBody>
                               </PopoverContent>
@@ -971,61 +972,71 @@ export default function Profile({server}: ProfileProps) {
                         className="well-card"
                         position="relative"
                       >
-                        <Box
-                          position="absolute"
-                          top={2}
-                          right={0}
-                        >
-                          <Menu>
-                            <MenuButton 
-                              as={Button}
-                              size="md"
-                              variant="ghost"
-                              rounded="full"
-                              height="25px"
-                            >
-                              <BiDotsHorizontalRounded/>
-                            </MenuButton>
-                            <MenuList>
-                              <MenuItem 
-                                data-book={JSON.stringify(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1])}
-                                onClick={e=>openCommentModal(e)}
-                                fontWeight="bold"
-                                icon={<BsReplyFill size={20} />}
-                              >
-                                Comment
-                              </MenuItem>
-                              <MenuItem 
-                                onClick={e=>navigate(`/chat/room?title=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title}&author=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author}`)}
-                                fontWeight="bold"
-                                icon={<MdOutlineChat size={20} />}
-                              >
-                                Chat Room
-                              </MenuItem>
-                              {viewer === "self" ? (
-                              <>
-                                <MenuItem
-                                  data-readingid={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}
-                                  data-hide={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? false : true}
-                                  onClick={e=>hideReading(e as any)}
-                                  fontWeight="bold"
-                                  icon={<BiHide size={20} />}
+                        <Flex align="center" justify="space-between">
+                          <Text fontStyle="italic">
+                            {
+                              dayjs(profileData
+                                .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                .created_on).local().format('MMM DD, h:mm a')
+                            }
+                          </Text>
+                          <Flex align="center" gap={1}>
+                            <Text>
+                              {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? <i>hidden</i> : ""}
+                            </Text>
+                            <Box>
+                              <Menu>
+                                <MenuButton 
+                                  as={Button}
+                                  size="md"
+                                  variant="ghost"
+                                  rounded="full"
+                                  height="25px"
                                 >
-                                  {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? "Unhide" : "Hide"}
-                                </MenuItem>
-                                <MenuItem
-                                  color="tomato"
-                                  onClick={e=>deleteReading(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
-                                  fontWeight="bold"
-                                  icon={<BiTrash size={20} />}
-                                >
-                                  Delete
-                                </MenuItem>
-                              </>
-                              ): null}
-                            </MenuList>
-                          </Menu>
-                        </Box>
+                                  <BiDotsHorizontalRounded/>
+                                </MenuButton>
+                                <MenuList>
+                                  <MenuItem 
+                                    data-book={JSON.stringify(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1])}
+                                    onClick={e=>openCommentModal(e)}
+                                    fontWeight="bold"
+                                    icon={<BsReplyFill size={20} />}
+                                  >
+                                    Comment
+                                  </MenuItem>
+                                  <MenuItem 
+                                    onClick={e=>navigate(`/chat/room?title=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title}&author=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author}`)}
+                                    fontWeight="bold"
+                                    icon={<MdOutlineChat size={20} />}
+                                  >
+                                    Chat Room
+                                  </MenuItem>
+                                  {viewer === "self" ? (
+                                  <>
+                                    <MenuItem
+                                      data-readingid={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}
+                                      data-hide={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? false : true}
+                                      onClick={e=>hideReading(e as any)}
+                                      fontWeight="bold"
+                                      icon={<BiHide size={20} />}
+                                    >
+                                      {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? "Unhide" : "Hide"}
+                                    </MenuItem>
+                                    <MenuItem
+                                      color="tomato"
+                                      onClick={e=>deleteReading(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
+                                      fontWeight="bold"
+                                      icon={<BiTrash size={20} />}
+                                    >
+                                      Delete
+                                    </MenuItem>
+                                  </>
+                                  ): null}
+                                </MenuList>
+                              </Menu>
+                            </Box>
+                          </Flex>
+                        </Flex>
                         <Text 
                           my={2}
                           rounded="md"
@@ -1070,21 +1081,9 @@ export default function Profile({server}: ProfileProps) {
                               .CurrentlyReading[profileData.CurrentlyReading.length - 1]
                               .image
                             }
-                            maxH="125px"
+                            maxH="100px"
                           />
                           <Box mx={2}>
-                            <Flex justify="space-between">
-                              <Text>
-                                {
-                                  dayjs(profileData
-                                    .CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                    .created_on).local().format('MMM DD, h:mm a')
-                                }
-                              </Text>
-                              <Text>
-                                {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? <i>hidden</i> : ""}
-                              </Text>
-                            </Flex>
                             <Heading as="h5" size="sm" me={3}>
                               {
                                 profileData
@@ -1092,7 +1091,7 @@ export default function Profile({server}: ProfileProps) {
                                 .title
                               }
                             </Heading>
-                            <Text>
+                            <Text fontSize="sm">
                               {
                               
                               profileData
@@ -1103,8 +1102,9 @@ export default function Profile({server}: ProfileProps) {
                             <Popover isLazy>
                               <PopoverTrigger>
                                 <Text
-                                  noOfLines={2}
+                                  noOfLines={3}
                                   cursor="pointer"
+                                  fontSize="sm"
                                 >
                                   {
                                     profileData
@@ -1116,7 +1116,7 @@ export default function Profile({server}: ProfileProps) {
                               <PopoverContent>
                                 <PopoverArrow />
                                 <PopoverCloseButton />
-                                <PopoverBody>
+                                <PopoverBody fontSize="sm">
                                   {
                                     profileData
                                     .CurrentlyReading[profileData.CurrentlyReading.length - 1]
@@ -1206,40 +1206,50 @@ export default function Profile({server}: ProfileProps) {
                             className="well-card"
                             position="relative"
                           >
-                            <Box
-                              position="absolute"
-                              top={2}
-                              right={0}
-                            >
-                              <Menu>
-                                <MenuButton 
-                                  as={Button}
-                                  size="md"
-                                  variant="ghost"
-                                  rounded="full"
-                                  height="25px"
-                                >
-                                  <BiDotsHorizontalRounded/>
-                                </MenuButton>
-                                <MenuList>
-                                  <MenuItem 
-                                    data-book={JSON.stringify(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1])}
-                                    onClick={e=>openCommentModal(e)}
-                                    fontWeight="bold"
-                                    icon={<BsReplyFill size={20} />}
+                            <Flex justify="space-between" align="center">
+                              <Text fontStyle="italic">
+                                {
+                                  dayjs(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                    .created_on)
+                                    .local()
+                                    .format('MMM DD, m a')
+                                }
+                              </Text>
+                              <Box
+                                position="absolute"
+                                top={2}
+                                right={0}
+                              >
+                                <Menu>
+                                  <MenuButton 
+                                    as={Button}
+                                    size="md"
+                                    variant="ghost"
+                                    rounded="full"
+                                    height="25px"
                                   >
-                                    Comment
-                                  </MenuItem>
-                                  <MenuItem 
-                                    onClick={e=>navigate(`/chat/room?title=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title}&author=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author}`)}
-                                    fontWeight="bold"
-                                    icon={<MdOutlineChat size={20} />}
-                                  >
-                                    Chat Room
-                                  </MenuItem>
-                                </MenuList>
-                              </Menu>
-                            </Box>
+                                    <BiDotsHorizontalRounded/>
+                                  </MenuButton>
+                                  <MenuList>
+                                    <MenuItem 
+                                      data-book={JSON.stringify(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1])}
+                                      onClick={e=>openCommentModal(e)}
+                                      fontWeight="bold"
+                                      icon={<BsReplyFill size={20} />}
+                                    >
+                                      Comment
+                                    </MenuItem>
+                                    <MenuItem 
+                                      onClick={e=>navigate(`/chat/room?title=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title}&author=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author}`)}
+                                      fontWeight="bold"
+                                      icon={<MdOutlineChat size={20} />}
+                                    >
+                                      Chat Room
+                                    </MenuItem>
+                                  </MenuList>
+                                </Menu>
+                              </Box>
+                            </Flex>
                             <Text 
                               my={2}
                               rounded="md"
@@ -1252,24 +1262,16 @@ export default function Profile({server}: ProfileProps) {
                                 src={
                                   profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].image
                                 }
-                                maxH="125px"
+                                maxH="100px"
                               />
                               <Box mx={2}>
-                                <Text>
-                                  {
-                                    dayjs(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                      .created_on)
-                                      .local()
-                                      .format('MMM DD, m a')
-                                  }
-                                </Text>
                                 <Heading as="h5" size="sm" me={3}>
                                   {
                                     profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
                                     .title
                                   }
                                 </Heading>
-                                <Text>
+                                <Text fontSize="sm">
                                   {
                                     profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
                                     .author
@@ -1278,8 +1280,9 @@ export default function Profile({server}: ProfileProps) {
                                 <Popover isLazy>
                                   <PopoverTrigger>
                                     <Text
-                                      noOfLines={2}
+                                      noOfLines={3}
                                       cursor="pointer"
+                                      fontSize="sm"
                                     >
                                       {
                                         profileData
@@ -1291,7 +1294,7 @@ export default function Profile({server}: ProfileProps) {
                                   <PopoverContent>
                                     <PopoverArrow />
                                     <PopoverCloseButton />
-                                    <PopoverBody>
+                                    <PopoverBody fontSize="sm">
                                       {
                                         profileData
                                         .CurrentlyReading[0]
@@ -1394,61 +1397,67 @@ export default function Profile({server}: ProfileProps) {
                                 className="well-card"
                                 position="relative"
                               >
-                                <Box
-                                  position="absolute"
-                                  top={2}
-                                  right={0}
-                                >
-                                  <Menu>
-                                    <MenuButton 
-                                      as={Button}
-                                      size="md"
-                                      variant="ghost"
-                                      rounded="full"
-                                      height="25px"
-                                    >
-                                      <BiDotsHorizontalRounded/>
-                                    </MenuButton>
-                                    <MenuList>
-                                      <MenuItem 
-                                        data-book={JSON.stringify(readBook)}
-                                        onClick={e=>openCommentModal(e)}
-                                        fontWeight="bold"
-                                        icon={<BsReplyFill size={20} />}
-                                      >
-                                        Comment
-                                      </MenuItem>
-                                      <MenuItem 
-                                        onClick={e=>navigate(`/chat/room?title=${readBook.title}&author=${readBook.author}`)}
-                                        fontWeight="bold"
-                                        icon={<MdOutlineChat size={20} />}
-                                      >
-                                        Chat Room
-                                      </MenuItem>
-                                      {viewer === "self" ? (
-                                      <>
-                                        <MenuItem
-                                          data-readingid={readBook.id}
-                                          data-hide={readBook.hidden ? false : true}
-                                          onClick={e=>hideReading(e as any)}
-                                          fontWeight="bold"
-                                          icon={<BiHide size={20} />}
+                                <Flex justify="space-between" align="center">
+                                  <Text fontStyle="italic">
+                                    {dayjs(readBook.created_on).local().format('MMM DD, h:mm a')}
+                                  </Text>
+                                  <Flex align="center" gap={1}>
+                                    <Text>
+                                      {viewer === "self" && readBook.hidden ? <i>hidden</i> : ""}
+                                    </Text>
+                                    <Box>
+                                      <Menu>
+                                        <MenuButton 
+                                          as={Button}
+                                          size="md"
+                                          variant="ghost"
+                                          rounded="full"
+                                          height="25px"
                                         >
-                                          {readBook.hidden ? "Unhide" : "Hide"}
-                                        </MenuItem>
-                                        <MenuItem
-                                          color="tomato"
-                                          onClick={e=>deleteReading(readBook.id)}
-                                          fontWeight="bold"
-                                          icon={<BiTrash size={20} />}
-                                        >
-                                          Delete
-                                        </MenuItem>
-                                      </>
-                                      ): null}
-                                    </MenuList>
-                                  </Menu>
-                              </Box>
+                                          <BiDotsHorizontalRounded/>
+                                        </MenuButton>
+                                        <MenuList>
+                                          <MenuItem 
+                                            data-book={JSON.stringify(readBook)}
+                                            onClick={e=>openCommentModal(e)}
+                                            fontWeight="bold"
+                                            icon={<BsReplyFill size={20} />}
+                                          >
+                                            Comment
+                                          </MenuItem>
+                                          <MenuItem 
+                                            onClick={e=>navigate(`/chat/room?title=${readBook.title}&author=${readBook.author}`)}
+                                            fontWeight="bold"
+                                            icon={<MdOutlineChat size={20} />}
+                                          >
+                                            Chat Room
+                                          </MenuItem>
+                                          {viewer === "self" ? (
+                                          <>
+                                            <MenuItem
+                                              data-readingid={readBook.id}
+                                              data-hide={readBook.hidden ? false : true}
+                                              onClick={e=>hideReading(e as any)}
+                                              fontWeight="bold"
+                                              icon={<BiHide size={20} />}
+                                            >
+                                              {readBook.hidden ? "Unhide" : "Hide"}
+                                            </MenuItem>
+                                            <MenuItem
+                                              color="tomato"
+                                              onClick={e=>deleteReading(readBook.id)}
+                                              fontWeight="bold"
+                                              icon={<BiTrash size={20} />}
+                                            >
+                                              Delete
+                                            </MenuItem>
+                                          </>
+                                          ): null}
+                                        </MenuList>
+                                      </Menu>
+                                    </Box>
+                                  </Flex>
+                                </Flex>
                                 <Text 
                                   my={2}
                                   rounded="md"
@@ -1489,26 +1498,19 @@ export default function Profile({server}: ProfileProps) {
                                 <Flex>
                                   <Image 
                                     src={readBook.image}
-                                    maxH="125px"
+                                    maxH="100px"
                                   />
                                   <Box mx={2} w="100%">
-                                    <Flex justify="space-between">
-                                      <Text>
-                                        {dayjs(readBook.created_on).local().format('MMM DD, h:mm a')}
-                                      </Text>
-                                      <Text>
-                                        {viewer === "self" && readBook.hidden ? <i>hidden</i> : ""}
-                                      </Text>
-                                    </Flex>
                                     <Heading as="h5" size="sm" me={3}>
                                       {readBook.title}
                                     </Heading>
-                                    <Text>{readBook.author}</Text>
+                                    <Text fontSize="sm">{readBook.author}</Text>
                                     <Popover isLazy>
                                       <PopoverTrigger>
                                         <Text
-                                          noOfLines={2}
+                                          noOfLines={3}
                                           cursor="pointer"
+                                          fontSize="sm"
                                         >
                                           {readBook.description}
                                         </Text>
@@ -1516,7 +1518,7 @@ export default function Profile({server}: ProfileProps) {
                                       <PopoverContent>
                                         <PopoverArrow />
                                         <PopoverCloseButton />
-                                        <PopoverBody>
+                                        <PopoverBody fontSize="sm">
                                           {readBook.description}
                                         </PopoverBody>
                                       </PopoverContent>

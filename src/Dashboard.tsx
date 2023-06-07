@@ -618,19 +618,20 @@ export default function Dashboard({server}: DashboardProps) {
                   <Flex>
                     <Image 
                       src={reading.image}
-                      maxH="125px"
+                      maxH="100px"
                     />
                     <Box mx={2}>
                       <Heading as="h5" size="sm" me={3}>
                         {reading.title}
                       </Heading>
-                      <Text>
+                      <Text fontSize="sm">
                         {reading.author}
                       </Text>
                       <Popover isLazy>
                         <PopoverTrigger>
                           <Text
                             noOfLines={3}
+                            fontSize="sm"
                             cursor="pointer"
                           >
                           {reading.description}
@@ -639,7 +640,7 @@ export default function Dashboard({server}: DashboardProps) {
                         <PopoverContent>
                           <PopoverArrow />
                           <PopoverCloseButton />
-                          <PopoverBody>
+                          <PopoverBody fontSize="sm">
                             {reading.description}
                           </PopoverBody>
                         </PopoverContent>
