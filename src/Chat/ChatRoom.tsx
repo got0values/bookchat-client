@@ -149,9 +149,8 @@ export default function ChatRoom({server}: {server: string}) {
     }
 
     socket.on("connect", onConnect)
-    setTimeout(()=>{
-      socket.connect();
-      socket.emit("join-room",{
+    socket.connect();
+    socket.emit("join-room",{
       roomId: roomId, 
       userName: user.Profile.username,
       profilePhoto: user.Profile.profile_photo,
@@ -160,7 +159,7 @@ export default function ChatRoom({server}: {server: string}) {
       bookAuthor: bookAuthor,
       typeOfRoom: typeOfRoom
     });
-    },500)
+    connectSocket();
     socket.on("receive-users", (users)=>{
       onReceiveUsers(users)
     })
