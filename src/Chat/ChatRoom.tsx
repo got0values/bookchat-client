@@ -176,7 +176,7 @@ export default function ChatRoom({server}: {server: string}) {
       socket.off('receive-message', onReceiveMessage);
 
       window.removeEventListener("beforeunload",disconnectSocket)
-      disconnectSocket();
+      // disconnectSocket();
     };
   },[searchParams,socket])
 
