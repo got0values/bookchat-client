@@ -149,17 +149,18 @@ export default function ChatRoom({server}: {server: string}) {
     }
 
     socket.on("connect", onConnect)
-    socket.connect();
-    socket.emit("join-room",{
-      roomId: roomId, 
-      userName: user.Profile.username,
-      profilePhoto: user.Profile.profile_photo,
-      country: user.Profile.country,
-      bookTitle: bookTitle,
-      bookAuthor: bookAuthor,
-      typeOfRoom: typeOfRoom
-    });
-    connectSocket();
+    setTimeout(()=>{
+      socket.connect();
+      socket.emit("join-room",{
+        roomId: roomId, 
+        userName: user.Profile.username,
+        profilePhoto: user.Profile.profile_photo,
+        country: user.Profile.country,
+        bookTitle: bookTitle,
+        bookAuthor: bookAuthor,
+        typeOfRoom: typeOfRoom
+      });
+    },2000)
     socket.on("receive-users", (users)=>{
       onReceiveUsers(users)
     })
