@@ -7,6 +7,7 @@ import {
   Flex,
   Text,
   Button,
+  Checkbox,
   Skeleton,
   Input,
   InputGroup,
@@ -168,6 +169,7 @@ export default function ChatRoom({server}: {server: string}) {
     };
   },[searchParams,socket])
 
+  const spoilerRef = useRef({} as HTMLInputElement)
   const chatTextRef = useRef({} as HTMLInputElement);
   const [chatError,setChatError] = useState("")
   async function submitChat() {
@@ -193,6 +195,7 @@ export default function ChatRoom({server}: {server: string}) {
           {
             userName: user.Profile.username, 
             text: chatText,
+            spoiler: spoilerRef.current.checked,
             time: new Date()
           }, 
           roomId
@@ -327,9 +330,38 @@ export default function ChatRoom({server}: {server: string}) {
                             {` (${dayjs(message.time).local().format('h:mm a')}):`}
                           </Text>
                         </Flex>
-                        <Text>
-                          {message.text}
-                        </Text>
+                        {message.spoiler === true ? (
+                          <Accordion 
+                            defaultIndex={[1]}
+                            allowToggle
+                          >
+                            <AccordionItem 
+                              border={0}
+                              p={0}
+                              rounded="md"
+                            >
+                              <AccordionButton p={1}>
+                                <Text 
+                                  color="red" 
+                                  fontWeight="bold" 
+                                  fontSize="sm"
+                                >
+                                  Spoiler!
+                                </Text>
+                                <AccordionIcon/>
+                              </AccordionButton>
+                              <AccordionPanel>
+                              <Text>
+                                {message.text}
+                              </Text>
+                              </AccordionPanel>
+                            </AccordionItem>
+                          </Accordion>
+                        ) : (
+                          <Text>
+                            {message.text}
+                          </Text>
+                        )}
                       </Flex>
                     )
                   })}
@@ -380,6 +412,11 @@ export default function ChatRoom({server}: {server: string}) {
                   aria-label="submit"
                   icon={<FiSend/>}
                 />
+                <Checkbox
+                  ref={spoilerRef}
+                >
+                  Spoiler
+                </Checkbox>
               </Flex>
             </Flex>
             <Flex
