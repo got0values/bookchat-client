@@ -43,11 +43,10 @@ import {
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { MdClose, MdLogout } from 'react-icons/md';
 import { BsFillMoonFill, BsFillSunFill, BsFillChatFill } from 'react-icons/bs';
-import { FiSettings, FiMail } from 'react-icons/fi';
+import { FiSettings } from 'react-icons/fi';
 import { RxDotFilled } from 'react-icons/rx';
 import { AiOutlineBell, AiFillHome } from 'react-icons/ai';
-import { FaSearch } from 'react-icons/fa';
-import { ImBooks } from 'react-icons/im';
+import { FaSearch, FaBookReader } from 'react-icons/fa';
 import logoIcon from './assets/BookChatNoirNewBlack.png';
 import logoIconWhite from './assets/BookChatNoirNewWhite.png';
 import Cookies from "js-cookie";
@@ -63,8 +62,8 @@ interface LinkItemProps {
 
 const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', linkTo: "/", icon: <AiFillHome size="25"/>, tooltip: "Home"},
-  { name: 'Book Clubs', linkTo: "/bookclubs", icon: <ImBooks size="25"/>, tooltip: "Book Clubs" },
-  { name: 'Chat Rooms', linkTo: "/chat", icon: <BsFillChatFill size="25"/>, tooltip: "Chat Rooms" }
+  { name: 'Chat Rooms', linkTo: "/chat", icon: <BsFillChatFill size="25" />, tooltip: "Chat Rooms" },
+  { name: 'Book Clubs', linkTo: "/bookclubs", icon: <FaBookReader size="25"/>, tooltip: "Book Clubs" }
 ];
 
 export default function TopNav({server,onLogout}: TopNavProps) {
@@ -517,7 +516,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
           </HStack>
           <HStack
             as={'nav'}
-            spacing={2}
+            spacing={3}
             pr="175px"
             display={{ base: 'none', md: 'flex' }}>
             {LinkItems.map((linkItem, index) => (
