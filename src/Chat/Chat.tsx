@@ -114,7 +114,7 @@ export default function Chat() {
                   borderBottom: "none"
                 }}
               >
-                Active
+                Browse
               </Tab>
             </TabList>
 
@@ -139,6 +139,7 @@ export default function Chat() {
                     <Input 
                       type="text"
                       ref={searchChatRoomRef}
+                      placeholder="Search for a book chat room"
                       onKeyDown={e=>e.key === 'Enter' ? searchChatRoom() : null}
                     />
                     <Button
@@ -199,6 +200,59 @@ export default function Chat() {
 
               </TabPanel>
               <TabPanel>
+
+                <Box
+                  className="well"
+                >
+                  <Heading size="md" mb={2}>General</Heading>
+                  <Flex
+                    direction="column"
+                    gap={2}
+                  >
+                    <Flex 
+                      className="well-card"
+                      justify="space-between"
+                      _hover={{
+                        cursor: "pointer"
+                      }}
+                      onClick={e=>navigate("/chat/room?generaltype=General")}
+                    >
+                      <Flex
+                        gap={1}
+                        direction="column"
+                        wrap="wrap"
+                      >
+                        <Heading
+                          as="h3"
+                          size="sm"
+                        >
+                          General
+                        </Heading>
+                      </Flex>
+                    </Flex>
+                    <Flex 
+                      className="well-card"
+                      justify="space-between"
+                      _hover={{
+                        cursor: "pointer"
+                      }}
+                      onClick={e=>navigate("/chat/room?generaltype=Recommendations")}
+                    >
+                      <Flex
+                        gap={1}
+                        direction="column"
+                        wrap="wrap"
+                      >
+                        <Heading
+                          as="h3"
+                          size="sm"
+                        >
+                          Recommendations
+                        </Heading>
+                      </Flex>
+                    </Flex>
+                  </Flex>
+                </Box>
 
                 <Box
                   className="well"

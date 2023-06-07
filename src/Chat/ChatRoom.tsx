@@ -68,6 +68,7 @@ export default function ChatRoom({server}: {server: string}) {
   const [bookTitle,setBookTitle] = useState(searchParams.get("title"))
   const [bookAuthor,setBookAuthor] = useState(searchParams.get("author"))
   const [bookClub,setBookClub] = useState(searchParams.get("bookclub"))
+  const [generalType,setGeneralType] = useState(searchParams.get("generaltype"))
   const chatBoxRef = useRef({} as HTMLInputElement);
   const [isConnected,setIsConnected] = useState(socket.connected);
   const [roomId,setRoomId] = useState<string>(bookTitle && bookAuthor ? (bookTitle + bookAuthor).replace(/\s+/g,'') : "coolchat");
@@ -79,7 +80,7 @@ export default function ChatRoom({server}: {server: string}) {
       setIp(resIp.data.ip)
     }
     getIp()
-    if (!searchParams.get("bookclub")) {
+    if (!searchParams.get("bookclub") && !searchParams.get("generaltype")) {
       if (!searchParams.get("title")) {
         navigate("/")
         toast({
@@ -98,6 +99,10 @@ export default function ChatRoom({server}: {server: string}) {
     else if (searchParams.get("bookclub")) {
       setBookClub(searchParams.get("bookclub"))
       setRoomId(searchParams.get("bookclub")!)
+    }
+    else if (searchParams.get("generaltype")) {
+      setGeneralType(searchParams.get("generaltype"))
+      setRoomId(searchParams.get("generaltype")!)
     }
     else {
       navigate("/")
@@ -280,17 +285,21 @@ export default function ChatRoom({server}: {server: string}) {
               height="85vh"
               direction="column"
             >
-              {!bookClub ? (
-                <>
-                  <Heading as="h1" size="md" textAlign="center" mb={2}>
-                  {bookTitle} - {bookAuthor}
-                  </Heading>
-                </>
+              <Heading as="h1" size="md" textAlign="center" mb={2}>
+              {bookTitle !== null ? (
+                  `${bookTitle} - ${bookAuthor}`
               ) : (
-                <Heading as="h1" size="lg" textAlign="center">
-                  {bookClub} Book Club
-                </Heading>
+                bookClub ? (
+                    `${bookClub} Book Club`
+                ) : (
+                  generalType !== null ? (
+                      `${generalType}`
+                  ) : (
+                    null
+                  )
+                )
               )}
+              </Heading>
               <Box
                 h="100%"
                 overflow="auto"
