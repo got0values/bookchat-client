@@ -1691,6 +1691,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                       ref={profileAboutRef}
                       defaultValue={user.Profile.about}
                       size="lg"
+                      maxLength={100}
                     />
                   </FormControl>
                   <FormControl mt="5%">
