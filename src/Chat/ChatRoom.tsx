@@ -254,7 +254,6 @@ export default function ChatRoom({server}: {server: string}) {
         p={1}
         m={2}
         rounded="md"
-        mb={3}
         direction="column"
         maxH="85vh"
         gap={1}
@@ -313,6 +312,10 @@ export default function ChatRoom({server}: {server: string}) {
               flex="1 1 80%"
               height="91vh"
               direction="column"
+              bg="rgb(237, 242, 247)"
+              _dark={{
+                bg: "blackAlpha.200"
+              }}
             >
               {!isLargerThan650 ? (
                 <Heading as="h1" size="md" textAlign="center" mb={2} pt={2}>
@@ -473,6 +476,10 @@ export default function ChatRoom({server}: {server: string}) {
               flex="1 1 15%"
               height={isLargerThan650 ? "91vh" : "auto"}
               direction="column"
+              bg="rgb(237, 242, 247)"
+              _dark={{
+                bg: "blackAlpha.200"
+              }}
             >
               {isLargerThan650 ? (
                 <>
@@ -516,29 +523,33 @@ export default function ChatRoom({server}: {server: string}) {
                   </AccordionItem>
                 </Accordion>
               )}
-                {isConnected ? (
-                  <Button 
-                    size="md"
-                    onClick={e=>disconnectSocket()}
-                    mt="auto"
-                    mx={2}
-                    id="disconnectRef"
-                    colorScheme="purple"
-                  >
-                    Disconnect
-                  </Button>
-                  ) : (
-                  <Button 
-                    size="md"
-                    onClick={e=>connectSocket()}
-                    mt="auto"
-                    mx={2}
-                    id="connectRef"
-                    colorScheme="green"
-                  >
-                    Connect
-                  </Button>
-                )}
+                <Flex
+                  align="center"
+                >
+                  {isConnected ? (
+                    <Button 
+                      w="100%"
+                      onClick={e=>disconnectSocket()}
+                      aria-label="disconnect"
+                      mt="auto"
+                      mx={2}
+                      id="disconnectRef"
+                    >
+                      Disconnect
+                    </Button>
+                    ) : (
+                    <Button 
+                      w="100%"
+                      onClick={e=>connectSocket()}
+                      mt="auto"
+                      mx={2}
+                      id="connectRef"
+                      colorScheme="green"
+                    >
+                      Connect
+                    </Button>
+                  )}
+                </Flex>
             </Flex>
           </Flex>
         </Skeleton>
