@@ -37,24 +37,18 @@ const customTheme = {
         }
       },
       '#main': {
-        py: "20px",
+        // py: "20px",
         display: "flex",
         justifyContent: "center"
       },
       '.main-content': {
         w: "100%",
-        // px: "20px",
+        py: "20px",
         maxW: '1000px'
-      },
-      '.chat-content': {
-        w: "100%",
-        maxW: "1500px"
-        // px: "20px",
-        // maxW: '1000px'
       },
       '.main-content-smaller': {
         w: "100%",
-        // px: "20px",
+        py: "20px",
         maxW: '700px'
       },
       '.well': {

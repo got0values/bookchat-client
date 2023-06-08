@@ -444,7 +444,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
         as="nav" 
         bg="white" 
         overflow="hidden" px={4} 
-        boxShadow="1px 1px 6px lightgray" 
+        boxShadow="1px 1px 6px lightgrey" 
         _dark={{
           boxShadow: "0 0 0",
           bg: "blackAlpha.700"

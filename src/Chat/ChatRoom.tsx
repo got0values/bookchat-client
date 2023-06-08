@@ -6,6 +6,7 @@ import {
   Heading,
   Flex,
   Text,
+  Center,
   Button,
   Checkbox,
   Skeleton,
@@ -23,6 +24,7 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
+  Divider,
   useColorMode,
   useToast,
   useMediaQuery
@@ -250,12 +252,16 @@ export default function ChatRoom({server}: {server: string}) {
         h="100%" 
         overflowY="auto"
         p={1}
-        border="1px solid"
+        m={2}
         rounded="md"
         mb={3}
         direction="column"
         maxH="85vh"
         gap={1}
+        bg="white"
+        _dark={{
+          bg: "blackAlpha.500"
+        }}
       >
         {roomUsers ? (
           roomUsers.map((roomUser,i)=>{
@@ -291,41 +297,48 @@ export default function ChatRoom({server}: {server: string}) {
 
   return (
     <>
-      <Box className="chat-content">
+      <Box 
+        w="100%"
+        h="100%"
+        pb={2}
+      >
         <Skeleton isLoaded={true}>
           <Flex 
             flexWrap="wrap" 
-            gap={3} w="99%" 
+            gap={0} 
             align="start" 
             justify="space-between"
-            className="well"
           >
             <Flex 
               flex="1 1 80%"
-              height="85vh"
+              height="91vh"
               direction="column"
             >
-              <Heading as="h1" size="md" textAlign="center" mb={2}>
-              {bookTitle !== null ? (
-                  `${bookTitle} - ${bookAuthor}`
-              ) : (
-                bookClub ? (
-                    `${bookClub} Book Club`
-                ) : (
-                  generalType !== null ? (
-                      `${generalType}`
+              {!isLargerThan650 ? (
+                <Heading as="h1" size="md" textAlign="center" mb={2} pt={2}>
+                  {bookTitle !== null ? (
+                      `${bookTitle} - ${bookAuthor}`
                   ) : (
-                    null
-                  )
-                )
-              )}
-              </Heading>
+                    bookClub ? (
+                        `${bookClub} Book Club`
+                    ) : (
+                      generalType !== null ? (
+                          `${generalType}`
+                      ) : (
+                        null
+                      )
+                    )
+                  )}
+                  </Heading>
+                ) : null}
               <Box
                 h="100%"
                 overflow="auto"
-                border="1px solid"
-                rounded="md"
                 mb={2}
+                bg="white"
+                _dark={{
+                  bg: "blackAlpha.500"
+                }}
                 ref={chatBoxRef as any}
               >
                 <>
@@ -342,69 +355,67 @@ export default function ChatRoom({server}: {server: string}) {
                   >
                     <Text size="sm">{isConnected ? "connected" : "disconnected"}</Text>
                   </Flex>
-                  {chatMessages?.map((message,i)=>{
-                    return (
-                      <Flex key={i} gap={1} m={1} fontSize={["sm","md","md"]}>
-                        <Flex 
-                          fontWeight="bold" 
-                          wrap="wrap"
-                          align="center"
-                          gap={1}
-                        >
-                          {message.userName === "admin" ? <Text color="purple">admin</Text>  : <Text>{message.userName}</Text>}
-                          <Text
-                            as="span"
-                            fontSize="xs"
+                  <Box p={1}>
+                    {chatMessages?.map((message,i)=>{
+                      return (
+                        <Flex key={i} gap={1} m={1} fontSize={["sm","md","md"]}>
+                          <Flex 
+                            fontWeight="bold" 
+                            wrap="wrap"
+                            align="center"
+                            gap={1}
                           >
-                            {` (${dayjs(message.time).local().format('h:mm a')}):`}
-                          </Text>
-                        </Flex>
-                        {message.spoiler === true ? (
-                          <Accordion 
-                            defaultIndex={[1]}
-                            allowToggle
-                          >
-                            <AccordionItem 
-                              border={0}
-                              p={0}
-                              rounded="md"
+                            {message.userName === "admin" ? <Text color="purple">admin</Text>  : <Text>{message.userName}</Text>}
+                            <Text
+                              as="span"
+                              fontSize="xs"
                             >
-                              <AccordionButton p={1}>
-                                <Text 
-                                  color="red" 
-                                  fontWeight="bold" 
-                                  fontSize="sm"
-                                >
-                                  Spoiler!
+                              {` (${dayjs(message.time).local().format('h:mm a')}):`}
+                            </Text>
+                          </Flex>
+                          {message.spoiler === true ? (
+                            <Accordion 
+                              defaultIndex={[1]}
+                              allowToggle
+                            >
+                              <AccordionItem 
+                                border={0}
+                                p={0}
+                                rounded="md"
+                              >
+                                <AccordionButton p={1}>
+                                  <Text 
+                                    color="red" 
+                                    fontWeight="bold" 
+                                    fontSize="sm"
+                                  >
+                                    Spoiler!
+                                  </Text>
+                                  <AccordionIcon/>
+                                </AccordionButton>
+                                <AccordionPanel>
+                                <Text>
+                                  {message.text}
                                 </Text>
-                                <AccordionIcon/>
-                              </AccordionButton>
-                              <AccordionPanel>
-                              <Text>
-                                {message.text}
-                              </Text>
-                              </AccordionPanel>
-                            </AccordionItem>
-                          </Accordion>
-                        ) : (
-                          <Text>
-                            {message.text}
-                          </Text>
-                        )}
-                      </Flex>
-                    )
-                  })}
+                                </AccordionPanel>
+                              </AccordionItem>
+                            </Accordion>
+                          ) : (
+                            <Text>
+                              {message.text}
+                            </Text>
+                          )}
+                        </Flex>
+                      )
+                    })}
+                  </Box>
                 </>
               </Box>
-              {chatError && (
-                <Text color="red">
-                  {chatError}
-                </Text>
-              )}
               <Flex
                 align="center" 
                 justify="space-between"
                 gap={1}
+                px={1}
               >
                 <InputGroup>
                   <Input
@@ -412,6 +423,11 @@ export default function ChatRoom({server}: {server: string}) {
                     ref={chatTextRef as any}
                     onKeyDown={e=> e.key === "Enter" ? submitChat() : null}
                     maxLength={50}
+                    bg="white"
+                    _dark={{
+                      bg: "blackAlpha.500"
+                    }}
+                    disabled={!isConnected}
                   />
                   <InputRightElement display={["none","none","inline-flex"]}>
                     <Popover>
@@ -425,7 +441,6 @@ export default function ChatRoom({server}: {server: string}) {
                           <Box 
                             as={Picker} 
                             set="twitter"
-                            // data={openMojiData}
                             previewPosition="none"
                             theme={colorMode === 'dark' ? 'dark' : 'light'}
                             onEmojiSelect={(e: any)=>pickEmoji(e)} 
@@ -435,11 +450,17 @@ export default function ChatRoom({server}: {server: string}) {
                     </Popover>
                   </InputRightElement>
                 </InputGroup>
+                {chatError && (
+                  <Text color="red" minW="125px" textAlign="center">
+                    {chatError}
+                  </Text>
+                )}
                 <IconButton
                   onClick={e=>submitChat()}
-                  colorScheme="gray"
+                  colorScheme={isConnected ? "teal" : "black"}
                   aria-label="submit"
                   icon={<FiSend/>}
+                  disabled={!isConnected}
                 />
                 <Checkbox
                   ref={spoilerRef}
@@ -450,12 +471,33 @@ export default function ChatRoom({server}: {server: string}) {
             </Flex>
             <Flex
               flex="1 1 15%"
-              height={isLargerThan650 ? "85vh" : "auto"}
+              height={isLargerThan650 ? "91vh" : "auto"}
               direction="column"
             >
-              <Heading as="h3" size="md" mb={1} mt={2}>Users</Heading>
               {isLargerThan650 ? (
-                <UsersBox/>
+                <>
+                  <Heading 
+                    as="h1" 
+                    size="md" 
+                    textAlign="center" 
+                    mt={1}
+                  >
+                    {bookTitle !== null ? (
+                        `${bookTitle} - ${bookAuthor}`
+                    ) : (
+                      bookClub ? (
+                          `${bookClub} Book Club`
+                      ) : (
+                        generalType !== null ? (
+                            `${generalType}`
+                        ) : (
+                          null
+                        )
+                      )
+                    )}
+                  </Heading>
+                  <UsersBox/>
+                </>
               ) : (
                 <Accordion
                   className="well-card"
@@ -474,25 +516,29 @@ export default function ChatRoom({server}: {server: string}) {
                   </AccordionItem>
                 </Accordion>
               )}
-
-              {isConnected ? (
-              <Button 
-                size="md"
-                onClick={e=>disconnectSocket()}
-                mt="auto"
-                id="disconnectRef"
-              >
-                Disconnect
-              </Button>
-              ) : (
-              <Button 
-                size="md"
-                onClick={e=>connectSocket()}
-                id="connectRef"
-              >
-                Connect
-              </Button>
-              )}
+                {isConnected ? (
+                  <Button 
+                    size="md"
+                    onClick={e=>disconnectSocket()}
+                    mt="auto"
+                    mx={2}
+                    id="disconnectRef"
+                    colorScheme="purple"
+                  >
+                    Disconnect
+                  </Button>
+                  ) : (
+                  <Button 
+                    size="md"
+                    onClick={e=>connectSocket()}
+                    mt="auto"
+                    mx={2}
+                    id="connectRef"
+                    colorScheme="green"
+                  >
+                    Connect
+                  </Button>
+                )}
             </Flex>
           </Flex>
         </Skeleton>
