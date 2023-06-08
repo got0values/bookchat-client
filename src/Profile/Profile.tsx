@@ -882,7 +882,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                 {viewer === "self" ? (
                   <>
                     <Heading as="h3" size="md" mb={2}>
-                      What I'm Reading
+                      Currently Reading
                     </Heading>
                     <Flex gap={2} align="center">
                       <Input 
@@ -1381,7 +1381,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                   className="well" 
                 >
                   <Heading as="h3" size="md" mb={2}>
-                    Books I've Read
+                    Past Reads
                   </Heading>
                   <>
                     {profileData?.CurrentlyReading?.length ? (
