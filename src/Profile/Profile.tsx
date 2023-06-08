@@ -712,7 +712,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                 <Heading fontSize={'3xl'}>
                   {`${profileData.User?.first_name} ${profileData.User?.last_name}`}
                 </Heading>
-                <Flex align="center" wrap="nowrap" gap={2} mb={4}>
+                <Flex align="center" wrap="nowrap" gap={2} mb={2}>
                   {profileData?.country ? (
                     <Box w="1.4rem">
                       <Flag alt={profileData.country} title={profileData.country}/>
@@ -727,7 +727,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                     textAlign={'center'}
                     color='gray.700'
                     px={3}
-                    mb={4}
+                    mb={2}
                     _dark={{
                       color: 'gray.400'
                     }}
@@ -737,7 +737,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                 ): null}
 
                 {profileData.Interests && profileData.Interests.length ? (
-                <HStack align={'center'} justify={'center'} px={3} mb={4} flexWrap="wrap">
+                <HStack align={'center'} justify={'center'} px={3} mb={2} flexWrap="wrap">
                   {collectionToArray(profileData.Interests, "interest").map((interest, i)=>{
                     if (i === 5) {
                       return <Text key={i}>...</Text>
