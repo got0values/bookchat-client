@@ -16,6 +16,7 @@ export interface SideNavProps {
 export interface TopNavProps {
   server: string;
   onLogout: () => void;
+  gbooksapi: string;
 }
 
 
@@ -43,6 +44,7 @@ export interface FollowRequest {
 //Profile
 export interface ProfileProps {
   server: string;
+  gbooksapi: string;
 }
 
 export interface ProfileButtonProps extends ProfileProps {
@@ -204,6 +206,7 @@ export interface BookClubRsvpType {
 //Dashboard
 export interface DashboardProps {
   server: string;
+  gbooksapi: string;
 }
 
 //Search

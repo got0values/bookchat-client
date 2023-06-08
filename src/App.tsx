@@ -19,6 +19,7 @@ import { useAuth } from './hooks/useAuth';
 
 function App() {
   const server = import.meta.env.VITE_SERVER;
+  const GBOOKSAPI = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY
   const { onLogin, onLogout } = useAuth() as AuthContextProps;
 
   return (
@@ -45,20 +46,20 @@ function App() {
         path="/" 
         element={ 
           <ProtectedRoute>
-            <TopNav server={server} onLogout={onLogout} />
+            <TopNav server={server} onLogout={onLogout} gbooksapi={GBOOKSAPI} />
           </ProtectedRoute>
         } 
       >
         <Route 
           index 
-          element={ <Dashboard server={server} /> } 
+          element={ <Dashboard server={server} gbooksapi={GBOOKSAPI} /> } 
         />
         <Route 
           path="profile"
         >
           <Route 
             path=":paramsUsername" 
-            element={ <Profile server={server} /> }
+            element={ <Profile server={server} gbooksapi={GBOOKSAPI} /> }
           />
         </Route>
         <Route 
@@ -73,7 +74,7 @@ function App() {
           >
             <Route
               index
-              element={ <BookClub server={server} /> }
+              element={ <BookClub server={server} gbooksapi={GBOOKSAPI} /> }
             />
             <Route
               path=":paramsBookClubBookId"
@@ -86,7 +87,7 @@ function App() {
         >
           <Route
             index
-            element={<Chat/>}
+            element={<Chat gbooksapi={GBOOKSAPI}/>}
           />
           <Route
             path="room"

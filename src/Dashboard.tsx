@@ -49,7 +49,7 @@ import utc from "dayjs/plugin/utc";
 import axios from "axios";
 
 
-export default function Dashboard({server}: DashboardProps) {
+export default function Dashboard({server,gbooksapi}: DashboardProps) {
   dayjs.extend(utc);
   const navigate = useNavigate();
   const { user, getUser } = useAuth();
@@ -217,7 +217,7 @@ export default function Dashboard({server}: DashboardProps) {
   async function searchBook() {
     setBookResultsLoading(true)
     await axios
-      .get("https://www.googleapis.com/books/v1/volumes?q=" + whatImReadingRef.current.value)
+      .get("https://www.googleapis.com/books/v1/volumes?q=" + whatImReadingRef.current.value + "&key=" + gbooksapi)
       .then((response)=>{
         setBookResults(response.data.items)
         setBookResultsLoading(false)

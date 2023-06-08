@@ -66,7 +66,7 @@ const LinkItems: Array<LinkItemProps> = [
   { name: 'Book Clubs', linkTo: "/bookclubs", icon: <FaBookReader size="25"/>, tooltip: "Book Clubs" }
 ];
 
-export default function TopNav({server,onLogout}: TopNavProps) {
+export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
   const { user,getUser } = useAuth();
@@ -418,7 +418,7 @@ export default function TopNav({server,onLogout}: TopNavProps) {
           throw new Error(response.data.message)
         })
       await axios
-        .get("https://www.googleapis.com/books/v1/volumes?q=" + navSearchRef.current.value)
+        .get("https://www.googleapis.com/books/v1/volumes?q=" + navSearchRef.current.value + "&key=" + gbooksapi)
         .then((response)=>{
           setSearchData(prev=>{
             return {...prev,books: response.data.items }

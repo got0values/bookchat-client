@@ -57,7 +57,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import {genres} from "./genres";
 
-export default function BookClub({server}: {server: string}) {
+export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: string}) {
   const toast = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient()
@@ -431,7 +431,7 @@ export default function BookClub({server}: {server: string}) {
   async function searchBook() {
     setBookResultsLoading(true)
     await axios
-      .get(`https://www.googleapis.com/books/v1/volumes?q=${searchBookRef.current.value}`)
+      .get(`https://www.googleapis.com/books/v1/volumes?q=${searchBookRef.current.value}&key=${gbooksapi}`)
       .then((response)=>{
         setBookResults(response.data.items)
         setBookResultsLoading(false)

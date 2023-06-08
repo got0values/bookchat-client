@@ -29,7 +29,7 @@ import {socket} from "./customSocket";
 import axios from "axios";
 
 
-export default function Chat() {
+export default function Chat({gbooksapi}: {gbooksapi: string}) {
   dayjs.extend(utc);
   const navigate = useNavigate();
   const {colorMode} = useColorMode();
@@ -82,7 +82,7 @@ export default function Chat() {
   async function searchChatRoom() {
     setChatSearchIsLoading(true)
     await axios
-      .get("https://www.googleapis.com/books/v1/volumes?q=" + searchChatRoomRef.current.value)
+      .get("https://www.googleapis.com/books/v1/volumes?q=" + searchChatRoomRef.current.value + "&key=" + gbooksapi)
       .then((response)=>{
         setChatRoomResults(response.data.items)
         setChatSearchIsLoading(false)

@@ -66,7 +66,7 @@ import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-export const useProfile = ({server}: ProfileProps) => {
+export const useProfile = ({server,gbooksapi}: ProfileProps) => {
   const { user, getUser } = useAuth();
   const { paramsUsername } = useParams<{paramsUsername: string}>();
   const navigate = useNavigate();
@@ -333,7 +333,7 @@ export const useProfile = ({server}: ProfileProps) => {
   async function searchBook() {
     setBookResultsLoading(true)
     await axios
-      .get("https://www.googleapis.com/books/v1/volumes?q=" + whatImReadingRef.current.value)
+      .get("https://www.googleapis.com/books/v1/volumes?q=" + whatImReadingRef.current.value + "&key=" + gbooksapi)
       .then((response)=>{
         setBookResults(response.data.items)
         setBookResultsLoading(false)
@@ -659,8 +659,8 @@ export const useProfile = ({server}: ProfileProps) => {
 }
 
 
-export default function Profile({server}: ProfileProps) {
-  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation} = useProfile({server});
+export default function Profile({server,gbooksapi}: ProfileProps) {
+  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation} = useProfile({server,gbooksapi});
 
   
 
