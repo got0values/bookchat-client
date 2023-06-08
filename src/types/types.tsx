@@ -44,7 +44,7 @@ export interface FollowRequest {
 //Profile
 export interface ProfileProps {
   server: string;
-  gbooksapi: string;
+  gbooksapi?: string;
 }
 
 export interface ProfileButtonProps extends ProfileProps {
