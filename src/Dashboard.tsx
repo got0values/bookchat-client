@@ -760,7 +760,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
         <ModalOverlay />
         <ModalContent maxH="80vh">
           <ModalHeader>
-            New Book Club Book
+            Choose a book
           </ModalHeader>
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">

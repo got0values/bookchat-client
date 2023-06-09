@@ -328,3 +328,10 @@ export interface ChatUser {
   bookAuthor: string;
   typeOfRoom: string;
 }
+
+//Bookshelf
+export interface BookshelfCategory {
+  id: number;
+  profile: number;
+  name: string;
+}
