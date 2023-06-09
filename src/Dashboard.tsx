@@ -437,7 +437,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               <Input
                 type="text"
                 mt={3}
-                mb={2}
+                mb={3}
                 placeholder="Thoughts?"
                 maxLength={300}
                 ref={thoughtsRef}
@@ -445,43 +445,35 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               <Flex>
                 <Image 
                   src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
-                  maxH="125px"
+                  maxH="50px"
                 />
                 <Box 
                   mx={2}
+                  w="100%"
                 >
-                  <Heading as="h5" size="sm" me={3}>
-                    {selectedBook.volumeInfo.title}
-                  </Heading>
-                  <Text>
-                    {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
-                  </Text>
-                  <Text
-                    noOfLines={2}
-                  >
-                    {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
-                  </Text>
-                  <Center>
-                    <Popover isLazy>
-                      <PopoverTrigger>
-                        <Button 
-                          size="xs" 
-                          variant="ghost" 
-                          m={1}
-                          h="auto"
-                        >
-                          ...
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent>
-                        <PopoverArrow />
-                        <PopoverCloseButton />
-                        <PopoverBody>
-                          {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
-                        </PopoverBody>
-                      </PopoverContent>
-                    </Popover>
-                  </Center>
+                  <Popover isLazy>
+                    <PopoverTrigger>
+                      <Box
+                        _hover={{
+                          cursor: "pointer"
+                        }}
+                      >
+                        <Heading as="h5" size="md" me={3}>
+                          {selectedBook.volumeInfo.title}
+                        </Heading>
+                        <Text fontSize="lg">
+                          {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
+                        </Text>
+                      </Box>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <PopoverArrow />
+                      <PopoverCloseButton />
+                      <PopoverBody>
+                        {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Popover>
                   <Flex justify="flex-end">
                     <Button 
                       size="sm"
@@ -618,24 +610,23 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   <Flex>
                     <Image 
                       src={reading.image}
-                      maxH="100px"
+                      maxH="50px"
                     />
-                    <Box mx={2}>
-                      <Heading as="h5" size="sm" me={3}>
-                        {reading.title}
-                      </Heading>
-                      <Text fontSize="sm">
-                        {reading.author}
-                      </Text>
+                    <Box mx={2} w="100%">
                       <Popover isLazy>
                         <PopoverTrigger>
-                          <Text
-                            noOfLines={3}
-                            fontSize="sm"
-                            cursor="pointer"
+                          <Box 
+                            _hover={{
+                              cursor: "pointer"
+                            }}
                           >
-                          {reading.description}
-                          </Text>
+                            <Heading as="h5" size="md" me={3}>
+                              {reading.title}
+                            </Heading>
+                            <Text fontSize="lg">
+                              {reading.author}
+                            </Text>
+                          </Box>
                         </PopoverTrigger>
                         <PopoverContent>
                           <PopoverArrow />

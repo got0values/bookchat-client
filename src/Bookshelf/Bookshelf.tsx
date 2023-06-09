@@ -430,28 +430,27 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                 <Flex mb={1}>
                   <Image
                     src={bookToAdd.image}
-                    maxH="100px"
+                    maxH="50px"
                   />
-                  <Box mx={2}>
-                    <Heading 
-                      as="h5" 
-                      size="sm"
-                      me={3}
-                    >
-                      {bookToAdd.title}
-                    </Heading>
-                    <Text fontSize="sm">
-                      {bookToAdd.author}
-                    </Text>
+                  <Box mx={2} w="100%">
                     <Popover isLazy>
                       <PopoverTrigger>
-                        <Text
-                          noOfLines={3}
-                          fontSize="sm"
-                          cursor="pointer"
+                        <Box
+                          _hover={{
+                            cursor: "pointer"
+                          }}
                         >
-                        {bookToAdd.description}
-                        </Text>
+                          <Heading 
+                            as="h5" 
+                            size="md"
+                            me={3}
+                          >
+                            {bookToAdd.title}
+                          </Heading>
+                          <Text fontSize="lg">
+                            {bookToAdd.author}
+                          </Text>
+                        </Box>
                       </PopoverTrigger>
                       <PopoverContent>
                         <PopoverArrow />
@@ -545,6 +544,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                 books.map((book: BookshelfBook)=>{
                   return (
                     <Stack className="well-card" key={book.id} position="relative">
+                      
                       <CloseButton
                         position="absolute"
                         top={0}
@@ -557,31 +557,31 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           }
                         }}
                       />
+
                       <Flex>
                       <Image
                         src={book.image}
-                        maxH="80px"
+                        maxH="50px"
                       />
-                      <Box mx={2}>
-                        <Heading 
-                          as="h5" 
-                          size="sm"
-                          me={3}
-                        >
-                          {book.title}
-                        </Heading>
-                        <Text fontSize="sm">
-                          {book.author}
-                        </Text>
+                      <Box mx={2} w="100%">
                         <Popover isLazy>
                           <PopoverTrigger>
-                            <Text
-                              noOfLines={2}
-                              fontSize="sm"
-                              cursor="pointer"
+                            <Box
+                              _hover={{
+                                cursor: "pointer"
+                              }}
                             >
-                            {book.description}
-                            </Text>
+                              <Heading 
+                                as="h5" 
+                                size="md"
+                                me={3}
+                              >
+                                {book.title}
+                              </Heading>
+                              <Text fontSize="lg">
+                                {book.author}
+                              </Text>
+                            </Box>
                           </PopoverTrigger>
                           <PopoverContent>
                             <PopoverArrow />
