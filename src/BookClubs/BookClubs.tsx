@@ -198,37 +198,25 @@ export default function BookClubs({server}: {server: string}) {
             borderBottom="none"
           >
             <Tab 
+              fontWeight="bold"
               _selected={{
-                bg: colorMode === "light" ? "white" : "#121212",
-                border: colorMode === "light" ? "1px solid #e7e7e7" : "1px solid #2e2e2e",
-                borderBottom: "none"
+                borderBottom: "2px solid gray"
               }}
             >
               My Book Clubs
             </Tab>
             <Tab 
+              fontWeight="bold"
               _selected={{
-                bg: colorMode === "light" ? "white" : "#121212",
-                border: colorMode === "light" ? "1px solid #e7e7e7" : "1px solid #2e2e2e",
-                borderBottom: "none"
+                borderBottom: "2px solid gray"
               }}
             >
               Browse
             </Tab>
           </TabList>
 
-          <TabPanels
-            bg="white"
-            rounded="md"
-            border="1px solid #e7e7e7"
-            _dark={{
-              bg: "#121212",
-              border: "1px solid #2e2e2e"
-            }}
-            // minH="80vh"
-          >
-
-            <TabPanel>
+          <TabPanels>
+            <TabPanel px={0}>
 
               <Flex flexWrap="wrap">
                 <Stack flex="1 1 30%" minW="200px">
@@ -350,8 +338,7 @@ export default function BookClubs({server}: {server: string}) {
               </Flex>
 
             </TabPanel>
-            <TabPanel>
-
+            <TabPanel px={0}>
               <Flex flexWrap="wrap">
                 <Stack flex="1 1 30%" minW="200px">
                   <Box className="well">

@@ -104,38 +104,26 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
               borderBottom="none"
             >
               <Tab 
+                fontWeight="bold"
                 _selected={{
-                  bg: colorMode === "light" ? "white" : "#121212",
-                  border: colorMode === "light" ? "1px solid #e7e7e7" : "1px solid #2e2e2e",
-                  borderBottom: "none"
+                  borderBottom: "2px solid gray"
                 }}
               >
                 Search
               </Tab>
               <Tab 
+                fontWeight="bold"
                 _selected={{
-                  bg: colorMode === "light" ? "white" : "#121212",
-                  border: colorMode === "light" ? "1px solid #e7e7e7" : "1px solid #2e2e2e",
-                  borderBottom: "none"
+                  borderBottom: "2px solid gray"
                 }}
               >
                 Browse
               </Tab>
             </TabList>
 
-            <TabPanels
-              bg="white"
-              rounded="md"
-              border="1px solid #e7e7e7"
-              _dark={{
-                bg: "#121212",
-                border: "1px solid #2e2e2e"
-              }}
-              // minH="80vh"
-            >
+            <TabPanels>
 
-              <TabPanel>
-
+              <TabPanel px={0}>
                 <Flex
                   direction="column"
                   gap={2}
@@ -146,6 +134,10 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                       ref={searchChatRoomRef}
                       placeholder="Search for a book chat room"
                       onKeyDown={e=>e.key === 'Enter' ? searchChatRoom() : null}
+                      bg="white" 
+                      _dark={{
+                        bg: "whiteAlpha.50"
+                      }}
                     />
                     <Button
                       onClick={e=>searchChatRoom()}
@@ -204,7 +196,7 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                 </Flex>
 
               </TabPanel>
-              <TabPanel>
+              <TabPanel px={0}>
 
                 <Box
                   className="well"
