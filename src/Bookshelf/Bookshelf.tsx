@@ -72,7 +72,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
       })
       .then((response)=>{
         const responseMessage = response.data.message
-        console.log(responseMessage)
         return responseMessage
       })
       .catch(({response})=>{
