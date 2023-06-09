@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent, HTMLInputTypeAttribute } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BookshelfCategory } from "../types/types";
+import { BookshelfCategory, BookshelfBook } from "../types/types";
 import { 
   Box,
   Tag,
@@ -72,7 +72,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
       })
       .then((response)=>{
         const responseMessage = response.data.message
-        // console.log(responseMessage)
+        console.log(responseMessage)
         return responseMessage
       })
       .catch(({response})=>{
@@ -243,12 +243,60 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     addBookshelfBookMutation.mutate();
   }
 
+  const deleteBookshelfBookMutation = useMutation({
+    mutationFn: async (e: any)=>{
+      let tokenCookie: string | null = Cookies.get().token;
+      const id = e.target.dataset.id;
+        await axios
+        .delete(server + "/api/deletebookshelfbook", 
+          {
+            headers: {
+              'authorization': tokenCookie
+            },
+            data: {
+              id: parseInt(id)
+            }
+          }
+        )
+        .then((response)=>{
+          toast({
+            description: "Bookshelf Book removed",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          })
+        })
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data) {
+            toast({
+              description: "An error has occurred",
+              status: "error",
+              duration: 9000,
+              isClosable: true
+            })
+            throw new Error(response.data.message)
+          }
+        })
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
+      queryClient.resetQueries({queryKey: ['bookshelfKey']})
+      queryClient.setQueryData(["bookshelfKey"],data)
+      getBookshelf()
+    }
+  })
+  async function deleteBookshelfBook(e: any) {
+    deleteBookshelfBookMutation.mutate(e);
+  }
+
  
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['bookshelfKey'], 
     queryFn: getBookshelf
   });
   const categories = data?.categories;
+  const books = data?.books;
   
   if (isError) {
     return <Flex align="center" justify="center" minH="90vh">
@@ -332,30 +380,26 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         justify="space-between"
                         key={i}
                       >
-                        <Flex
-                          align="center"
-                          gap={1}
-                          key={i}
+                        <Checkbox me={1}
                         >
-                          <Button 
-                            size="xs" 
-                            p={0}
-                            colorScheme="red"
-                            variant="ghost"
-                            data-id={category.id}
-                            onClick={e=>removeCategory(e)}
-                          >
-                            <Box
-                              as={IoIosRemove} 
-                              size={15} 
-                              pointerEvents="none"
-                            />
-                          </Button>
                           <Text>
                             {category.name}
                           </Text>
-                        </Flex>
-                        <Checkbox me={1}/>
+                        </Checkbox>
+                        <Button 
+                          size="xs" 
+                          p={0}
+                          colorScheme="red"
+                          variant="ghost"
+                          data-id={category.id}
+                          onClick={e=>removeCategory(e)}
+                        >
+                          <Box
+                            as={IoIosRemove} 
+                            size={15} 
+                            pointerEvents="none"
+                          />
+                        </Button>
                       </Flex>
                     )
                   })
@@ -364,7 +408,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             </Box>
           </Stack>
           <Stack flex="1 1 65%" maxW="100%" className="well">
-            <Flex align="center" justify="space-between" mb={2}>
+            <Flex align="center" justify="space-between">
               <Heading as="h3" size="md">
                 Bookshelf
               </Heading>
@@ -440,7 +484,12 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           }]
                         }
                         else {
-                          return [...prev]
+                          if (id === "") {
+                            return []
+                          }
+                          else {
+                            return [...prev]
+                          }
                         }
                       })
                     }}
@@ -475,7 +524,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   {bookToAddCategories ? (
                     bookToAddCategories.map((category: BookshelfCategory)=>{
                       return (
-                        <Badge
+                        <Tag
                           size="xs"
                           rounded="lg"
                           p={1}
@@ -484,7 +533,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           key={category.id}
                         >
                           {category.name}
-                        </Badge>
+                        </Tag>
                       )
                     })
                   ): null}
@@ -492,9 +541,82 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
               </Stack>
             )}
 
-            <Box>
-              
-            </Box>
+            <Stack>
+              {books ? (
+                books.map((book: BookshelfBook)=>{
+                  return (
+                    <Stack className="well-card" key={book.id} position="relative">
+                      <CloseButton
+                        position="absolute"
+                        top={0}
+                        right={0}
+                        data-id={book.id}
+                        onClick={e=>deleteBookshelfBook(e)}
+                        sx={{
+                          'svg': {
+                            pointerEvents: "none"
+                          }
+                        }}
+                      />
+                      <Flex>
+                      <Image
+                        src={book.image}
+                        maxH="80px"
+                      />
+                      <Box mx={2}>
+                        <Heading 
+                          as="h5" 
+                          size="sm"
+                          me={3}
+                        >
+                          {book.title}
+                        </Heading>
+                        <Text fontSize="sm">
+                          {book.author}
+                        </Text>
+                        <Popover isLazy>
+                          <PopoverTrigger>
+                            <Text
+                              noOfLines={2}
+                              fontSize="sm"
+                              cursor="pointer"
+                            >
+                            {book.description}
+                            </Text>
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverBody fontSize="sm">
+                              {book.description}
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Popover>
+                      </Box>
+                      </Flex>
+                      <Flex align="center" gap={1}>
+                        {book.BookshelfBookCategory.length ? (
+                          book.BookshelfBookCategory.map((category,i)=>{
+                            return (
+                              <Tag
+                                size="xs"
+                                rounded="lg"
+                                p={1}
+                                px={2}
+                                fontSize="xs"
+                                key={i}
+                              >
+                                {category.BookshelfCategory.name}
+                              </Tag>
+                            )
+                          })
+                        ): null}
+                      </Flex>
+                    </Stack>
+                  )
+                })
+              ): null}
+            </Stack>
           </Stack>
 
         </Flex>

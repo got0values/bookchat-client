@@ -334,4 +334,16 @@ export interface BookshelfCategory {
   id: number;
   profile: number;
   name: string;
+  BookshelfCategory: BookshelfCategory;
+}
+
+export interface BookshelfBook {
+  id: number;
+  profile: number;
+  title: string;
+  author: string;
+  image: string;
+  description: string;
+  created_on: string;
+  BookshelfBookCategory: BookshelfCategory[];
 }
