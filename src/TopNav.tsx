@@ -47,6 +47,7 @@ import { FiSettings } from 'react-icons/fi';
 import { RxDotFilled } from 'react-icons/rx';
 import { AiOutlineBell, AiFillHome } from 'react-icons/ai';
 import { FaSearch, FaBookReader } from 'react-icons/fa';
+import { ImBooks } from 'react-icons/im';
 import logoIcon from './assets/BookChatNoirNewBlack.png';
 import logoIconWhite from './assets/BookChatNoirNewWhite.png';
 import Cookies from "js-cookie";
@@ -63,7 +64,8 @@ interface LinkItemProps {
 const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', linkTo: "/", icon: <AiFillHome size="25"/>, tooltip: "Home"},
   { name: 'Chat Rooms', linkTo: "/chat", icon: <BsFillChatFill size="25" />, tooltip: "Chat Rooms" },
-  { name: 'Book Clubs', linkTo: "/bookclubs", icon: <FaBookReader size="25"/>, tooltip: "Book Clubs" }
+  { name: 'Book Clubs', linkTo: "/bookclubs", icon: <FaBookReader size="25"/>, tooltip: "Book Clubs" },
+  { name: 'Bookshelf', linkTo: "/bookshelf", icon: <ImBooks size="25"/>, tooltip: "Bookshelf" }
 ];
 
 export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {

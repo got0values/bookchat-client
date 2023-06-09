@@ -12,6 +12,7 @@ import BookClubBook from './BookClubs/BookClubBook';
 import Profile from './Profile/Profile';
 import Chat from "./Chat/Chat";
 import ChatRoom from './Chat/ChatRoom';
+import Bookshelf from './Bookshelf/Bookshelf';
 import Settings from './Settings';
 import ResetPassword from "./ResetPassword";
 import Terms from "./Terms";
@@ -102,6 +103,14 @@ function App() {
           path="*" 
           element={ <RedirectPage /> } 
         />
+        <Route
+          path="bookshelf"
+        >
+          <Route
+            index
+            element={<Bookshelf server={server} gbooksapi={GBOOKSAPI} />}
+          />
+        </Route>
       </Route>
     </Routes>
   )
