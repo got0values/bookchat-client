@@ -962,8 +962,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 ]}
                                 defaultValue={book.notes}
                                 onChange={e=>{ 
-                                    const notesInput = document.getElementById(`notes-input-${book.id}`) as HTMLTextAreaElement
-                                    notesInput.value = e
+                                    const notesInput: any = document.getElementById(`notes-input-${book.id}`);
+                                    notesInput!.value = e;
                                   }
                                 }
                                 id={`notes-input-${book.id}`}
