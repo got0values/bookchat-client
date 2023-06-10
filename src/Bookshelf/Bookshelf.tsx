@@ -419,6 +419,11 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           align="center"
                           justify="space-between"
                           key={i}
+                          _hover={{
+                            '.remove-button': {
+                              visibility: 'visible'
+                            }
+                          }}
                         >
                           <Checkbox 
                             me={1}
@@ -433,6 +438,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             p={0}
                             colorScheme="red"
                             variant="ghost"
+                            className="remove-button"
+                            visibility="hidden"
                             data-id={category.id}
                             onClick={e=>removeCategory(e)}
                           >
