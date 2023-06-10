@@ -208,7 +208,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     const author = e.target.dataset.author;
     const image = e.target.dataset.image;
     const description = e.target.dataset.description;
-    setBookToAdd({title,author,image,description})
+    const isbn = e.target.dataset.isbn;
+    setBookToAdd({title,author,image,description,isbn})
     onCloseBookSearchModal();
   }
   const [bookToAddCategories,setBookToAddCategories] = useState([] as any);
@@ -641,14 +642,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                               Chat Room
                             </MenuItem>
                             <MenuItem
-                              data-id={book.id}
-                              // onClick={e=>deleteBookshelfBook(e)}
-                              fontWeight="bold"
-                              icon={<MdSubject size={20} />}
-                            >
-                              Add/Edit Categories
-                            </MenuItem>
-                            <MenuItem
                               color="tomato"
                               data-id={book.id}
                               onClick={e=>deleteBookshelfBook(e)}
@@ -666,7 +659,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       <Flex>
                         <Image
                           src={book.image}
-                          maxH="50px"
+                          maxH="75px"
                         />
                         <Box mx={2} w="100%">
                           <Popover isLazy>
@@ -685,6 +678,9 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 </Heading>
                                 <Text fontSize="lg">
                                   {book.author}
+                                </Text>
+                                <Text>
+                                  {book.isbn}
                                 </Text>
                               </Box>
                             </PopoverTrigger>
@@ -923,11 +919,11 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                               </Popover>
                               <Button 
                                 size="xs"
-                                data-book={JSON.stringify(book)}
                                 data-title={book.volumeInfo.title}
                                 data-author={book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
                                 data-description={book.volumeInfo.description}
                                 data-image={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : null}
+                                data-isbn={book.volumeInfo.industryIdentifiers ? book.volumeInfo.industryIdentifiers[0].identifier : null}
                                 onClick={e=>selectBookToAdd(e)}
                                 colorScheme="green"
                               >

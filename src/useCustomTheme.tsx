@@ -33,7 +33,8 @@ const customTheme = {
         _dark: {
           bg: 'blackAlpha.50',
           // bgGradient: 'linear(to-r, blackAlpha.100, whiteAlpha.100, blackAlpha.100)'
-          color: 'whiteAlpha.700'
+          color: 'whiteAlpha.700',
+          fontFeatureSettings: "'lnum' 1"
         }
       },
       '#main': {
