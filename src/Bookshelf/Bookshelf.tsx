@@ -240,6 +240,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             isClosable: true
           })
         })
+      return getBookshelf();
     },
     onSuccess: (data,variables)=>{
       queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
@@ -252,7 +253,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
         isClosable: true
       })
       setBookToAdd(null)
-      getBookshelf()
     }
   })
   async function addBookshelfBook() {
@@ -294,12 +294,12 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             throw new Error(response.data.message)
           }
         })
+      return getBookshelf();
     },
     onSuccess: (data,variables)=>{
       queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
       queryClient.resetQueries({queryKey: ['bookshelfKey']})
       queryClient.setQueryData(["bookshelfKey"],data)
-      getBookshelf()
     }
   })
   async function deleteBookshelfBook(e: any) {
@@ -343,12 +343,12 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             throw new Error(response.data.message)
           }
         })
+      return getBookshelf();
     },
     onSuccess: (data,variables)=>{
       queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
       queryClient.resetQueries({queryKey: ['bookshelfKey']})
       queryClient.setQueryData(["bookshelfKey"],data)
-      getBookshelf()
     }
   })
   async function addCategoryToBook(e: any) {
