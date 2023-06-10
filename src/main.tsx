@@ -20,7 +20,7 @@ const queryClient = new QueryClient({
 const GOOGLECRED = import.meta.env.VITE_GOOGLECRED
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  // <React.StrictMode>
+  <React.StrictMode>
   <GoogleOAuthProvider clientId={GOOGLECRED}>
       <BrowserRouter>
         <ChakraProvider theme={theme}>
@@ -34,5 +34,5 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         </ChakraProvider>
       </BrowserRouter>
     </GoogleOAuthProvider>
-  // </React.StrictMode>,
+  </React.StrictMode>,
 )
