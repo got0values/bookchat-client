@@ -323,14 +323,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             }
           }
         )
-        .then((response)=>{
-          toast({
-            description: "Category added",
-            status: "success",
-            duration: 9000,
-            isClosable: true
-          })
-        })
         .catch(({response})=>{
           console.log(response)
           if (response.data) {
@@ -353,6 +345,47 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   })
   async function addCategoryToBook(e: any) {
     addCategoryToBookMutation.mutate(e);
+  }
+
+  const removeCategoryFromBookMutation = useMutation({
+    mutationFn: async (e: any)=>{
+      let tokenCookie: string | null = Cookies.get().token;
+      const categoryid = e.target.dataset.categoryid;
+      const bookid = e.target.dataset.bookid;
+      await axios
+        .delete(server + "/api/removecategoryfrombook", 
+          {
+            headers: {
+              'authorization': tokenCookie
+            },
+            data: {
+              bookid: parseInt(bookid),
+              categoryid: parseInt(categoryid)
+            }
+          }
+        )
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data) {
+            toast({
+              description: response.data.message,
+              status: "error",
+              duration: 9000,
+              isClosable: true
+            })
+            throw new Error(response.data.message)
+          }
+        })
+      return getBookshelf();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
+      queryClient.resetQueries({queryKey: ['bookshelfKey']})
+      queryClient.setQueryData(["bookshelfKey"],data)
+    }
+  })
+  async function removeCategoryFromBook(e: any) {
+    removeCategoryFromBookMutation.mutate(e);
   }
 
   function filterByCategory(checkedValues: string[]) {
@@ -753,6 +786,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       </Flex>
 
                       <Flex align="center" gap={1} justify="flex-end">
+                        {console.log(book.BookshelfBookCategory)}
                         {book.BookshelfBookCategory.length ? (
                           book.BookshelfBookCategory.map((category,i)=>{
                             return (
@@ -772,12 +806,18 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                     visibility: "visible"
                                   }
                                 }}
+                                data-bookid={book.id}
+                                data-categoryid={category.BookshelfCategory.id}
+                                onClick={e=>removeCategoryFromBook(e)}
                               >
-                                <Text>
+                                <Text pointerEvents="none">
                                   {category.BookshelfCategory.name}
                                 </Text>
-                                <Box visibility="hidden">
-                                  <CloseButton size="xs" p="0" pointerEvents="none"/>
+                                <Box visibility="hidden" pointerEvents="none">
+                                  <CloseButton 
+                                    size="xs" p="0" 
+                                    pointerEvents="none"
+                                  />
                                 </Box>
                               </Tag>
                             )
