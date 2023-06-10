@@ -306,6 +306,55 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     deleteBookshelfBookMutation.mutate(e);
   }
 
+  const addCategoryToBookMutation = useMutation({
+    mutationFn: async (e: any)=>{
+      let tokenCookie: string | null = Cookies.get().token;
+      const categoryid = e.target.dataset.categoryid;
+      const bookid = e.target.dataset.bookid;
+      await axios
+        .put(server + "/api/addcategorytobook", 
+          {
+            categoryid: parseInt(categoryid),
+            bookid: parseInt(bookid)
+          },
+          {
+            headers: {
+              'authorization': tokenCookie
+            }
+          }
+        )
+        .then((response)=>{
+          toast({
+            description: "Category added",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          })
+        })
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data) {
+            toast({
+              description: response.data.message,
+              status: "error",
+              duration: 9000,
+              isClosable: true
+            })
+            throw new Error(response.data.message)
+          }
+        })
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
+      queryClient.resetQueries({queryKey: ['bookshelfKey']})
+      queryClient.setQueryData(["bookshelfKey"],data)
+      getBookshelf()
+    }
+  })
+  async function addCategoryToBook(e: any) {
+    addCategoryToBookMutation.mutate(e);
+  }
+
   function filterByCategory(checkedValues: string[]) {
     if (!checkedValues.length) {
       setBookshelfBooks(books);
@@ -438,6 +487,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             p={0}
                             colorScheme="red"
                             variant="ghost"
+                            rounded="xl"
                             className="remove-button"
                             visibility="hidden"
                             data-id={category.id}
@@ -752,7 +802,10 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                               categories.map((category: BookshelfCategory)=>{
                                 return (
                                   <MenuItem
+                                    data-categoryid={category.id}
+                                    data-bookid={book.id}
                                     key={category.id}
+                                    onClick={e=>addCategoryToBook(e)}
                                   >
                                     {category.name}
                                   </MenuItem>
