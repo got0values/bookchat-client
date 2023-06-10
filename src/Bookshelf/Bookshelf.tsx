@@ -299,25 +299,24 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   }
 
   function filterByCategory(checkedValues: string[]) {
-    // console.log(books)
-    // if (!checkedValues.length) {
-    //   setBookshelfBooks(books);
-    // }
-    // else {
-    //   setBookshelfBooks(prev=>{
-    //     return (
-    //       books.filter((book: BookshelfBook)=>{
-    //         if (book.BookshelfBookCategory.length) {
-    //           console.log(book.BookshelfBookCategory.flat())
-    //           return !checkedValues.some((cV)=>book.BookshelfBookCategory.indexOf(parseInt(cV)) == -1)
-    //         }
-    //         else {
-    //           return true;
-    //         }
-    //       })
-    //     )
-    //   })
-    // }
+    if (!checkedValues.length) {
+      setBookshelfBooks(books);
+    }
+    else {
+      setBookshelfBooks(prev=>{
+        return (
+          books.filter((book: BookshelfBook)=>{
+            if (book.BookshelfBookCategory.length) {
+              const categories = book.BookshelfBookCategory.map((bsbc)=>bsbc.BookshelfCategory.id)
+              return !checkedValues.some((cV)=>categories.indexOf(parseInt(cV)) == -1)
+            }
+            else {
+              return true;
+            }
+          })
+        )
+      })
+    }
   }
 
  
