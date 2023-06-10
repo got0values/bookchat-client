@@ -55,7 +55,8 @@ import {
 } from "@chakra-ui/react";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { MdEdit, MdOutlineChat, MdSubject } from 'react-icons/md';
-import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
+import { BiDotsHorizontalRounded, BiTrash, BiPlus } from 'react-icons/bi';
+import ReactQuill from 'react-quill';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
@@ -456,7 +457,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                 onClick={onOpenBookSearchModal}
                 size="sm"
               >
-                Add
+                New
               </Button>
             </Flex>
 
@@ -503,12 +504,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     </Popover>
                   </Box>
                 </Flex>
-                <Textarea
-                  ref={notesRef}
-                  placeholder="Notes"
-                  mb={1}
-                >
-                </Textarea>
                 <Flex
                   align="center"
                   justify="space-between"
@@ -555,34 +550,58 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       })
                     ):null}
                   </Select>
-                  <Button
-                    size="sm"
-                    onClick={e=>addBookshelfBook()}
+                  <Flex
+                    align="center"
+                    gap={1}
                   >
-                    Set
-                  </Button>
+                    {bookToAddCategories ? (
+                      bookToAddCategories.map((category: BookshelfCategory)=>{
+                        return (
+                          <Tag
+                            size="xs"
+                            rounded="lg"
+                            p={1}
+                            px={2}
+                            fontSize="xs"
+                            key={category.id}
+                          >
+                            {category.name}
+                          </Tag>
+                        )
+                      })
+                    ): null}
+                  </Flex>
                 </Flex>
-                <Flex
-                  align="center"
-                  gap={1}
+                <Box>
+                  <Textarea
+                    as={ReactQuill} 
+                    // id="location" 
+                    ref={notesRef}
+                    mb={1}
+                    theme="snow"
+                    modules={{
+                      toolbar: [
+                        [{ 'header': []}],
+                        ['bold', 'italic', 'underline'],
+                        [{'list': 'ordered'}, {'list': 'bullet'}],
+                        ['link'],
+                        [{'align': []}],
+                        ['clean']
+                      ]
+                    }}
+                    formats={[
+                      'header','bold', 'italic', 'underline','list', 'bullet', 'align','link'
+                    ]}
+                  />
+                </Box>
+                <Button
+                  size="sm"
+                  ml="auto"
+                  w="auto"
+                  onClick={e=>addBookshelfBook()}
                 >
-                  {bookToAddCategories ? (
-                    bookToAddCategories.map((category: BookshelfCategory)=>{
-                      return (
-                        <Tag
-                          size="xs"
-                          rounded="lg"
-                          p={1}
-                          px={2}
-                          fontSize="xs"
-                          key={category.id}
-                        >
-                          {category.name}
-                        </Tag>
-                      )
-                    })
-                  ): null}
-                </Flex>
+                  Save
+                </Button>
               </Stack>
             )}
 
@@ -620,44 +639,14 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             >
                               Chat Room
                             </MenuItem>
-                            {book.notes ? (
-                              <MenuItem
-                                data-id={book.id}
-                                // onClick={e=>deleteBookshelfBook(e)}
-                                fontWeight="bold"
-                                icon={<MdEdit size={20} />}
-                              >
-                                Edit Notes
-                              </MenuItem>
-                            ) : (
-                              <MenuItem
-                                data-id={book.id}
-                                // onClick={e=>deleteBookshelfBook(e)}
-                                fontWeight="bold"
-                                icon={<MdEdit size={20} />}
-                              >
-                                Add Notes
-                              </MenuItem>
-                            )}
-                            {book.BookshelfBookCategory.length ? (
-                              <MenuItem
-                                data-id={book.id}
-                                // onClick={e=>deleteBookshelfBook(e)}
-                                fontWeight="bold"
-                                icon={<MdSubject size={20} />}
-                              >
-                                Edit Categories
-                              </MenuItem>
-                            ) : (
-                              <MenuItem
-                                data-id={book.id}
-                                // onClick={e=>deleteBookshelfBook(e)}
-                                fontWeight="bold"
-                                icon={<MdSubject size={20} />}
-                              >
-                                Add Categories
-                              </MenuItem>
-                            )}
+                            <MenuItem
+                              data-id={book.id}
+                              // onClick={e=>deleteBookshelfBook(e)}
+                              fontWeight="bold"
+                              icon={<MdSubject size={20} />}
+                            >
+                              Add/Edit Categories
+                            </MenuItem>
                             <MenuItem
                               color="tomato"
                               data-id={book.id}
@@ -709,35 +698,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         </Box>
                       </Flex>
 
-                      {book.notes && (
-                        <Accordion allowToggle>
-                          <AccordionItem 
-                            border="0" 
-                            borderColor="inherit" 
-                            rounded="md"
-                            boxShadow="base"
-                            py={1}
-                            bg="white"
-                            _dark={{
-                              bg: "blackAlpha.300"
-                            }}
-                          >
-                            <AccordionButton>
-                              <Heading as="h4" size="sm">
-                                Notes
-                              </Heading>
-                              <AccordionIcon ml="auto" />
-                            </AccordionButton>
-                            <AccordionPanel>
-                              <Text>
-                                {book.notes}
-                              </Text>
-                            </AccordionPanel>
-                          </AccordionItem>
-                        </Accordion>
-                      )}
-
-                      <Flex align="center" gap={1}>
+                      <Flex align="center" gap={1} justify="flex-end">
                         {book.BookshelfBookCategory.length ? (
                           book.BookshelfBookCategory.map((category,i)=>{
                             return (
@@ -745,16 +706,120 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 size="xs"
                                 rounded="lg"
                                 p={1}
-                                px={2}
+                                pl={4}
                                 fontSize="xs"
+                                display="flex"
+                                gap={1}
                                 key={i}
+                                _hover={{
+                                  color: "red",
+                                  cursor: "pointer",
+                                  'div': {
+                                    visibility: "visible"
+                                  }
+                                }}
                               >
-                                {category.BookshelfCategory.name}
+                                <Text>
+                                  {category.BookshelfCategory.name}
+                                </Text>
+                                <Box visibility="hidden">
+                                  <CloseButton size="xs" p="0" pointerEvents="none"/>
+                                </Box>
                               </Tag>
                             )
                           })
                         ): null}
+                        <Menu>
+                          <MenuButton 
+                            as={Button}
+                            size="md"
+                            variant="ghost"
+                            rounded="full"
+                            height="25px"
+                          >
+                            <BiPlus size={15}/>
+                          </MenuButton>
+                          <MenuList>
+                            <MenuItem>
+                              None
+                            </MenuItem>
+                            {categories ? (
+                              categories.map((category: BookshelfCategory)=>{
+                                return (
+                                  <MenuItem
+                                    key={category.id}
+                                  >
+                                    {category.name}
+                                  </MenuItem>
+                                )
+                              })
+                            ):null}
+
+                          </MenuList>
+                        </Menu>
                       </Flex>
+                      <Accordion allowToggle>
+                        <AccordionItem 
+                          border="0" 
+                          borderColor="inherit" 
+                          rounded="md"
+                          boxShadow="base"
+                          py={1}
+                          bg="white"
+                          _dark={{
+                            bg: "blackAlpha.300"
+                          }}
+                        >
+                          <AccordionButton>
+                            <Heading as="h4" size="sm">
+                              Notes
+                            </Heading>
+                            <AccordionIcon ml="auto" />
+                          </AccordionButton>
+                          <AccordionPanel>
+                            <Flex
+                              direction="column"
+                              gap={2}
+                            >
+                              <Textarea
+                                as={ReactQuill}
+                                border="0" 
+                                rounded="md"
+                                theme="snow"
+                                sx={{
+                                  '.ql-toolbar': {
+                                    borderTopRadius: "5px",
+                                    borderColor: "#ccc"
+                                  },
+                                  '.ql-container': {
+                                    borderBottomRadius: "5px",
+                                    borderColor: "#ccc"
+                                  }
+                                }}
+                                modules={{
+                                  toolbar: [
+                                    [{ 'header': []}],
+                                    ['bold', 'italic', 'underline'],
+                                    [{'list': 'ordered'}, {'list': 'bullet'}],
+                                    ['link'],
+                                    [{'align': []}],
+                                    ['clean']
+                                  ]
+                                }}
+                                formats={[
+                                  'header','bold', 'italic', 'underline','list', 'bullet', 'align','link'
+                                ]}
+                                defaultValue={book.notes}
+                              />
+                              <Button
+                                w="100%"
+                              >
+                                Save
+                              </Button>
+                            </Flex>
+                          </AccordionPanel>
+                        </AccordionItem>
+                      </Accordion>
                     </Flex>
                   )
                 }).reverse()
