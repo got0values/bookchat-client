@@ -545,12 +545,16 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
               <Heading as="h3" size="md">
                 Bookshelf
               </Heading>
-              <Button
+              <Box
                 onClick={onOpenBookSearchModal}
-                size="sm"
+                rounded="md"
+                _hover={{
+                  cursor: "pointer",
+                  bg: "grey"
+                }}
               >
-                New
-              </Button>
+                <IoIosAdd size={25} />
+              </Box>
             </Flex>
 
             {bookToAdd && (
@@ -786,7 +790,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       </Flex>
 
                       <Flex align="center" gap={1} justify="flex-end">
-                        {console.log(book.BookshelfBookCategory)}
                         {book.BookshelfBookCategory.length ? (
                           book.BookshelfBookCategory.map((category,i)=>{
                             return (
