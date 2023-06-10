@@ -17,6 +17,7 @@ import {
   Card,
   CardBody,
   CardHeader,
+  IconButton,
   Button,
   Input,
   Flex,
@@ -732,12 +733,14 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         <Menu>
                           <MenuButton 
                             as={Button}
-                            size="md"
+                            // size="sm"
                             variant="ghost"
                             rounded="full"
-                            height="25px"
+                            height="20px"
+                            minWidth="auto"
+                            px={0}
                           >
-                            <BiPlus size={15}/>
+                            <BiPlus size={20} />
                           </MenuButton>
                           <MenuList>
                             <MenuItem>
