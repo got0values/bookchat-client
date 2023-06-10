@@ -54,8 +54,10 @@ import {
   useColorMode
 } from "@chakra-ui/react";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
-import { MdEdit, MdOutlineChat } from 'react-icons/md';
+import { MdEdit, MdOutlineChat, MdSubject } from 'react-icons/md';
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
 import axios from "axios";
 
@@ -64,6 +66,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   const toast = useToast();
   const navigate = useNavigate();
   const {colorMode} = useColorMode();
+  dayjs.extend(utc);
   const queryClient = useQueryClient();
 
   const [bookshelfBooks,setBookshelfBooks] = useState([] as BookshelfBook[])
@@ -207,6 +210,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     onCloseBookSearchModal();
   }
   const [bookToAddCategories,setBookToAddCategories] = useState([] as any);
+  const notesRef = useRef({} as HTMLTextAreaElement)
   const addBookshelfBookMutation = useMutation({
     mutationFn: async ()=>{
       let tokenCookie: string | null = Cookies.get().token;
@@ -214,7 +218,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
         .post(server + "/api/addbookshelfbook", 
           {
             book: bookToAdd,
-            categories: bookToAddCategories
+            categories: bookToAddCategories,
+            notes: notesRef.current.value
           },
           {headers: {
             'authorization': tokenCookie
@@ -498,6 +503,12 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     </Popover>
                   </Box>
                 </Flex>
+                <Textarea
+                  ref={notesRef}
+                  placeholder="Notes"
+                  mb={1}
+                >
+                </Textarea>
                 <Flex
                   align="center"
                   justify="space-between"
@@ -572,11 +583,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     })
                   ): null}
                 </Flex>
-                {/* <Textarea
-                  // ref={}
-                  placeholder="Notes"
-                >
-                </Textarea> */}
               </Stack>
             )}
 
@@ -584,7 +590,13 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
               {bookshelfBooks ? (
                 bookshelfBooks.map((book: BookshelfBook)=>{
                   return (
-                    <Stack className="well-card" key={book.id} position="relative">
+                    <Flex 
+                      direction="column" 
+                      gap={2} 
+                      className="well-card" 
+                      key={book.id} 
+                      position="relative"
+                    >
                       <Box
                         position="absolute"
                         top="5px"
@@ -608,14 +620,44 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             >
                               Chat Room
                             </MenuItem>
-                            <MenuItem
-                              data-id={book.id}
-                              // onClick={e=>deleteBookshelfBook(e)}
-                              fontWeight="bold"
-                              icon={<MdEdit size={20} />}
-                            >
-                              Edit
-                            </MenuItem>
+                            {book.notes ? (
+                              <MenuItem
+                                data-id={book.id}
+                                // onClick={e=>deleteBookshelfBook(e)}
+                                fontWeight="bold"
+                                icon={<MdEdit size={20} />}
+                              >
+                                Edit Notes
+                              </MenuItem>
+                            ) : (
+                              <MenuItem
+                                data-id={book.id}
+                                // onClick={e=>deleteBookshelfBook(e)}
+                                fontWeight="bold"
+                                icon={<MdEdit size={20} />}
+                              >
+                                Add Notes
+                              </MenuItem>
+                            )}
+                            {book.BookshelfBookCategory.length ? (
+                              <MenuItem
+                                data-id={book.id}
+                                // onClick={e=>deleteBookshelfBook(e)}
+                                fontWeight="bold"
+                                icon={<MdSubject size={20} />}
+                              >
+                                Edit Categories
+                              </MenuItem>
+                            ) : (
+                              <MenuItem
+                                data-id={book.id}
+                                // onClick={e=>deleteBookshelfBook(e)}
+                                fontWeight="bold"
+                                icon={<MdSubject size={20} />}
+                              >
+                                Add Categories
+                              </MenuItem>
+                            )}
                             <MenuItem
                               color="tomato"
                               data-id={book.id}
@@ -628,41 +670,73 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           </MenuList>
                         </Menu>
                       </Box>
+                      <Text fontStyle="italic">
+                        {dayjs(book.created_on).local().format('MMM DD, h:mm a')}
+                      </Text>
                       <Flex>
-                      <Image
-                        src={book.image}
-                        maxH="50px"
-                      />
-                      <Box mx={2} w="100%">
-                        <Popover isLazy>
-                          <PopoverTrigger>
-                            <Box
-                              _hover={{
-                                cursor: "pointer"
-                              }}
-                            >
-                              <Heading 
-                                as="h5" 
-                                size="md"
-                                me={3}
+                        <Image
+                          src={book.image}
+                          maxH="50px"
+                        />
+                        <Box mx={2} w="100%">
+                          <Popover isLazy>
+                            <PopoverTrigger>
+                              <Box
+                                _hover={{
+                                  cursor: "pointer"
+                                }}
                               >
-                                {book.title}
-                              </Heading>
-                              <Text fontSize="lg">
-                                {book.author}
-                              </Text>
-                            </Box>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <PopoverArrow />
-                            <PopoverCloseButton />
-                            <PopoverBody fontSize="sm">
-                              {book.description}
-                            </PopoverBody>
-                          </PopoverContent>
-                        </Popover>
-                      </Box>
+                                <Heading 
+                                  as="h5" 
+                                  size="md"
+                                  me={3}
+                                >
+                                  {book.title}
+                                </Heading>
+                                <Text fontSize="lg">
+                                  {book.author}
+                                </Text>
+                              </Box>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                              <PopoverArrow />
+                              <PopoverCloseButton />
+                              <PopoverBody fontSize="sm">
+                                {book.description}
+                              </PopoverBody>
+                            </PopoverContent>
+                          </Popover>
+                        </Box>
                       </Flex>
+
+                      {book.notes && (
+                        <Accordion allowToggle>
+                          <AccordionItem 
+                            border="0" 
+                            borderColor="inherit" 
+                            rounded="md"
+                            boxShadow="base"
+                            py={1}
+                            bg="white"
+                            _dark={{
+                              bg: "blackAlpha.300"
+                            }}
+                          >
+                            <AccordionButton>
+                              <Heading as="h4" size="sm">
+                                Notes
+                              </Heading>
+                              <AccordionIcon ml="auto" />
+                            </AccordionButton>
+                            <AccordionPanel>
+                              <Text>
+                                {book.notes}
+                              </Text>
+                            </AccordionPanel>
+                          </AccordionItem>
+                        </Accordion>
+                      )}
+
                       <Flex align="center" gap={1}>
                         {book.BookshelfBookCategory.length ? (
                           book.BookshelfBookCategory.map((category,i)=>{
@@ -681,9 +755,9 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           })
                         ): null}
                       </Flex>
-                    </Stack>
+                    </Flex>
                   )
-                })
+                }).reverse()
               ): null}
             </Stack>
           </Stack>

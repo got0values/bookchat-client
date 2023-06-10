@@ -344,6 +344,7 @@ export interface BookshelfBook {
   author: string;
   image: string;
   description: string;
+  notes: string;
   created_on: string;
   BookshelfBookCategory: BookshelfCategory[];
 }
