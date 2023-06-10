@@ -388,6 +388,56 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     removeCategoryFromBookMutation.mutate(e);
   }
 
+  const updateNotesMutation = useMutation({
+    mutationFn: async (e: any)=>{
+      let tokenCookie: string | null = Cookies.get().token;
+      const bookid = e.target.dataset.bookid;
+      const notesInput = (document.getElementById(`notes-input-${bookid}`) as HTMLInputElement);
+      const notes = notesInput.value
+      await axios
+        .put(server + "/api/updatenotes", 
+          {
+            bookid: parseInt(bookid),
+            notes: notes
+          },
+          {
+            headers: {
+              'authorization': tokenCookie
+            }
+          }
+        )
+        .then((response)=>{
+          toast({
+            description: "Notes updated!",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          })
+        })
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data) {
+            toast({
+              description: response.data.message,
+              status: "error",
+              duration: 9000,
+              isClosable: true
+            })
+            throw new Error(response.data.message)
+          }
+        })
+      return getBookshelf();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
+      queryClient.resetQueries({queryKey: ['bookshelfKey']})
+      queryClient.setQueryData(["bookshelfKey"],data)
+    }
+  })
+  async function updateNotes(e: any) {
+    updateNotesMutation.mutate(e);
+  }
+
   function filterByCategory(checkedValues: string[]) {
     if (!checkedValues.length) {
       setBookshelfBooks(books);
@@ -911,9 +961,17 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                   'header','bold', 'italic', 'underline','list', 'bullet', 'align','link'
                                 ]}
                                 defaultValue={book.notes}
+                                onChange={e=>{ 
+                                    const notesInput = document.getElementById(`notes-input-${book.id}`) as HTMLTextAreaElement
+                                    notesInput.value = e
+                                  }
+                                }
+                                id={`notes-input-${book.id}`}
                               />
                               <Button
                                 w="100%"
+                                data-bookid={book.id}
+                                onClick={e=>updateNotes(e)}
                               >
                                 Save Notes
                               </Button>
