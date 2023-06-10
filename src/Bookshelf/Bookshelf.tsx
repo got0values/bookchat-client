@@ -733,7 +733,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         <Menu>
                           <MenuButton 
                             as={Button}
-                            // size="sm"
                             variant="ghost"
                             rounded="full"
                             height="20px"
