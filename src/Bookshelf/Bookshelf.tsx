@@ -812,7 +812,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                               <Button
                                 w="100%"
                               >
-                                Save
+                                Save Notes
                               </Button>
                             </Flex>
                           </AccordionPanel>
