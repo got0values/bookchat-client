@@ -37,6 +37,11 @@ import {
   PopoverBody,
   PopoverArrow,
   Select,
+  Textarea,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
   useDisclosure,
   Avatar,
   Accordion,
@@ -49,6 +54,8 @@ import {
   useColorMode
 } from "@chakra-ui/react";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
+import { MdEdit, MdOutlineChat } from 'react-icons/md';
+import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
 import Cookies from "js-cookie";
 import axios from "axios";
 
@@ -59,6 +66,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   const {colorMode} = useColorMode();
   const queryClient = useQueryClient();
 
+  const [bookshelfBooks,setBookshelfBooks] = useState([] as BookshelfBook[])
   const [showAddCategory,setShowAddCategory] = useState(false)
 
   async function getBookshelf() {
@@ -72,6 +80,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
       })
       .then((response)=>{
         const responseMessage = response.data.message
+        setBookshelfBooks(responseMessage.books)
         return responseMessage
       })
       .catch(({response})=>{
@@ -289,6 +298,28 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     deleteBookshelfBookMutation.mutate(e);
   }
 
+  function filterByCategory(checkedValues: string[]) {
+    // console.log(books)
+    // if (!checkedValues.length) {
+    //   setBookshelfBooks(books);
+    // }
+    // else {
+    //   setBookshelfBooks(prev=>{
+    //     return (
+    //       books.filter((book: BookshelfBook)=>{
+    //         if (book.BookshelfBookCategory.length) {
+    //           console.log(book.BookshelfBookCategory.flat())
+    //           return !checkedValues.some((cV)=>book.BookshelfBookCategory.indexOf(parseInt(cV)) == -1)
+    //         }
+    //         else {
+    //           return true;
+    //         }
+    //       })
+    //     )
+    //   })
+    // }
+  }
+
  
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['bookshelfKey'], 
@@ -370,40 +401,46 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                 </>
               )}
 
-              <Stack>
-                {categories ? (
-                  categories.map((category: BookshelfCategory,i: number)=>{
-                    return (
-                      <Flex
-                        align="center"
-                        justify="space-between"
-                        key={i}
-                      >
-                        <Checkbox me={1}
+              <CheckboxGroup
+                onChange={e=>filterByCategory(e as string[])}
+              >         
+                <Stack>
+                  {categories ? (
+                    categories.map((category: BookshelfCategory,i: number)=>{
+                      return (
+                        <Flex
+                          align="center"
+                          justify="space-between"
+                          key={i}
                         >
-                          <Text>
-                            {category.name}
-                          </Text>
-                        </Checkbox>
-                        <Button 
-                          size="xs" 
-                          p={0}
-                          colorScheme="red"
-                          variant="ghost"
-                          data-id={category.id}
-                          onClick={e=>removeCategory(e)}
-                        >
-                          <Box
-                            as={IoIosRemove} 
-                            size={15} 
-                            pointerEvents="none"
-                          />
-                        </Button>
-                      </Flex>
-                    )
-                  })
-                ): null}
-              </Stack>
+                          <Checkbox 
+                            me={1}
+                            value={category.id.toString()}
+                          >
+                            <Text>
+                              {category.name}
+                            </Text>
+                          </Checkbox>
+                          <Button 
+                            size="xs" 
+                            p={0}
+                            colorScheme="red"
+                            variant="ghost"
+                            data-id={category.id}
+                            onClick={e=>removeCategory(e)}
+                          >
+                            <Box
+                              as={IoIosRemove} 
+                              size={15} 
+                              pointerEvents="none"
+                            />
+                          </Button>
+                        </Flex>
+                      )
+                    })
+                  ): null}
+                </Stack>
+              </CheckboxGroup>
             </Box>
           </Stack>
           <Stack flex="1 1 65%" maxW="100%" className="well">
@@ -536,28 +573,62 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     })
                   ): null}
                 </Flex>
+                {/* <Textarea
+                  // ref={}
+                  placeholder="Notes"
+                >
+                </Textarea> */}
               </Stack>
             )}
 
             <Stack>
-              {books ? (
-                books.map((book: BookshelfBook)=>{
+              {bookshelfBooks ? (
+                bookshelfBooks.map((book: BookshelfBook)=>{
                   return (
                     <Stack className="well-card" key={book.id} position="relative">
-                      
-                      <CloseButton
+                      <Box
                         position="absolute"
-                        top={0}
+                        top="5px"
                         right={0}
-                        data-id={book.id}
-                        onClick={e=>deleteBookshelfBook(e)}
-                        sx={{
-                          'svg': {
-                            pointerEvents: "none"
-                          }
-                        }}
-                      />
-
+                      >
+                        <Menu>
+                          <MenuButton 
+                            as={Button}
+                            size="md"
+                            variant="ghost"
+                            rounded="full"
+                            height="25px"
+                          >
+                            <BiDotsHorizontalRounded/>
+                          </MenuButton>
+                          <MenuList>
+                            <MenuItem 
+                              onClick={e=>navigate(`/chat/room?title=${book.title}&author=${book.author}`)}
+                              fontWeight="bold"
+                              icon={<MdOutlineChat size={20} />}
+                            >
+                              Chat Room
+                            </MenuItem>
+                            <MenuItem
+                              data-id={book.id}
+                              // onClick={e=>deleteBookshelfBook(e)}
+                              fontWeight="bold"
+                              icon={<MdEdit size={20} />}
+                            >
+                              Edit
+                            </MenuItem>
+                            <MenuItem
+                              color="tomato"
+                              data-id={book.id}
+                              onClick={e=>deleteBookshelfBook(e)}
+                              fontWeight="bold"
+                              icon={<BiTrash size={20} />}
+                            >
+                              Delete
+                            </MenuItem>
+                          </MenuList>
+                        </Menu>
+                      </Box>
                       <Flex>
                       <Image
                         src={book.image}
