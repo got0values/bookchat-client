@@ -792,18 +792,23 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       key={book.id} 
                       position="relative"
                     >
-                      <Box
-                        position="absolute"
-                        top="5px"
-                        right={0}
+                      <Flex
+                        align="center"
+                        justify="space-between"
                       >
+                        <Text fontStyle="italic">
+                          {dayjs(book.created_on).local().format('MMM DD, h:mm a')}
+                        </Text>
                         <Menu>
                           <MenuButton 
                             as={Button}
                             size="md"
                             variant="ghost"
                             rounded="full"
-                            height="25px"
+                            // height="25px"
+                            position="absolute"
+                            top="0"
+                            right="0"
                           >
                             <BiDotsHorizontalRounded/>
                           </MenuButton>
@@ -826,10 +831,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             </MenuItem>
                           </MenuList>
                         </Menu>
-                      </Box>
-                      <Text fontStyle="italic">
-                        {dayjs(book.created_on).local().format('MMM DD, h:mm a')}
-                      </Text>
+                      </Flex>
                       <Flex>
                         <Image
                           src={book.image}
@@ -1036,8 +1038,9 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
         <Modal 
           isOpen={isOpenBookSearchModal} 
           onClose={onCloseBookSearchModal}
-          size="lg"
-          // isCentered
+          size="md"
+          // maxW="90vw"
+          isCentered
         >
           <ModalOverlay />
           <ModalContent 
