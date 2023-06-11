@@ -852,16 +852,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 display="flex"
                                 gap={1}
                                 key={i}
-                                _activeStep={{
-                                  color: "red",
-                                  cursor: "pointer",
-                                  'div': {
-                                    visibility: "visible"
-                                  }
-                                }}
                                 onClick={e=>{
                                   const closeButton = document.getElementById(`close-button-${category.BookshelfCategory.id}`)
-                                  console.log(closeButton)
                                   if(closeButton?.style.visibility === "hidden") {
                                     closeButton.style.visibility = "visible"
                                   }
@@ -874,53 +866,60 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                   {category.BookshelfCategory.name}
                                 </Text>
                                 <Box 
-                                  visibility="hidden" 
-                                  pointerEvents="none"
                                   id={`close-button-${category.BookshelfCategory.id}`}
+                                  style={{visibility: "hidden"}}
+                                  data-bookid={book.id}
+                                  data-categoryid={category.BookshelfCategory.id}
+                                  onClick={e=>removeCategoryFromBook(e)}
+                                  _hover={{
+                                    cursor: "pointer"
+                                  }}
                                 >
                                   <CloseButton 
-                                    size="xs" p="0" 
-                                    data-bookid={book.id}
-                                    data-categoryid={category.BookshelfCategory.id}
-                                    onClick={e=>removeCategoryFromBook(e)}
+                                    size="xs" 
+                                    p="0" 
+                                    color="red"
+                                    pointerEvents="none"
                                   />
                                 </Box>
+                                {removeCategoryFromBookMutation.isLoading && (
+                                  <Spinner size="xs"/>
+                                )}
                               </Tag>
                             )
                           })
                         ): null}
-                        <Menu>
-                          <MenuButton 
-                            as={Button}
-                            variant="ghost"
-                            rounded="full"
-                            height="20px"
-                            minWidth="auto"
-                            px={0}
-                          >
-                            <BiPlus size={20} />
-                          </MenuButton>
-                          <MenuList>
-                            <MenuItem>
-                              None
-                            </MenuItem>
-                            {categories ? (
-                              categories.map((category: BookshelfCategory)=>{
-                                return (
-                                  <MenuItem
-                                    data-categoryid={category.id}
-                                    data-bookid={book.id}
-                                    key={category.id}
-                                    onClick={e=>addCategoryToBook(e)}
-                                  >
-                                    {category.name}
-                                  </MenuItem>
-                                )
-                              })
-                            ):null}
+                        {categories.length ? (
+                          <Menu>
+                            <MenuButton 
+                              as={Button}
+                              variant="ghost"
+                              rounded="full"
+                              height="20px"
+                              minWidth="auto"
+                              px={0}
+                            >
+                              <BiPlus size={20} />
+                            </MenuButton>
+                            <MenuList>
+                              {categories ? (
+                                categories.map((category: BookshelfCategory)=>{
+                                  return (
+                                    <MenuItem
+                                      data-categoryid={category.id}
+                                      data-bookid={book.id}
+                                      key={category.id}
+                                      onClick={e=>addCategoryToBook(e)}
+                                    >
+                                      {category.name}
+                                    </MenuItem>
+                                  )
+                                })
+                              ):null}
 
-                          </MenuList>
-                        </Menu>
+                            </MenuList>
+                          </Menu>
+                        ) : null}
                       </Flex>
                       <Accordion allowToggle>
                         <AccordionItem 
