@@ -639,72 +639,83 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                 </Flex>
                 <Flex
                   align="center"
-                  justify="space-between"
+                  gap={1}
+                  justify="flex-end"
                 >
-                  <Select
-                    w="auto"
-                    size="sm"
-                    rounded="md"
-                    onClick={(e)=>{
-                      setBookToAddCategories((prev: BookshelfCategory[])=>{
-                        const id = (e as any).target.value;
-                        const name = (e as any).target.options[(e as any).target.selectedIndex].dataset.name;
-                        const alreadyIn = prev.filter((cat)=>cat.id===id).length;
-                        if (id !== "" && alreadyIn === 0) {
-                          return [...prev,{
-                            id: id,
-                            name: name
-                          }]
-                        }
-                        else {
-                          if (id === "") {
-                            return []
-                          }
-                          else {
-                            return [...prev]
-                          }
-                        }
-                      })
-                    }}
-                  >
-                    <option value="">None</option>
-                    {categories ? (
-                      categories.map((category: BookshelfCategory)=>{
-                        return (
-                          <option
-                            key={category.id}
-                            data-id={category.id}
-                            data-name={category.name}
-                            value={category.id}
-                          >
-                            {category.name}
-                          </option>
-                        )
-                      })
-                    ):null}
-                  </Select>
-                  <Flex
-                    align="center"
-                    gap={1}
-                  >
-                    {bookToAddCategories ? (
-                      bookToAddCategories.map((category: BookshelfCategory)=>{
-                        return (
-                          <Tag
-                            size="xs"
-                            rounded="lg"
-                            p={1}
-                            px={2}
-                            fontSize="xs"
-                            key={category.id}
-                          >
-                            {category.name}
-                          </Tag>
-                        )
-                      })
-                    ): null}
-                  </Flex>
+                  {bookToAddCategories ? (
+                    bookToAddCategories.map((category: BookshelfCategory)=>{
+                      return (
+                        <Tag
+                          size="xs"
+                          rounded="lg"
+                          p={1}
+                          px={2}
+                          fontSize="xs"
+                          key={category.id}
+                        >
+                          {category.name}
+                        </Tag>
+                      )
+                    })
+                  ): null}
+                  {categories.length ? (
+                    <Menu>
+                      <MenuButton 
+                        as={Button}
+                        variant="ghost"
+                        rounded="full"
+                        height="20px"
+                        minWidth="auto"
+                        px={0}
+                      >
+                        <BiPlus size={20} />
+                      </MenuButton>
+                      <MenuList>
+                        <MenuItem
+                          onClick={e=>setBookToAddCategories([])}
+                        >
+                          None
+                        </MenuItem>
+                        {categories ? (
+                          categories.map((category: BookshelfCategory)=>{
+                            return (
+                              <MenuItem
+                                key={category.id}
+                                data-id={category.id}
+                                data-name={category.name}
+                                onClick={(e)=>{
+                                  setBookToAddCategories((prev: BookshelfCategory[])=>{
+                                    const id = (e as any).target.dataset.id;
+                                    const name = (e as any).target.dataset.name;
+                                    const alreadyIn = prev.filter((cat)=>cat.id===id).length;
+                                    if (id !== "" && alreadyIn === 0) {
+                                      return [...prev,{
+                                        id: id,
+                                        name: name
+                                      }]
+                                    }
+                                    else {
+                                      if (id === "") {
+                                        return []
+                                      }
+                                      else {
+                                        return [...prev]
+                                      }
+                                    }
+                                  })
+                                }}
+                              >
+                                {category.name}
+                              </MenuItem>
+                            )
+                          })
+                        ):null}
+
+                      </MenuList>
+                    </Menu>
+                  ) : null}
                 </Flex>
+
                 <Accordion allowToggle>
                   <AccordionItem 
                     border="0" 
@@ -879,6 +890,9 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                   else if (closeButton?.style.visibility === "visible") {
                                     closeButton.style.visibility = "hidden"
                                   }
+                                }}
+                                _hover={{
+                                  cursor: "pointer"
                                 }}
                               >
                                 <Text pointerEvents="none">
