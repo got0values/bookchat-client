@@ -363,6 +363,7 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
           title: (e.target as HTMLDivElement).dataset.title,
           author: (e.target as HTMLDivElement).dataset.author,
           description: (e.target as HTMLDivElement).dataset.description,
+          isbn: (e.target as HTMLDivElement).dataset.isbn,
           thoughts: thoughtsRef.current.value
         },
         {
@@ -956,6 +957,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 data-title={selectedBook.volumeInfo.title}
                                 data-author={selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
                                 data-description={selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
+                                data-isbn={selectedBook.volumeInfo.industryIdentifiers ? selectedBook.volumeInfo.industryIdentifiers[0].identifier : null}
                                 onClick={e=>postCurrentlyReading(e)}
                               >
                                 Post
