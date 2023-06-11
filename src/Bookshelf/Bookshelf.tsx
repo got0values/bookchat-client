@@ -487,7 +487,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   Categories
                 </Heading>
 
-                {!showAddCategory ? (
+                {!showAddCategory && (
                   <Box
                     onClick={e=>setShowAddCategory(true)}
                     rounded="md"
@@ -497,17 +497,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     }}
                   >
                     <IoIosAdd size={25} />
-                  </Box>
-                ) : (
-                  <Box
-                    onClick={e=>setShowAddCategory(false)}
-                    rounded="md"
-                    _hover={{
-                      cursor: "pointer",
-                      bg: "grey"
-                    }}
-                  >
-                    <IoIosRemove size={25} />
                   </Box>
                 )}
 
@@ -532,6 +521,11 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       onClick={e=>createCategory()}
                     >
                       Add
+                    </Button>
+                    <Button
+                      onClick={e=>setShowAddCategory(false)}
+                    >
+                      Cancel
                     </Button>
                   </Flex>
                   {createCategoryError && (
