@@ -852,24 +852,37 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 display="flex"
                                 gap={1}
                                 key={i}
-                                _hover={{
+                                _activeStep={{
                                   color: "red",
                                   cursor: "pointer",
                                   'div': {
                                     visibility: "visible"
                                   }
                                 }}
-                                data-bookid={book.id}
-                                data-categoryid={category.BookshelfCategory.id}
-                                onClick={e=>removeCategoryFromBook(e)}
+                                onClick={e=>{
+                                  const closeButton = document.getElementById(`close-button-${category.BookshelfCategory.id}`)
+                                  console.log(closeButton)
+                                  if(closeButton?.style.visibility === "hidden") {
+                                    closeButton.style.visibility = "visible"
+                                  }
+                                  else if (closeButton?.style.visibility === "visible") {
+                                    closeButton.style.visibility = "hidden"
+                                  }
+                                }}
                               >
                                 <Text pointerEvents="none">
                                   {category.BookshelfCategory.name}
                                 </Text>
-                                <Box visibility="hidden" pointerEvents="none">
+                                <Box 
+                                  visibility="hidden" 
+                                  pointerEvents="none"
+                                  id={`close-button-${category.BookshelfCategory.id}`}
+                                >
                                   <CloseButton 
                                     size="xs" p="0" 
-                                    pointerEvents="none"
+                                    data-bookid={book.id}
+                                    data-categoryid={category.BookshelfCategory.id}
+                                    onClick={e=>removeCategoryFromBook(e)}
                                   />
                                 </Box>
                               </Tag>
