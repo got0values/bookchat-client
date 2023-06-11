@@ -194,6 +194,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     await axios
       .get("https://www.googleapis.com/books/v1/volumes?q=" + searchBookRef.current.value + "&key=" + gbooksapi)
       .then((response)=>{
+        console.log(response.data.items)
         setBookResults(response.data.items)
         setBookResultsLoading(false)
         onOpenBookSearchModal();
