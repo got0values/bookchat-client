@@ -705,35 +705,67 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     ): null}
                   </Flex>
                 </Flex>
-                <Box>
-                  <Textarea
-                    as={ReactQuill} 
-                    // id="location" 
-                    ref={notesRef}
-                    mb={1}
-                    theme="snow"
-                    modules={{
-                      toolbar: [
-                        [{ 'header': []}],
-                        ['bold', 'italic', 'underline'],
-                        [{'list': 'ordered'}, {'list': 'bullet'}],
-                        ['link'],
-                        [{'align': []}],
-                        ['clean']
-                      ]
+                <Accordion allowToggle>
+                  <AccordionItem 
+                    border="0" 
+                    borderColor="inherit" 
+                    rounded="md"
+                    boxShadow="base"
+                    py={1}
+                    bg="white"
+                    _dark={{
+                      bg: "blackAlpha.300"
                     }}
-                    formats={[
-                      'header','bold', 'italic', 'underline','list', 'bullet', 'align','link'
-                    ]}
-                  />
-                </Box>
+                  >
+                    <AccordionButton>
+                      <Heading as="h4" size="sm">
+                        Notes
+                      </Heading>
+                      <AccordionIcon ml="auto" />
+                    </AccordionButton>
+                    <AccordionPanel>
+                      <Textarea
+                        as={ReactQuill} 
+                        // id="location" 
+                        ref={notesRef}
+                        mb={1}
+                        theme="snow"
+                        rounded="md"
+                        sx={{
+                          '.ql-toolbar': {
+                            borderTopRadius: "5px",
+                            borderColor: "#ccc"
+                          },
+                          '.ql-container': {
+                            borderBottomRadius: "5px",
+                            borderColor: "#ccc"
+                          }
+                        }}
+                        modules={{
+                          toolbar: [
+                            [{ 'header': []}],
+                            ['bold', 'italic', 'underline'],
+                            [{'list': 'ordered'}, {'list': 'bullet'}],
+                            ['link'],
+                            [{'align': []}],
+                            ['clean']
+                          ]
+                        }}
+                        formats={[
+                          'header','bold', 'italic', 'underline','list', 'bullet', 'align','link'
+                        ]}
+                      />
+                    </AccordionPanel>
+                  </AccordionItem>
+                </Accordion>
                 <Button
                   size="sm"
                   ml="auto"
                   w="auto"
+                  colorScheme="teal"
                   onClick={e=>addBookshelfBook()}
                 >
-                  Save
+                  Add to Bookshelf
                 </Button>
               </Stack>
             )}
