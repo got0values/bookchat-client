@@ -654,6 +654,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                 <Flex
                   align="center"
                   gap={1}
+                  wrap="wrap"
                   justify="flex-end"
                 >
                   {bookToAddCategories ? (
@@ -890,7 +891,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         </Box>
                       </Flex>
 
-                      <Flex align="center" gap={1} justify="flex-end">
+                      <Flex align="center" gap={1} wrap="wrap" justify="flex-end">
                         {book.BookshelfBookCategory.length ? (
                           book.BookshelfBookCategory.map((category,i)=>{
                             return (
