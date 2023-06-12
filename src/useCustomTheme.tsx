@@ -45,12 +45,12 @@ const customTheme = {
       '.main-content': {
         w: "100%",
         py: "20px",
-        maxW: '1000px'
+        maxW: '1200px'
       },
       '.main-content-smaller': {
         w: "100%",
         py: "20px",
-        maxW: '700px'
+        maxW: '900px'
       },
       '.well': {
         bg: 'gray.50',
