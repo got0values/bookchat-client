@@ -102,38 +102,46 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     mutationFn: async ()=>{
       let tokenCookie: string | null = Cookies.get().token;
       const createCategoryInput = createCategoryInputRef.current.value;
-      if (createCategoryInput.length) {
+      if (createCategoryInput !== "") {
         await axios
-        .post(server + "/api/createbookshelfcategory", 
-        {
-          name: createCategoryInput
-        },
-        {headers: {
-          'authorization': tokenCookie
-        }}
-        )
-        .catch(({response})=>{
-          console.log(response)
-          if (response.data) {
-            setCreateCategoryError(response.data.message)
-          }
-        })
+          .post(server + "/api/createbookshelfcategory", 
+          {
+            name: createCategoryInput
+          },
+          {headers: {
+            'authorization': tokenCookie
+          }}
+          )
+          .then((response)=> {
+            toast({
+              description: "Bookshelf Category created",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+            setCreateCategoryError("")
+          })
+          .catch(({response})=>{
+            console.log(response)
+            if (response.data) {
+              setCreateCategoryError(response.data.message)
+            }
+          })
       }
       else {
         setCreateCategoryError("Please enter a book club name")
       }
+      return getBookshelf()
     },
     onSuccess: (data,variables)=>{
-      queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
-      queryClient.resetQueries({queryKey: ['bookshelfKey']})
-      queryClient.setQueryData(["bookshelfKey"],data)
-      toast({
-        description: "Bookshelf Category created",
-        status: "success",
-        duration: 9000,
-        isClosable: true
-      })
-      getBookshelf()
+      if (data) {
+        queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
+        queryClient.resetQueries({queryKey: ['bookshelfKey']})
+        queryClient.setQueryData(["bookshelfKey"],data)
+      }
+      else {
+        setCreateCategoryError("Please enter category name")
+      }
     }
   })
   async function createCategory() {
@@ -452,7 +460,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
               return !checkedValues.some((cV)=>categories.indexOf(parseInt(cV)) == -1)
             }
             else {
-              return true;
+              return false;
             }
           })
         )
@@ -925,7 +933,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             )
                           })
                         ): null}
-                        {categories.length ? (
+                        {categories?.length ? (
                           <Menu>
                             <MenuButton 
                               as={Button}
