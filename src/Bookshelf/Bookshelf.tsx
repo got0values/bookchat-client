@@ -639,7 +639,12 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       <PopoverContent>
                         <PopoverArrow />
                         <PopoverCloseButton />
-                        <PopoverBody fontSize="sm">
+                        <PopoverBody 
+                          fontSize="sm"
+                          _dark={{
+                            bg: "black"
+                          }}
+                        >
                           {bookToAdd.description}
                         </PopoverBody>
                       </PopoverContent>
@@ -872,7 +877,12 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             <PopoverContent>
                               <PopoverArrow />
                               <PopoverCloseButton />
-                              <PopoverBody fontSize="sm">
+                              <PopoverBody 
+                              _dark={{
+                                bg: "black"
+                              }}
+                                fontSize="sm"
+                              >
                                 {book.description}
                               </PopoverBody>
                             </PopoverContent>
@@ -1132,7 +1142,11 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 <PopoverContent>
                                   <PopoverArrow />
                                   <PopoverCloseButton />
-                                  <PopoverBody>{book.volumeInfo.description}</PopoverBody>
+                                  <PopoverBody
+                                    _dark={{
+                                      bg: "black"
+                                    }}
+                                  >{book.volumeInfo.description}</PopoverBody>
                                 </PopoverContent>
                               </Popover>
                               <Button 

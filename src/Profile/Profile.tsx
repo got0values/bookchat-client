@@ -945,7 +945,12 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                               <PopoverContent>
                                 <PopoverArrow />
                                 <PopoverCloseButton />
-                                <PopoverBody fontSize="sm">
+                                <PopoverBody 
+                                  fontSize="sm"
+                                  _dark={{
+                                    bg: "black"
+                                  }}
+                                >
                                   {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
                                 </PopoverBody>
                               </PopoverContent>
@@ -1113,7 +1118,12 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                               <PopoverContent>
                                 <PopoverArrow />
                                 <PopoverCloseButton />
-                                <PopoverBody fontSize="sm">
+                                <PopoverBody 
+                                  fontSize="sm"
+                                  _dark={{
+                                    bg: "black"
+                                  }}
+                                >
                                   {
                                     profileData
                                     .CurrentlyReading[profileData.CurrentlyReading.length - 1]
@@ -1146,7 +1156,11 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     <PopoverContent>
                                       <PopoverArrow />
                                       <PopoverCloseButton />
-                                      <PopoverBody>
+                                      <PopoverBody
+                                        _dark={{
+                                          bg: "black"
+                                        }}
+                                      >
                                         {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? (
                                           profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.map((like,i)=>{
                                             return (
@@ -1286,7 +1300,12 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   <PopoverContent>
                                     <PopoverArrow />
                                     <PopoverCloseButton />
-                                    <PopoverBody fontSize="sm">
+                                    <PopoverBody 
+                                     fontSize="sm"
+                                     _dark={{
+                                      bg: "black"
+                                    }}
+                                    >
                                       {
                                         profileData
                                         .CurrentlyReading[0]
@@ -1319,7 +1338,11 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                         <PopoverContent>
                                           <PopoverArrow />
                                           <PopoverCloseButton />
-                                          <PopoverBody>
+                                          <PopoverBody
+                                            _dark={{
+                                              bg: "black"
+                                            }}
+                                          >
                                             {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? (
                                               profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.map((like,i)=>{
                                                 return (
@@ -1509,7 +1532,12 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       <PopoverContent>
                                         <PopoverArrow />
                                         <PopoverCloseButton />
-                                        <PopoverBody fontSize="sm">
+                                        <PopoverBody 
+                                          fontSize="sm"
+                                          _dark={{
+                                            bg: "black"
+                                          }}
+                                        >
                                           {readBook.description}
                                         </PopoverBody>
                                       </PopoverContent>
@@ -1538,7 +1566,11 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                             <PopoverContent>
                                               <PopoverArrow />
                                               <PopoverCloseButton />
-                                              <PopoverBody>
+                                              <PopoverBody
+                                                _dark={{
+                                                  bg: "black"
+                                                }}
+                                              >
                                                 {readBook.CurrentlyReadingLike?.length ? (
                                                   readBook.CurrentlyReadingLike?.map((like,i)=>{
                                                     return (
@@ -1855,7 +1887,13 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     <PopoverContent>
                                       <PopoverArrow />
                                       <PopoverCloseButton />
-                                      <PopoverBody>{book.volumeInfo.description}</PopoverBody>
+                                      <PopoverBody
+                                        _dark={{
+                                          bg: "black"
+                                        }}
+                                      >
+                                        {book.volumeInfo.description}
+                                      </PopoverBody>
                                     </PopoverContent>
                                   </Popover>
                                   <Button 

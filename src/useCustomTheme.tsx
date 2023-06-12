@@ -101,7 +101,7 @@ const customTheme = {
           bg: "black"
         }
       }
-    },
+    }
   },
 }
 

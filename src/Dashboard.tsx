@@ -470,7 +470,11 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     <PopoverContent>
                       <PopoverArrow />
                       <PopoverCloseButton />
-                      <PopoverBody>
+                      <PopoverBody
+                        _dark={{
+                          bg: "black"
+                        }}
+                      >
                         {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
                       </PopoverBody>
                     </PopoverContent>
@@ -633,7 +637,12 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                         <PopoverContent>
                           <PopoverArrow />
                           <PopoverCloseButton />
-                          <PopoverBody fontSize="sm">
+                          <PopoverBody 
+                            fontSize="sm"
+                            _dark={{
+                              bg: "black"
+                            }}
+                          >
                             {reading.description}
                           </PopoverBody>
                         </PopoverContent>
@@ -662,7 +671,11 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                               <PopoverContent>
                                 <PopoverArrow />
                                 <PopoverCloseButton />
-                                <PopoverBody>
+                                <PopoverBody
+                                  _dark={{
+                                    bg: "black"
+                                  }}
+                                >
                                   {reading.CurrentlyReadingLike?.length ? (
                                     reading.CurrentlyReadingLike?.map((like,i)=>{
                                       return (

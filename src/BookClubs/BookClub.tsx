@@ -1242,7 +1242,11 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 <PopoverArrow />
                                 <PopoverCloseButton />
                                 <PopoverHeader>Past Books</PopoverHeader>
-                                <PopoverBody>
+                                <PopoverBody
+                                  _dark={{
+                                    bg: "black"
+                                  }}
+                                >
                                   {bookClub.BookClubBook.map((bcb,i)=>{
                                     if (i !== 0) {
                                       return (
@@ -1355,7 +1359,11 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                   <PopoverArrow />
                                   <PopoverCloseButton />
                                   <PopoverHeader>RSVP List</PopoverHeader>
-                                  <PopoverBody>{bookClub?.BookClubMeetingRsvp.length ? 
+                                  <PopoverBody
+                                    _dark={{
+                                      bg: "black"
+                                    }}
+                                  >{bookClub?.BookClubMeetingRsvp.length ? 
                                   (
                                     bookClub?.BookClubMeetingRsvp.map((rsvp,i)=>{
                                       return (
@@ -1433,7 +1441,11 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                     <PopoverArrow />
                                     <PopoverCloseButton />
                                     <PopoverHeader>{pollBookOneReceived.title}</PopoverHeader>
-                                    <PopoverBody>{pollBookOneReceived.description ? pollBookOneReceived.description : null}</PopoverBody>
+                                    <PopoverBody
+                                      _dark={{
+                                        bg: "black"
+                                      }}
+                                    >{pollBookOneReceived.description ? pollBookOneReceived.description : null}</PopoverBody>
                                   </PopoverContent>
                                 </Popover>
 
@@ -1500,7 +1512,11 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                     <PopoverArrow />
                                     <PopoverCloseButton />
                                     <PopoverHeader>{pollBookTwoReceived.title}</PopoverHeader>
-                                    <PopoverBody>{pollBookTwoReceived.description ? pollBookTwoReceived.description : null}</PopoverBody>
+                                    <PopoverBody
+                                      _dark={{
+                                        bg: "black"
+                                      }}
+                                    >{pollBookTwoReceived.description ? pollBookTwoReceived.description : null}</PopoverBody>
                                   </PopoverContent>
                                 </Popover>
                                 {bookClub.BookClubBookPoll?.BookClubBookPollVote
@@ -1566,7 +1582,11 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                     <PopoverArrow />
                                     <PopoverCloseButton />
                                     <PopoverHeader>{pollBookThreeReceived.title}</PopoverHeader>
-                                    <PopoverBody>{pollBookThreeReceived.description ? pollBookThreeReceived.description : null}</PopoverBody>
+                                    <PopoverBody
+                                      _dark={{
+                                        bg: "black"
+                                      }}
+                                    >{pollBookThreeReceived.description ? pollBookThreeReceived.description : null}</PopoverBody>
                                   </PopoverContent>
                                 </Popover>
                                 {bookClub.BookClubBookPoll?.BookClubBookPollVote
@@ -1875,7 +1895,11 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                               <PopoverContent>
                                 <PopoverArrow />
                                 <PopoverCloseButton />
-                                <PopoverBody>{book.volumeInfo.description}</PopoverBody>
+                                <PopoverBody
+                                  _dark={{
+                                    bg: "black"
+                                  }}
+                                >{book.volumeInfo.description}</PopoverBody>
                               </PopoverContent>
                             </Popover>
                             <Button 
@@ -1985,7 +2009,11 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                               <PopoverContent>
                                 <PopoverArrow />
                                 <PopoverCloseButton />
-                                <PopoverBody>{book.volumeInfo.description}</PopoverBody>
+                                <PopoverBody
+                                  _dark={{
+                                    bg: "black"
+                                  }}
+                                >{book.volumeInfo.description}</PopoverBody>
                               </PopoverContent>
                             </Popover>
                             <Button 
