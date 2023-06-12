@@ -89,7 +89,6 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
     onOpen: onOpenPasswordResetModal, 
     onClose: onClosePasswordResetModal 
   } = useDisclosure()
-  const [following,setFollowing] = useState<any[] | null>(null)
   function openPasswordResetModal(e: any) {
     onOpenPasswordResetModal()
   }
