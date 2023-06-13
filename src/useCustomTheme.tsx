@@ -50,7 +50,7 @@ const customTheme = {
       '.main-content-smaller': {
         w: "100%",
         py: "20px",
-        maxW: '900px'
+        maxW: '700px'
       },
       '.well': {
         bg: 'gray.50',
