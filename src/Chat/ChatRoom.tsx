@@ -227,6 +227,7 @@ export default function ChatRoom({server}: {server: string}) {
       .post(server + "/api/chat",
       {
         chatText: chatText,
+        spoiler: spoilerRef.current.checked,
         uri: window.location.pathname + window.location.search,
         ip: ip
       },
@@ -422,7 +423,7 @@ export default function ChatRoom({server}: {server: string}) {
                                 {message.userName}:
                               </Text>
                             )}
-                            {message.spoiler === true ? (
+                            {message.spoiler ? (
                               <Accordion 
                                 defaultIndex={[1]}
                                 allowToggle
