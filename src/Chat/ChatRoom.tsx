@@ -25,12 +25,20 @@ import {
   AccordionItem,
   AccordionPanel,
   Divider,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
   useColorMode,
+  useDisclosure,
   useToast,
   useMediaQuery
 } from "@chakra-ui/react";
 import { useAuth } from '../hooks/useAuth';
-import { BsEmojiSmile } from 'react-icons/bs';
+import { BsEmojiSmile, BsReplyFill } from 'react-icons/bs';
 import { FiSend } from "react-icons/fi";
 import Picker from '@emoji-mart/react';
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
@@ -176,7 +184,7 @@ export default function ChatRoom({server}: {server: string}) {
       })
       setRoomUsers(prev=>[...new Set(users)])
     }
-    function onReceiveMessage(message: {userName: string, text: string, spoiler: boolean, time: string}) {
+    function onReceiveMessage(message: {userName: string, text: string, response_to: string, spoiler: boolean, time: string}) {
       setChatMessages(prev=>[...prev,message])
       setTimeout(()=>{
         if (chatBoxRef.current) {
@@ -228,6 +236,7 @@ export default function ChatRoom({server}: {server: string}) {
       {
         chatText: chatText,
         spoiler: spoilerRef.current.checked,
+        responseTo: null,
         uri: window.location.pathname + window.location.search,
         ip: ip
       },
@@ -258,6 +267,66 @@ export default function ChatRoom({server}: {server: string}) {
       })
     }
   }
+
+  const { 
+    isOpen: isOpenRespondModal, 
+    onOpen: onOpenRespondModal, 
+    onClose: onCloseRespondModal 
+  } = useDisclosure()
+  const respondSubmitButtonRef = useRef({} as HTMLButtonElement);
+  const respondInputRef = useRef({} as HTMLInputElement);
+  const [modalMessage,setModalMessage] = useState<any | null>(null);
+  function openRespondModal(message: any) {
+    setModalMessage(message)
+    onOpenRespondModal();
+  }
+  function closeRespondModal() {
+    setModalMessage(null)
+    onCloseRespondModal();
+  }
+  async function submitResponse() {
+    const responseText = respondInputRef.current.value;
+    const originalMessage = modalMessage;
+    if (responseText) {
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .post(server + "/api/chat",
+          {
+            chatText: responseText,
+            spoiler: false,
+            responseTo: JSON.stringify(originalMessage),
+            uri: window.location.pathname + window.location.search,
+            ip: ip
+          },
+          {
+            headers: {
+              'authorization': tokenCookie
+            }
+          }
+          )
+          .then((response)=>{
+            socket.emit(
+              "send-message", 
+              {
+                userName: user.Profile.username, 
+                text: responseText,
+                responseTo: JSON.stringify(originalMessage),
+                spoiler: false,
+                time: new Date()
+              }, 
+              roomId
+            );
+            respondInputRef.current.value = "";
+          })
+          .catch(({response})=>{
+            console.log(response)
+            throw new Error(response.data.message)
+          })
+      }
+    }
+  }
+  
 
   function pickEmoji(e: {unified: string}) {
     let unifiedSplit = e.unified.split("-");
@@ -390,18 +459,26 @@ export default function ChatRoom({server}: {server: string}) {
                           direction="column"
                           fontSize={["sm","md","md"]}
                           // rounded="md"
-                          // _hover={{
-                          //   ".respond-box": {
-                          //     display: "block"
-                          //   },
-                          //   bg: "black",
-                          //   color: "white"
-                          // }}
+                          _hover={{
+                            cursor: message.userName !== "admin" && !message.responseTo ? "pointer" : "default"
+                          }}
+                          onClick={e=>{
+                            let responseBox = document.getElementById(`message-${i.toString()}`)
+                            if (message.userName !== "admin" && !message.responseTo) {
+                              if (responseBox?.style.display === "none") {
+                                responseBox!.style.display = "block";
+                              }
+                              else {
+                                responseBox!.style.display = "none";
+                              }
+                            }
+                          }}
                         >
                           <Text
                             // as="span"
                             fontSize="xs"
                             mb={-1}
+                            opacity="75%"
                           >
                             {` ${dayjs(message.time).local().format('MMM DD, YYYY h:mm a')}`}
                           </Text>
@@ -451,21 +528,62 @@ export default function ChatRoom({server}: {server: string}) {
                                 </AccordionItem>
                               </Accordion>
                             ) : (
-                              <Text>
+                              message.responseTo ? (
+                                <Box>
+                                  <Text>
+                                    {message.text} 
+                                  </Text>
+                                  <Box
+                                    fontSize="sm"
+                                    bg="blackAlpha.100"
+                                    rounded="md"
+                                    p={1}
+                                    _dark={{
+                                      bg: "blackAlpha.400"
+                                    }}
+                                  >
+                                    <Box>
+                                      <Text fontSize="xs" fontStyle="italic">
+                                        {dayjs(JSON.parse(message.responseTo).time).local().format("MMM DD, YYYY h:mm a")}
+                                      </Text>
+                                      <Flex
+                                        align="center"
+                                        wrap="wrap"
+                                        gap={1}
+                                        rowGap={0}
+                                      >
+                                        <Text fontWeight="bold">
+                                          {JSON.parse(message.responseTo).userName}:
+                                        </Text>
+                                        <Text>
+                                          {JSON.parse(message.responseTo).text}
+                                        </Text>
+                                      </Flex>
+                                    </Box>
+                                  </Box>
+                                </Box>
+                              ): (
+                                <Text>
                                 {message.text}
                               </Text>
+                              )
                             )}
 
-                            {/* <Box
+                            <Box
                               display="none"
-                              className="respond-box"
+                              id={`message-${i.toString()}`}
+                              style={{
+                                display: "none"
+                              }}
                             >
                               <Button
                                 size="xs"
+                                onClick={e=>openRespondModal(message)}
+                                variant="ghost"
                               >
-                                Respond
+                                <BsReplyFill/>
                               </Button>
-                            </Box> */}
+                            </Box>
 
                           </Flex>
                         </Flex>
@@ -485,7 +603,7 @@ export default function ChatRoom({server}: {server: string}) {
                     type="text"
                     ref={chatTextRef as any}
                     onKeyDown={e=> e.key === "Enter" ? submitChat() : null}
-                    maxLength={50}
+                    maxLength={200}
                     bg="white"
                     _dark={{
                       bg: "blackAlpha.500"
@@ -574,7 +692,8 @@ export default function ChatRoom({server}: {server: string}) {
                   allowMultiple
                 >
                   <AccordionItem border={0}>
-                    <Flex as={AccordionButton} justify="flex-end">
+                    <Flex as={AccordionButton} align="center" justify="space-between">
+                      <Text fontWeight="bold">People in Room</Text>
                       <AccordionIcon/>
                     </Flex>
                     <AccordionPanel>
@@ -614,6 +733,68 @@ export default function ChatRoom({server}: {server: string}) {
           </Flex>
         </Skeleton>
       </Box>
+
+      {modalMessage ? (
+        <Modal 
+          isOpen={isOpenRespondModal} 
+          onClose={closeRespondModal}
+          isCentered
+        >
+          <ModalOverlay />
+          <ModalContent maxH="80vh">
+            <ModalHeader>
+              Reply
+            </ModalHeader>
+            <ModalCloseButton />
+              <ModalBody h="auto" maxH="75vh" overflow="auto">
+                <Flex
+                  align="flex-start"
+                  gap={0}
+                  direction="column"
+                >
+                  <Text
+                    fontSize="xs"
+                  >
+                    {dayjs(modalMessage.time).local().format("M/DD/YY h:mm a")}
+                  </Text>
+                  <Flex
+                    align="flex-end"
+                    gap={1}
+                  >
+                    <Text
+                      fontWeight="bold"
+                    >
+                      {modalMessage.userName}:
+                    </Text>
+                    <Text>
+                      {modalMessage.text}
+                    </Text>
+                  </Flex>
+                </Flex>
+              </ModalBody>
+              <ModalFooter flexDirection="column">
+              <Flex
+                align="center"
+                gap={1}
+                w="100%"
+              > 
+                <Input
+                  type="text"
+                  ref={respondInputRef}
+                  onKeyUp={e=>e.key === 'Enter' ? respondSubmitButtonRef.current.click() : null}
+                />
+                <Button
+                  colorScheme="teal"
+                  ref={respondSubmitButtonRef}
+                  onClick={e=>submitResponse()}
+                >
+                  Submit
+                </Button>
+              </Flex>
+              </ModalFooter>
+          </ModalContent>
+        </Modal>
+        ): null}
     </>
   );
 };
