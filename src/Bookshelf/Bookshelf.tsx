@@ -489,59 +489,61 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
       >
 
         <Flex flexWrap="wrap" align="flex-start">
-          <Stack flex="1 1 30%" minW="200px">
-            <Box className="well">
-              <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
-                <Heading as="h3" size="md">
-                  Categories
-                </Heading>
+          <Stack flex="1 1 30%">
+            <Stack className="well">
+              <Box>
+                <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
+                  <Heading as="h3" size="md">
+                    Categories
+                  </Heading>
 
-                {!showAddCategory && (
-                  <Box
-                    onClick={e=>setShowAddCategory(true)}
-                    rounded="md"
-                    _hover={{
-                      cursor: "pointer",
-                      bg: "grey"
-                    }}
-                  >
-                    <IoIosAdd size={25} />
-                  </Box>
-                )}
-
-              </Flex>
-
-              {showAddCategory && (
-                <>
-                  <Flex
-                    align="center"
-                    justify="space-between"
-                    gap={1}
-                    mb={2}
-                  >
-                    <Input
-                      type="text"
-                      ref={createCategoryInputRef}
-                      onKeyUp={e=>e.key === 'Enter' ? createCategoryButtonRef.current.click() : null}
-                      maxLength={40}
-                    />
-                    <Button
-                      ref={createCategoryButtonRef}
-                      onClick={e=>createCategory()}
+                  {!showAddCategory && (
+                    <Box
+                      onClick={e=>setShowAddCategory(true)}
+                      rounded="md"
+                      _hover={{
+                        cursor: "pointer",
+                        bg: "grey"
+                      }}
                     >
-                      Add
-                    </Button>
-                    <Button
-                      onClick={e=>setShowAddCategory(false)}
-                    >
-                      Cancel
-                    </Button>
-                  </Flex>
-                  {createCategoryError && (
-                    <Text color="red">{createCategoryError}</Text>
+                      <IoIosAdd size={25} />
+                    </Box>
                   )}
-                </>
-              )}
+
+                </Flex>
+
+                {showAddCategory && (
+                  <>
+                    <Flex
+                      align="center"
+                      justify="space-between"
+                      gap={1}
+                      mb={2}
+                    >
+                      <Input
+                        type="text"
+                        ref={createCategoryInputRef}
+                        onKeyUp={e=>e.key === 'Enter' ? createCategoryButtonRef.current.click() : null}
+                        maxLength={40}
+                      />
+                      <Button
+                        ref={createCategoryButtonRef}
+                        onClick={e=>createCategory()}
+                      >
+                        Add
+                      </Button>
+                      <Button
+                        onClick={e=>setShowAddCategory(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </Flex>
+                    {createCategoryError && (
+                      <Text color="red">{createCategoryError}</Text>
+                    )}
+                  </>
+                )}
+              </Box>
 
               <CheckboxGroup
                 onChange={e=>filterByCategory(e as string[])}
@@ -584,217 +586,220 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   ): null}
                 </Stack>
               </CheckboxGroup>
-            </Box>
+            </Stack>
           </Stack>
           <Stack flex="1 1 65%" maxW="100%" className="well">
-            <Flex align="center" justify="space-between">
-              <Heading as="h3" size="md">
-                Bookshelf
-              </Heading>
-              <Box
-                onClick={onOpenBookSearchModal}
-                rounded="md"
-                _hover={{
-                  cursor: "pointer",
-                  bg: "grey"
-                }}
-              >
-                <IoIosAdd size={25} />
-              </Box>
-            </Flex>
-
-            {bookToAdd && (
-              <Stack className="well-card" position="relative">
-                <CloseButton
-                  position="absolute"
-                  top={0}
-                  right={0}
-                  onClick={e=>setBookToAdd(null)}
-                />
-                <Flex mb={1}>
-                  <Image
-                    src={bookToAdd.image}
-                    maxH="50px"
-                  />
-                  <Box mx={2} w="100%">
-                    <Popover isLazy>
-                      <PopoverTrigger>
-                        <Box
-                          _hover={{
-                            cursor: "pointer"
-                          }}
-                        >
-                          <Heading 
-                            as="h5" 
-                            size="md"
-                            me={3}
-                          >
-                            {bookToAdd.title}
-                          </Heading>
-                          <Text fontSize="lg">
-                            {bookToAdd.author}
-                          </Text>
-                        </Box>
-                      </PopoverTrigger>
-                      <PopoverContent>
-                        <PopoverArrow />
-                        <PopoverCloseButton />
-                        <PopoverBody 
-                          fontSize="sm"
-                          _dark={{
-                            bg: "black"
-                          }}
-                        >
-                          {bookToAdd.description}
-                        </PopoverBody>
-                      </PopoverContent>
-                    </Popover>
-                  </Box>
-                </Flex>
-                <Flex
-                  align="center"
-                  gap={1}
-                  wrap="wrap"
-                  justify="flex-end"
+            <Box>
+              <Flex align="center" justify="space-between">
+                <Heading as="h3" size="md">
+                  Bookshelf
+                </Heading>
+                <Box
+                  onClick={onOpenBookSearchModal}
+                  rounded="md"
+                  _hover={{
+                    cursor: "pointer",
+                    bg: "grey"
+                  }}
                 >
-                  {bookToAddCategories ? (
-                    bookToAddCategories.map((category: BookshelfCategory)=>{
-                      return (
-                        <Tag
-                          size="xs"
-                          rounded="lg"
-                          p={1}
-                          px={2}
-                          fontSize="xs"
-                          key={category.id}
+                  <IoIosAdd size={25} />
+                </Box>
+              </Flex>
+
+              {bookToAdd && (
+                <Stack className="well-card" position="relative">
+                  <CloseButton
+                    position="absolute"
+                    top={0}
+                    right={0}
+                    onClick={e=>setBookToAdd(null)}
+                  />
+                  <Flex mb={1}>
+                    <Image
+                      src={bookToAdd.image}
+                      maxH="50px"
+                    />
+                    <Box mx={2} w="100%">
+                      <Popover isLazy>
+                        <PopoverTrigger>
+                          <Box
+                            _hover={{
+                              cursor: "pointer"
+                            }}
+                          >
+                            <Heading 
+                              as="h5" 
+                              size="md"
+                              me={3}
+                              noOfLines={1}
+                            >
+                              {bookToAdd.title}
+                            </Heading>
+                            <Text fontSize="lg">
+                              {bookToAdd.author}
+                            </Text>
+                          </Box>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <PopoverArrow />
+                          <PopoverCloseButton />
+                          <PopoverBody 
+                            fontSize="sm"
+                            _dark={{
+                              bg: "black"
+                            }}
+                          >
+                            {bookToAdd.description}
+                          </PopoverBody>
+                        </PopoverContent>
+                      </Popover>
+                    </Box>
+                  </Flex>
+                  <Flex
+                    align="center"
+                    gap={1}
+                    wrap="wrap"
+                    justify="flex-end"
+                  >
+                    {bookToAddCategories ? (
+                      bookToAddCategories.map((category: BookshelfCategory)=>{
+                        return (
+                          <Tag
+                            size="xs"
+                            rounded="lg"
+                            p={1}
+                            px={2}
+                            fontSize="xs"
+                            key={category.id}
+                          >
+                            {category.name}
+                          </Tag>
+                        )
+                      })
+                    ): null}
+                    {categories.length ? (
+                      <Menu>
+                        <MenuButton 
+                          as={Button}
+                          variant="ghost"
+                          rounded="full"
+                          height="20px"
+                          minWidth="auto"
+                          px={0}
                         >
-                          {category.name}
-                        </Tag>
-                      )
-                    })
-                  ): null}
-                  {categories.length ? (
-                    <Menu>
-                      <MenuButton 
-                        as={Button}
-                        variant="ghost"
-                        rounded="full"
-                        height="20px"
-                        minWidth="auto"
-                        px={0}
-                      >
-                        <BiPlus size={20} />
-                      </MenuButton>
-                      <MenuList>
-                        <MenuItem
-                          onClick={e=>setBookToAddCategories([])}
-                        >
-                          None
-                        </MenuItem>
-                        {categories ? (
-                          categories.map((category: BookshelfCategory)=>{
-                            return (
-                              <MenuItem
-                                key={category.id}
-                                data-id={category.id}
-                                data-name={category.name}
-                                onClick={(e)=>{
-                                  setBookToAddCategories((prev: BookshelfCategory[])=>{
-                                    const id = (e as any).target.dataset.id;
-                                    const name = (e as any).target.dataset.name;
-                                    const alreadyIn = prev.filter((cat)=>cat.id===id).length;
-                                    if (id !== "" && alreadyIn === 0) {
-                                      return [...prev,{
-                                        id: id,
-                                        name: name
-                                      }]
-                                    }
-                                    else {
-                                      if (id === "") {
-                                        return []
+                          <BiPlus size={20} />
+                        </MenuButton>
+                        <MenuList>
+                          <MenuItem
+                            onClick={e=>setBookToAddCategories([])}
+                          >
+                            None
+                          </MenuItem>
+                          {categories ? (
+                            categories.map((category: BookshelfCategory)=>{
+                              return (
+                                <MenuItem
+                                  key={category.id}
+                                  data-id={category.id}
+                                  data-name={category.name}
+                                  onClick={(e)=>{
+                                    setBookToAddCategories((prev: BookshelfCategory[])=>{
+                                      const id = (e as any).target.dataset.id;
+                                      const name = (e as any).target.dataset.name;
+                                      const alreadyIn = prev.filter((cat)=>cat.id===id).length;
+                                      if (id !== "" && alreadyIn === 0) {
+                                        return [...prev,{
+                                          id: id,
+                                          name: name
+                                        }]
                                       }
                                       else {
-                                        return [...prev]
+                                        if (id === "") {
+                                          return []
+                                        }
+                                        else {
+                                          return [...prev]
+                                        }
                                       }
-                                    }
-                                  })
-                                }}
-                              >
-                                {category.name}
-                              </MenuItem>
-                            )
-                          })
-                        ):null}
+                                    })
+                                  }}
+                                >
+                                  {category.name}
+                                </MenuItem>
+                              )
+                            })
+                          ):null}
 
-                      </MenuList>
-                    </Menu>
-                  ) : null}
-                </Flex>
+                        </MenuList>
+                      </Menu>
+                    ) : null}
+                  </Flex>
 
-                <Accordion allowToggle>
-                  <AccordionItem 
-                    border="0" 
-                    borderColor="inherit" 
-                    rounded="md"
-                    boxShadow="base"
-                    py={1}
-                    bg="white"
-                    _dark={{
-                      bg: "blackAlpha.300"
-                    }}
+                  <Accordion allowToggle>
+                    <AccordionItem 
+                      border="0" 
+                      borderColor="inherit" 
+                      rounded="md"
+                      boxShadow="base"
+                      py={1}
+                      bg="white"
+                      _dark={{
+                        bg: "blackAlpha.300"
+                      }}
+                    >
+                      <AccordionButton>
+                        <Heading as="h4" size="sm">
+                          Notes
+                        </Heading>
+                        <AccordionIcon ml="auto" />
+                      </AccordionButton>
+                      <AccordionPanel>
+                        <Textarea
+                          as={ReactQuill} 
+                          // id="location" 
+                          ref={notesRef}
+                          mb={1}
+                          theme="snow"
+                          rounded="md"
+                          sx={{
+                            '.ql-toolbar': {
+                              borderTopRadius: "5px",
+                              borderColor: colorMode === "light" ? "#ccc" : "#222222"
+                            },
+                            '.ql-container': {
+                              borderBottomRadius: "5px",
+                              borderColor: colorMode === "light" ? "#ccc" : "#222222"
+                            }
+                          }}
+                          modules={{
+                            toolbar: [
+                              [{ 'header': []}],
+                              ['bold', 'italic', 'underline'],
+                              [{'list': 'ordered'}, {'list': 'bullet'}],
+                              ['link'],
+                              [{'align': []}],
+                              ['clean']
+                            ]
+                          }}
+                          formats={[
+                            'header','bold', 'italic', 'underline','list', 'bullet', 'align','link'
+                          ]}
+                        />
+                      </AccordionPanel>
+                    </AccordionItem>
+                  </Accordion>
+                  <Button
+                    // size="sm"
+                    ml="auto"
+                    // w="auto"
+                    colorScheme="teal"
+                    onClick={e=>addBookshelfBook()}
                   >
-                    <AccordionButton>
-                      <Heading as="h4" size="sm">
-                        Notes
-                      </Heading>
-                      <AccordionIcon ml="auto" />
-                    </AccordionButton>
-                    <AccordionPanel>
-                      <Textarea
-                        as={ReactQuill} 
-                        // id="location" 
-                        ref={notesRef}
-                        mb={1}
-                        theme="snow"
-                        rounded="md"
-                        sx={{
-                          '.ql-toolbar': {
-                            borderTopRadius: "5px",
-                            borderColor: colorMode === "light" ? "#ccc" : "#222222"
-                          },
-                          '.ql-container': {
-                            borderBottomRadius: "5px",
-                            borderColor: colorMode === "light" ? "#ccc" : "#222222"
-                          }
-                        }}
-                        modules={{
-                          toolbar: [
-                            [{ 'header': []}],
-                            ['bold', 'italic', 'underline'],
-                            [{'list': 'ordered'}, {'list': 'bullet'}],
-                            ['link'],
-                            [{'align': []}],
-                            ['clean']
-                          ]
-                        }}
-                        formats={[
-                          'header','bold', 'italic', 'underline','list', 'bullet', 'align','link'
-                        ]}
-                      />
-                    </AccordionPanel>
-                  </AccordionItem>
-                </Accordion>
-                <Button
-                  // size="sm"
-                  ml="auto"
-                  // w="auto"
-                  colorScheme="teal"
-                  onClick={e=>addBookshelfBook()}
-                >
-                  Save to Bookshelf
-                </Button>
-              </Stack>
-            )}
+                    Save to Bookshelf
+                  </Button>
+                </Stack>
+              )}
+            </Box>
 
             <Stack>
               {bookshelfBooks ? (
@@ -864,6 +869,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                   as="h5" 
                                   size="md"
                                   me={3}
+                                  noOfLines={1}
                                 >
                                   {book.title}
                                 </Heading>
@@ -900,12 +906,13 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 rounded="lg"
                                 p={1}
                                 pl={4}
-                                fontSize="xs"
+                                fontSize="sm"
                                 display="flex"
-                                gap={1}
+                                alignItems="center"
+                                gap={2}
                                 key={i}
                                 onClick={e=>{
-                                  const closeButton = document.getElementById(`close-button-${category.BookshelfCategory.id}`)
+                                  const closeButton = document.getElementById(`close-button-${book.id}-${category.BookshelfCategory.id}`)
                                   if(closeButton?.style.visibility === "hidden") {
                                     closeButton.style.visibility = "visible"
                                   }
@@ -921,7 +928,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                   {category.BookshelfCategory.name}
                                 </Text>
                                 <Box 
-                                  id={`close-button-${category.BookshelfCategory.id}`}
+                                  id={`close-button-${book.id}-${category.BookshelfCategory.id}`}
                                   style={{visibility: "hidden"}}
                                   data-bookid={book.id}
                                   data-categoryid={category.BookshelfCategory.id}
@@ -932,6 +939,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 >
                                   <CloseButton 
                                     size="xs" 
+                                    fontSize="xs"
                                     p="0" 
                                     color="red"
                                     pointerEvents="none"
