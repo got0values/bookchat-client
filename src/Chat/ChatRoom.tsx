@@ -66,6 +66,24 @@ export default function ChatRoom({server}: {server: string}) {
     socket.emit("get-users",roomId)
   }
 
+  async function getChatHistory() {
+    let tokenCookie: string | null = Cookies.get().token;
+    await axios
+      .get(server + "/api/chathistory?roomuri=" + window.location.pathname + encodeURIComponent(window.location.search),
+      {
+        headers: {
+          authorization: tokenCookie
+        }
+      }
+      )
+      .then((response)=>{
+        setChatMessages(response.data.message)
+      })
+      .catch((response)=>{
+        console.log(response)
+      })
+  }
+
   const [ip,setIp] = useState("");
   const [bookTitle,setBookTitle] = useState(searchParams.get("title"))
   const [bookAuthor,setBookAuthor] = useState(searchParams.get("author"))
@@ -83,6 +101,8 @@ export default function ChatRoom({server}: {server: string}) {
       setIp(resIp.data.ip)
     }
     getIp()
+
+    getChatHistory()
     
     // let typeOfRoomVar = searchParams.get("generaltype") ? "generaltype" : searchParams.get("bookclub") ? "bookclub" : "book";
     let typeOfRoomVar;
@@ -156,7 +176,7 @@ export default function ChatRoom({server}: {server: string}) {
       })
       setRoomUsers(prev=>[...new Set(users)])
     }
-    function onReceiveMessage(message: {userName: string, text: string}) {
+    function onReceiveMessage(message: {userName: string, text: string, spoiler: boolean, time: string}) {
       setChatMessages(prev=>[...prev,message])
       setTimeout(()=>{
         if (chatBoxRef.current) {
@@ -361,53 +381,92 @@ export default function ChatRoom({server}: {server: string}) {
                   <Box p={1}>
                     {chatMessages?.map((message,i)=>{
                       return (
-                        <Flex key={i} gap={1} m={1} fontSize={["sm","md","md"]}>
-                          <Flex 
-                            fontWeight="bold" 
-                            wrap="wrap"
-                            align="center"
+                        <Flex 
+                          key={i} 
+                          gap={0} 
+                          m={1} 
+                          align="flex-start"
+                          direction="column"
+                          fontSize={["sm","md","md"]}
+                          // rounded="md"
+                          // _hover={{
+                          //   ".respond-box": {
+                          //     display: "block"
+                          //   },
+                          //   bg: "black",
+                          //   color: "white"
+                          // }}
+                        >
+                          <Text
+                            // as="span"
+                            fontSize="xs"
+                            mb={-1}
+                          >
+                            {` ${dayjs(message.time).local().format('MMM DD, YYYY h:mm a')}`}
+                          </Text>
+                          <Flex
+                            align="flex-start"
                             gap={1}
                           >
-                            {message.userName === "admin" ? <Text color="purple">admin</Text>  : <Text>{message.userName}</Text>}
-                            <Text
-                              as="span"
-                              fontSize="xs"
-                            >
-                              {` (${dayjs(message.time).local().format('h:mm a')}):`}
+                            {message.userName === "admin" ? (
+                             <Text 
+                              color="purple"
+                              fontWeight="bold"
+                             >
+                              admin:
                             </Text>
-                          </Flex>
-                          {message.spoiler === true ? (
-                            <Accordion 
-                              defaultIndex={[1]}
-                              allowToggle
-                            >
-                              <AccordionItem 
-                                border={0}
-                                p={0}
-                                rounded="md"
+                            )  : (
+                              <Text
+                                fontWeight="bold"
                               >
-                                <AccordionButton p={1}>
-                                  <Text 
-                                    color="red" 
-                                    fontWeight="bold" 
-                                    fontSize="sm"
-                                  >
-                                    Spoiler!
+                                {message.userName}:
+                              </Text>
+                            )}
+                            {message.spoiler === true ? (
+                              <Accordion 
+                                defaultIndex={[1]}
+                                allowToggle
+                              >
+                                <AccordionItem 
+                                  border={0}
+                                  p={0}
+                                  rounded="md"
+                                >
+                                  <AccordionButton px={1} py={1}>
+                                    <Text 
+                                      color="red" 
+                                      fontWeight="bold" 
+                                      fontSize="sm"
+                                    >
+                                      Spoiler!
+                                    </Text>
+                                    <AccordionIcon/>
+                                  </AccordionButton>
+                                  <AccordionPanel>
+                                  <Text>
+                                    {message.text}
                                   </Text>
-                                  <AccordionIcon/>
-                                </AccordionButton>
-                                <AccordionPanel>
-                                <Text>
-                                  {message.text}
-                                </Text>
-                                </AccordionPanel>
-                              </AccordionItem>
-                            </Accordion>
-                          ) : (
-                            <Text>
-                              {message.text}
-                            </Text>
-                          )}
+                                  </AccordionPanel>
+                                </AccordionItem>
+                              </Accordion>
+                            ) : (
+                              <Text>
+                                {message.text}
+                              </Text>
+                            )}
+
+                            {/* <Box
+                              display="none"
+                              className="respond-box"
+                            >
+                              <Button
+                                size="xs"
+                              >
+                                Respond
+                              </Button>
+                            </Box> */}
+
+                          </Flex>
                         </Flex>
                       )
                     })}
