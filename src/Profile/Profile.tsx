@@ -1189,14 +1189,16 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                             </Flex>
                           </Box>
                         </Flex>
-                        <Divider my={3} />
-                        {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment ? (
-                            <Comments 
-                              comments={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment} 
-                              getProfile={getProfile} 
-                              location="profile"
-                              server={server}
-                            />
+                        {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment.length ? (
+                            <>
+                              <Divider my={3} />
+                              <Comments 
+                                comments={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment} 
+                                getProfile={getProfile} 
+                                location="profile"
+                                server={server}
+                              />
+                            </>
                         ): null}
                       </Box>
                     ) : null}
@@ -1599,14 +1601,16 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     </Flex>
                                   </Box>
                                 </Flex>
-                                <Divider my={3} />
-                                {readBook.CurrentlyReadingComment ? (
-                                    <Comments 
-                                      comments={readBook.CurrentlyReadingComment} 
-                                      getProfile={getProfile} 
-                                      location="profile"
-                                      server={server}
-                                    />
+                                {readBook.CurrentlyReadingComment.length ? (
+                                    <>
+                                      <Divider my={3} />
+                                      <Comments 
+                                        comments={readBook.CurrentlyReadingComment} 
+                                        getProfile={getProfile} 
+                                        location="profile"
+                                        server={server}
+                                      />
+                                    </>
                                 ): null}
                               </Box>
                             ) : null

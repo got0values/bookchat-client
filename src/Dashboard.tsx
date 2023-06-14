@@ -703,14 +703,16 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       </Flex>
                     </Box>
                   </Flex>
-                  <Divider my={3} />
                   {reading.CurrentlyReadingComment && reading.CurrentlyReadingComment.length ? (
-                    <Comments 
-                      comments={reading.CurrentlyReadingComment} 
-                      getDashboard={getDashboard} 
-                      location="dashboard"
-                      server={server} 
-                    />
+                    <>
+                    <Divider my={3} />
+                      <Comments 
+                        comments={reading.CurrentlyReadingComment} 
+                        getDashboard={getDashboard} 
+                        location="dashboard"
+                        server={server} 
+                      />
+                    </>
                   ): null}
                 </Box>
               )
