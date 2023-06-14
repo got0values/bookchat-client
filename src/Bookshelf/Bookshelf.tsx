@@ -760,11 +760,11 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         sx={{
                           '.ql-toolbar': {
                             borderTopRadius: "5px",
-                            borderColor: "#ccc"
+                            borderColor: colorMode === "light" ? "#ccc" : "#222222"
                           },
                           '.ql-container': {
                             borderBottomRadius: "5px",
-                            borderColor: "#ccc"
+                            borderColor: colorMode === "light" ? "#ccc" : "#222222"
                           }
                         }}
                         modules={{
@@ -785,13 +785,13 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   </AccordionItem>
                 </Accordion>
                 <Button
-                  size="sm"
+                  // size="sm"
                   ml="auto"
-                  w="auto"
+                  // w="auto"
                   colorScheme="teal"
                   onClick={e=>addBookshelfBook()}
                 >
-                  Add to Bookshelf
+                  Save to Bookshelf
                 </Button>
               </Stack>
             )}
@@ -997,6 +997,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           <AccordionPanel>
                             <Flex
                               direction="column"
+                              align="center"
                               gap={2}
                             >
                               <Textarea
@@ -1007,11 +1008,11 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 sx={{
                                   '.ql-toolbar': {
                                     borderTopRadius: "5px",
-                                    borderColor: "#ccc"
+                                    borderColor: colorMode === "light" ? "#ccc" : "#222222"
                                   },
                                   '.ql-container': {
                                     borderBottomRadius: "5px",
-                                    borderColor: "#ccc"
+                                    borderColor: colorMode === "light" ? "#ccc" : "#222222"
                                   }
                                 }}
                                 modules={{
@@ -1036,7 +1037,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 id={`notes-input-${book.id}`}
                               />
                               <Button
-                                w="100%"
+                                w="auto"
+                                alignSelf="flex-end"
                                 data-bookid={book.id}
                                 onClick={e=>updateNotes(e)}
                               >
