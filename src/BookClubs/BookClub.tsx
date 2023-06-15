@@ -1208,7 +1208,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                           <Center flexDirection="column">
                             <Button 
                               variant="ghost"
-                              colorScheme="teal"
+                              colorScheme="purple"
                               leftIcon={<BsCardText size={20} />}
                               onClick={e=>navigate(`${currentBook?.id}`)}
                             >
@@ -1314,7 +1314,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                             <Button
                               mb={2}
                               variant="ghost"
-                              colorScheme="teal"
+                              colorScheme="purple"
                               onClick={e=>navigate(`/chat/room?bookclub=${bookClub.name}`)}
                             >
                               Join
@@ -1336,7 +1336,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                               }
                               {!rsvpStatus ? (
                                 <Button
-                                  colorScheme="teal"
+                                  colorScheme="purple"
                                   disabled={rsvpCallbackMutation.isLoading}
                                   onClick={rsvpCallback}
                                 >
@@ -1456,7 +1456,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                   .filter((pollVote)=>pollVote.book === 1 && pollVote.profile_id === user.Profile.id).length ? (
                                     <Button
                                       size="xs"
-                                      colorScheme="red"
+                                      colorScheme="purple"
                                       marginTop="auto"
                                       onClick={e=>unPollVote(1)}
                                     >
@@ -1468,7 +1468,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 ) : (
                                   <Button
                                     size="xs"
-                                    colorScheme="teal"
+                                    colorScheme="purple"
                                     marginTop="auto"
                                     onClick={e=>pollVote(1)}
                                   >
@@ -1538,7 +1538,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 ) : (
                                   <Button
                                     size="xs"
-                                    colorScheme="teal"
+                                    colorScheme="purple"
                                     marginTop="auto"
                                     onClick={e=>pollVote(2)}
                                   >
@@ -1596,7 +1596,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                   .filter((pollVote)=>pollVote.book === 3 && pollVote.profile_id === user.Profile.id).length ? (
                                     <Button
                                       size="xs"
-                                      colorScheme="red"
+                                      colorScheme="purple"
                                       marginTop="auto"
                                       onClick={e=>unPollVote(3)}
                                     >
@@ -1740,7 +1740,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                       type="submit"
                       mr={3}
                       size="md"
-                      colorScheme="teal"
+                      colorScheme="purple"
                     >
                       Update
                     </Button>
@@ -1803,7 +1803,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                     <Button 
                       type="submit"
                       size="md"
-                      colorScheme="teal"
+                      colorScheme="purple"
                     >
                       Update
                     </Button>
@@ -1838,6 +1838,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                   />
                   <Button
                     onClick={searchBook}
+                    colorScheme="purple"
+                    variant="outline"
                   >
                     Search
                   </Button>
@@ -1953,6 +1955,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                   />
                   <Button
                     onClick={searchBook}
+                    colorScheme="purple"
+                    variant="outline"
                   >
                     Search
                   </Button>
@@ -2171,7 +2175,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                 </Button>
                 <Button
                   onClick={createPollBooks}
-                  colorScheme="teal"
+                  colorScheme="purple"
                 >
                   Save
                 </Button>

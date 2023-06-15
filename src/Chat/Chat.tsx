@@ -141,6 +141,8 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                     />
                     <Button
                       onClick={e=>searchChatRoom()}
+                      colorScheme="purple"
+                      variant="outline"
                     >
                       Search
                     </Button>
@@ -185,6 +187,7 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                             <Button
                               size="xs"
                               onClick={e=>navigate(`/chat/room?title=${result.volumeInfo.title ? result.volumeInfo.title : ""}&author=${result.volumeInfo.authors ? result.volumeInfo.authors[0] : ""}`)}
+                              colorScheme="purple"
                             >
                               Chat
                             </Button>

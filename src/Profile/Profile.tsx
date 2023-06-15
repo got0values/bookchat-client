@@ -897,7 +897,13 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                         ref={whatImReadingRef}
                         onKeyDown={e=>e.key === 'Enter' ? searchBook() : null}
                       />
-                      <Button onClick={searchBook}>Search</Button>
+                      <Button 
+                        colorScheme="purple"
+                        variant="outline"
+                        onClick={searchBook}
+                      >
+                        Search
+                      </Button>
                     </Flex>
                     {selectedBook ? (
                       <Box
@@ -957,7 +963,9 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                             </Popover>
                             <Flex justify="flex-end">
                               <Button 
-                                size="sm"
+                                // size="sm"
+                                colorScheme="purple"
+                                // variant="outline"
                                 data-image={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
                                 data-title={selectedBook.volumeInfo.title}
                                 data-author={selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
@@ -1072,11 +1080,13 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           <Button
                             onClick={e=>updateCurrentlyReadingThoughts(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
                             disabled={updateCurrentlyReadingThoughtsMutation.isLoading}
+                            colorScheme="green"
                           >
                             Update
                           </Button>
                           <Button
                             onClick={e=>cancelEditCurrentlyReadingThoughts(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
+                            colorScheme="gray"
                           >
                             Cancel
                           </Button>
@@ -1503,6 +1513,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   <Button
                                     onClick={e=>updateCurrentlyReadingThoughts(readBook.id)}
                                     disabled={updateCurrentlyReadingThoughtsMutation.isLoading}
+                                    colorScheme="green"
                                   >
                                     Update
                                   </Button>
@@ -1680,7 +1691,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           {(profilePhotoMutation.error as Error).message}
                         </Text>
                       )}
-                      <Button variant='ghost' mr={3} onClick={updateUserProfilePhoto}  size="lg">
+                      <Button mr={3} onClick={updateUserProfilePhoto}  size="lg" colorScheme="purple">
                         Save
                       </Button>
                     </>
@@ -1816,7 +1827,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                         {(profileDataMutation.error as Error).message}
                       </Text>
                     )}
-                    <Button mr={3} onClick={updateProfileData} size="lg">
+                    <Button mr={3} onClick={updateProfileData} size="lg" colorScheme="purple">
                       Save
                     </Button>
                     </>
@@ -1949,7 +1960,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                 <ModalFooter flexDirection="column">
                 <> 
                   <Button
-                    colorScheme="green"
+                    colorScheme="purple"
                     data-profileid={profileData.id}
                     data-currentlyreadingid={commentBookData?.id}
                     ref={commentCurrentlyReadingButton}

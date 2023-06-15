@@ -1049,6 +1049,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 alignSelf="flex-end"
                                 data-bookid={book.id}
                                 onClick={e=>updateNotes(e)}
+                                colorScheme="purple"
                               >
                                 Save Notes
                               </Button>
@@ -1095,6 +1096,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     <Button
                       onClick={e=>searchBook()}
                       ref={searchBookButtonRef}
+                      colorScheme="purple"
+                      variant="outline"
                     >
                       Search
                     </Button>

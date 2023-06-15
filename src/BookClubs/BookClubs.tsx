@@ -229,7 +229,7 @@ export default function BookClubs({server}: {server: string}) {
                         variant="ghost"
                         onClick={createBookClubModalOpen}
                       >
-                        <IoIosAdd size={25} /> New
+                        <IoIosAdd size={25} />
                       </Button>
                     </Flex>
                     <Box>
@@ -631,7 +631,7 @@ export default function BookClubs({server}: {server: string}) {
 
         </Tabs>
 
-        <Modal isOpen={isOpenCreateBookClubModal} onClose={closeCreateBookClubModal} size="xl">
+        <Modal isOpen={isOpenCreateBookClubModal} onClose={closeCreateBookClubModal} size="xl" isCentered>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>
@@ -654,10 +654,11 @@ export default function BookClubs({server}: {server: string}) {
                   {createBookClubError}
                 </Text>
                 <Button 
-                  variant='ghost' 
+                  // variant='ghost' 
                   mr={3}
                   size="lg"
                   onClick={createBookClub}
+                  colorScheme="purple"
                 >
                   Create
                 </Button>

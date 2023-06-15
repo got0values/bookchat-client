@@ -413,6 +413,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             />
             <Button 
               size="md"
+              colorScheme="purple"
+              variant="outline"
               onClick={searchBook}
             >
               Search
@@ -423,10 +425,11 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               my={2}
               p={4}
               rounded="md"
-              bg="gray.200"
-              _dark={{
-                bg: 'blackAlpha.600'
-              }}
+              // bg="white"
+              // _dark={{
+              //   bg: 'blackAlpha.600'
+              // }}
+              className="well-card"
               position="relative"
             >
               <CloseButton
@@ -481,7 +484,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   </Popover>
                   <Flex justify="flex-end">
                     <Button 
-                      size="sm"
+                      // size="sm"
+                      colorScheme="purple"
                       data-image={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
                       data-title={selectedBook.volumeInfo.title}
                       data-author={selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
@@ -602,6 +606,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       id={`currently-reading-input-${reading.id}`}
                     />
                     <Button
+                      colorScheme="green"
                       onClick={e=>updateCurrentlyReadingThoughts(reading.id)}
                       disabled={updateCurrentlyReadingThoughtsMutation.isLoading}
                     >
@@ -747,7 +752,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             <ModalFooter flexDirection="column">
             <> 
               <Button
-                colorScheme="green"
+                colorScheme="purple"
                 data-profileid={commentBookData?.Profile?.id}
                 data-currentlyreadingid={commentBookData?.id}
                 ref={commentCurrentlyReadingButton}
