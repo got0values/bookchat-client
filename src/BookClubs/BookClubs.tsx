@@ -241,14 +241,19 @@ export default function BookClubs({server}: {server: string}) {
                               mx={0}
                               onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
                               _hover={{
-                                cursor: "pointer"
+                                cursor: "pointer",
+                                bg: "gray.200"
                               }}
                               key={i}
                             >
                               <Heading as="h4" size="sm" noOfLines={1}>
                                 {bookClub.name}
                               </Heading>
-                              <Text>
+                              <Text
+                                opacity="75%"
+                                noOfLines={2}
+                                fontSize="sm"
+                              >
                                   {bookClub.about}
                               </Text>
                             </Box>
