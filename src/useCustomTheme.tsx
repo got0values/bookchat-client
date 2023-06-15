@@ -5,7 +5,7 @@ import '@fontsource/inter/700.css'
 
 const customTheme = {
   config: {
-    initialColorMode: 'dark',
+    initialColorMode: 'light',
     useSystemColorMode: false
   },
   // colors: {
