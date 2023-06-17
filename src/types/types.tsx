@@ -372,6 +372,7 @@ export interface BookSuggestionType {
   notes: string;
   rating: number;
   created_on: string;
+  Profile_BookSuggestion_suggestorToProfile: ProfileType;
 }
 
 export interface StarRatingType {

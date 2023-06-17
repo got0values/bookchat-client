@@ -4,47 +4,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 // import { BookshelfCategory, BookshelfBook, BookshelfType } from "../types/types";
 import { 
   Box,
-  Tag,
-  Heading,
   Text,
-  Image,
-  Center,
-  Spinner,
-  Stack,
-  Button,
-  Input,
-  Flex,
-  Skeleton,
   useToast,
-  CloseButton,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Popover,
-  PopoverTrigger,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverBody,
-  PopoverArrow,
-  Textarea,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  useDisclosure,
-  FormLabel,
-  Switch,
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Checkbox,
-  CheckboxGroup,
   Tabs, 
   TabList, 
   TabPanels, 
@@ -53,7 +14,7 @@ import {
   useColorMode
 } from "@chakra-ui/react";
 import { BookSuggestionToList } from "./BookSuggestToList";
-// import { IoIosAdd, IoIosRemove } from 'react-icons/io';
+import { BookSuggestionsForMe } from "./BookSuggestionsForMe";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
@@ -98,11 +59,7 @@ export default function BookSuggestions({server, gbooksapi}: {server: string; gb
         <TabPanels>
           <TabPanel px={0}>
             
-            {/* <Box className="well">
-              <Heading as="h2" size="md">
-                Check
-              </Heading>
-            </Box> */}
+            <BookSuggestionsForMe server={server} />
 
           </TabPanel>
 
