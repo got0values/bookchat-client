@@ -8,7 +8,7 @@ const StarRating = ({ratingCallback, starRatingId, defaultRating}: StarRatingTyp
   const buttons = [];
 
   const onClick = (idx: number) => {
-    if (!isNaN(idx)) {
+    if (!isNaN(idx) && ratingCallback !== null) {
       if (rating === 1 && idx === 1) {
         setRating(prev=>0);
         ratingCallback([0,starRatingId])
@@ -27,8 +27,11 @@ const StarRating = ({ratingCallback, starRatingId, defaultRating}: StarRatingTyp
         p={0}
         m={0}
         variant="unstyled"
-        onClick={() => onClick(idx)}
+        onClick={e=>ratingCallback !== null ? onClick(idx) : null}
         _focus={{ outline: 0 }}
+        _hover={{
+          cursor: ratingCallback !== null ? "pointer" : "default"
+        }}
       >
         <Icon
           as={fill ? AiFillStar : AiOutlineStar}
@@ -39,7 +42,7 @@ const StarRating = ({ratingCallback, starRatingId, defaultRating}: StarRatingTyp
           p={0}
           name="star"
           color={fill ? "gold" : "gray"}
-          onClick={e=>onClick(fill)}
+          onClick={e=>ratingCallback !== null ? onClick(fill) : null}
         />
       </Button>
     );

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent, HTMLInputTypeAttribute } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BookshelfCategory, BookshelfBook, BookshelfType } from "../types/types";
+import { BookshelfCategory, BookshelfBook } from "../types/types";
 import { 
   Box,
   Tag,
@@ -48,7 +48,7 @@ import {
   useColorMode
 } from "@chakra-ui/react";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
-import { MdEdit, MdOutlineChat, MdSubject } from 'react-icons/md';
+import { MdOutlineChat } from 'react-icons/md';
 import { BiDotsHorizontalRounded, BiTrash, BiPlus } from 'react-icons/bi';
 import ReactQuill from 'react-quill';
 import dayjs from "dayjs";
@@ -548,7 +548,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
       <Skeleton 
         isLoaded={!isLoading}
       >
-
         <Flex flexWrap="wrap" align="flex-start">
           <Stack flex="1 1 30%">
             <Flex

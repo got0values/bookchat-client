@@ -334,8 +334,10 @@ export interface BookshelfType {
   id: number;
   profile: number;
   allow_suggestions: number;
+  Profile: ProfileType;
   BookShelfCategory: BookshelfCategory[];
-  BookShelfBook: BookshelfBook[];
+  BookshelfBook: BookshelfBook[];
+  Flag?: any;
 }
 export interface BookshelfCategory {
   id: number;
@@ -359,7 +361,7 @@ export interface BookshelfBook {
 }
 
 export interface StarRatingType {
-  ratingCallback: ([rating,starRatingId]: [rating: number, starRatingId: number])=>void;
+  ratingCallback: (([rating,starRatingId]: [rating: number, starRatingId: number])=>void) | null;
   starRatingId: number;
   defaultRating: number;
 }

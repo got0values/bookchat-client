@@ -13,6 +13,8 @@ import Profile from './Profile/Profile';
 import Chat from "./Chat/Chat";
 import ChatRoom from './Chat/ChatRoom';
 import Bookshelf from './Bookshelf/Bookshelf';
+import BookSuggestions from "./Book Suggestions/BookSuggestions";
+import BookSuggestionBookshelf from "./Book Suggestions/BookSuggestionBookshelf";
 import Settings from './Settings';
 import ResetPassword from "./ResetPassword";
 import Terms from "./Terms";
@@ -95,14 +97,6 @@ function App() {
             element={ <ChatRoom server={server} /> }
           />
         </Route>
-        <Route 
-          path="settings" 
-          element={ <Settings server={server} /> } 
-        />
-        <Route 
-          path="*" 
-          element={ <RedirectPage /> } 
-        />
         <Route
           path="bookshelf"
         >
@@ -111,6 +105,26 @@ function App() {
             element={<Bookshelf server={server} gbooksapi={GBOOKSAPI} />}
           />
         </Route>
+        <Route
+          path="booksuggestions"
+        >
+          <Route
+            index
+            element={<BookSuggestions server={server} gbooksapi={GBOOKSAPI} />}
+          />
+          <Route
+            path="bookshelf"
+            element={<BookSuggestionBookshelf server={server} gbooksapi={GBOOKSAPI} />}
+          />
+        </Route>
+        <Route 
+          path="settings" 
+          element={ <Settings server={server} /> } 
+        />
+        <Route 
+          path="*" 
+          element={ <RedirectPage /> } 
+        />
       </Route>
     </Routes>
   )
