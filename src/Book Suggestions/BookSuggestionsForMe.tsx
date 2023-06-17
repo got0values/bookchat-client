@@ -40,7 +40,6 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
       )
       .then((response)=>{
         const {data} = response;
-        console.log(data.message)
         return data.message;
       })
       .catch(({response})=>{

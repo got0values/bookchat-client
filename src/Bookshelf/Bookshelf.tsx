@@ -1162,7 +1162,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             // maxH="80vh"
           >
             <ModalHeader>
-              New Book Club Book
+              New Bookshelf Book
             </ModalHeader>
             <ModalCloseButton />
               <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
