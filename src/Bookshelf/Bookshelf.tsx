@@ -500,8 +500,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   }
 
   const allowSuggestionsRef = useRef({} as HTMLInputElement);
-  async function allowSuggestionsToggle(e: HTMLInputElement){
-    const isChecked = e.target.checked;
+  async function allowSuggestionsToggle(){
+    const isChecked = allowSuggestionsRef.current.checked;
     let tokenCookie: string | null = Cookies.get().token;
       if (tokenCookie) {
         await axios
@@ -567,7 +567,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                 id="allow-suggestions"
                 defaultChecked={allowSuggestions}
                 ref={allowSuggestionsRef}
-                onChange={e=>allowSuggestionsToggle(e)}
+                onChange={e=>allowSuggestionsToggle()}
               />
             </Flex>
             <Stack className="well">
