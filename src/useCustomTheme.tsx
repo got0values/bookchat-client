@@ -62,6 +62,9 @@ const customTheme = {
           bg: 'blackAlpha.300'
         }
       },
+      '.non-well': {
+        m: '0.4rem!important'
+      },
       '.well-card': {
         padding: 4, 
         boxShadow: "base",

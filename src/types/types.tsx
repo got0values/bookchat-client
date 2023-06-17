@@ -330,6 +330,13 @@ export interface ChatUser {
 }
 
 //Bookshelf
+export interface BookshelfType {
+  id: number;
+  profile: number;
+  allow_suggestions: number;
+  BookShelfCategory: BookshelfCategory[];
+  BookShelfBook: BookshelfBook[];
+}
 export interface BookshelfCategory {
   id: number;
   profile: number;

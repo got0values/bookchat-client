@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent, HTMLInputTypeAttribute } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BookshelfCategory, BookshelfBook } from "../types/types";
+import { BookshelfCategory, BookshelfBook, BookshelfType } from "../types/types";
 import { 
   Box,
   Tag,
@@ -10,14 +10,7 @@ import {
   Image,
   Center,
   Spinner,
-  Badge,
-  Fade,
   Stack,
-  HStack,
-  Card,
-  CardBody,
-  CardHeader,
-  IconButton,
   Button,
   Input,
   Flex,
@@ -37,14 +30,14 @@ import {
   PopoverContent,
   PopoverBody,
   PopoverArrow,
-  Select,
   Textarea,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
   useDisclosure,
-  Avatar,
+  FormLabel,
+  Switch,
   Accordion,
   AccordionButton,
   AccordionIcon,
@@ -86,7 +79,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
       })
       .then((response)=>{
         const responseMessage = response.data.message
-        setBookshelfBooks(responseMessage.books)
+        setBookshelfBooks(responseMessage.BookshelfBook)
         return responseMessage
       })
       .catch(({response})=>{
@@ -170,6 +163,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             setCreateCategoryError(response.data.message)
           }
         })
+      return getBookshelf();
     },
     onSuccess: (data,variables)=>{
       queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
@@ -181,7 +175,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
         duration: 9000,
         isClosable: true
       })
-      getBookshelf()
     }
   })
   async function removeCategory(e: any) {
@@ -203,7 +196,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     await axios
       .get("https://www.googleapis.com/books/v1/volumes?q=" + searchBookRef.current.value + "&key=" + gbooksapi)
       .then((response)=>{
-        console.log(response.data.items)
         setBookResults(response.data.items)
         setBookResultsLoading(false)
         onOpenBookSearchModal();
@@ -473,7 +465,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     mutationFn: async ([rating,starRatingId]:[rating: number,starRatingId: number]) => {
       let tokenCookie: string | null = Cookies.get().token;
       if (tokenCookie) {
-        axios
+        await axios
         .put(server + "/api/ratebookshelfbook",
           {
             rating: rating,
@@ -507,13 +499,43 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     ratingCallbackMutation.mutate([rating,starRatingId])
   }
 
+  const allowSuggestionsRef = useRef({} as HTMLInputElement);
+  async function allowSuggestionsToggle(e: HTMLInputElement){
+    const isChecked = e.target.checked;
+    let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+        .put(server + "/api/bookshelfallowsuggestions",
+          {
+            allowSuggestions: isChecked ? 1 : 0
+          },
+          {
+            headers: {
+              authorization: tokenCookie
+            }
+          }
+        )
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data?.message) {
+            throw new Error(response.data?.message)
+          }
+        })
+      }
+      else {
+        throw new Error("An error has occured")
+      }
+  }
+
  
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['bookshelfKey'], 
     queryFn: getBookshelf
   });
-  const categories = data?.categories;
-  const books = data?.books;
+  const bookshelf = data ? data : null;
+  const allowSuggestions = bookshelf?.allow_suggestions;
+  const categories = bookshelf?.BookshelfCategory;
+  const books = bookshelf?.BookshelfBook;
   
   if (isError) {
     return <Flex align="center" justify="center" minH="90vh">
@@ -529,11 +551,30 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
 
         <Flex flexWrap="wrap" align="flex-start">
           <Stack flex="1 1 30%">
+            <Flex
+              align="center"
+              justify="space-between"
+              className="non-well"
+            >
+              <FormLabel 
+                htmlFor="allow-suggestions"
+                mb={0}
+                fontWeight="bold"
+               >
+                Allow suggestions?
+              </FormLabel>
+              <Switch
+                id="allow-suggestions"
+                defaultChecked={allowSuggestions}
+                ref={allowSuggestionsRef}
+                onChange={e=>allowSuggestionsToggle(e)}
+              />
+            </Flex>
             <Stack className="well">
               <Box>
                 <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
                   <Heading as="h3" size="md">
-                    Categories
+                    Filter by Category
                   </Heading>
 
                   {!showAddCategory && (
