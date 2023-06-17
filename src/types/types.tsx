@@ -360,6 +360,20 @@ export interface BookshelfBook {
   BookshelfBookCategory: BookshelfCategory[];
 }
 
+export interface BookSuggestionType {
+  id: number;
+  suggestor: number;
+  suggestee: number;
+  title: string;
+  author: string;
+  image: string;
+  description: string;
+  isbn: string;
+  notes: string;
+  rating: number;
+  created_on: string;
+}
+
 export interface StarRatingType {
   ratingCallback: (([rating,starRatingId]: [rating: number, starRatingId: number])=>void) | null;
   starRatingId: number;

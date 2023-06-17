@@ -4,53 +4,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { BookshelfType } from "../types/types";
 import { 
   Box,
-  Tag,
   Heading,
   Text,
   Avatar,
-  Image,
-  Center,
-  Spinner,
-  Stack,
   Button,
-  Input,
   Flex,
   Skeleton,
   useToast,
-  CloseButton,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Popover,
-  PopoverTrigger,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverBody,
-  PopoverArrow,
-  Textarea,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  useDisclosure,
-  FormLabel,
-  Switch,
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Checkbox,
-  CheckboxGroup,
-  Tabs, 
-  TabList, 
-  TabPanels, 
-  Tab, 
-  TabPanel
 } from "@chakra-ui/react";
 import { BsArrowRight } from 'react-icons/bs';
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
@@ -134,9 +94,9 @@ export function BookSuggestionToList({server}: {server: string;}) {
                 <Text fontWeight="bold">
                   {bookshelf.Profile.username}
                 </Text>
-                <Box w="1.4rem">
+                {/* <Box w="1.4rem">
                   {bookshelf.Flag ? <bookshelf.Flag/> : null}
-                </Box>
+                </Box> */}
               </Flex>
               <Flex
                 align="center"
