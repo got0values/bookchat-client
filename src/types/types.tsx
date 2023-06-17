@@ -349,3 +349,9 @@ export interface BookshelfBook {
   created_on: string;
   BookshelfBookCategory: BookshelfCategory[];
 }
+
+export interface StarRatingType {
+  ratingCallback: ([rating,starRatingId]: [rating: number, starRatingId: number])=>void;
+  starRatingId: number;
+  defaultRating: number;
+}

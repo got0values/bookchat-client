@@ -62,6 +62,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
 import axios from "axios";
+import StarRating from "../shared/StarRating";
 
 
 export default function Bookshelf({server, gbooksapi}: {server: string; gbooksapi: string;}) {
@@ -468,6 +469,44 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     }
   }
 
+  const ratingCallbackMutation = useMutation({
+    mutationFn: async ([rating,starRatingId]:[rating: number,starRatingId: number]) => {
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        axios
+        .put(server + "/api/ratebookshelfbook",
+          {
+            rating: rating,
+            id: starRatingId
+          },
+          {
+            headers: {
+              authorization: tokenCookie
+            }
+          }
+        )
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data?.message) {
+            throw new Error(response.data?.message)
+          }
+        })
+      }
+      else {
+        throw new Error("An error has occured")
+      }
+      return getBookshelf()
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
+      queryClient.resetQueries({queryKey: ['bookshelfKey']})
+      queryClient.setQueryData(["bookshelfKey"],data)
+    }
+  })
+  function ratingCallback([rating,starRatingId]: [rating:number,starRatingId:number]) {
+    ratingCallbackMutation.mutate([rating,starRatingId])
+  }
+
  
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['bookshelfKey'], 
@@ -855,7 +894,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       <Flex>
                         <Image
                           src={book.image}
-                          maxH="75px"
+                          maxH="100px"
                         />
                         <Box mx={2} w="100%">
                           <Popover isLazy>
@@ -873,12 +912,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 >
                                   {book.title}
                                 </Heading>
-                                <Text fontSize="lg">
-                                  {book.author}
-                                </Text>
-                                <Text>
-                                  {book.isbn}
-                                </Text>
                               </Box>
                             </PopoverTrigger>
                             <PopoverContent>
@@ -894,6 +927,17 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                               </PopoverBody>
                             </PopoverContent>
                           </Popover>
+                          <Text fontSize="lg">
+                            {book.author}
+                          </Text>
+                          <Text>
+                            {book.isbn}
+                          </Text>
+                          <StarRating
+                            ratingCallback={ratingCallback} 
+                            starRatingId={book.id}
+                            defaultRating={book.rating}
+                          />
                         </Box>
                       </Flex>
 
