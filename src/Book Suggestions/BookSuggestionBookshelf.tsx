@@ -74,7 +74,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
         const currentbookshelf = data.message;
         const nextbookshelfdata = data.nextbookshelf;
         const previoussuggestionsdata = data.previoussuggestions;
-        console.log(data)
+        // console.log(data)
         if (nextbookshelfdata) {
           setNextBookshelf(nextbookshelfdata)
         }
@@ -151,7 +151,9 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           searchInputRef.current.value = "";
           if (nextBookshelf) {
             navigate(`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`)
-            window.location.reload()
+            setTimeout(()=>{
+              window.location.reload()
+            },1500)
           }
           else {
             navigate(`/booksuggestions`);
@@ -187,12 +189,6 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
     Flag: bookSuggestionBookshelf?.Profile.country ? (countryFlagIconsReact as any)[bookSuggestionBookshelf.Profile.country] : <Box></Box>
   }
 
-  // if (bookSuggestionBookshelf?.allow_suggestions !== 1) {
-  //   return <Flex align="center" justify="center" minH="90vh">
-  //     <Heading as="h1" size="xl">Currently not allowing suggestions</Heading>
-  //   </Flex>
-  // }
-
   if (isError) {
     return <Flex align="center" justify="center" minH="90vh">
       <Heading as="h1" size="xl">Error: {(error as Error).message}</Heading>
@@ -219,7 +215,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           >
             <Avatar 
               src={bookSuggestionBookshelf?.Profile?.profile_photo} 
-              name={bookSuggestionBookshelf.Profile?.username} 
+              name={bookSuggestionBookshelf?.Profile?.username} 
             />
             <Text fontWeight="bold" fontSize="xl">
               {bookSuggestionBookshelf?.Profile?.username} 
@@ -373,14 +369,22 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                             </PopoverBody>
                           </PopoverContent>
                         </Popover>
-                        <Text>
+                        <Text fontStyle="italic">
                           {book.isbn}
                         </Text>
-                        <StarRating
-                          ratingCallback={null} 
-                          starRatingId={book.id}
-                          defaultRating={book.rating}
-                        />
+                        <Flex
+                          align="center"
+                          gap={1}
+                        >
+                          <Text fontWeight="bold">
+                            {bookSuggestionBookshelf.Profile?.username}'s rating:
+                          </Text>
+                          <StarRating
+                            ratingCallback={null} 
+                            starRatingId={book.id}
+                            defaultRating={book.rating}
+                          />
+                        </Flex>
                       </Box>
                     </Flex>
                   )
