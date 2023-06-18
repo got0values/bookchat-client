@@ -575,6 +575,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   });
   const bookshelf = data ? data : null;
   const allowSuggestions = bookshelf?.allow_suggestions;
+  const suggestionsNotesDefaultValue = bookshelf?.suggestions_notes;
   const categories = bookshelf?.BookshelfCategory;
   const books = bookshelf?.BookshelfBook;
   
@@ -619,6 +620,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
               >
                 <Textarea
                   placeholder="Suggestion notes"
+                  defaultValue={suggestionsNotesDefaultValue}
                   ref={suggestionsNotesRef}
                   maxLength={150}
                 >

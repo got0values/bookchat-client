@@ -73,47 +73,53 @@ export function BookSuggestionToList({server}: {server: string;}) {
       {bookSuggestToList?.length ? (
         bookSuggestToList.map((bookshelf: BookshelfType, i: number)=>{
           return (
-            <Flex 
+            <Box
               className="well"
-              align="center"
-              justify="space-between"
               key={i}
             >
-              <Flex
-                as={Link}
-                to={`/profile/${bookshelf.Profile.username}`}
+              <Flex 
                 align="center"
-                gap={2}
+                justify="space-between"
               >
-                <Avatar 
-                  src={bookshelf.Profile.profile_photo} 
-                  size="sm"
-                  name={bookshelf.Profile.username}
-                />
-                <Text fontWeight="bold">
-                  {bookshelf.Profile.username}
-                </Text>
-                {/* <Box w="1.4rem">
-                  {bookshelf.Flag ? <bookshelf.Flag/> : null}
-                </Box> */}
-              </Flex>
-              <Flex
-                align="center"
-                gap={2}
-              >
-                <Box>
-                  <Text as="span" fontWeight="bold">Books:</Text> {(bookshelf as any)._count.BookshelfBook}
-                </Box>
-                <Button
-                  // size="lg"
-                  variant="ghost"
-                  p={0}
-                  onClick={e=>navigate(`/booksuggestions/bookshelf?profile=${bookshelf.Profile.username}`)}
+                <Flex
+                  as={Link}
+                  to={`/profile/${bookshelf.Profile.username}`}
+                  align="center"
+                  gap={2}
                 >
-                  <BsArrowRight size={20} />
-                </Button>
+                  <Avatar 
+                    src={bookshelf.Profile.profile_photo} 
+                    size="sm"
+                    name={bookshelf.Profile.username}
+                  />
+                  <Text fontWeight="bold">
+                    {bookshelf.Profile.username}
+                  </Text>
+                  {/* <Box w="1.4rem">
+                    {bookshelf.Flag ? <bookshelf.Flag/> : null}
+                  </Box> */}
+                </Flex>
+                <Flex
+                  align="center"
+                  gap={2}
+                >
+                  <Box>
+                    <Text as="span" fontWeight="bold">Books:</Text> {(bookshelf as any)._count.BookshelfBook}
+                  </Box>
+                  <Button
+                    // size="lg"
+                    variant="ghost"
+                    p={0}
+                    onClick={e=>navigate(`/booksuggestions/bookshelf?profile=${bookshelf.Profile.username}`)}
+                  >
+                    <BsArrowRight size={20} />
+                  </Button>
+                </Flex>
               </Flex>
-            </Flex>
+              <Text>
+                {bookshelf.suggestions_notes}
+              </Text>
+            </Box>
           )
         })
       ): (

@@ -334,6 +334,7 @@ export interface BookshelfType {
   id: number;
   profile: number;
   allow_suggestions: number;
+  suggestions_notes: string;
   Profile: ProfileType;
   BookShelfCategory: BookshelfCategory[];
   BookshelfBook: BookshelfBook[];

@@ -201,47 +201,54 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
         isLoaded={!isLoading}
       >
         <Flex
-          align="center"
-          justify="space-between"
           className="non-well"
+          direction="column"
           pb={2}
         >
-          <>
           <Flex
-            as={Link}
-            to={`/profile/${bookSuggestionBookshelf?.Profile?.username}`}
             align="center"
-            gap={2}
+            justify="space-between"
           >
-            <Avatar 
-              src={bookSuggestionBookshelf?.Profile?.profile_photo} 
-              name={bookSuggestionBookshelf?.Profile?.username} 
-            />
-            <Text fontWeight="bold" fontSize="xl">
-              {bookSuggestionBookshelf?.Profile?.username} 
-            </Text>
-            {/* <Box w="1.4rem">
-              {bookSuggestionBookshelf.Flag ? <bookSuggestionBookshelf.Flag/> : null}
-            </Box> */}
+            <Flex
+              as={Link}
+              to={`/profile/${bookSuggestionBookshelf?.Profile?.username}`}
+              align="center"
+              gap={2}
+            >
+              <Avatar 
+                src={bookSuggestionBookshelf?.Profile?.profile_photo} 
+                name={bookSuggestionBookshelf?.Profile?.username} 
+              />
+              <Text fontWeight="bold" fontSize="xl">
+                {bookSuggestionBookshelf?.Profile?.username} 
+              </Text>
+              {/* <Box w="1.4rem">
+                {bookSuggestionBookshelf.Flag ? <bookSuggestionBookshelf.Flag/> : null}
+              </Box> */}
+            </Flex>
+            {nextBookshelf ? (
+              <a href={`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`}>
+                <Button
+                  variant="ghost"
+                  fontSize="md"
+                  display="flex"
+                  gap={2}
+                  p={0}
+                  _hover={{
+                    bg: "transparent"
+                  }}
+                  // onClick={e=>redirect(`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`)}
+                >
+                  Next <BsArrowRight size={20} />
+                </Button>
+              </a>
+            ): null}
           </Flex>
-          {nextBookshelf ? (
-            <a href={`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`}>
-              <Button
-                variant="ghost"
-                fontSize="md"
-                display="flex"
-                gap={2}
-                p={0}
-                _hover={{
-                  bg: "transparent"
-                }}
-                // onClick={e=>redirect(`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`)}
-              >
-                Skip <BsArrowRight size={20} />
-              </Button>
-            </a>
-          ): null}
-          </>
+          <Box>
+            <Text>
+              {bookSuggestionBookshelf.suggestions_notes}
+            </Text>
+          </Box>
         </Flex>
         {previousSuggestions && previousSuggestions.length ? (
           <Box px={2}>
@@ -374,6 +381,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                         </Text>
                         <Flex
                           align="center"
+                          wrap="wrap"
                           gap={1}
                         >
                           <Text fontWeight="bold">
