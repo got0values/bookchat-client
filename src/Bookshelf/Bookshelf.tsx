@@ -501,14 +501,15 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     ratingCallbackMutation.mutate([rating,starRatingId])
   }
 
-  const suggestionNotesRef = useRef({} as HTMLTextAreaElement);
+  const suggestionsNotesRef = useRef({} as HTMLTextAreaElement);
   async function saveSuggestionNotes() {
     let tokenCookie: string | null = Cookies.get().token;
+    const suggestionsNotes = suggestionsNotesRef.current.value;
     if (tokenCookie) {
       await axios
-      .post(server + "/api/savesuggestionnotes",
+      .put(server + "/api/savesuggestionsnotes",
         {
-          suggestionNotes: suggestionNotesRef.current.value
+          suggestionsNotes: suggestionsNotes
         },
         {
           headers: {
@@ -516,7 +517,16 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
           }
         }
       )
-      .catch(({response})=>{
+      .then((response)=>{
+        toast({
+          description: "Notes saved",
+          status: "success",
+          duration: 9000,
+          isClosable: true
+        })
+        throw new Error(response.data.message)
+      })
+      .catch((response)=>{
         console.log(response)
         if (response.data?.message) {
           throw new Error(response.data?.message)
@@ -545,7 +555,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
         }
       )
       .then((response)=>{
-        setShowSuggestionsNotes(!showSuggestionsNotes)
+        setShowSuggestionsNotes(prev=>!prev)
       })
       .catch(({response})=>{
         console.log(response)
@@ -609,7 +619,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
               >
                 <Textarea
                   placeholder="Suggestion notes"
-                  ref={suggestionNotesRef}
+                  ref={suggestionsNotesRef}
                   maxLength={150}
                 >
                 </Textarea>
