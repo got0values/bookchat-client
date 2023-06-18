@@ -203,7 +203,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
         <Flex
           className="non-well"
           direction="column"
-          pb={2}
+          // pb={2}
         >
           <Flex
             align="center"
@@ -254,7 +254,8 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           <Box px={2}>
             <Heading as="h3" size="sm" mb={1}>Your previous suggestions:</Heading>
             <Flex
-              align="center"
+              // align="center"
+              wrap="wrap"
               gap={2}
             >
               {previousSuggestions.length ? (
@@ -263,7 +264,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                     <Flex
                       // align="center"
                       gap={1}
-                      wrap="wrap"
+                      maxW="200px"
                       key={i}
                     >
                       <Image
@@ -275,12 +276,14 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                         <Text
                           fontSize="sm"
                           fontWeight="bold"
+                          noOfLines={1}
                           mb={-1}
                         >
                           {suggestion.title}
                         </Text>
                         <Text
                           fontSize="sm"
+                          noOfLines={1}
                         >
                           {suggestion.author}
                         </Text>
