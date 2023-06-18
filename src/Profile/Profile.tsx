@@ -888,9 +888,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                     <Flex gap={2} align="center">
                       <Input 
                         type="text" 
-                        placeholder="What i'm reading"
-                        variant="ghost"
-                        bg="white" 
+                        placeholder="What i'm reading" 
                         _dark={{
                           bg: "blackAlpha.400"
                         }}

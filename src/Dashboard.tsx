@@ -402,9 +402,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           <Flex gap={2}>
             <Input 
               type="search" 
-              placeholder="Share what you're reading"
-              variant="ghost"
-              bg="white" 
+              placeholder="Share what you're reading" 
               _dark={{
                 bg: "whiteAlpha.50"
               }}
