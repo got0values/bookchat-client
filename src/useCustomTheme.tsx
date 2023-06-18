@@ -29,7 +29,8 @@ const customTheme = {
   styles: {
     global: {
       body: {
-        bg: 'gray.100',
+        // bg: 'gray.100',
+        bg: 'white',
         _dark: {
           bg: 'blackAlpha.50',
           // bgGradient: 'linear(to-r, blackAlpha.100, whiteAlpha.100, blackAlpha.100)'
@@ -53,7 +54,8 @@ const customTheme = {
         maxW: '700px'
       },
       '.well': {
-        bg: 'gray.50',
+        // bg: 'gray.50',
+        bg: 'white',
         p: 4,
         m: '0.25rem!important',
         boxShadow: "base",

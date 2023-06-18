@@ -83,9 +83,14 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                   src={suggestion.Profile_BookSuggestion_suggestorToProfile.profile_photo} 
                   size="sm"
                 />
-                <Text fontWeight="bold">
-                  {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
-                </Text>
+                <Box>
+                  <Text fontWeight="bold" mb={-2}>
+                    {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
+                  </Text>
+                  <Text fontStyle="italic" opacity="75%">
+                    {dayjs(suggestion.created_on).local().format('MMM d, YYYY')}
+                  </Text>
+                </Box>
                 {/* <Box w="1.4rem">
                   {bookshelf.Flag ? <bookshelf.Flag/> : null}
                 </Box> */}
@@ -127,7 +132,7 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                     <Text
                       fontWeight="bold"
                     >
-                      Your suggestion rating: 
+                      Your rating: 
                     </Text>
                     <Text>
                       Coming soon!
