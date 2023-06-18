@@ -67,6 +67,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
 
   const [bookshelfBooks,setBookshelfBooks] = useState([] as BookshelfBook[])
   const [showAddCategory,setShowAddCategory] = useState(false)
+  const [showSuggestionsNotes,setShowSuggestionsNotes] = useState(false)
 
   async function getBookshelf() {
     const tokenCookie: string | null = Cookies.get().token;
@@ -78,8 +79,9 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
         }
       })
       .then((response)=>{
-        const responseMessage = response.data.message
-        setBookshelfBooks(responseMessage.BookshelfBook)
+        const responseMessage = response.data.message;
+        setBookshelfBooks(responseMessage.BookshelfBook);
+        setShowSuggestionsNotes(responseMessage.allow_suggestions);
         return responseMessage
       })
       .catch(({response})=>{
@@ -499,35 +501,64 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     ratingCallbackMutation.mutate([rating,starRatingId])
   }
 
+  const suggestionNotesRef = useRef({} as HTMLTextAreaElement);
+  async function saveSuggestionNotes() {
+    let tokenCookie: string | null = Cookies.get().token;
+    if (tokenCookie) {
+      await axios
+      .post(server + "/api/savesuggestionnotes",
+        {
+          suggestionNotes: suggestionNotesRef.current.value
+        },
+        {
+          headers: {
+            authorization: tokenCookie
+          }
+        }
+      )
+      .catch(({response})=>{
+        console.log(response)
+        if (response.data?.message) {
+          throw new Error(response.data?.message)
+        }
+      })
+    }
+    else {
+      throw new Error("An error has occured")
+    }
+  }
+
   const allowSuggestionsRef = useRef({} as HTMLInputElement);
   async function allowSuggestionsToggle(){
     const isChecked = allowSuggestionsRef.current.checked;
     let tokenCookie: string | null = Cookies.get().token;
-      if (tokenCookie) {
-        await axios
-        .put(server + "/api/bookshelfallowsuggestions",
-          {
-            allowSuggestions: isChecked ? 1 : 0
-          },
-          {
-            headers: {
-              authorization: tokenCookie
-            }
+    if (tokenCookie) {
+      await axios
+      .put(server + "/api/bookshelfallowsuggestions",
+        {
+          allowSuggestions: isChecked ? 1 : 0
+        },
+        {
+          headers: {
+            authorization: tokenCookie
           }
-        )
-        .catch(({response})=>{
-          console.log(response)
-          if (response.data?.message) {
-            throw new Error(response.data?.message)
-          }
-        })
-      }
-      else {
-        throw new Error("An error has occured")
-      }
+        }
+      )
+      .then((response)=>{
+        setShowSuggestionsNotes(!showSuggestionsNotes)
+      })
+      .catch(({response})=>{
+        console.log(response)
+        if (response.data?.message) {
+          throw new Error(response.data?.message)
+        }
+      })
+    }
+    else {
+      throw new Error("An error has occured")
+    }
   }
 
- 
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['bookshelfKey'], 
     queryFn: getBookshelf
@@ -549,7 +580,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
         isLoaded={!isLoading}
       >
         <Flex flexWrap="wrap" align="flex-start">
-          <Stack flex="1 1 30%">
+          <Box flex="1 1 30%">
             <Flex
               align="center"
               justify="space-between"
@@ -569,6 +600,31 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                 onChange={e=>allowSuggestionsToggle()}
               />
             </Flex>
+            {showSuggestionsNotes ? (
+              <Flex
+                direction="column"
+                align="center"
+                gap={1}
+                mx={1}
+              >
+                <Textarea
+                  placeholder="Suggestion notes"
+                  ref={suggestionNotesRef}
+                  maxLength={150}
+                >
+                </Textarea>
+                <Button
+                  onClick={e=>saveSuggestionNotes()}
+                  colorScheme="purple"
+                  variant="outline"
+                  w="100%"
+                >
+                  Save
+                </Button>  
+              </Flex>
+            ) : (
+              null
+            )}
             <Stack className="well">
               <Box>
                 <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
@@ -666,7 +722,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                 </Stack>
               </CheckboxGroup>
             </Stack>
-          </Stack>
+          </Box>
           <Stack flex="1 1 65%" maxW="100%" className="well">
             <Box>
               <Flex align="center" justify="space-between">
