@@ -141,9 +141,10 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
           <Heading fontSize={'4xl'}>Sign in to your account</Heading>
         </Stack>
         <Box
-          rounded={'lg'}
+          rounded="sm"
           bg={colorMode === "light" ? "white" : "blackAlpha.300"}
-          boxShadow="base"
+          boxShadow="1px 1px 2px 1px black"
+          border="1px solid black"
           p={8}
         >
           <Stack spacing={4}></Stack>
@@ -161,6 +162,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 size="lg"
+                borderColor="black"
                 required
               />
             </FormControl>
@@ -172,13 +174,14 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 size="lg"
+                borderColor="black"
                 required
               />
             </FormControl>
             <Box textAlign="center">
               <Button 
                 type="submit"
-                bg={'blue.400'}
+                bg={'black'}
                 color={'white'}
                 _hover={{
                   bg: 'blue.500',
@@ -202,10 +205,13 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
           <Text>OR</Text>
         </Center>
         <Center>
-          <GoogleLogin onSuccess={(e)=>handleSubmit(e,true)} onError={()=>setError("error")} />
+          <GoogleLogin 
+            onSuccess={(e)=>handleSubmit(e,true)} 
+            onError={()=>setError("error")} 
+          />
         </Center>
         <Text fontSize={'lg'} color={'gray.600'} textAlign="center">
-          Don't have an account? <Link href="/register" color={'blue.400'}>Register</Link>
+          Don't have an account? <Link href="/register" fontWeight="bold">Register</Link>
         </Text>
       </Stack>
 
@@ -228,6 +234,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
                 id="pwResetEmail"
                 type="email"
                 ref={pwResetEmailRef as any}
+                borderColor="black"
               />
             </ModalBody>
             <ModalFooter justifyContent="space-between">
@@ -236,6 +243,8 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
               </Text>
               <Button
                 onClick={e=>pwResetEmailCallback()}
+                variant="outline"
+                borderColor="black"
               >
                 Submit
               </Button>

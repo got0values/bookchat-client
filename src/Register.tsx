@@ -124,13 +124,14 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
         <Stack align={'center'}>
           <Heading fontSize={'4xl'}>Register for an account</Heading>
           <Text fontSize={'lg'} color={'gray.600'}>
-            to enjoy all of our cool <Link href="https://bookchatnoir.com" color={'blue.400'}>features</Link> ✌️
+            to enjoy all of our cool <Link href="https://bookchatnoir.com" color={'purple'} fontWeight="bold">features</Link> ✌️
           </Text>
         </Stack>
         <Box
-          rounded={'lg'}
+          rounded={'sm'}
           bg={colorMode === "light" ? "white" : "blackAlpha.300"}
-          boxShadow="base"
+          boxShadow="1px 1px 2px 1px black"
+          border="1px solid black"
           p={8}
         >
           <Stack spacing={4}></Stack>
@@ -150,6 +151,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                   onChange={(e) => setFirstName(e.target.value)}
                   flex="1 1 auto"
                   size="lg"
+                  borderColor="black"
                   required
                 />
                 <Input
@@ -160,6 +162,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                   onChange={(e) => setLastName(e.target.value)}
                   flex="1 1 auto"
                   size="lg"
+                  borderColor="black"
                   required
                 />
               </Flex>
@@ -170,6 +173,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   size="lg"
+                  borderColor="black"
                   required
                 />
               </FormControl>
@@ -182,6 +186,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                       onChange={(e) => checkPassword(e.target.value)}
                       size="lg"
                       minLength={8}
+                      borderColor="black"
                       required
                     />
                     <Tooltip label="Passwords requirements: Minimum length of 8, maximum length of 100, minimum of 1 uppercase letter, must have lowercase letters, minimum of 2 digits, minimum of 1 symbol, should not have spaces" hasArrow>
@@ -202,6 +207,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                   onChange={(e) => confirmPasswordCheck(e.target.value)}
                   size="lg"
                   minLength={8}
+                  borderColor="black"
                   required
                 />
                 <Text color="red" mt={2} mb={4}>
@@ -213,14 +219,14 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
                   onChange={e=>handleTermsChecked(e)}
                 >
                   <Text>
-                    I agree to the <Link color="blue.400" href="/terms" target="_blank">Book Chat Noir Terms</Link>
+                    I agree to the <Link color="black" fontWeight="bold" href="/terms" target="_blank">Book Chat Noir Terms</Link>
                   </Text>
                 </Checkbox>
               </FormControl>
               <Box textAlign="center">
                 <Button 
                   type="submit"
-                  bg={'blue.400'}
+                  bg={'black'}
                   color={'white'}
                   _hover={{
                     bg: 'blue.500',
@@ -245,7 +251,7 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
           />
         </Center>
         <Text fontSize={'lg'} color={'gray.600'} textAlign="center">
-          Already have an account? <Link href="/login" color={'blue.400'}>Login</Link>
+          Already have an account? <Link href="/login" color={'black'} fontWeight="bold">Login</Link>
         </Text>
       </Stack>
     </Flex>

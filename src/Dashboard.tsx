@@ -623,7 +623,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   <Flex>
                     <Image 
                       src={reading.image}
-                      maxH="50px"
+                      maxH="100px"
                     />
                     <Box mx={2} w="100%">
                       <Popover isLazy>
@@ -638,6 +638,9 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                             </Heading>
                             <Text fontSize="lg">
                               {reading.author}
+                            </Text>
+                            <Text fontSize="lg" noOfLines={2}>
+                              {reading.description ? reading.description: null}
                             </Text>
                           </Box>
                         </PopoverTrigger>

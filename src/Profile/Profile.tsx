@@ -930,7 +930,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                         <Flex>
                           <Image 
                             src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
-                            maxH="50px"
+                            maxH="100px"
                           />
                           <Box 
                             mx={2}
@@ -948,6 +948,9 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   </Heading>
                                   <Text fontSize="lg">
                                     {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
+                                  </Text>
+                                  <Text fontSize="lg" noOfLines={2}>
+                                    {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
                                   </Text>
                                 </Box>
                               </PopoverTrigger>
@@ -1104,7 +1107,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                               .CurrentlyReading[profileData.CurrentlyReading.length - 1]
                               .image
                             }
-                            maxH="50px"
+                            maxH="100px"
                           />
                           <Box mx={2} w="100%">
                             <Popover isLazy>
@@ -1123,10 +1126,16 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   </Heading>
                                   <Text fontSize="lg">
                                     {
-                                    
-                                    profileData
-                                    .CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                    .author
+                                      profileData
+                                      .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                      .author
+                                    }
+                                  </Text>
+                                  <Text fontSize="lg" noOfLines={2}>
+                                    {
+                                      profileData
+                                      .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                      .description
                                     }
                                   </Text>
                                 </Box>
@@ -1291,7 +1300,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 src={
                                   profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].image
                                 }
-                                maxH="50px"
+                                maxH="100px"
                               />
                               <Box mx={2} w="100%">
                                 <Popover isLazy>
@@ -1311,6 +1320,13 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                         {
                                           profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
                                           .author
+                                        }
+                                      </Text>
+                                      <Text fontSize="lg" noOfLines={2}>
+                                        {
+                                          profileData
+                                          .CurrentlyReading[0]
+                                          .description
                                         }
                                       </Text>
                                     </Box>
@@ -1534,7 +1550,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 <Flex>
                                   <Image 
                                     src={readBook.image}
-                                    maxH="50px"
+                                    maxH="100px"
                                   />
                                   <Box mx={2} w="100%">
                                     <Popover isLazy>
@@ -1544,10 +1560,13 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                             cursor: "pointer"
                                           }}
                                         >
-                                          <Heading as="h5" size="md" me={3}>
+                                          <Heading as="h5" size="md" me={3} noOfLines={1}>
                                             {readBook.title}
                                           </Heading>
                                           <Text fontSize="lg">{readBook.author}</Text>
+                                          <Text fontSize="lg" noOfLines={2}>
+                                            {readBook.description}
+                                          </Text>
                                         </Box>
                                       </PopoverTrigger>
                                       <PopoverContent>
