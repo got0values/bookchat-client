@@ -60,6 +60,7 @@ const StarRating = ({ratingCallback, starRatingId, defaultRating}: StarRatingTyp
       <Input 
         name="rating" 
         type="hidden" 
+        data-id={starRatingId}
         value={rating} 
       />
       {buttons}

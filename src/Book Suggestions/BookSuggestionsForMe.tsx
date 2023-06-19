@@ -50,6 +50,44 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
     return bookSuggestToList;
   }
 
+  const ratingCallbackMutation = useMutation({
+    mutationFn: async ([rating,starRatingId]:[rating: number,starRatingId: number]) => {
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+        .put(server + "/api/ratesuggestion",
+          {
+            rating: rating,
+            id: starRatingId
+          },
+          {
+            headers: {
+              authorization: tokenCookie
+            }
+          }
+        )
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data?.message) {
+            throw new Error(response.data?.message)
+          }
+        })
+      }
+      else {
+        throw new Error("An error has occured")
+      }
+      return getBookSuggestionsForMe()
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
+      queryClient.resetQueries({queryKey: ['bookshelfKey']})
+      queryClient.setQueryData(["bookshelfKey"],data)
+    }
+  })
+  function ratingCallback([rating,starRatingId]: [rating:number,starRatingId:number]) {
+    ratingCallbackMutation.mutate([rating,starRatingId])
+  }
+
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['bookSuggestionsForMeKey'], 
     queryFn: getBookSuggestionsForMe
@@ -137,14 +175,14 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                     >
                       Your rating: 
                     </Text>
-                    <Text>
+                    {/* <Text>
                       Coming soon!
-                    </Text>
-                    {/* <StarRating
-                      ratingCallback={null} 
+                    </Text> */}
+                    <StarRating
+                      ratingCallback={ratingCallback} 
                       starRatingId={suggestion.id}
-                      defaultRating={suggestion.rating}
-                    /> */}
+                      defaultRating={suggestion.rating ? suggestion.rating : 0}
+                    />
                   </Flex>
                 </Box>
               </Flex>

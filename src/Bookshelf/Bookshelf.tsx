@@ -1064,7 +1064,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           <StarRating
                             ratingCallback={ratingCallback} 
                             starRatingId={book.id}
-                            defaultRating={book.rating}
+                            defaultRating={book.rating ? book.rating : 0}
                           />
                         </Box>
                       </Flex>
