@@ -892,6 +892,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                       <Input 
                         type="text" 
                         borderColor="black"
+                        size="lg"
                         placeholder="What i'm reading" 
                         _dark={{
                           bg: "blackAlpha.400"
@@ -901,6 +902,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                       />
                       <Button 
                         borderColor="black"
+                        size="lg"
                         variant="outline"
                         onClick={searchBook}
                       >
@@ -920,8 +922,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                         />
                         <Input
                           type="text"
-                          mt={3}
-                          mb={3}
+                          my={3}
                           borderColor="black"
                           placeholder="Thoughts?"
                           maxLength={300}

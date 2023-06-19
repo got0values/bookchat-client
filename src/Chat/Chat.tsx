@@ -131,6 +131,7 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                   <Flex gap={1}>
                     <Input 
                       type="text"
+                      size="lg"
                       ref={searchChatRoomRef}
                       placeholder="Search for a book chat room"
                       onKeyDown={e=>e.key === 'Enter' ? searchChatRoom() : null}
@@ -142,6 +143,7 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                     />
                     <Button
                       onClick={e=>searchChatRoom()}
+                      size="lg"
                       borderColor="black"
                       variant="outline"
                     >

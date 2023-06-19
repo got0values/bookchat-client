@@ -404,6 +404,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               type="search" 
               placeholder="Share what you're reading" 
               border="1px solid black"
+              size="lg"
               _dark={{
                 bg: "whiteAlpha.50"
               }}
@@ -411,7 +412,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               onKeyDown={e=>e.key === 'Enter' ? searchBook() : null}
             />
             <Button 
-              size="md"
+              size="lg"
               colorScheme="black"
               variant="outline"
               onClick={searchBook}
