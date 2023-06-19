@@ -26,6 +26,7 @@ const StarRating = ({ratingCallback, starRatingId, defaultRating}: StarRatingTyp
         size="xs"
         p={0}
         m={0}
+        ml={-1}
         variant="unstyled"
         onClick={e=>ratingCallback !== null ? onClick(idx) : null}
         _focus={{ outline: 0 }}

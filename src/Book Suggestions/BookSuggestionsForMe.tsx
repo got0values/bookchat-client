@@ -24,8 +24,6 @@ import axios from "axios";
 
 
 export function BookSuggestionsForMe({server}: {server: string;}) {
-  const toast = useToast();
-  const navigate = useNavigate();
   dayjs.extend(utc);
   const queryClient = useQueryClient();
 
@@ -79,9 +77,9 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
       return getBookSuggestionsForMe()
     },
     onSuccess: (data,variables)=>{
-      queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
-      queryClient.resetQueries({queryKey: ['bookshelfKey']})
-      queryClient.setQueryData(["bookshelfKey"],data)
+      queryClient.invalidateQueries({ queryKey: ['bookSuggestionsForMeKey'] })
+      queryClient.resetQueries({queryKey: ['bookSuggestionsForMeKey']})
+      queryClient.setQueryData(["bookSuggestionsForMeKey"],data)
     }
   })
   function ratingCallback([rating,starRatingId]: [rating:number,starRatingId:number]) {
@@ -123,9 +121,16 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                   src={suggestion.Profile_BookSuggestion_suggestorToProfile.profile_photo}
                 />
                 <Box>
-                  <Text fontWeight="bold">
-                    {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
-                  </Text>
+                  <Flex align="center" gap={1}>
+                    <Text fontWeight="bold">
+                      {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
+                    </Text>
+                    <StarRating
+                      ratingCallback={null} 
+                      starRatingId={suggestion.id}
+                      defaultRating={suggestion.suggestorRating ? suggestion.suggestorRating : 0}
+                    />
+                  </Flex>
                   <Text fontStyle="italic" opacity="75%">
                     {dayjs(suggestion.created_on).local().format('MMM d, YYYY')}
                   </Text>
