@@ -780,6 +780,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     <Image
                       src={bookToAdd.image}
                       maxH="50px"
+                      boxShadow="1px 1px 1px 1px darkgrey"
                     />
                     <Box mx={2} w="100%">
                       <Popover isLazy>
@@ -1021,6 +1022,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         <Image
                           src={book.image}
                           maxH="100px"
+                          boxShadow="1px 1px 1px 1px darkgrey"
                         />
                         <Box mx={2} w="100%">
                           <Popover isLazy>

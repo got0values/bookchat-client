@@ -271,6 +271,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                         src={suggestion.image}
                         height="100%"
                         maxH="35px"
+                        boxShadow="1px 1px 1px 1px darkgrey"
                       />
                       <Box>
                         <Text
@@ -342,6 +343,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                         src={book.image}
                         height="100%"
                         maxH="125px"
+                        boxShadow="1px 1px 1px 1px darkgrey"
                       />
                       <Box mx={2} w="100%">
                         <Heading 

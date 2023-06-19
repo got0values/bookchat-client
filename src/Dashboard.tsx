@@ -448,6 +448,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 <Image 
                   src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
                   maxH="100px"
+                  boxShadow="1px 1px 1px 1px darkgrey"
                 />
                 <Box 
                   mx={2}
@@ -582,6 +583,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       </Menu>
                     </Box>
                   </Flex>
+                  <Divider />
                   <Text 
                     my={2}
                     rounded="md"
@@ -624,6 +626,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     <Image 
                       src={reading.image}
                       maxH="100px"
+                      boxShadow="1px 1px 1px 1px darkgrey"
                     />
                     <Box mx={2} w="100%">
                       <Popover isLazy>
@@ -715,7 +718,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   </Flex>
                   {reading.CurrentlyReadingComment && reading.CurrentlyReadingComment.length ? (
                     <>
-                    <Divider my={3} />
+                    <Divider my={3} w="50%" mx="auto" borderColor="gray" />
                       <Comments 
                         comments={reading.CurrentlyReadingComment} 
                         getDashboard={getDashboard} 

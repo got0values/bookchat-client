@@ -308,6 +308,7 @@ export default function BookClubs({server}: {server: string}) {
                                         src={bookClub.BookClubBook[0].image}
                                         alt={bookClub.BookClubBook[0].title}
                                         maxH="50px"
+                                        boxShadow="1px 1px 1px 1px darkgrey"
                                       />
                                     </Box>
                                     <Box>
@@ -437,6 +438,7 @@ export default function BookClubs({server}: {server: string}) {
                                           src={bookClub.BookClubBook[0].image}
                                           alt={bookClub.BookClubBook[0].title}
                                           maxH="50px"
+                                          boxShadow="1px 1px 1px 1px darkgrey"
                                         />
                                       </Box>
                                       <Box>
@@ -554,6 +556,7 @@ export default function BookClubs({server}: {server: string}) {
                                         src={bookClub.BookClubBook[0].image}
                                         alt={bookClub.BookClubBook[0].title}
                                         maxH="50px"
+                                        boxShadow="1px 1px 1px 1px darkgrey"
                                       />
                                     </Box>
                                     <Box>

@@ -1211,6 +1211,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 className="book-image"
                                 onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                                 src={currentBook?.image}
+                                boxShadow="1px 1px 1px 1px darkgrey"
                               />
                             </Box>
                             <Flex direction="column" align="center" justify="center" flex="1 1" minW="250px">
@@ -1485,6 +1486,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                     className="book-image"
                                     onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                                     src={pollBookOneReceived.image}
+                                    boxShadow="1px 1px 1px 1px darkgrey"
                                   />
                                 </Box>
                                 <Text fontSize="sm" fontWeight="bold">
@@ -1558,6 +1560,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                     className="book-image"
                                     onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                                     src={pollBookTwoReceived.image}
+                                    boxShadow="1px 1px 1px 1px darkgrey"
                                   />
                                 </Box>
                                 <Text fontSize="sm" fontWeight="bold">
@@ -1630,6 +1633,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                     className="book-image"
                                     onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                                     src={pollBookThreeReceived.image}
+                                    boxShadow="1px 1px 1px 1px darkgrey"
                                   />
                                 </Box>
                                 <Text fontSize="sm" fontWeight="bold">
@@ -1946,6 +1950,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                               onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                               src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
                               alt="book image"
+                              boxShadow="1px 1px 1px 1px darkgrey"
                             />
                             <Heading
                               as="h4"
@@ -2062,6 +2067,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                               className="book-image"
                               onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                               src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
+                              boxShadow="1px 1px 1px 1px darkgrey"
                             />
                             <Heading
                               as="h4"
@@ -2146,6 +2152,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                         className="book-image"
                         onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                         src={pollBookOne.image}
+                        boxShadow="1px 1px 1px 1px darkgrey"
                       />
                     </Box>
                     <Text fontSize="sm" fontWeight="bold">
@@ -2177,6 +2184,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                           className="book-image"
                           onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                           src={pollBookTwo.image}
+                          boxShadow="1px 1px 1px 1px darkgrey"
                         />
                       </Box>
                       <Text fontSize="sm" fontWeight="bold">
@@ -2208,6 +2216,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                           className="book-image"
                           onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                           src={pollBookThree.image}
+                          boxShadow="1px 1px 1px 1px darkgrey"
                         />
                       </Box>
                       <Text fontSize="sm" fontWeight="bold">

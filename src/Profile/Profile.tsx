@@ -931,6 +931,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           <Image 
                             src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
                             maxH="100px"
+                            boxShadow="1px 1px 1px 1px darkgrey"
                           />
                           <Box 
                             mx={2}
@@ -1108,6 +1109,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                               .image
                             }
                             maxH="100px"
+                            boxShadow="1px 1px 1px 1px darkgrey"
                           />
                           <Box mx={2} w="100%">
                             <Popover isLazy>
@@ -1301,6 +1303,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].image
                                 }
                                 maxH="100px"
+                                boxShadow="1px 1px 1px 1px darkgrey"
                               />
                               <Box mx={2} w="100%">
                                 <Popover isLazy>
@@ -1551,6 +1554,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   <Image 
                                     src={readBook.image}
                                     maxH="100px"
+                                    boxShadow="1px 1px 1px 1px darkgrey"
                                   />
                                   <Box mx={2} w="100%">
                                     <Popover isLazy>

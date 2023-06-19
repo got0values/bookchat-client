@@ -12,6 +12,7 @@ import {
   Stack,
   Flex,
   Skeleton,
+  Divider,
   useToast,
 } from "@chakra-ui/react";
 import StarRating from "../shared/StarRating";
@@ -71,6 +72,7 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
           return (
             <Stack 
               className="well"
+              spacing={4}
               key={i}
             >
               <Flex
@@ -80,11 +82,10 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                 gap={2}
               >
                 <Avatar 
-                  src={suggestion.Profile_BookSuggestion_suggestorToProfile.profile_photo} 
-                  size="sm"
+                  src={suggestion.Profile_BookSuggestion_suggestorToProfile.profile_photo}
                 />
                 <Box>
-                  <Text fontWeight="bold" mb={-2}>
+                  <Text fontWeight="bold">
                     {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
                   </Text>
                   <Text fontStyle="italic" opacity="75%">
@@ -95,6 +96,7 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                   {bookshelf.Flag ? <bookshelf.Flag/> : null}
                 </Box> */}
               </Flex>
+              <Divider />
               <Flex
                 gap={1}
               >
@@ -102,6 +104,7 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                   src={suggestion.image}
                   height="100%"
                   maxH="125px"
+                  boxShadow="1px 1px 1px 1px darkgrey"
                 />
                 <Box>
                   <Text
