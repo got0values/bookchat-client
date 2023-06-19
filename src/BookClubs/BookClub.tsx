@@ -1468,12 +1468,13 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                             ref={pollIdRef}
                             value={bookClub?.BookClubBookPoll.id}
                           />
-                          <Flex justify="space-around" w="100%" flexWrap="nowrap" gap={2}>
+                          <Flex justify="space-around" w="100%" flexWrap="nowrap" gap={0}>
                             {pollBookOneReceived ? (
                               <Flex
                                 flexDirection="column" 
                                 flex="0 1 175px"
                                 className="well-card"
+                                p={1}
                               >
                                 <Box>
                                   <Heading as="h5" size="sm" textAlign="center">1</Heading>
@@ -1489,10 +1490,10 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                     boxShadow="1px 1px 1px 1px darkgrey"
                                   />
                                 </Box>
-                                <Text fontSize="sm" fontWeight="bold">
+                                <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
                                   {pollBookOneReceived.title}
                                 </Text>
-                                <Text fontSize="sm">
+                                <Text fontSize="sm" noOfLines={1}>
                                   {pollBookOneReceived.author}
                                 </Text>
                                 <Popover isLazy>
@@ -1548,6 +1549,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 flexDirection="column" 
                                 flex="0 1 175px"
                                 className="well-card"
+                                p={1}
                               >
                                 <Box>
                                   <Heading as="h5" size="sm" textAlign="center">2</Heading>
@@ -1563,10 +1565,10 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                     boxShadow="1px 1px 1px 1px darkgrey"
                                   />
                                 </Box>
-                                <Text fontSize="sm" fontWeight="bold">
+                                <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
                                   {pollBookTwoReceived.title}
                                 </Text>
-                                <Text fontSize="sm">
+                                <Text fontSize="sm" noOfLines={1}>
                                   {pollBookTwoReceived.author}
                                 </Text>
                                 <Popover isLazy>
@@ -1621,6 +1623,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 flexDirection="column" 
                                 flex="0 1 175px"
                                 className="well-card"
+                                p={1}
                               >
                                 <Box>
                                   <Heading as="h5" size="sm" textAlign="center">3</Heading>
@@ -1636,10 +1639,10 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                     boxShadow="1px 1px 1px 1px darkgrey"
                                   />
                                 </Box>
-                                <Text fontSize="sm" fontWeight="bold">
+                                <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
                                   {pollBookThreeReceived.title}
                                 </Text>
-                                <Text fontSize="sm">
+                                <Text fontSize="sm" noOfLines={1}>
                                   {pollBookThreeReceived.author}
                                 </Text>
                                 <Popover isLazy>
@@ -1726,7 +1729,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
       
       <Modal isOpen={isOpenEditModal} onClose={closeEditModal} size="xl" isCentered>
         <ModalOverlay />
-        <ModalContent maxH="80vh">
+        <ModalContent>
           <ModalHeader>
             Edit Book Club
           </ModalHeader>
@@ -1825,7 +1828,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
 
       <Modal isOpen={isOpenMeetingModal} onClose={closeMeetingModal} size="xl" isCentered>
         <ModalOverlay />
-        <ModalContent maxH="80vh">
+        <ModalContent>
           <ModalHeader>
             Edit Book Club Meeting
           </ModalHeader>
@@ -1867,6 +1870,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                     <Button 
                       type="button"
                       size="md"
+                      variant="outline"
                       colorScheme="red"
                       onClick={clearRsvpsCallback}
                     >
@@ -1874,6 +1878,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                     </Button>
                     <Button 
                       type="submit"
+                      backgroundColor="black"
+                      color="white"
                       size="md"
                       colorScheme="purple"
                     >
@@ -1893,7 +1899,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
         isCentered
       >
         <ModalOverlay />
-        <ModalContent maxH="80vh">
+        <ModalContent>
           <ModalHeader>
             New Book Club Book
           </ModalHeader>
@@ -1903,6 +1909,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                 <Flex gap={1} position="sticky" top={0} zIndex={200}>
                   <Input
                     type="text"
+                    size="lg"
                     ref={searchBookRef}
                     bg="white"
                     color="black"
@@ -1910,7 +1917,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                   />
                   <Button
                     onClick={searchBook}
-                    colorScheme="purple"
+                    size="lg"
+                    borderColor="black"
                     variant="outline"
                   >
                     Search
@@ -2245,14 +2253,14 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                 <Button 
                   type="button"
                   size="md"
-                  colorScheme="red"
+                  colorScheme="yellow"
                   onClick={clearPollVotes}
                 >
                   Reset Votes
                 </Button>
                 <Button
                   onClick={createPollBooks}
-                  colorScheme="purple"
+                  backgroundColor="black"
                 >
                   Save
                 </Button>

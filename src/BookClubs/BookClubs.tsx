@@ -350,9 +350,6 @@ export default function BookClubs({server}: {server: string}) {
               <Flex flexWrap="wrap">
                 <Stack flex="1 1 30%" minW="200px">
                   <Box className="well">
-                    <Heading as="h3" size="md" mb={2}>
-                      Filter
-                    </Heading>
                     <Accordion
                       className="well-card"
                       p={0}
@@ -362,7 +359,10 @@ export default function BookClubs({server}: {server: string}) {
                       <AccordionItem
                         border={0}
                       >
-                        <Flex as={AccordionButton} justify="flex-end">
+                        <Flex as={AccordionButton} justify="space-between" slign="center">
+                          <Heading as="h3" size="md">
+                            Filter
+                          </Heading>
                           <AccordionIcon/>
                         </Flex>
                         <AccordionPanel>
