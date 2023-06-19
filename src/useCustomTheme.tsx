@@ -33,7 +33,6 @@ const customTheme = {
         bg: 'white',
         _dark: {
           bg: 'blackAlpha.50',
-          // bgGradient: 'linear(to-r, blackAlpha.100, whiteAlpha.100, blackAlpha.100)'
           color: 'whiteAlpha.700',
           fontFeatureSettings: "'lnum' 1"
         }
@@ -58,34 +57,26 @@ const customTheme = {
         bg: 'white',
         p: 4,
         m: '0.25rem!important',
-        boxShadow: "base",
-        borderRadius: 10,
+        boxShadow: "1px 1px 2px 1px black",
+        border: "1px solid black",
+        rounded: "sm",
+        _dark: {
+          bg: 'blackAlpha.300'
+        }
+      },
+      '.well-card': {
+        padding: 4, 
+        boxShadow: "1px 1px 1px 1px black",
+        border: "1px solid black",
+        m: 1, 
+        rounded: "sm",
+        bg: "white",
         _dark: {
           bg: 'blackAlpha.300'
         }
       },
       '.non-well': {
         m: '0.4rem!important'
-      },
-      '.well-card': {
-        padding: 4, 
-        boxShadow: "base",
-        m: 1, 
-        rounded: "md",
-        bg: "white",
-        _dark: {
-          bg: 'blackAlpha.300'
-        }
-      },
-      '.profile-card': {
-        padding: 4, 
-        boxShadow: "base",
-        m: 1, 
-        rounded: "md",
-        bg: "white",
-        _dark: {
-          bg: 'blackAlpha.500'
-        }
       },
       '.chakra-menu__menu-list': {
         // bg: "white",
@@ -108,6 +99,14 @@ const customTheme = {
       }
     }
   },
+  components: {
+    // Button: {
+    //   baseStyle: {
+    //     border: "1px solid",
+    //     borderColor: "black"
+    //   }
+    // }
+  }
 }
 
 export const theme = extendTheme( customTheme )

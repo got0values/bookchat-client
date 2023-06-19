@@ -1001,7 +1001,23 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
             <Flex flexWrap="wrap" w="100%" align="start" justify="space-between" gap={1}>
               <Stack flex="1 1 30%" top="0" gap={1}>
                 <Flex className="well" direction="column" align="center" gap={2}>
-                  <Heading as="h4" size="md">{bookClub.name}</Heading>
+                  <Flex
+                    align="center"
+                    justify="space-between"
+                    w="100%"
+                  >
+                    <Heading as="h4" size="md">{bookClub.name}</Heading>
+                    {isBookClubCreator ? (
+                      <Button
+                        onClick={openEditModal}
+                        leftIcon={<HiOutlinePencil/>}
+                        variant="ghost"
+                        size="sm"
+                      >
+                        Edit
+                      </Button>
+                    ): null}
+                  </Flex>
                   <Text>{bookClub.about}</Text>
                   <Flex align="center" justify="center" flexWrap="wrap" gap={1}>
                     {bookClubGroups && bookClubGroups.length ? (
@@ -1033,16 +1049,6 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                   <Text fontStyle="italic">
                     {bookClub.visibility === 0 ? "private (friends only)" : "public"}
                   </Text>
-                  {isBookClubCreator ? (
-                    <Flex>
-                      <Button
-                        onClick={openEditModal}
-                        leftIcon={<HiOutlinePencil/>}
-                      >
-                        Edit
-                      </Button>
-                    </Flex>
-                  ): null}
                 </Flex>
                 {bookClub.visibility === 0 && !isCreatorsFriend ? (
                   null
@@ -1159,16 +1165,30 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                     <Flex className="well" direction="column" gap={2}>
                       <Flex align="center" justify="space-between">
                         <Heading as="h4" size="md">Currently Reading</Heading>
-                        {isBookClubCreator ? (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          leftIcon={<AiOutlinePlus size={15} />}
-                          onClick={e=>openNewCurrentBookModal()}
-                        >
-                          New
-                        </Button>
-                        ) : null}
+                        <Flex>
+                          {isBookClubCreator ? (
+                            <>
+                              {isBookClubCreator ? (
+                                <Button 
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={e=>openEditCurrentBookModal(currentBook?.id!)}
+                                  leftIcon={<HiOutlinePencil size={15} />}
+                                >
+                                  Edit
+                                </Button>
+                              ) : null}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                leftIcon={<AiOutlinePlus size={15} />}
+                                onClick={e=>openNewCurrentBookModal()}
+                              >
+                                New
+                              </Button>
+                            </>
+                          ) : null}
+                        </Flex>
                       </Flex>
                       {currentBook ? (
                       <>
@@ -1210,22 +1230,14 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                           </Flex>
                           <Center flexDirection="column">
                             <Button 
-                              variant="ghost"
-                              colorScheme="purple"
+                              backgroundColor="black"
+                              color="white"
                               leftIcon={<BsCardText size={20} />}
                               onClick={e=>navigate(`${currentBook?.id}`)}
+                              mb={1}
                             >
                               Discussion
                             </Button>
-                            {isBookClubCreator ? (
-                              <Button 
-                                variant="ghost"
-                                onClick={e=>openEditCurrentBookModal(currentBook?.id!)}
-                                leftIcon={<HiOutlinePencil size={15} />}
-                              >
-                                Edit
-                              </Button>
-                            ) : null}
                           </Center>
                         </Box>
                         {bookClub?.BookClubBook?.length && bookClub?.BookClubBook?.length > 1 ? (
@@ -1315,7 +1327,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                           <Center>
                             <Button
                               mb={2}
-                              colorScheme="purple"
+                              backgroundColor="black"
+                              color="white"
                               onClick={e=>navigate(`/chat/room?bookclub=${bookClub.name}`)}
                             >
                               Join
@@ -1329,6 +1342,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                               <Link target="_blank" href={`https://calendar.google.com/calendar/render?action=TEMPLATE&ctz=US/Eastern&location=Online&dates=${new Date(bookClub.next_meeting_start).toISOString().replace(/[\W_]+/g,"")}/${new Date(bookClub.next_meeting_end).toISOString().replace(/[\W_]+/g,"")}&text=${bookClub.name}&trp=false`}>
                                 <Button
                                   variant="outline"
+                                  borderColor="black"
                                   size="sm"
                                   display="flex"
                                   alignItems="center"
@@ -1351,6 +1365,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                               >
                                 <Button
                                   variant="outline"
+                                  borderColor="black"
                                   size="sm"
                                   display="flex"
                                   alignItems="center"
@@ -1374,8 +1389,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
 
                                 {!rsvpStatus ? (
                                   <Button
-                                    colorScheme="purple"
-                                    variant="outline"
+                                    backgroundColor="black"
+                                    color="white"
                                     size="sm"
                                     m={1}
                                     disabled={rsvpCallbackMutation.isLoading}
@@ -1394,34 +1409,35 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                     Un-RSVP
                                   </Button>
                                 )}
-                                <Popover isLazy>
-                                  <PopoverTrigger>
-                                    <Button size="xs" opacity="65%" variant="ghost" m={1}>View RSVP List</Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent>
-                                    <PopoverArrow />
-                                    <PopoverCloseButton />
-                                    <PopoverHeader>RSVP List</PopoverHeader>
-                                    <PopoverBody
-                                      _dark={{
-                                        bg: "black"
-                                      }}
-                                    >{bookClub?.BookClubMeetingRsvp.length ? 
-                                    (
-                                      bookClub?.BookClubMeetingRsvp.map((rsvp,i)=>{
-                                        return (
-                                          <Text key={i}>
-                                            <Link
-                                              href={`/profile/${rsvp.Profile.username}`}
-                                            >
-                                              {rsvp.Profile.username}
-                                            </Link>
-                                          </Text>
-                                        )
-                                      })
-                                    ) : null}</PopoverBody>
-                                  </PopoverContent>
-                                </Popover>
+                                {bookClub?.BookClubMeetingRsvp.length ? (
+                                  <Popover isLazy>
+                                    <PopoverTrigger>
+                                      <Button size="xs" opacity="65%" variant="ghost" m={1}>View RSVP List</Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent>
+                                      <PopoverArrow />
+                                      <PopoverCloseButton />
+                                      <PopoverHeader>RSVP List</PopoverHeader>
+                                      <PopoverBody
+                                        _dark={{
+                                          bg: "black"
+                                        }}
+                                      >
+                                        {bookClub?.BookClubMeetingRsvp.map((rsvp,i)=>{
+                                          return (
+                                            <Text key={i}>
+                                              <Link
+                                                href={`/profile/${rsvp.Profile.username}`}
+                                              >
+                                                {rsvp.Profile.username}
+                                              </Link>
+                                            </Text>
+                                          )
+                                        })}
+                                      </PopoverBody>
+                                    </PopoverContent>
+                                  </Popover>
+                                ) : null}
                               </>
                             </Flex>
                           </Flex>
@@ -1500,7 +1516,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                   .filter((pollVote)=>pollVote.book === 1 && pollVote.profile_id === user.Profile.id).length ? (
                                     <Button
                                       size="xs"
-                                      colorScheme="purple"
+                                      variant="outline"
+                                      borderColor="black"
                                       marginTop="auto"
                                       onClick={e=>unPollVote(1)}
                                     >
@@ -1512,7 +1529,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 ) : (
                                   <Button
                                     size="xs"
-                                    colorScheme="purple"
+                                    backgroundColor="black"
+                                    color="white"
                                     marginTop="auto"
                                     onClick={e=>pollVote(1)}
                                   >
@@ -1570,7 +1588,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                   .filter((pollVote)=>pollVote.book === 2 && pollVote.profile_id === user.Profile.id).length ? (
                                     <Button
                                       size="xs"
-                                      colorScheme="red"
+                                      variant="outline"
+                                      borderColor="black"
                                       marginTop="auto"
                                       onClick={e=>unPollVote(2)}
                                     >
@@ -1582,7 +1601,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 ) : (
                                   <Button
                                     size="xs"
-                                    colorScheme="purple"
+                                    backgroundColor="black"
+                                    color="white"
                                     marginTop="auto"
                                     onClick={e=>pollVote(2)}
                                   >
@@ -1640,7 +1660,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                   .filter((pollVote)=>pollVote.book === 3 && pollVote.profile_id === user.Profile.id).length ? (
                                     <Button
                                       size="xs"
-                                      colorScheme="purple"
+                                      variant="outline"
+                                      borderColor="black"
                                       marginTop="auto"
                                       onClick={e=>unPollVote(3)}
                                     >
@@ -1652,7 +1673,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 ) : (
                                   <Button
                                     size="xs"
-                                    colorScheme="teal"
+                                    backgroundColor="black"
+                                    color="white"
                                     marginTop="auto"
                                     onClick={e=>pollVote(3)}
                                   >
@@ -1719,6 +1741,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                     id="name"
                     ref={nameRef}
                     defaultValue={bookClub?.name}
+                    borderColor="black"
                     required
                   />
                   <FormErrorMessage>Name is required</FormErrorMessage>
@@ -1728,6 +1751,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                   ref={aboutRef}
                   id="about"
                   defaultValue={bookClub?.about}
+                  borderColor="black"
                 />
                 <Stack 
                   spacing={3} 
@@ -1782,9 +1806,9 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                     </Button>
                     <Button 
                       type="submit"
-                      mr={3}
                       size="md"
-                      colorScheme="purple"
+                      backgroundColor="black"
+                      color="white"
                     >
                       Update
                     </Button>

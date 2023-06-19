@@ -227,6 +227,8 @@ export default function BookClubs({server}: {server: string}) {
                       </Heading>
                       <Button
                         variant="ghost"
+                        size="xs"
+                        px={0}
                         onClick={createBookClubModalOpen}
                       >
                         <IoIosAdd size={25} />
@@ -640,17 +642,16 @@ export default function BookClubs({server}: {server: string}) {
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>
-              <Heading as="h3" size="lg">
-                What is your book club name?
-              </Heading>
+              What is your book club name?
             </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Input
-              type="text"
-              ref={createBookClubNameRef}
-              maxLength={100}
-              required
+                type="text"
+                ref={createBookClubNameRef}
+                maxLength={100}
+                borderColor="black"
+                required
               />
             </ModalBody>
             <ModalFooter>
@@ -661,9 +662,9 @@ export default function BookClubs({server}: {server: string}) {
                 <Button 
                   // variant='ghost' 
                   mr={3}
-                  size="lg"
                   onClick={createBookClub}
-                  colorScheme="purple"
+                  backgroundColor="black"
+                  color="white"
                 >
                   Create
                 </Button>

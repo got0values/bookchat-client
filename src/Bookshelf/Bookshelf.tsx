@@ -592,51 +592,61 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
       >
         <Flex flexWrap="wrap" align="flex-start">
           <Box flex="1 1 30%">
-            <Flex
-              align="center"
-              justify="space-between"
-              className="non-well"
+            <Box
+              className="well"
             >
-              <FormLabel 
-                htmlFor="allow-suggestions"
-                mb={0}
-                fontWeight="bold"
-               >
-                Allow suggestions?
-              </FormLabel>
-              <Switch
-                id="allow-suggestions"
-                defaultChecked={allowSuggestions}
-                ref={allowSuggestionsRef}
-                onChange={e=>allowSuggestionsToggle()}
-              />
-            </Flex>
-            {showSuggestionsNotes ? (
               <Flex
-                direction="column"
                 align="center"
-                gap={1}
-                mx={1}
+                justify="space-between"
+                className="non-well"
               >
-                <Textarea
-                  placeholder="Suggestion notes"
-                  defaultValue={suggestionsNotesDefaultValue}
-                  ref={suggestionsNotesRef}
-                  maxLength={150}
+                <FormLabel 
+                  htmlFor="allow-suggestions"
+                  mb={0}
+                  fontWeight="bold"
                 >
-                </Textarea>
-                <Button
-                  onClick={e=>saveSuggestionNotes()}
-                  colorScheme="purple"
-                  variant="outline"
-                  w="100%"
-                >
-                  Save
-                </Button>  
+                  Allow suggestions?
+                </FormLabel>
+                <Switch
+                  id="allow-suggestions"
+                  defaultChecked={allowSuggestions}
+                  ref={allowSuggestionsRef}
+                  onChange={e=>allowSuggestionsToggle()}
+                />
               </Flex>
-            ) : (
-              null
-            )}
+              {showSuggestionsNotes ? (
+                <Flex
+                  direction="column"
+                  align="center"
+                  gap={1}
+                  mx={1}
+                >
+                  <Textarea
+                    placeholder="Suggestion notes"
+                    defaultValue={suggestionsNotesDefaultValue}
+                    ref={suggestionsNotesRef}
+                    maxLength={150}
+                    borderColor="black"
+                  >
+                  </Textarea>
+                  <Flex
+                    justify="flex-end"
+                    w="100%"
+                  >
+                    <Button
+                      onClick={e=>saveSuggestionNotes()}
+                      colorScheme="black"
+                      variant="outline"
+                      size="sm"
+                    >
+                      Save
+                    </Button>  
+                  </Flex>
+                </Flex>
+              ) : (
+                null
+              )}
+            </Box>
             <Stack className="well">
               <Box>
                 <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
@@ -672,15 +682,20 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         ref={createCategoryInputRef}
                         onKeyUp={e=>e.key === 'Enter' ? createCategoryButtonRef.current.click() : null}
                         maxLength={40}
+                        borderColor="black"
                       />
                       <Button
                         ref={createCategoryButtonRef}
                         onClick={e=>createCategory()}
+                        backgroundColor="black"
+                        color="white"
                       >
                         Add
                       </Button>
                       <Button
                         onClick={e=>setShowAddCategory(false)}
+                        variant="outline"
+                        borderColor="black"
                       >
                         Cancel
                       </Button>
@@ -884,10 +899,11 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
 
                   <Accordion allowToggle>
                     <AccordionItem 
-                      border="0" 
-                      borderColor="inherit" 
-                      rounded="md"
-                      boxShadow="base"
+                      border="1px solid black"
+                      borderLeft="1px solid black"
+                      borderRight="1px solid black"
+                      rounded="sm"
+                      boxShadow="0"
                       py={1}
                       bg="white"
                       _dark={{
@@ -935,20 +951,22 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       </AccordionPanel>
                     </AccordionItem>
                   </Accordion>
-                  <Button
-                    // size="sm"
-                    ml="auto"
-                    // w="auto"
-                    colorScheme="teal"
-                    onClick={e=>addBookshelfBook()}
+                  <Flex
+                    justify="flex-end"
                   >
-                    Save to Bookshelf
-                  </Button>
+                    <Button
+                      backgroundColor="black"
+                      color="white"
+                      onClick={e=>addBookshelfBook()}
+                    >
+                      Save to Bookshelf
+                    </Button>
+                  </Flex>
                 </Stack>
               )}
             </Box>
 
-            <Stack>
+            <Box>
               {bookshelfBooks ? (
                 bookshelfBooks.map((book: BookshelfBook)=>{
                   return (
@@ -1138,10 +1156,11 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       </Flex>
                       <Accordion allowToggle>
                         <AccordionItem 
-                          border="0" 
-                          borderColor="inherit" 
-                          rounded="md"
-                          boxShadow="base"
+                          borderColor="black" 
+                          borderLeft="1px solid black"
+                          borderRight="1px solid black"
+                          rounded="sm"
+                          boxShadow="0"
                           py={1}
                           bg="white"
                           _dark={{
@@ -1201,7 +1220,9 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 alignSelf="flex-end"
                                 data-bookid={book.id}
                                 onClick={e=>updateNotes(e)}
-                                colorScheme="purple"
+                                size="sm"
+                                backgroundColor="black"
+                                color="white"
                               >
                                 Save Notes
                               </Button>
@@ -1213,7 +1234,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   )
                 }).reverse()
               ): null}
-            </Stack>
+            </Box>
           </Stack>
 
         </Flex>
@@ -1244,11 +1265,12 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       type="search"
                       ref={searchBookRef}
                       onKeyUp={e=>e.key === 'Enter' ? searchBookButtonRef.current.click() : null}
+                      borderColor="black"
                     />
                     <Button
                       onClick={e=>searchBook()}
                       ref={searchBookButtonRef}
-                      colorScheme="purple"
+                      borderColor="black"
                       variant="outline"
                     >
                       Search

@@ -138,10 +138,11 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                       _dark={{
                         bg: "whiteAlpha.50"
                       }}
+                      borderColor="black"
                     />
                     <Button
                       onClick={e=>searchChatRoom()}
-                      colorScheme="purple"
+                      borderColor="black"
                       variant="outline"
                     >
                       Search

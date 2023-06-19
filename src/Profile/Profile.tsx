@@ -697,10 +697,8 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
             <Stack flex="1 1 30%" gap={1}>
               <Center
                 flexDirection="column"
-                className="profile-card"
-                rounded={'lg'}
+                className="well"
                 textAlign={'center'}
-                boxShadow="base"
               >
                 <Avatar
                   mb={4}
@@ -829,7 +827,12 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
 
                 <Box>
                   {viewer === "self" ? (
-                    <Button leftIcon={<MdEdit/>} onClick={openProfileDataModal}>
+                    <Button 
+                      leftIcon={<MdEdit/>} 
+                      onClick={openProfileDataModal}
+                      variant="outline"
+                      borderColor="black"
+                    >
                       Edit
                     </Button>
                     ) : (
@@ -888,6 +891,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                     <Flex gap={2} align="center">
                       <Input 
                         type="text" 
+                        borderColor="black"
                         placeholder="What i'm reading" 
                         _dark={{
                           bg: "blackAlpha.400"
@@ -896,7 +900,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                         onKeyDown={e=>e.key === 'Enter' ? searchBook() : null}
                       />
                       <Button 
-                        colorScheme="purple"
+                        borderColor="black"
                         variant="outline"
                         onClick={searchBook}
                       >
@@ -918,6 +922,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           type="text"
                           mt={3}
                           mb={3}
+                          borderColor="black"
                           placeholder="Thoughts?"
                           maxLength={300}
                           ref={thoughtsRef}
@@ -962,7 +967,8 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                             <Flex justify="flex-end">
                               <Button 
                                 // size="sm"
-                                colorScheme="purple"
+                                backgroundColor="black"
+                                color="white"
                                 // variant="outline"
                                 data-image={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
                                 data-title={selectedBook.volumeInfo.title}
@@ -1072,13 +1078,15 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           <Input
                             my={2}
                             type="text"
+                            borderColor="black"
                             defaultValue={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].thoughts ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].thoughts : ""}
                             id={`currently-reading-input-${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}`}
                           />
                           <Button
                             onClick={e=>updateCurrentlyReadingThoughts(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
                             disabled={updateCurrentlyReadingThoughtsMutation.isLoading}
-                            colorScheme="green"
+                            backgroundColor="black"
+                            color="white"
                           >
                             Update
                           </Button>
@@ -1505,13 +1513,15 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   <Input
                                     my={2}
                                     type="text"
+                                    borderColor="black"
                                     defaultValue={readBook.thoughts ? readBook.thoughts : ""}
                                     id={`currently-reading-input-${readBook.id}`}
                                   />
                                   <Button
                                     onClick={e=>updateCurrentlyReadingThoughts(readBook.id)}
                                     disabled={updateCurrentlyReadingThoughtsMutation.isLoading}
-                                    colorScheme="green"
+                                    backgroundColor="black"
+                                    color="white"
                                   >
                                     Update
                                   </Button>
@@ -1689,7 +1699,13 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           {(profilePhotoMutation.error as Error).message}
                         </Text>
                       )}
-                      <Button mr={3} onClick={updateUserProfilePhoto}  size="lg" colorScheme="purple">
+                      <Button 
+                        mr={3} 
+                        onClick={updateUserProfilePhoto}  
+                        size="lg" 
+                        backgroundColor="black"
+                        color="white"
+                      >
                         Save
                       </Button>
                     </>
@@ -1713,6 +1729,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                     <Input 
                       type="text" 
                       id="userName"
+                      borderColor="black"
                       ref={profileUserNameRef}
                       defaultValue={user.Profile.username}
                       maxLength={15}
@@ -1724,6 +1741,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                     <Input 
                       type="text" 
                       id="about"
+                      borderColor="black"
                       ref={profileAboutRef}
                       defaultValue={user.Profile.about}
                       size="lg"
@@ -1735,6 +1753,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                     <Select
                       id="country"
                       placeholder="Select"
+                      borderColor="black"
                       ref={countrySelectRef}
                       defaultValue={user.Profile.country}
                     >
@@ -1763,6 +1782,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                       <Input 
                         type="text" 
                         id="interests"
+                        borderColor="black"
                         ref={interestsInputRef}
                         size="lg"
                         maxLength={15}
@@ -1825,7 +1845,13 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                         {(profileDataMutation.error as Error).message}
                       </Text>
                     )}
-                    <Button mr={3} onClick={updateProfileData} size="lg" colorScheme="purple">
+                    <Button 
+                      mr={3} 
+                      onClick={updateProfileData} 
+                      size="lg" 
+                      backgroundColor="black"
+                      color="white"
+                    >
                       Save
                     </Button>
                     </>
@@ -1913,7 +1939,8 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     size="xs"
                                     data-book={JSON.stringify(book)}
                                     onClick={e=>selectBook(e)}
-                                    colorScheme="green"
+                                    backgroundColor="black"
+                                    color="white"
                                   >
                                     Set
                                   </Button>
@@ -1951,14 +1978,16 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                 <ModalBody h="auto" maxH="75vh" overflow="auto">
                   <Input
                     type="text"
+                    borderColor="black"
                     ref={commentRef as any}
                     onKeyUp={e=>e.key === 'Enter' ? commentCurrentlyReadingButton.current.click() : null}
                   />
                 </ModalBody>
-                <ModalFooter flexDirection="column">
+                <ModalFooter>
                 <> 
                   <Button
-                    colorScheme="purple"
+                    backgroundColor="black"
+                    color="white"
                     data-profileid={profileData.id}
                     data-currentlyreadingid={commentBookData?.id}
                     ref={commentCurrentlyReadingButton}

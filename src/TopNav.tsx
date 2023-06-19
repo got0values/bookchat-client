@@ -447,7 +447,8 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
         as="nav" 
         bg="white" 
         overflow="hidden" px={4} 
-        boxShadow="1px 1px 6px lightgrey" 
+        // boxShadow="1px 1px 6px lightgrey"
+        boxShadow="1px 1px 2px 1px black" 
         _dark={{
           boxShadow: "0 0 0",
           bg: "blackAlpha.700"
@@ -461,6 +462,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
             aria-label={'Open Menu'}
             display={{ md: 'none' }}
             onClick={isOpen ? onClose : onOpen}
+            bg="transparent"
           />
           <HStack spacing={8} alignItems={'center'}>
             <Box 
@@ -506,6 +508,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                   bg: "whiteAlpha.50"
                 }}
                 ref={navSearchRef}
+                // borderColor="black"
                 onKeyDown={e=>e.key === 'Enter' ? navSearch() : null}
               />
               <Box
@@ -676,9 +679,10 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                   onClick={onClose}
                   p={2}
                   rounded={'md'}
+                  fontWeight="bold"
                   _hover={{
                     textDecoration: 'none',
-                    color: 'blue',
+                    // color: 'blue',
                     bg: 'gray.200'
                   }}
                   _dark={{

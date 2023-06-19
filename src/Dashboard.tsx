@@ -397,12 +397,13 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
       <Box className="main-content-smaller" pb={5}>
         <Box 
           m={0}
-          p={1}
+          // p={1}
         >
-          <Flex gap={2}>
+          <Flex gap={2} className="non-well">
             <Input 
               type="search" 
               placeholder="Share what you're reading" 
+              border="1px solid black"
               _dark={{
                 bg: "whiteAlpha.50"
               }}
@@ -411,7 +412,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             />
             <Button 
               size="md"
-              colorScheme="purple"
+              colorScheme="black"
               variant="outline"
               onClick={searchBook}
             >
@@ -422,12 +423,11 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             <Box
               my={2}
               p={4}
-              rounded="md"
               // bg="white"
               // _dark={{
               //   bg: 'blackAlpha.600'
               // }}
-              className="well-card"
+              className="well"
               position="relative"
             >
               <CloseButton
@@ -447,7 +447,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               <Flex>
                 <Image 
                   src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
-                  maxH="50px"
+                  maxH="100px"
                 />
                 <Box 
                   mx={2}
@@ -466,6 +466,9 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                         <Text fontSize="lg">
                           {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
                         </Text>
+                        <Text fontSize="lg" noOfLines={2}>
+                          {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
+                        </Text>
                       </Box>
                     </PopoverTrigger>
                     <PopoverContent>
@@ -483,7 +486,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   <Flex justify="flex-end">
                     <Button 
                       // size="sm"
-                      colorScheme="purple"
+                      backgroundColor="black"
+                      color="white"
                       data-image={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
                       data-title={selectedBook.volumeInfo.title}
                       data-author={selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
@@ -508,7 +512,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 <Box
                   my={3}
                   // mx=".5rem"
-                  className="well-card"
+                  className="well"
                   key={i}
                 >
                   <Suspense
@@ -743,14 +747,15 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             <ModalBody h="auto" maxH="75vh" overflow="auto">
               <Input
                 type="text"
+                borderColor="black"
                 ref={commentRef as any}
                 onKeyUp={e=>e.key === 'Enter' ? commentCurrentlyReadingButton.current.click() : null}
               />
             </ModalBody>
-            <ModalFooter flexDirection="column">
-            <> 
+            <ModalFooter>
               <Button
-                colorScheme="purple"
+                backgroundColor="black"
+                color="white"
                 data-profileid={commentBookData?.Profile?.id}
                 data-currentlyreadingid={commentBookData?.id}
                 ref={commentCurrentlyReadingButton}
@@ -758,7 +763,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               >
                 Submit
               </Button>
-            </>
             </ModalFooter>
         </ModalContent>
       </Modal>

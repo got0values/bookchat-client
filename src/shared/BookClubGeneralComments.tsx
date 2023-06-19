@@ -274,6 +274,7 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
               <InputGroup>
                 <Input
                   type="text"
+                  borderColor="black"
                   ref={commentRef}
                 />
                 <InputRightElement display={["none","none","inline-flex"]}>
@@ -301,6 +302,8 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
               <Button
                 type="submit"
                 disabled={postCommentMutation.isLoading}
+                variant="outline"
+                borderColor="black"
               >
                 Post
               </Button>
@@ -599,12 +602,15 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                       <Input
                         type="text"
                         ref={replyBoxRef}
+                        borderColor="black"
                         required
                       />
                       <Button 
                         type="submit"
                         mr={3}
                         size="lg"
+                        variant="outline"
+                        borderColor="black"
                       >
                         Reply
                       </Button>

@@ -314,7 +314,8 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
               <Input
                 type="search"
                 bg="white"
-                placeholder="Give a suggestion"
+                borderColor="black"
+                placeholder="Search for a suggestion"
                 _dark={{
                   bg: "gray.800"
                 }}
@@ -322,7 +323,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                 ref={searchInputRef}
               />
               <Button
-                colorScheme="purple"
+                borderColor="black"
                 variant="outline"
                 onClick={e=>searchBook()}
               >
