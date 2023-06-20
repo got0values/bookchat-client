@@ -59,6 +59,7 @@ import { useAuth } from '../hooks/useAuth';
 import { FollowProfileButton, CancelRequestButton, UnFollowProfileButton } from "./profileButtons";
 import Comments from "../shared/CurrentlyReadingComments";
 import { capitalizeLetters } from "../utils/capitalizeLetters";
+import StarRating from "../shared/StarRating";
 import countryList from 'country-list';
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import dayjs from "dayjs";
@@ -114,7 +115,6 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
           }
       })
       .catch(({response})=>{
-        console.log(response)
         throw new Error(response.data.message)
       })
       return getProfileData;
@@ -712,7 +712,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                 <Heading fontSize={'3xl'}>
                   {`${profileData.User?.first_name} ${profileData.User?.last_name}`}
                 </Heading>
-                <Flex align="center" wrap="nowrap" gap={2} mb={2}>
+                <Flex align="center" wrap="nowrap" gap={2}>
                   {profileData?.country ? (
                     <Box w="1.4rem">
                       <Flag alt={profileData.country} title={profileData.country}/>
@@ -722,6 +722,21 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                     {`@${profileData.username}`}
                   </Text>
                 </Flex>
+                {profileData.rating ? (
+                  <Flex
+                    align="center"
+                    gap={2}
+                  >
+                    <StarRating
+                      ratingCallback={null} 
+                      starRatingId={0}
+                      defaultRating={profileData.rating}
+                    />
+                    <Text fontWeight={600} color={'gray.600'}>
+                      {profileData.rating.toFixed(2)}/5
+                    </Text>
+                  </Flex>
+                ): null}
                 {profileData?.about ? (
                   <Text
                     textAlign={'center'}
