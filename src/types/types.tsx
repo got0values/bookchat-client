@@ -356,6 +356,7 @@ export interface BookshelfBook {
   image: string;
   description: string;
   isbn: string;
+  published_date: string;
   notes: string;
   rating: number;
   created_on: string;

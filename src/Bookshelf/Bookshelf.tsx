@@ -213,7 +213,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     const image = e.target.dataset.image;
     const description = e.target.dataset.description;
     const isbn = e.target.dataset.isbn;
-    setBookToAdd({title,author,image,description,isbn})
+    const published_date = e.target.dataset.publisheddate;
+    setBookToAdd({title,author,image,description,isbn,published_date})
     onCloseBookSearchModal();
   }
   const [bookToAddCategories,setBookToAddCategories] = useState([] as any);
@@ -1055,11 +1056,11 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                               </PopoverBody>
                             </PopoverContent>
                           </Popover>
-                          <Text fontSize="lg">
+                          <Text fontSize="lg" noOfLines={1}>
                             {book.author}
                           </Text>
-                          <Text>
-                            {book.isbn}
+                          <Text noOfLines={1}>
+                            {book.published_date ? dayjs(book.published_date).format("YYYY") : null}
                           </Text>
                           <StarRating
                             ratingCallback={ratingCallback} 
@@ -1346,6 +1347,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 data-description={book.volumeInfo.description}
                                 data-image={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : null}
                                 data-isbn={book.volumeInfo.industryIdentifiers ? book.volumeInfo.industryIdentifiers[0].identifier : null}
+                                data-publisheddate={book.volumeInfo.publishedDate ? book.volumeInfo.publishedDate : null}
                                 onClick={e=>selectBookToAdd(e)}
                                 colorScheme="green"
                               >
