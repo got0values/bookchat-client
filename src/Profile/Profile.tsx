@@ -54,7 +54,7 @@ import { FiFile } from 'react-icons/fi';
 import { MdEdit, MdOutlineChat } from 'react-icons/md';
 import { BsPlusLg } from 'react-icons/bs';
 import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
-import { BsReplyFill, BsPostcardHeartFill } from 'react-icons/bs';
+import { BsReplyFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { ImBooks } from 'react-icons/im';
 import { useAuth } from '../hooks/useAuth';
@@ -904,25 +904,46 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                 <Text color="red" pt={2}>{profileActionError}</Text>
               </Center>
 
+              {profileData.Bookshelf?.allow_suggestions ? (
+                <Box className="well">
+                  <Flex 
+                    as={Link} 
+                    to={`/booksuggestions/bookshelf?profile=${profileData.username}`}
+                    gap={1}
+                    align="center"
+                    justify="center"
+                  >
+                    <ImBooks size="20"/>
+                    <Heading as="h2" size="md">
+                      {profileData?.User.first_name}'s Bookshelf
+                    </Heading>
+                  </Flex>
+                </Box>
+              ):(
+                null
+              )}
+
               <Box className="well">
                 {viewer === "following" || viewer === "self" ? (
                   <>
-                    <Heading as="h2" size="md">{profileData?.User.first_name}'s Book Clubs</Heading>
-                    <UnorderedList my={1}>
-                      {profileData.BookClubs.length ? profileData.BookClubs.map((bookClub,i)=>{
-                        return (
-                          <ListItem key={i}>
-                            <Link
-                              to={`/bookclubs/${bookClub.id}`}
-                            >
-                              {bookClub.name}
-                            </Link>
-                          </ListItem>
-                        )
-                      }) : (
-                        <i>No book clubs yet</i>
-                      )}
-                    </UnorderedList>
+                    <Box>
+                      <Heading as="h2" size="md">{profileData?.User.first_name}'s Book Clubs</Heading>
+                      <UnorderedList my={1}>
+                        {profileData.BookClubs.length ? profileData.BookClubs.map((bookClub,i)=>{
+                          return (
+                            <ListItem key={i}>
+                              <Link
+                                to={`/bookclubs/${bookClub.id}`}
+                              >
+                                {bookClub.name}
+                              </Link>
+                            </ListItem>
+                          )
+                        }) : (
+                          <i>No book clubs yet</i>
+                        )}
+                      </UnorderedList>
+                    </Box>
                   </>
                 ) : (
                   <Text fontStyle="italic">Follow to see more</Text>

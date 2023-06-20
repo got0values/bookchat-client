@@ -68,6 +68,7 @@ export interface ProfileType {
   Following_Following_following_profile_idToProfile?: Following_Following_following_profile_idToProfile[];
   BookClubMembers_BookClubMembers_book_club_creatorToProfile: BookClubMember[];
   BookSuggestion_BookSuggestion_suggestorToProfile: BookSuggestionType[];
+  Bookshelf: BookshelfType;
 }
 
 export interface Interests {
