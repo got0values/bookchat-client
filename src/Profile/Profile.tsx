@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent, Key, ReactComponentElement } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ProfileProps, HTMLInputEvent, ProfileType, Following_Following_following_profile_idToProfile } from '../types/types';
+import { ProfileProps, HTMLInputEvent, ProfileType, Following_Following_following_profile_idToProfile, BookshelfBook } from '../types/types';
 import { 
   Box,
   Heading,
@@ -46,15 +46,17 @@ import {
   MenuItem,
   CloseButton,
   Divider,
-  useDisclosure
+  useDisclosure,
+  useToast
 } from "@chakra-ui/react";
 import collectionToArray from "../utils/collectionToArray";
 import { FiFile } from 'react-icons/fi';
 import { MdEdit, MdOutlineChat } from 'react-icons/md';
 import { BsPlusLg } from 'react-icons/bs';
 import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
-import { BsReplyFill } from 'react-icons/bs';
+import { BsReplyFill, BsPostcardHeartFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
+import { ImBooks } from 'react-icons/im';
 import { useAuth } from '../hooks/useAuth';
 import { FollowProfileButton, CancelRequestButton, UnFollowProfileButton } from "./profileButtons";
 import Comments from "../shared/CurrentlyReadingComments";
@@ -75,6 +77,7 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
   const profileData: any = queryClient.getQueryData(["profileKey",paramsUsername])
   const countries = countryList.getNameList();
   dayjs.extend(utc)
+  const toast = useToast();
 
   //self, nonFollower, requesting, follower
   const [ viewer, setViewer ] = useState("nonFollower");
@@ -657,12 +660,43 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
     updateCurrentlyReadingThoughtsMutation.mutate(bookId)
   }
 
-  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation};
+  async function addToBookshelf(bookToAdd: any) {
+    let tokenCookie: string | null = Cookies.get().token;
+    await axios
+      .post(server + "/api/addbookshelfbook", 
+        {
+          book: bookToAdd,
+          categories: [],
+          notes: ""
+        },
+        {headers: {
+          'authorization': tokenCookie
+        }}
+      ).then((response)=>{
+        toast({
+          description: "Added to bookshelf",
+          status: "success",
+          duration: 9000,
+          isClosable: true
+        })
+      })
+      .catch(({response})=>{
+        console.log(response)
+        toast({
+          description: "An error has occurred",
+          status: "error",
+          duration: 9000,
+          isClosable: true
+        })
+      })
+  }
+
+  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf};
 }
 
 
 export default function Profile({server,gbooksapi}: ProfileProps) {
-  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation} = useProfile({server,gbooksapi});
+  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf} = useProfile({server,gbooksapi});
 
   
 
@@ -909,7 +943,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                         type="text" 
                         borderColor="black"
                         size="lg"
-                        placeholder="What i'm reading" 
+                        placeholder="What are you reading?" 
                         _dark={{
                           bg: "blackAlpha.400"
                         }}
@@ -1057,6 +1091,20 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   </MenuItem>
                                   {viewer === "self" ? (
                                   <>
+                                    <MenuItem
+                                      onClick={e=>addToBookshelf({
+                                        image: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].image,
+                                        title: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title,
+                                        author: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author,
+                                        description: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].description,
+                                        isbn: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].isbn ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].isbn : "",
+                                        published_date: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].published_date ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].published_date : "",
+                                      })}
+                                      fontWeight="bold"
+                                      icon={<ImBooks size={20} />}
+                                    >
+                                      Add to Bookshelf
+                                    </MenuItem>
                                     <MenuItem
                                       data-readingid={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}
                                       data-hide={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? false : true}
@@ -1524,6 +1572,20 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                           </MenuItem>
                                           {viewer === "self" ? (
                                           <>
+                                            <MenuItem
+                                              onClick={e=>addToBookshelf({
+                                                image: readBook.image,
+                                                title: readBook.title,
+                                                author: readBook.author,
+                                                description: readBook.description,
+                                                isbn: readBook.isbn ? readBook.isbn : "",
+                                                published_date: readBook.published_date ? readBook.published_date : "",
+                                              })}
+                                              fontWeight="bold"
+                                              icon={<ImBooks size={20} />}
+                                            >
+                                              Add to Bookshelf
+                                            </MenuItem>
                                             <MenuItem
                                               data-readingid={readBook.id}
                                               data-hide={readBook.hidden ? false : true}

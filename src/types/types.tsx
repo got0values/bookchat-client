@@ -261,6 +261,7 @@ export interface CurrentlyReading {
   description: string;
   link: string;
   hidden: boolean;
+  isbn: string;
   published_date: string;
   created_on: Date;
   Profile: ProfileType;
