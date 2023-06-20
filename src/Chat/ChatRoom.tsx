@@ -85,7 +85,7 @@ export default function ChatRoom({server}: {server: string}) {
       }
       )
       .then((response)=>{
-        setChatMessages(response.data.message)
+        setChatMessages(response.data.message.sort((a:any,b:any)=>(new Date(a.time) as any) - (new Date(b.time) as any)))
       })
       .catch((response)=>{
         console.log(response)
