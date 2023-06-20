@@ -55,7 +55,7 @@ const customTheme = {
       '.well': {
         // bg: 'gray.50',
         bg: 'white',
-        p: 4,
+        p: 2,
         m: '0.25rem!important',
         boxShadow: "1px 1px 2px 1px black",
         border: "1px solid black",
