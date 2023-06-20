@@ -374,6 +374,7 @@ export interface BookSuggestionType {
   isbn: string;
   notes: string;
   rating: number;
+  published_date: string;
   suggestorRating: number;
   created_on: string;
   Profile_BookSuggestion_suggestorToProfile: ProfileType;

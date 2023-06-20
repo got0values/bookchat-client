@@ -125,14 +125,19 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                     <Text fontWeight="bold">
                       {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
                     </Text>
-                    <StarRating
+                    {/* <StarRating
                       ratingCallback={null} 
                       starRatingId={suggestion.id}
                       defaultRating={suggestion.suggestorRating ? suggestion.suggestorRating : 0}
-                    />
+                    /> */}
+                    {suggestion.suggestorRating ? (
+                      <Text fontStyle="italic" fontSize="sm">
+                        {suggestion.suggestorRating}/5 rating
+                      </Text>
+                    ): null}
                   </Flex>
                   <Text fontStyle="italic" opacity="75%">
-                    {dayjs(suggestion.created_on).local().format('MMM d, YYYY')}
+                    {dayjs(suggestion.created_on).local().format('MMM DD, YYYY')}
                   </Text>
                 </Box>
                 {/* <Box w="1.4rem">
@@ -164,6 +169,11 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                   <Text
                     noOfLines={1}
                   >
+                    {suggestion.published_date ? dayjs(suggestion.published_date).format("YYYY") : null}
+                  </Text>
+                  <Text
+                    noOfLines={1}
+                  >
                     {suggestion.description}
                   </Text>
                   <Text
@@ -178,7 +188,7 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                     <Text
                       fontWeight="bold"
                     >
-                      Your rating: 
+                      Rate: 
                     </Text>
                     {/* <Text>
                       Coming soon!

@@ -125,6 +125,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
     const author = selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : "";
     const description = selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : "";
     const isbn = selectedBook.volumeInfo.industryIdentifiers ? selectedBook.volumeInfo.industryIdentifiers[0].identifier : "";
+    const published_date = selectedBook.volumeInfo.publishedDate ? selectedBook.volumeInfo.publishedDate : "";
     let tokenCookie = Cookies.get().token;
     if (tokenCookie) {
       await axios
@@ -135,6 +136,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           title: title,
           author: author,
           description: description,
+          published_date: published_date,
           isbn: isbn
         },
         {headers: {
@@ -261,35 +263,41 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
               {previousSuggestions.length ? (
                 previousSuggestions.map((suggestion,i)=>{
                   return (
-                    <Flex
-                      // align="center"
-                      gap={1}
+                    <Box
                       maxW="200px"
                       key={i}
                     >
-                      <Image
-                        src={suggestion.image}
-                        height="100%"
-                        maxH="35px"
-                        boxShadow="1px 1px 1px 1px darkgrey"
-                      />
-                      <Box>
-                        <Text
-                          fontSize="sm"
-                          fontWeight="bold"
-                          noOfLines={1}
-                          mb={-1}
-                        >
-                          {suggestion.title}
-                        </Text>
-                        <Text
-                          fontSize="sm"
-                          noOfLines={1}
-                        >
-                          {suggestion.author}
-                        </Text>
-                      </Box>
-                    </Flex>
+                      <Text fontSize="sm">
+                        {dayjs(suggestion.created_on).local().format("MMM DD, YYYY")}
+                      </Text>
+                      <Flex
+                        // align="center"
+                        gap={1}
+                      >
+                        <Image
+                          src={suggestion.image}
+                          height="100%"
+                          maxH="35px"
+                          boxShadow="1px 1px 1px 1px darkgrey"
+                        />
+                        <Box>
+                          <Text
+                            fontSize="sm"
+                            fontWeight="bold"
+                            noOfLines={1}
+                            mb={-1}
+                          >
+                            {suggestion.title}
+                          </Text>
+                          <Text
+                            fontSize="sm"
+                            noOfLines={1}
+                          >
+                            {suggestion.author}
+                          </Text>
+                        </Box>
+                      </Flex>
+                    </Box>
                   )
                 })
               ): (
@@ -316,6 +324,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                 type="search"
                 bg="white"
                 borderColor="black"
+                size="lg"
                 placeholder="Search for a suggestion"
                 _dark={{
                   bg: "gray.800"
@@ -326,6 +335,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
               <Button
                 borderColor="black"
                 variant="outline"
+                size="lg"
                 onClick={e=>searchBook()}
               >
                 Search
@@ -354,8 +364,11 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                         >
                           {book.title}
                         </Heading>
-                        <Text fontSize="lg" fontWeight="bold">
+                        <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
                           {book.author}
+                        </Text>
+                        <Text fontStyle="italic">
+                          {book.published_date ? dayjs(book.published_date).format("YYYY"): null}
                         </Text>
                         <Popover isLazy>
                           <PopoverTrigger>
@@ -382,9 +395,6 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                             </PopoverBody>
                           </PopoverContent>
                         </Popover>
-                        <Text fontStyle="italic">
-                          {book.isbn}
-                        </Text>
                         <Flex
                           align="center"
                           wrap="wrap"
