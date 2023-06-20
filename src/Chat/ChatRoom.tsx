@@ -343,7 +343,9 @@ export default function ChatRoom({server}: {server: string}) {
         overflowY="auto"
         p={1}
         m={2}
-        rounded="md"
+        rounded="sm"
+        boxShadow="1px 1px 2px 1px black"
+        border="1px solid black"
         direction="column"
         maxH="85vh"
         gap={1}
@@ -402,7 +404,7 @@ export default function ChatRoom({server}: {server: string}) {
               flex="1 1 80%"
               height="91vh"
               direction="column"
-              bg="rgb(237, 242, 247)"
+              // bg="rgb(237, 242, 247)"
               _dark={{
                 bg: "blackAlpha.200"
               }}
@@ -427,8 +429,10 @@ export default function ChatRoom({server}: {server: string}) {
               <Box
                 h="100%"
                 overflow="auto"
-                mb={2}
+                m={2}
                 bg="white"
+                boxShadow="1px 1px 2px 1px black"
+                border="1px solid black"
                 _dark={{
                   bg: "blackAlpha.500"
                 }}
@@ -602,6 +606,8 @@ export default function ChatRoom({server}: {server: string}) {
                   <Input
                     type="text"
                     ref={chatTextRef as any}
+                    ms={1}
+                    borderColor="black"
                     onKeyDown={e=> e.key === "Enter" ? submitChat() : null}
                     maxLength={200}
                     bg="white"
@@ -638,7 +644,8 @@ export default function ChatRoom({server}: {server: string}) {
                 )}
                 <IconButton
                   onClick={e=>submitChat()}
-                  colorScheme={isConnected ? "teal" : "black"}
+                  backgroundColor={isConnected ? "black" : "gray"}
+                  color="white"
                   aria-label="submit"
                   icon={<FiSend/>}
                   disabled={!isConnected}
@@ -654,7 +661,7 @@ export default function ChatRoom({server}: {server: string}) {
               flex="1 1 15%"
               height={isLargerThan650 ? "91vh" : "auto"}
               direction="column"
-              bg="rgb(237, 242, 247)"
+              // bg="rgb(237, 242, 247)"
               _dark={{
                 bg: "blackAlpha.200"
               }}
@@ -708,6 +715,8 @@ export default function ChatRoom({server}: {server: string}) {
                   {isConnected ? (
                     <Button 
                       w="100%"
+                      variant="outline"
+                      borderColor="black"
                       onClick={e=>disconnectSocket()}
                       aria-label="disconnect"
                       mt="auto"
@@ -723,6 +732,7 @@ export default function ChatRoom({server}: {server: string}) {
                       mt="auto"
                       mx={2}
                       id="connectRef"
+                      variant="outline"
                       colorScheme="green"
                     >
                       Connect
@@ -784,7 +794,8 @@ export default function ChatRoom({server}: {server: string}) {
                   onKeyUp={e=>e.key === 'Enter' ? respondSubmitButtonRef.current.click() : null}
                 />
                 <Button
-                  colorScheme="teal"
+                  backgroundColor="black"
+                  color="white"
                   ref={respondSubmitButtonRef}
                   onClick={e=>submitResponse()}
                 >
