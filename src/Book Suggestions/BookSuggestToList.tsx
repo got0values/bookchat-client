@@ -21,10 +21,8 @@ import axios from "axios";
 
 
 export function BookSuggestionToList({server}: {server: string;}) {
-  const toast = useToast();
   const navigate = useNavigate();
   dayjs.extend(utc);
-  const queryClient = useQueryClient();
 
   async function getBookSuggestToList() {
     let tokenCookie: string | null = Cookies.get().token;
@@ -123,7 +121,11 @@ export function BookSuggestionToList({server}: {server: string;}) {
           )
         })
       ): (
-        <Box></Box>
+        <Box>
+          <Text fontStyle="italic">
+            Please check back tomorrow!
+          </Text>
+        </Box>
       )}
 
     </Skeleton>

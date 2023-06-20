@@ -132,7 +132,7 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                     /> */}
                     {suggestion.suggestorRating ? (
                       <Text fontStyle="italic" fontSize="sm">
-                        {suggestion.suggestorRating}/5 rating
+                        {suggestion.suggestorRating.toFixed(1)}/5 rating
                       </Text>
                     ): null}
                   </Flex>
