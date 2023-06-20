@@ -259,6 +259,7 @@ export interface CurrentlyReading {
   description: string;
   link: string;
   hidden: boolean;
+  published_date: string;
   created_on: Date;
   Profile: ProfileType;
   CurrentlyReadingComment: CurrentlyReadingComment[];

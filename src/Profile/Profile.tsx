@@ -364,6 +364,7 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
           author: (e.target as HTMLDivElement).dataset.author,
           description: (e.target as HTMLDivElement).dataset.description,
           isbn: (e.target as HTMLDivElement).dataset.isbn,
+          published_date: (e.target as HTMLDivElement).dataset.publisheddate,
           thoughts: thoughtsRef.current.value
         },
         {
@@ -945,14 +946,17 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     cursor: "pointer"
                                   }}
                                 >
-                                  <Heading as="h5" size="md" me={3}>
+                                  <Heading as="h5" size="md" me={3} noOfLines={1}>
                                     {selectedBook.volumeInfo.title}
                                   </Heading>
-                                  <Text fontSize="lg">
+                                  <Text fontSize="lg" noOfLines={1}>
                                     {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
                                   </Text>
-                                  <Text fontSize="lg" noOfLines={2}>
+                                  <Text fontSize="lg" noOfLines={1}>
                                     {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
+                                  </Text>
+                                  <Text fontSize="lg" noOfLines={1}>
+                                    {selectedBook.volumeInfo.publishedDate ? dayjs(selectedBook.volumeInfo.publishedDate).format("YYYY"): null}
                                   </Text>
                                 </Box>
                               </PopoverTrigger>
@@ -980,6 +984,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 data-author={selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
                                 data-description={selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
                                 data-isbn={selectedBook.volumeInfo.industryIdentifiers ? selectedBook.volumeInfo.industryIdentifiers[0].identifier : null}
+                                data-publisheddate={selectedBook.volumeInfo.publishedDate ? selectedBook.volumeInfo.publishedDate : null}
                                 onClick={e=>postCurrentlyReading(e)}
                               >
                                 Post
@@ -1120,25 +1125,34 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     cursor: "pointer"
                                   }}
                                 >
-                                  <Heading as="h5" size="md" me={3}>
+                                  <Heading as="h5" size="md" me={3} noOfLines={1}>
                                     {
                                       profileData
                                       .CurrentlyReading[profileData.CurrentlyReading.length - 1]
                                       .title
                                     }
                                   </Heading>
-                                  <Text fontSize="lg">
+                                  <Text fontSize="lg" noOfLines={1}>
                                     {
                                       profileData
                                       .CurrentlyReading[profileData.CurrentlyReading.length - 1]
                                       .author
                                     }
                                   </Text>
-                                  <Text fontSize="lg" noOfLines={2}>
+                                  <Text fontSize="lg" noOfLines={1}>
                                     {
                                       profileData
                                       .CurrentlyReading[profileData.CurrentlyReading.length - 1]
                                       .description
+                                    }
+                                  </Text>
+                                  <Text fontSize="lg" noOfLines={1}>
+                                    {
+                                      profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].published_date ? (
+                                        dayjs(profileData
+                                        .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                        .published_date).format("YYYY")
+                                      ) : null
                                     }
                                   </Text>
                                 </Box>
@@ -1314,23 +1328,31 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                         cursor: "pointer"
                                       }}
                                     >
-                                      <Heading as="h5" size="md" me={3}>
+                                      <Heading as="h5" size="md" me={3} noOfLines={1}>
                                         {
                                           profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
                                           .title
                                         }
                                       </Heading>
-                                      <Text fontSize="lg">
+                                      <Text fontSize="lg" noOfLines={1}>
                                         {
                                           profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
                                           .author
                                         }
                                       </Text>
-                                      <Text fontSize="lg" noOfLines={2}>
+                                      <Text fontSize="lg" noOfLines={1}>
                                         {
                                           profileData
                                           .CurrentlyReading[0]
                                           .description
+                                        }
+                                      </Text>
+                                      <Text fontSize="lg" noOfLines={1}>
+                                        { profileData.CurrentlyReading[0].published_date ? (
+                                            dayjs(profileData
+                                            .CurrentlyReading[0]
+                                            .published_date).format("YYYY")
+                                          ) : null
                                         }
                                       </Text>
                                     </Box>
@@ -1568,9 +1590,12 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                           <Heading as="h5" size="md" me={3} noOfLines={1}>
                                             {readBook.title}
                                           </Heading>
-                                          <Text fontSize="lg">{readBook.author}</Text>
-                                          <Text fontSize="lg" noOfLines={2}>
+                                          <Text fontSize="lg" noOfLines={1}>{readBook.author}</Text>
+                                          <Text fontSize="lg" noOfLines={1}>
                                             {readBook.description}
+                                          </Text>
+                                          <Text fontSize="lg" noOfLines={1}>
+                                            {readBook.published_date ? dayjs(readBook.published_date).format("YYYY") : null}
                                           </Text>
                                         </Box>
                                       </PopoverTrigger>
