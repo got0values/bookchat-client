@@ -267,9 +267,6 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                       maxW="200px"
                       key={i}
                     >
-                      <Text fontSize="sm">
-                        {dayjs(suggestion.created_on).local().format("MMM DD, YYYY")}
-                      </Text>
                       <Flex
                         // align="center"
                         gap={1}
@@ -277,10 +274,17 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                         <Image
                           src={suggestion.image}
                           height="100%"
-                          maxH="35px"
+                          maxH="50px"
                           boxShadow="1px 1px 1px 1px darkgrey"
                         />
                         <Box>
+                          <Text 
+                            fontSize="sm"
+                            opacity="80%"
+                            mb={-1}
+                          >
+                            {dayjs(suggestion.created_on).local().format("MM/DD/YY")}
+                          </Text>
                           <Text
                             fontSize="sm"
                             fontWeight="bold"
