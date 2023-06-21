@@ -1,5 +1,5 @@
 import React, {createContext,useContext} from 'react';
-import { useNavigate,  } from "react-router-dom"
+import { useNavigate, useLocation  } from "react-router-dom"
 import { AuthProviderProps, AuthContextProps } from '../types/types';
 import { useLocalStorage } from './useLocalStorage';
 import { useToast } from '@chakra-ui/react';
@@ -14,6 +14,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   const toast = useToast();
 
   const navigate = useNavigate();
+  const location = useLocation();
   const [user,setUser] = useLocalStorage("user", null);
   
   async function getUser() {
@@ -54,6 +55,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   }
 
   async function onLogin(token: string) {
+    // if (location.key) { //redirect to original location if it exists
+    //   navigate(-1)
+    // }
+    // else {
+    //   navigate("/");
+    // }
     navigate("/");
     Cookies.set("token", token);
     await getUser();
@@ -63,7 +70,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   function onLogout(): void {
     Cookies.remove("token", { path: ''});
     setUser(null)
-    return navigate("/login");
+    setTimeout(()=>{
+      navigate("/login");
+    },100)
+    return
   }
 
   return (
