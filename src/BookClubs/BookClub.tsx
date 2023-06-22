@@ -2261,6 +2261,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                 <Button
                   onClick={createPollBooks}
                   backgroundColor="black"
+                  color="white"
                 >
                   Save
                 </Button>
