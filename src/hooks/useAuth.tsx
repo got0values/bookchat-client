@@ -14,7 +14,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   const toast = useToast();
 
   const navigate = useNavigate();
-  const location = useLocation();
+  const {state: locationState} = useLocation();
   const [user,setUser] = useLocalStorage("user", null);
   
   async function getUser() {
@@ -48,22 +48,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
         duration: 9000,
         isClosable: true
       })
-      navigate("/login")
+      // navigate("/login")
       throw new Error(response.message)
     })
     return data;
   }
 
   async function onLogin(token: string) {
-    // if (location.key) { //redirect to original location if it exists
-    //   navigate(-1)
-    // }
-    // else {
-    //   navigate("/");
-    // }
-    navigate("/");
     Cookies.set("token", token);
     await getUser();
+    setTimeout(async ()=>{
+      if (locationState) {
+        navigate(locationState.redirectTo)
+      }
+      else {
+        navigate("/");
+      }
+    },100)
     return
   }
 
