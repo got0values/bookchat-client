@@ -80,7 +80,11 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
       })
       .then((response)=>{
         const responseMessage = response.data.message;
-        setBookshelfBooks(responseMessage.BookshelfBook);
+        setBookshelfBooks(prev=>{
+          return responseMessage.BookshelfBook.sort((a: BookshelfBook,b: BookshelfBook)=>{
+            return (new Date(a.created_on) as any) - (new Date(b.created_on) as any)
+          }).reverse()
+        });
         setShowSuggestionsNotes(responseMessage.allow_suggestions);
         return responseMessage
       })
@@ -757,18 +761,26 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                 <Heading as="h3" size="md">
                   Bookshelf
                 </Heading>
-                <Box
-                  onClick={onOpenBookSearchModal}
-                  rounded="md"
-                  _hover={{
-                    cursor: "pointer",
-                    bg: "grey"
-                  }}
-                >
-                  <IoIosAdd size={25} />
-                </Box>
+                <Menu>
+                  <MenuButton 
+                    as={Button}
+                    variant="ghost"
+                    rounded="full"
+                    height="20px"
+                    minWidth="auto"
+                    px={0}
+                  >
+                    <IoIosAdd size={25} />
+                  </MenuButton>
+                  <MenuList>
+                    <MenuItem
+                      onClick={onOpenBookSearchModal}
+                    >
+                      Search
+                    </MenuItem>
+                  </MenuList>
+                </Menu>
               </Flex>
-
               {bookToAdd && (
                 <Stack className="well-card" position="relative">
                   <CloseButton
@@ -984,7 +996,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         justify="space-between"
                       >
                         <Text fontStyle="italic">
-                          {dayjs(book.created_on).local().format('MMM DD, h:mm a')}
+                          {dayjs(book.created_on).local().format('MMM DD, YYYY')}
                         </Text>
                         <Menu>
                           <MenuButton 
@@ -1235,7 +1247,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       </Accordion>
                     </Flex>
                   )
-                }).reverse()
+                })
               ): null}
             </Box>
           </Stack>
