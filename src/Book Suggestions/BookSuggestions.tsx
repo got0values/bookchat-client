@@ -45,7 +45,7 @@ export default function BookSuggestions({server, gbooksapi}: {server: string; gb
               borderBottom: "2px solid gray"
             }}
           >
-            For Me
+            Suggest
           </Tab>
           <Tab 
             fontWeight="bold"
@@ -53,20 +53,20 @@ export default function BookSuggestions({server, gbooksapi}: {server: string; gb
               borderBottom: "2px solid gray"
             }}
           >
-            Suggest
+            For Me
           </Tab>
         </TabList>
         <TabPanels>
           <TabPanel px={0}>
             
-            <BookSuggestionsForMe server={server} />
+            <BookSuggestionToList server={server} />
 
           </TabPanel>
 
           <TabPanel px={0}>
             
 
-            <BookSuggestionToList server={server} />
+            <BookSuggestionsForMe server={server} />
 
 
           </TabPanel>
