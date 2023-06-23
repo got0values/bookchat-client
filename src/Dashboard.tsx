@@ -250,6 +250,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           author: (e.target as HTMLDivElement).dataset.author,
           description: (e.target as HTMLDivElement).dataset.description,
           isbn: (e.target as HTMLDivElement).dataset.isbn,
+          page_count: parseInt((e.target as HTMLDivElement).dataset.pagecount as string),
           published_date: (e.target as HTMLDivElement).dataset.publisheddate,
           thoughts: thoughtsRef.current.value
         },
@@ -500,6 +501,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       data-author={selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
                       data-description={selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
                       data-isbn={selectedBook.volumeInfo.industryIdentifiers ? selectedBook.volumeInfo.industryIdentifiers[0].identifier : null}
+                      data-pagecount={selectedBook.volumeInfo.pageCount ? selectedBook.volumeInfo.pageCount : null}
                       data-publisheddate={selectedBook.volumeInfo.publishedDate ? selectedBook.volumeInfo.publishedDate : null}
                       onClick={e=>postCurrentlyReading(e)}
                     >

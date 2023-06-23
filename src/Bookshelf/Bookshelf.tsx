@@ -219,6 +219,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     const image = e.target.dataset.image;
     const description = e.target.dataset.description;
     const isbn = e.target.dataset.isbn;
+    const page_count = parseInt(e.target.dataset.pagecount);
     const published_date = e.target.dataset.publisheddate;
     setBookToAdd({title,author,image,description,isbn,published_date})
     onCloseBookSearchModal();
@@ -1041,7 +1042,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       <Flex>
                         <Image
                           src={book.image}
-                          maxH="100px"
+                          maxH="125px"
                           boxShadow="1px 1px 1px 1px darkgrey"
                         />
                         <Box mx={2} w="100%">
@@ -1056,7 +1057,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                   as="h5" 
                                   size="md"
                                   me={3}
-                                  noOfLines={1}
+                                  noOfLines={2}
                                 >
                                   {book.title}
                                 </Heading>
@@ -1078,7 +1079,12 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           <Text fontSize="lg" noOfLines={1}>
                             {book.author}
                           </Text>
-                          <Text noOfLines={1}>
+                          {book.page_count ? (
+                            <Text>
+                              {book.page_count} pages
+                            </Text>
+                          ): null}
+                          <Text>
                             {book.published_date ? dayjs(book.published_date).format("YYYY") : null}
                           </Text>
                           <StarRating
@@ -1373,6 +1379,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 data-description={book.volumeInfo.description}
                                 data-image={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : null}
                                 data-isbn={book.volumeInfo.industryIdentifiers ? book.volumeInfo.industryIdentifiers[0].identifier : null}
+                                data-pagecount={book.volumeInfo.pageCount ? book.volumeInfo.pageCount : null}
                                 data-publisheddate={book.volumeInfo.publishedDate ? book.volumeInfo.publishedDate : null}
                                 onClick={e=>selectBookToAdd(e)}
                                 backgroundColor="black"

@@ -181,11 +181,13 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                   >
                     {suggestion.author}
                   </Text>
-                  <Text
-                    noOfLines={1}
-                  >
-                    {suggestion.published_date ? dayjs(suggestion.published_date).format("YYYY") : null}
-                  </Text>
+                  {suggestion.published_date ? (
+                    <Text
+                      fontStyle="italic"
+                    >
+                      {dayjs(suggestion.published_date).format("YYYY")}
+                    </Text>
+                  ): null}
                   <Popover isLazy>
                     <PopoverTrigger>
                       <Text
@@ -209,11 +211,11 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                       </PopoverBody>
                     </PopoverContent>
                   </Popover>
-                  <Text
-                    fontStyle="italic"
-                  >
-                    {suggestion.isbn}
-                  </Text>
+                  {suggestion.page_count ? (
+                    <Text>
+                      {suggestion.page_count} pages
+                    </Text>
+                  ): null}
                   <Flex
                     align="center"
                     gap={1}
@@ -236,7 +238,7 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
               </Flex>
             </Stack>
           )
-        })
+        }).reverse()
       ): (
         <Box></Box>
       )}

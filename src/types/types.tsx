@@ -263,6 +263,7 @@ export interface CurrentlyReading {
   link: string;
   hidden: boolean;
   isbn: string;
+  page_count: number;
   published_date: string;
   created_on: Date;
   Profile: ProfileType;
@@ -360,6 +361,7 @@ export interface BookshelfBook {
   image: string;
   description: string;
   isbn: string;
+  page_count: number;
   published_date: string;
   notes: string;
   rating: number;
@@ -376,6 +378,7 @@ export interface BookSuggestionType {
   image: string;
   description: string;
   isbn: string;
+  page_count: number;
   notes: string;
   rating: number;
   published_date: string;

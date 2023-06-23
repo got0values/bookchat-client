@@ -369,6 +369,7 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
           author: (e.target as HTMLDivElement).dataset.author,
           description: (e.target as HTMLDivElement).dataset.description,
           isbn: (e.target as HTMLDivElement).dataset.isbn,
+          page_count: parseInt((e.target as HTMLDivElement).dataset.pagecount as string),
           published_date: (e.target as HTMLDivElement).dataset.publisheddate,
           thoughts: thoughtsRef.current.value
         },
@@ -1049,6 +1050,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 data-author={selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
                                 data-description={selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
                                 data-isbn={selectedBook.volumeInfo.industryIdentifiers ? selectedBook.volumeInfo.industryIdentifiers[0].identifier : null}
+                                data-pagecount={selectedBook.volumeInfo.pageCount ? selectedBook.volumeInfo.pageCount : null}
                                 data-publisheddate={selectedBook.volumeInfo.publishedDate ? selectedBook.volumeInfo.publishedDate : null}
                                 onClick={e=>postCurrentlyReading(e)}
                               >
@@ -1114,6 +1116,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                         author: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author,
                                         description: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].description,
                                         isbn: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].isbn ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].isbn : "",
+                                        page_count: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].page_count ? parseInt(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].page_count as any) : null,
                                         published_date: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].published_date ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].published_date : "",
                                       })}
                                       fontWeight="bold"
@@ -1599,6 +1602,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                                 author: readBook.author,
                                                 description: readBook.description,
                                                 isbn: readBook.isbn ? readBook.isbn : "",
+                                                page_count: readBook.page_count ? parseInt(readBook.page_count as any) : null,
                                                 published_date: readBook.published_date ? readBook.published_date : "",
                                               })}
                                               fontWeight="bold"
