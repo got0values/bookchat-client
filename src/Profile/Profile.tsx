@@ -767,7 +767,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                       defaultRating={profileData.rating}
                     />
                     <Text fontWeight={600} color={'gray.600'}>
-                      {profileData.rating.toFixed(2)}/5
+                      {profileData.rating.toFixed(2)}
                     </Text>
                   </Flex>
                 ): null}
