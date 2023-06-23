@@ -1172,7 +1172,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         >
                           <AccordionButton>
                             <Heading as="h4" size="sm">
-                              Personal Notes
+                              Private Notes
                             </Heading>
                             <AccordionIcon ml="auto" />
                           </AccordionButton>
