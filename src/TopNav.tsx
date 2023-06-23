@@ -90,74 +90,79 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
     let totalNotifications = 0;
     try {
       const tokenCookie = Cookies.get().token;
-      const otherNotifications = await axios
-        .get(server + "/api/notifications",
-          {
-            headers: {
-              Authorization: tokenCookie
+      if (tokenCookie && tokenCookie !== undefined) {
+        const otherNotifications = await axios
+          .get(server + "/api/notifications",
+            {
+              headers: {
+                Authorization: tokenCookie
+              }
             }
+          )
+          .then((response)=>{
+            return response.data.message;
+          })
+          .catch((response)=>{
+            console.log(response)
+          })
+          let commentData = otherNotifications?.filter((on: OtherNotificationsType)=>on.type === 1);
+          commentData = commentData.map((comment: any)=>{
+            return (
+              {
+                ...comment,
+                from_data: JSON.parse(comment.from_data),
+                subject: JSON.parse(comment.subject)
+              }
+            )
+          })
+          let replyData = otherNotifications?.filter((on: OtherNotificationsType)=>on.type === 2);
+          replyData = replyData.map((reply: any)=>{
+            return (
+              {
+                ...reply,
+                from_data: JSON.parse(reply.from_data),
+                subject: JSON.parse(reply.subject)
+              }
+            )
+          })
+          userNotifications = {
+            ...userNotifications, 
+            comments: [...userNotifications.comments as any[], ...commentData],
+            replies: [...userNotifications.replies as any[], ...replyData]
           }
-        )
-        .then((response)=>{
-          return response.data.message;
-        })
-        .catch((response)=>{
-          console.log(response)
-        })
-        let commentData = otherNotifications?.filter((on: OtherNotificationsType)=>on.type === 1);
-        commentData = commentData.map((comment: any)=>{
-          return (
-            {
-              ...comment,
-              from_data: JSON.parse(comment.from_data),
-              subject: JSON.parse(comment.subject)
-             }
-          )
-        })
-        let replyData = otherNotifications?.filter((on: OtherNotificationsType)=>on.type === 2);
-        replyData = replyData.map((reply: any)=>{
-          return (
-            {
-              ...reply,
-              from_data: JSON.parse(reply.from_data),
-              subject: JSON.parse(reply.subject)
-            }
-          )
-        })
-        userNotifications = {
-          ...userNotifications, 
-          comments: [...userNotifications.comments as any[], ...commentData],
-          replies: [...userNotifications.replies as any[], ...replyData]
-        }
 
-      //check if any follow requests
-      if (user?.Profile.Following_Following_following_profile_idToProfile?.length) {
-        let followers = user.Profile.Following_Following_following_profile_idToProfile;
-        for (let i = 0; i < followers.length; i++) {
-          if(followers[i].status === "requesting") {
-            userNotifications = {
-              ...userNotifications, 
-              followRequests: [...userNotifications.followRequests as any[], followers[i]] 
+        //check if any follow requests
+        if (user?.Profile.Following_Following_following_profile_idToProfile?.length) {
+          let followers = user.Profile.Following_Following_following_profile_idToProfile;
+          for (let i = 0; i < followers.length; i++) {
+            if(followers[i].status === "requesting") {
+              userNotifications = {
+                ...userNotifications, 
+                followRequests: [...userNotifications.followRequests as any[], followers[i]] 
+              }
             }
           }
         }
-      }
-      if (user?.Profile.BookClubMembers_BookClubMembers_book_club_creatorToProfile?.length) {
-        let bookClubMembers = user.Profile.BookClubMembers_BookClubMembers_book_club_creatorToProfile;
-        for (let i = 0; i < bookClubMembers.length; i++) {
-          if(bookClubMembers[i].status === 1) {
-            userNotifications = {
-              ...userNotifications, 
-              bookClubRequests: [...userNotifications.bookClubRequests as any[], bookClubMembers[i]] 
+        if (user?.Profile.BookClubMembers_BookClubMembers_book_club_creatorToProfile?.length) {
+          let bookClubMembers = user.Profile.BookClubMembers_BookClubMembers_book_club_creatorToProfile;
+          for (let i = 0; i < bookClubMembers.length; i++) {
+            if(bookClubMembers[i].status === 1) {
+              userNotifications = {
+                ...userNotifications, 
+                bookClubRequests: [...userNotifications.bookClubRequests as any[], bookClubMembers[i]] 
+              }
             }
           }
         }
+        totalNotifications = userNotifications.followRequests.length + userNotifications.bookClubRequests.length + userNotifications.comments.length + userNotifications.replies.length;
+        return {
+          userNotifications,
+          totalNotifications
+        };
       }
-      totalNotifications = userNotifications.followRequests.length + userNotifications.bookClubRequests.length + userNotifications.comments.length + userNotifications.replies.length;
-      return {
-        userNotifications,
-        totalNotifications
-      };
+      else {
+        navigate("/login")
+      }
     } catch(error) {
       toast({
         description: "An error has occurred",
