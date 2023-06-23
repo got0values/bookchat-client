@@ -443,7 +443,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               <Flex>
                 <Image 
                   src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
-                  maxH="75px"
+                  maxH="100px"
                   boxShadow="1px 1px 1px 1px darkgrey"
                 />
                 <Box 
@@ -457,37 +457,38 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     <Text fontSize="lg">
                       {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
                     </Text>
-                  </Box>
-                  {/* <Popover isLazy>
-                    <PopoverTrigger>
-                      <Box
-                        _hover={{
-                          cursor: "pointer"
-                        }}
-                      >
-                        <Heading as="h5" size="md" me={3}>
-                          {selectedBook.volumeInfo.title}
-                        </Heading>
-                        <Text fontSize="lg">
-                          {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
-                        </Text>
-                        <Text fontSize="lg" noOfLines={2}>
+                    <Popover isLazy>
+                      <PopoverTrigger>
+                        <Box
+                          _hover={{
+                            cursor: "pointer"
+                          }}
+                        >
+                          <Text fontSize="lg" noOfLines={1}>
+                            {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
+                          </Text>
+                        </Box>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <PopoverArrow />
+                        <PopoverCloseButton />
+                        <PopoverBody
+                          _dark={{
+                            bg: "black"
+                          }}
+                        >
                           {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
-                        </Text>
-                      </Box>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <PopoverArrow />
-                      <PopoverCloseButton />
-                      <PopoverBody
-                        _dark={{
-                          bg: "black"
-                        }}
-                      >
-                        {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
-                      </PopoverBody>
-                    </PopoverContent>
-                  </Popover> */}
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Popover>
+                    <Text fontSize="lg">
+                      {selectedBook.volumeInfo.publishedDate !== null ? 
+                        (
+                          dayjs(selectedBook.volumeInfo.publishedDate).format("YYYY")
+                        ) : null
+                      }
+                    </Text>
+                  </Box>
                   <Flex justify="flex-end">
                     <Button 
                       // size="sm"
@@ -630,63 +631,50 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   <Flex>
                     <Image 
                       src={reading.image}
-                      maxH="75px"
+                      maxH="100px"
                       boxShadow="1px 1px 1px 1px darkgrey"
                     />
                     <Box mx={2} w="100%">
-                    <Box>
-                      <Heading as="h5" size="md" me={3} noOfLines={1}>
-                        {reading.title}
-                      </Heading>
-                      <Text fontSize="lg" noOfLines={1}>
-                        {reading.author}
-                      </Text>
-                      <Text fontSize="lg">
-                        {reading.published_date !== null ? 
-                          (
-                            dayjs(reading.published_date).format("YYYY")
-                          ) : null
-                        }
-                      </Text>
-                    </Box>
-                      {/* <Popover isLazy>
-                        <PopoverTrigger>
-                          <Box 
-                            _hover={{
-                              cursor: "pointer"
-                            }}
-                          >
-                            <Heading as="h5" size="md" me={3} noOfLines={1}>
-                              {reading.title}
-                            </Heading>
-                            <Text fontSize="lg" noOfLines={1}>
-                              {reading.author}
-                            </Text>
-                            <Text fontSize="lg" noOfLines={1}>
-                              {reading.description ? reading.description: null}
-                            </Text>
-                            <Text fontSize="lg">
-                              {reading.published_date !== null ? 
-                                (
-                                  dayjs(reading.published_date).format("YYYY")
-                                ) : null
-                              }
-                            </Text>
-                          </Box>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <PopoverArrow />
-                          <PopoverCloseButton />
-                          <PopoverBody 
-                            fontSize="sm"
-                            _dark={{
-                              bg: "black"
-                            }}
-                          >
-                            {reading.description}
-                          </PopoverBody>
-                        </PopoverContent>
-                      </Popover> */}
+                      <Box>
+                        <Heading as="h5" size="md" me={3} noOfLines={1}>
+                          {reading.title}
+                        </Heading>
+                        <Text fontSize="lg" noOfLines={1}>
+                          {reading.author}
+                        </Text>
+                        <Popover isLazy>
+                          <PopoverTrigger>
+                            <Box 
+                              _hover={{
+                                cursor: "pointer"
+                              }}
+                            >
+                              <Text fontSize="lg" noOfLines={1}>
+                                {reading.description ? reading.description: null}
+                              </Text>
+                            </Box>
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverBody 
+                              fontSize="sm"
+                              _dark={{
+                                bg: "black"
+                              }}
+                            >
+                              {reading.description}
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Popover>
+                        <Text fontSize="lg">
+                          {reading.published_date !== null ? 
+                            (
+                              dayjs(reading.published_date).format("YYYY")
+                            ) : null
+                          }
+                        </Text>
+                      </Box>
                       <Flex justify="flex-end">
                         <Flex align="center" gap={0}>
                           <Button 

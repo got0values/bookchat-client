@@ -993,7 +993,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                         <Flex>
                           <Image 
                             src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
-                            maxH="75px"
+                            maxH="100px"
                             boxShadow="1px 1px 1px 1px darkgrey"
                           />
                           <Box 
@@ -1007,44 +1007,37 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                               <Text fontSize="lg" noOfLines={1}>
                                 {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
                               </Text>
+                            </Box>
+                            <Box>
+                              <Popover isLazy>
+                                <PopoverTrigger>
+                                  <Box
+                                    _hover={{
+                                      cursor: "pointer"
+                                    }}
+                                  >
+                                    <Text fontSize="lg" noOfLines={1}>
+                                      {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
+                                    </Text>
+                                  </Box>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                  <PopoverArrow />
+                                  <PopoverCloseButton />
+                                  <PopoverBody 
+                                    fontSize="sm"
+                                    _dark={{
+                                      bg: "black"
+                                    }}
+                                  >
+                                    {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
+                                  </PopoverBody>
+                                </PopoverContent>
+                              </Popover>
                               <Text fontSize="lg" noOfLines={1}>
                                 {selectedBook.volumeInfo.publishedDate ? dayjs(selectedBook.volumeInfo.publishedDate).format("YYYY"): null}
                               </Text>
                             </Box>
-                            {/* <Popover isLazy>
-                              <PopoverTrigger>
-                                <Box
-                                  _hover={{
-                                    cursor: "pointer"
-                                  }}
-                                >
-                                  <Heading as="h5" size="md" me={3} noOfLines={1}>
-                                    {selectedBook.volumeInfo.title}
-                                  </Heading>
-                                  <Text fontSize="lg" noOfLines={1}>
-                                    {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
-                                  </Text>
-                                  <Text fontSize="lg" noOfLines={1}>
-                                    {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
-                                  </Text>
-                                  <Text fontSize="lg" noOfLines={1}>
-                                    {selectedBook.volumeInfo.publishedDate ? dayjs(selectedBook.volumeInfo.publishedDate).format("YYYY"): null}
-                                  </Text>
-                                </Box>
-                              </PopoverTrigger>
-                              <PopoverContent>
-                                <PopoverArrow />
-                                <PopoverCloseButton />
-                                <PopoverBody 
-                                  fontSize="sm"
-                                  _dark={{
-                                    bg: "black"
-                                  }}
-                                >
-                                  {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
-                                </PopoverBody>
-                              </PopoverContent>
-                            </Popover> */}
                             <Flex justify="flex-end">
                               <Button 
                                 // size="sm"
@@ -1200,7 +1193,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                               .CurrentlyReading[profileData.CurrentlyReading.length - 1]
                               .image
                             }
-                            maxH="75px"
+                            maxH="100px"
                             boxShadow="1px 1px 1px 1px darkgrey"
                           />
                           <Box mx={2} w="100%">
@@ -1219,6 +1212,39 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   .author
                                 }
                               </Text>
+                              <Popover isLazy>
+                                <PopoverTrigger>
+                                  <Box
+                                    _hover={{
+                                      cursor: "pointer"
+                                    }}
+                                  >
+                                    <Text fontSize="lg" noOfLines={1}>
+                                      {
+                                        profileData
+                                        .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                        .description
+                                      }
+                                    </Text>
+                                  </Box>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                  <PopoverArrow />
+                                  <PopoverCloseButton />
+                                  <PopoverBody 
+                                    fontSize="sm"
+                                    _dark={{
+                                      bg: "black"
+                                    }}
+                                  >
+                                    {
+                                      profileData
+                                      .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                      .description
+                                    }
+                                  </PopoverBody>
+                                </PopoverContent>
+                              </Popover>
                               <Text fontSize="lg" noOfLines={1}>
                                 {
                                   profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].published_date ? (
@@ -1229,62 +1255,6 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 }
                               </Text>
                             </Box>
-                            {/* <Popover isLazy>
-                              <PopoverTrigger>
-                                <Box
-                                  _hover={{
-                                    cursor: "pointer"
-                                  }}
-                                >
-                                  <Heading as="h5" size="md" me={3} noOfLines={1}>
-                                    {
-                                      profileData
-                                      .CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                      .title
-                                    }
-                                  </Heading>
-                                  <Text fontSize="lg" noOfLines={1}>
-                                    {
-                                      profileData
-                                      .CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                      .author
-                                    }
-                                  </Text>
-                                  <Text fontSize="lg" noOfLines={1}>
-                                    {
-                                      profileData
-                                      .CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                      .description
-                                    }
-                                  </Text>
-                                  <Text fontSize="lg" noOfLines={1}>
-                                    {
-                                      profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].published_date ? (
-                                        dayjs(profileData
-                                        .CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                        .published_date).format("YYYY")
-                                      ) : null
-                                    }
-                                  </Text>
-                                </Box>
-                              </PopoverTrigger>
-                              <PopoverContent>
-                                <PopoverArrow />
-                                <PopoverCloseButton />
-                                <PopoverBody 
-                                  fontSize="sm"
-                                  _dark={{
-                                    bg: "black"
-                                  }}
-                                >
-                                  {
-                                    profileData
-                                    .CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                    .description
-                                  }
-                                </PopoverBody>
-                              </PopoverContent>
-                            </Popover> */}
                             <Flex justify="flex-end">
                               <Flex align="center" gap={0}>
                                 <Button 
@@ -1428,7 +1398,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 src={
                                   profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].image
                                 }
-                                maxH="75px"
+                                maxH="100px"
                                 boxShadow="1px 1px 1px 1px darkgrey"
                               />
                               <Box mx={2} w="100%">
@@ -1445,6 +1415,39 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       .author
                                     }
                                   </Text>
+                                  <Popover isLazy>
+                                    <PopoverTrigger>
+                                      <Box
+                                        _hover={{
+                                          cursor: "pointer"
+                                        }}
+                                      >
+                                        <Text fontSize="lg" noOfLines={1}>
+                                          {
+                                            profileData
+                                            .CurrentlyReading[0]
+                                            .description
+                                          }
+                                        </Text>
+                                      </Box>
+                                    </PopoverTrigger>
+                                    <PopoverContent>
+                                      <PopoverArrow />
+                                      <PopoverCloseButton />
+                                      <PopoverBody 
+                                      fontSize="sm"
+                                      _dark={{
+                                        bg: "black"
+                                      }}
+                                      >
+                                        {
+                                          profileData
+                                          .CurrentlyReading[0]
+                                          .description
+                                        }
+                                      </PopoverBody>
+                                    </PopoverContent>
+                                  </Popover>
                                   <Text fontSize="lg" noOfLines={1}>
                                     { profileData.CurrentlyReading[0].published_date ? (
                                         dayjs(profileData
@@ -1454,59 +1457,6 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     }
                                   </Text>
                                 </Box>
-                                {/* <Popover isLazy>
-                                  <PopoverTrigger>
-                                    <Box
-                                      _hover={{
-                                        cursor: "pointer"
-                                      }}
-                                    >
-                                      <Heading as="h5" size="md" me={3} noOfLines={1}>
-                                        {
-                                          profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                          .title
-                                        }
-                                      </Heading>
-                                      <Text fontSize="lg" noOfLines={1}>
-                                        {
-                                          profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
-                                          .author
-                                        }
-                                      </Text>
-                                      <Text fontSize="lg" noOfLines={1}>
-                                        {
-                                          profileData
-                                          .CurrentlyReading[0]
-                                          .description
-                                        }
-                                      </Text>
-                                      <Text fontSize="lg" noOfLines={1}>
-                                        { profileData.CurrentlyReading[0].published_date ? (
-                                            dayjs(profileData
-                                            .CurrentlyReading[0]
-                                            .published_date).format("YYYY")
-                                          ) : null
-                                        }
-                                      </Text>
-                                    </Box>
-                                  </PopoverTrigger>
-                                  <PopoverContent>
-                                    <PopoverArrow />
-                                    <PopoverCloseButton />
-                                    <PopoverBody 
-                                     fontSize="sm"
-                                     _dark={{
-                                      bg: "black"
-                                    }}
-                                    >
-                                      {
-                                        profileData
-                                        .CurrentlyReading[0]
-                                        .description
-                                      }
-                                    </PopoverBody>
-                                  </PopoverContent>
-                                </Popover> */}
                                 <Flex justify="flex-end">
                                   <Flex align="center" gap={0}>
                                     <Button 
@@ -1723,7 +1673,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 <Flex>
                                   <Image 
                                     src={readBook.image}
-                                    maxH="75px"
+                                    maxH="100px"
                                     boxShadow="1px 1px 1px 1px darkgrey"
                                   />
                                   <Box mx={2} w="100%">
@@ -1732,42 +1682,35 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                         {readBook.title}
                                       </Heading>
                                       <Text fontSize="lg" noOfLines={1}>{readBook.author}</Text>
+                                      <Popover isLazy>
+                                        <PopoverTrigger>
+                                          <Box
+                                            _hover={{
+                                              cursor: "pointer"
+                                            }}
+                                          >
+                                            <Text fontSize="lg" noOfLines={1}>
+                                              {readBook.description}
+                                            </Text>
+                                          </Box>
+                                        </PopoverTrigger>
+                                        <PopoverContent>
+                                          <PopoverArrow />
+                                          <PopoverCloseButton />
+                                          <PopoverBody 
+                                            fontSize="sm"
+                                            _dark={{
+                                              bg: "black"
+                                            }}
+                                          >
+                                            {readBook.description}
+                                          </PopoverBody>
+                                        </PopoverContent>
+                                      </Popover>
                                       <Text fontSize="lg" noOfLines={1}>
                                         {readBook.published_date ? dayjs(readBook.published_date).format("YYYY") : null}
                                       </Text>
                                     </Box>
-                                    {/* <Popover isLazy>
-                                      <PopoverTrigger>
-                                        <Box
-                                          _hover={{
-                                            cursor: "pointer"
-                                          }}
-                                        >
-                                          <Heading as="h5" size="md" me={3} noOfLines={1}>
-                                            {readBook.title}
-                                          </Heading>
-                                          <Text fontSize="lg" noOfLines={1}>{readBook.author}</Text>
-                                          <Text fontSize="lg" noOfLines={1}>
-                                            {readBook.description}
-                                          </Text>
-                                          <Text fontSize="lg" noOfLines={1}>
-                                            {readBook.published_date ? dayjs(readBook.published_date).format("YYYY") : null}
-                                          </Text>
-                                        </Box>
-                                      </PopoverTrigger>
-                                      <PopoverContent>
-                                        <PopoverArrow />
-                                        <PopoverCloseButton />
-                                        <PopoverBody 
-                                          fontSize="sm"
-                                          _dark={{
-                                            bg: "black"
-                                          }}
-                                        >
-                                          {readBook.description}
-                                        </PopoverBody>
-                                      </PopoverContent>
-                                    </Popover> */}
                                     <Flex justify="flex-end">
                                       <Flex align="center" gap={0}>
                                         <Button 
