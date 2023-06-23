@@ -13,9 +13,11 @@ import {
   Flex,
   Skeleton,
   Divider,
+  Icon,
   useToast,
 } from "@chakra-ui/react";
 import StarRating from "../shared/StarRating";
+import { AiFillStar } from "react-icons/ai";
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -131,9 +133,16 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                       defaultRating={suggestion.suggestorRating ? suggestion.suggestorRating : 0}
                     /> */}
                     {suggestion.suggestorRating ? (
-                      <Text fontStyle="italic" fontSize="sm">
-                        {suggestion.suggestorRating.toFixed(1)}/5 rating
-                      </Text>
+                      <Flex align="center" gap={0}>
+                        <Icon
+                          as={AiFillStar}
+                          size={25}
+                          color="gold"
+                        />
+                        <Text fontStyle="italic" fontSize="sm">
+                          {suggestion.suggestorRating.toFixed(1)}
+                        </Text>
+                      </Flex>
                     ): null}
                   </Flex>
                   <Text fontStyle="italic" opacity="75%">
