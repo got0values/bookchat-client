@@ -793,43 +793,48 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   <Flex mb={1}>
                     <Image
                       src={bookToAdd.image}
-                      maxH="50px"
+                      maxH="100px"
                       boxShadow="1px 1px 1px 1px darkgrey"
                     />
                     <Box mx={2} w="100%">
-                      <Popover isLazy>
-                        <PopoverTrigger>
-                          <Box
-                            _hover={{
-                              cursor: "pointer"
-                            }}
-                          >
-                            <Heading 
-                              as="h5" 
-                              size="md"
-                              me={3}
-                              noOfLines={1}
+                      <Box>
+                        <Popover isLazy>
+                          <PopoverTrigger>
+                            <Box
+                              _hover={{
+                                cursor: "pointer"
+                              }}
                             >
-                              {bookToAdd.title}
-                            </Heading>
-                            <Text fontSize="lg">
-                              {bookToAdd.author}
-                            </Text>
-                          </Box>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <PopoverArrow />
-                          <PopoverCloseButton />
-                          <PopoverBody 
-                            fontSize="sm"
-                            _dark={{
-                              bg: "black"
-                            }}
-                          >
-                            {bookToAdd.description}
-                          </PopoverBody>
-                        </PopoverContent>
-                      </Popover>
+                              <Heading 
+                                as="h5" 
+                                size="md"
+                                me={3}
+                                noOfLines={1}
+                              >
+                                {bookToAdd.title}
+                              </Heading>
+                            </Box>
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverBody 
+                              fontSize="sm"
+                              _dark={{
+                                bg: "black"
+                              }}
+                            >
+                              {bookToAdd.description}
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Popover>
+                        <Text fontSize="lg">
+                          {bookToAdd.author}
+                        </Text>
+                        <Text>
+                          {bookToAdd.published_date ? dayjs(bookToAdd.published_date).format("YYYY") : null}
+                        </Text>
+                      </Box>
                     </Box>
                   </Flex>
                   <Flex
