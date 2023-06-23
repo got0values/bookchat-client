@@ -453,7 +453,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                     onKeyUp={e=>e.key === 'Enter' ? searchBook() : null}
                     ref={searchInputRef}
                     style={{
-                      background: `white no-repeat url(${googleWatermark})`,
+                      background: `no-repeat url(${googleWatermark})`,
                       backgroundPosition: "top 0px right 5px"
                     }}
                   />

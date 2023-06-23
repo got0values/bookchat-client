@@ -802,7 +802,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   ref={whatImReadingRef}
                   onKeyDown={e=>e.key === 'Enter' ? searchBook() : null}
                   style={{
-                    background: `white no-repeat url(${googleWatermark})`,
+                    background: `no-repeat url(${googleWatermark})`,
                     backgroundPosition: "top 0px right 5px"
                   }}
                 />
