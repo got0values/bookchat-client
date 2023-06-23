@@ -1914,6 +1914,10 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                     bg="white"
                     color="black"
                     onKeyDown={e=>e.key === "Enter" ? searchBook() : null}
+                    style={{
+                      background: "white no-repeat url(/src/assets/google_watermark.gif)",
+                      backgroundPosition: "top 0px right 5px"
+                    }}
                   />
                   <Button
                     onClick={searchBook}
@@ -1989,7 +1993,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                               size="xs"
                               data-book={JSON.stringify(book)}
                               onClick={e=>selectBook(e)}
-                              colorScheme="green"
+                              backgroundColor="black"
+                              color="white"
                             >
                               Set
                             </Button>
@@ -2033,10 +2038,14 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                     bg="white"
                     color="black"
                     onKeyDown={e=>e.key === "Enter" ? searchBook() : null}
+                    style={{
+                      background: "white no-repeat url(/src/assets/google_watermark.gif)",
+                      backgroundPosition: "top 0px right 5px"
+                    }}
                   />
                   <Button
                     onClick={searchBook}
-                    colorScheme="purple"
+                    borderColor="black"
                     variant="outline"
                   >
                     Search

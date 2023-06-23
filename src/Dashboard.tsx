@@ -221,7 +221,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
       .then((response)=>{
         setBookResults(response.data.items)
         setBookResultsLoading(false)
-        onOpenReadingModal();
+        // onOpenReadingModal();
       })
       .catch((error)=>{
         console.log(error)
@@ -402,24 +402,17 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
         >
           <Flex gap={2} className="non-well">
             <Input 
-              type="search" 
               placeholder="Share what you're reading" 
-              border="1px solid black"
               size="lg"
-              _dark={{
-                bg: "whiteAlpha.50"
+              onClick={e=>onOpenReadingModal()}
+              sx={{
+                cursor: 'none',
+                '&:hover': {
+                  cursor: 'pointer'
+                }
               }}
-              ref={whatImReadingRef}
-              onKeyDown={e=>e.key === 'Enter' ? searchBook() : null}
+              readOnly={true}
             />
-            <Button 
-              size="lg"
-              colorScheme="black"
-              variant="outline"
-              onClick={searchBook}
-            >
-              Search
-            </Button>
           </Flex>
           {selectedBook ? (
             <Box
@@ -796,6 +789,30 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
               <Stack gap={2} position="relative">
+              <Flex gap={2} className="non-well">
+                <Input 
+                  type="search" 
+                  placeholder="What are you reading?" 
+                  border="1px solid black"
+                  size="lg"
+                  _dark={{
+                    bg: "whiteAlpha.50"
+                  }}
+                  ref={whatImReadingRef}
+                  onKeyDown={e=>e.key === 'Enter' ? searchBook() : null}
+                  style={{
+                    background: "white no-repeat url(/src/assets/google_watermark.gif)",
+                    backgroundPosition: "top 0px right 5px"
+                  }}
+                />
+                <Button 
+                  size="lg"
+                  colorScheme="black"
+                  variant="outline"
+                >
+                  Search
+                </Button>
+              </Flex>
                 {bookResultsLoading ? (
                   <Center>
                     <Spinner size="xl"/>

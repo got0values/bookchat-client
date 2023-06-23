@@ -111,7 +111,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
       .then((response)=>{
         setBookResults(response.data.items)
         setBookResultsLoading(false)
-        onOpenSearchModal();
+        // onOpenSearchModal();
       })
       .catch((error)=>{
         console.log(error)
@@ -329,21 +329,19 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                 bg="white"
                 borderColor="black"
                 size="lg"
-                placeholder="Search for a suggestion"
+                placeholder="Suggest a book"
                 _dark={{
                   bg: "gray.800"
                 }}
-                onKeyUp={e=>e.key === 'Enter' ? searchBook() : null}
-                ref={searchInputRef}
+                sx={{
+                  cursor: 'none',
+                  '&:hover': {
+                    cursor: 'pointer'
+                  }
+                }}
+                readOnly={true}
+                onClick={e=>onOpenSearchModal()}
               />
-              <Button
-                borderColor="black"
-                variant="outline"
-                size="lg"
-                onClick={e=>searchBook()}
-              >
-                Search
-              </Button>
             </Flex>
             <Stack>
               {bookSuggestionBookshelf?.BookshelfBook?.length ? (
@@ -437,6 +435,36 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
               <Stack gap={2} position="relative">
+                <Flex
+                  align="center"
+                  justify="space-between"
+                  gap={1}
+                >
+                  <Input
+                    type="search"
+                    bg="white"
+                    borderColor="black"
+                    size="lg"
+                    placeholder="Search for a suggestion"
+                    _dark={{
+                      bg: "gray.800"
+                    }}
+                    onKeyUp={e=>e.key === 'Enter' ? searchBook() : null}
+                    ref={searchInputRef}
+                    style={{
+                      background: "white no-repeat url(/src/assets/google_watermark.gif)",
+                      backgroundPosition: "top 0px right 5px"
+                    }}
+                  />
+                  <Button
+                    borderColor="black"
+                    variant="outline"
+                    size="lg"
+                    onClick={e=>searchBook()}
+                  >
+                    Search
+                  </Button>
+                </Flex>
                 {bookResultsLoading ? (
                   <Center>
                     <Spinner size="xl"/>
@@ -448,7 +476,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                         <Flex
                           m={3}
                           p={2}
-                          maxW="125px"
+                          maxW="135px"
                           direction="column"
                           align="center"
                           rounded="md"
@@ -471,14 +499,16 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                               onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                               src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
                               alt="book image"
+                              boxShadow="1px 1px 1px 1px darkgrey"
                             />
                             <Heading
                               as="h4"
                               size="sm"
+                              noOfLines={1}
                             >
                               {book.volumeInfo.title}
                             </Heading>
-                            <Text>
+                            <Text noOfLines={1}>
                               {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
                             </Text>
                           </Box>
@@ -497,7 +527,8 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                               size="xs"
                               data-book={JSON.stringify(book)}
                               onClick={e=>selectBook(e)}
-                              colorScheme="green"
+                              backgroundColor="black"
+                              color="white"
                             >
                               Set
                             </Button>

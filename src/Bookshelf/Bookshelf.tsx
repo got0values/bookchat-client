@@ -1281,6 +1281,10 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       ref={searchBookRef}
                       onKeyUp={e=>e.key === 'Enter' ? searchBookButtonRef.current.click() : null}
                       borderColor="black"
+                      style={{
+                        background: "white no-repeat url(/src/assets/google_watermark.gif)",
+                        backgroundPosition: "top 0px right 5px"
+                      }}
                     />
                     <Button
                       onClick={e=>searchBook()}

@@ -18,8 +18,11 @@ import {
   MenuList,
   MenuItem,
   MenuDivider,
-  InputGroup,
-  InputRightElement,
+  Table,
+  Tbody,
+  Tr,
+  Td,
+  TableContainer,
   Heading,
   useDisclosure,
   useColorModeValue,
@@ -41,6 +44,7 @@ import {
   Link as ChakraLink,
 } from '@chakra-ui/react';
 import { GiHamburgerMenu } from 'react-icons/gi';
+import { BsArrowRight } from 'react-icons/bs';
 import { MdClose, MdLogout } from 'react-icons/md';
 import { BsFillMoonFill, BsFillSunFill, BsFillChatFill, BsPostcardHeartFill } from 'react-icons/bs';
 import { FiSettings } from 'react-icons/fi';
@@ -53,6 +57,8 @@ import logoIconWhite from './assets/BookChatNoirNewWhite.png';
 import Cookies from "js-cookie";
 import axios from "axios";
 import { ReactJSXElement } from '@emotion/react/types/jsx-namespace';
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 interface LinkItemProps {
   name: string;
@@ -78,6 +84,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
   const queryClient = useQueryClient();
   const activeLinkBg = useColorModeValue("gray.200","whiteAlpha.200");
   const activeLinkColor = useColorModeValue("black","white");
+  dayjs.extend(utc);
 
   async function getNotifications() {
     // resetNotifications();
@@ -981,40 +988,45 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
               )}
             </Box>
             <Box my={2}>
-              <Heading as="h3" size="md">Books</Heading>
+              <Heading as="h3" size="md">Book Chat Rooms</Heading>
               {searchData && searchData.books?.length > 0 ? (
-                searchData.books?.map((book,i)=>{
-                  return (
-                    <Box
-                      key={i}
-                      my={1}
-                    >
-                      <Flex 
-                        gap={1} 
-                        flexWrap="wrap" 
-                        rowGap={0} 
-                        fontSize="sm"
-                        align="center"
-                      >
-                        <Text fontStyle="italic">{book.volumeInfo?.title}</Text>
-                        <Text>{book.volumeInfo.authors ? book.volumeInfo.authors[0] : ""}</Text>
-                        <Button
-                          size="xs"
-                          onClick={e=>{
-                            navigate(`/chat/room?title=${book.volumeInfo.title}&author=${book.volumeInfo.authors ? book.volumeInfo.authors[0] : ""}`)
-                            closeSearchModal()
-                          }}
-                        >
-                          Chat
-                        </Button>
-                      </Flex>
-                    </Box>
-                  )
-                })
-              ) : (
-                <i>No books based on the search term</i>
-              )}
+                <TableContainer>
+                  <Table size='sm'>
+                    <Tbody>
+                      {searchData.books?.map((book,i)=>{
+                        return (
+                          <Tr key={i}>
+                            <Td fontStyle="italic" px={0} maxW="100px" overflow="hidden" textOverflow="ellipsis">
+                              {book.volumeInfo?.title}
+                            </Td>
+                            <Td px={0}>
+                              {book.volumeInfo.publishedDate ? dayjs(book.volumeInfo.publishedDate).format('YYYY') : null}
+                            </Td>
+                            <Td px={0}>
+                              {book.volumeInfo.authors ? book.volumeInfo.authors[0] : ""}
+                            </Td>
+                            <Td px={0}>
+                              <Button
+                                size="xs"
+                                onClick={e=>{
+                                  navigate(`/chat/room?title=${book.volumeInfo.title}&author=${book.volumeInfo.authors ? book.volumeInfo.authors[0] : ""}`)
+                                  closeSearchModal()
+                                }}
+                                backgroundColor="black"
+                                color="white"
+                              >
+                                <BsArrowRight/>
+                              </Button>
+                            </Td>
+                          </Tr>
+                        )
+                      })}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
+              ): null}
             </Box>
+
           </ModalBody>
           </ModalContent>
         </Modal>

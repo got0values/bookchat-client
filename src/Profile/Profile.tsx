@@ -50,6 +50,7 @@ import {
   useToast
 } from "@chakra-ui/react";
 import collectionToArray from "../utils/collectionToArray";
+import GooglePreviewLink from "../shared/GooglePreviewLink";
 import { FiFile } from 'react-icons/fi';
 import { MdEdit, MdOutlineChat } from 'react-icons/md';
 import { BsPlusLg } from 'react-icons/bs';
@@ -340,7 +341,7 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
       .then((response)=>{
         setBookResults(response.data.items)
         setBookResultsLoading(false)
-        onOpenReadingModal();
+        // onOpenReadingModal();
       })
       .catch((error)=>{
         console.log(error)
@@ -696,7 +697,7 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
 
 
 export default function Profile({server,gbooksapi}: ProfileProps) {
-  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf} = useProfile({server,gbooksapi});
+  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf} = useProfile({server,gbooksapi});
 
   
 
@@ -957,20 +958,17 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                         borderColor="black"
                         size="lg"
                         placeholder="What are you reading?" 
+                        onClick={e=>onOpenReadingModal()}
                         _dark={{
                           bg: "blackAlpha.400"
                         }}
-                        ref={whatImReadingRef}
-                        onKeyDown={e=>e.key === 'Enter' ? searchBook() : null}
+                        sx={{
+                          '&:hover': {
+                            cursor: 'pointer'
+                          }
+                        }}
+                        readOnly={true}
                       />
-                      <Button 
-                        borderColor="black"
-                        size="lg"
-                        variant="outline"
-                        onClick={searchBook}
-                      >
-                        Search
-                      </Button>
                     </Flex>
                     {selectedBook ? (
                       <Box
@@ -994,14 +992,29 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                         <Flex>
                           <Image 
                             src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
-                            maxH="100px"
+                            maxH="75px"
                             boxShadow="1px 1px 1px 1px darkgrey"
                           />
                           <Box 
                             mx={2}
                             w="100%"
                           >
-                            <Popover isLazy>
+                            <Box
+                              _hover={{
+                                cursor: "pointer"
+                              }}
+                            >
+                              <Heading as="h5" size="md" me={3} noOfLines={1}>
+                                {selectedBook.volumeInfo.title}
+                              </Heading>
+                              <Text fontSize="lg" noOfLines={1}>
+                                {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
+                              </Text>
+                              <Text fontSize="lg" noOfLines={1}>
+                                {selectedBook.volumeInfo.publishedDate ? dayjs(selectedBook.volumeInfo.publishedDate).format("YYYY"): null}
+                              </Text>
+                            </Box>
+                            {/* <Popover isLazy>
                               <PopoverTrigger>
                                 <Box
                                   _hover={{
@@ -1034,7 +1047,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
                                 </PopoverBody>
                               </PopoverContent>
-                            </Popover>
+                            </Popover> */}
                             <Flex justify="flex-end">
                               <Button 
                                 // size="sm"
@@ -1190,11 +1203,36 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                               .CurrentlyReading[profileData.CurrentlyReading.length - 1]
                               .image
                             }
-                            maxH="100px"
+                            maxH="75px"
                             boxShadow="1px 1px 1px 1px darkgrey"
                           />
                           <Box mx={2} w="100%">
-                            <Popover isLazy>
+                            <Box>
+                              <Heading as="h5" size="md" me={3} noOfLines={1}>
+                                {
+                                  profileData
+                                  .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                  .title
+                                }
+                              </Heading>
+                              <Text fontSize="lg" noOfLines={1}>
+                                {
+                                  profileData
+                                  .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                  .author
+                                }
+                              </Text>
+                              <Text fontSize="lg" noOfLines={1}>
+                                {
+                                  profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].published_date ? (
+                                    dayjs(profileData
+                                    .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                    .published_date).format("YYYY")
+                                  ) : null
+                                }
+                              </Text>
+                            </Box>
+                            {/* <Popover isLazy>
                               <PopoverTrigger>
                                 <Box
                                   _hover={{
@@ -1249,7 +1287,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   }
                                 </PopoverBody>
                               </PopoverContent>
-                            </Popover>
+                            </Popover> */}
                             <Flex justify="flex-end">
                               <Flex align="center" gap={0}>
                                 <Button 
@@ -1393,11 +1431,33 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 src={
                                   profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].image
                                 }
-                                maxH="100px"
+                                maxH="75px"
                                 boxShadow="1px 1px 1px 1px darkgrey"
                               />
                               <Box mx={2} w="100%">
-                                <Popover isLazy>
+                                <Box>
+                                  <Heading as="h5" size="md" me={3} noOfLines={1}>
+                                    {
+                                      profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                      .title
+                                    }
+                                  </Heading>
+                                  <Text fontSize="lg" noOfLines={1}>
+                                    {
+                                      profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                      .author
+                                    }
+                                  </Text>
+                                  <Text fontSize="lg" noOfLines={1}>
+                                    { profileData.CurrentlyReading[0].published_date ? (
+                                        dayjs(profileData
+                                        .CurrentlyReading[0]
+                                        .published_date).format("YYYY")
+                                      ) : null
+                                    }
+                                  </Text>
+                                </Box>
+                                {/* <Popover isLazy>
                                   <PopoverTrigger>
                                     <Box
                                       _hover={{
@@ -1449,7 +1509,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       }
                                     </PopoverBody>
                                   </PopoverContent>
-                                </Popover>
+                                </Popover> */}
                                 <Flex justify="flex-end">
                                   <Flex align="center" gap={0}>
                                     <Button 
@@ -1666,11 +1726,20 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 <Flex>
                                   <Image 
                                     src={readBook.image}
-                                    maxH="100px"
+                                    maxH="75px"
                                     boxShadow="1px 1px 1px 1px darkgrey"
                                   />
                                   <Box mx={2} w="100%">
-                                    <Popover isLazy>
+                                    <Box>
+                                      <Heading as="h5" size="md" me={3} noOfLines={1}>
+                                        {readBook.title}
+                                      </Heading>
+                                      <Text fontSize="lg" noOfLines={1}>{readBook.author}</Text>
+                                      <Text fontSize="lg" noOfLines={1}>
+                                        {readBook.published_date ? dayjs(readBook.published_date).format("YYYY") : null}
+                                      </Text>
+                                    </Box>
+                                    {/* <Popover isLazy>
                                       <PopoverTrigger>
                                         <Box
                                           _hover={{
@@ -1701,7 +1770,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                           {readBook.description}
                                         </PopoverBody>
                                       </PopoverContent>
-                                    </Popover>
+                                    </Popover> */}
                                     <Flex justify="flex-end">
                                       <Flex align="center" gap={0}>
                                         <Button 
@@ -2007,11 +2076,36 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
               <ModalOverlay />
               <ModalContent maxH="80vh">
                 <ModalHeader>
-                  New Book Club Book
+                  What are you reading?
                 </ModalHeader>
                 <ModalCloseButton />
                   <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
                     <Stack gap={2} position="relative">
+                      <Flex gap={2} align="center">
+                        <Input 
+                          type="text" 
+                          borderColor="black"
+                          size="lg"
+                          placeholder="What are you reading?" 
+                          _dark={{
+                            bg: "blackAlpha.400"
+                          }}
+                          ref={whatImReadingRef}
+                          onKeyDown={e=>e.key === 'Enter' ? searchBook() : null}
+                          style={{
+                            background: "white no-repeat url(/src/assets/google_watermark.gif)",
+                            backgroundPosition: "top 0px right 5px"
+                          }}
+                        />
+                        <Button 
+                          borderColor="black"
+                          size="lg"
+                          variant="outline"
+                          onClick={searchBook}
+                        >
+                          Search
+                        </Button>
+                      </Flex>
                       {bookResultsLoading ? (
                         <Center>
                           <Spinner size="xl"/>

@@ -6,23 +6,23 @@ import {
   Heading,
   Flex,
   Text,
-  Link,
   Button,
   Skeleton,
   Input,
-  InputGroup,
-  InputRightElement,
+  Table,
+  Tbody,
+  Tr,
+  Td,
+  TableContainer,
   Image,
   Tabs, 
   TabList, 
   TabPanels, 
   Tab, 
   TabPanel,
-  IconButton,
-  Stack,
-  useColorMode,
-  useToast
+  useColorMode
 } from "@chakra-ui/react";
+import { BsArrowRight } from 'react-icons/bs';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import {socket} from "./customSocket";
@@ -151,54 +151,40 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                     </Button>
                   </Flex>
                   {chatRoomResults ? (
-                    <Flex
-                      className="well"
-                      wrap="wrap"
-                      justify="space-between"
-                      gap={3}
-                    >
-                      {chatRoomResults?.map((result,i)=>{
-                        return (
-                          <Flex
-                            direction="column"
-                            gap={1}
-                            maxW="150px"
-                            flex="1 1 50%"
-                            key={i}
-                          >
-                            <Image 
-                              w="100%"
-                              h="auto"
-                              m={1}
-                              className="book-image"
-                              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                              src={result.volumeInfo.imageLinks ? result.volumeInfo.imageLinks.smallThumbnail : null}
-                            />
-                            <Text
-                              size="sm"
-                              fontStyle="italic"
-                              textOverflow="wrap"
-                            >
-                              {result.volumeInfo.title ? result.volumeInfo.title : null}
-                            </Text>
-                            <Text
-                              size="sm"
-                              textOverflow="wrap"
-                            >
-                              {result.volumeInfo.authors ? result.volumeInfo.authors[0] : null}
-                            </Text>
-                            <Button
-                              size="xs"
-                              onClick={e=>navigate(`/chat/room?title=${result.volumeInfo.title ? result.volumeInfo.title : ""}&author=${result.volumeInfo.authors ? result.volumeInfo.authors[0] : ""}`)}
-                              colorScheme="purple"
-                            >
-                              Chat
-                            </Button>
-                          </Flex>
-                        )
-                      })}
-                    </Flex>
-                  ) : null}
+                    <TableContainer>
+                      <Table size='sm' colorScheme="facebook">
+                        <Tbody>
+                          {chatRoomResults?.map((result,i)=>{
+                            return (
+                              <Tr key={i}>
+                                <Td fontStyle="italic" px={0} maxW="100px" overflow="hidden" textOverflow="ellipsis">
+                                  {result.volumeInfo?.title}
+                                </Td>
+                                <Td px={0} textAlign="center">
+                                  {result.volumeInfo.publishedDate ? dayjs(result.volumeInfo.publishedDate).format("YYYY") : null}
+                                </Td>
+                                <Td px={0} maxW="100px" overflow="hidden" textOverflow="ellipsis">
+                                  {result.volumeInfo.authors ? result.volumeInfo.authors[0] : ""}
+                                </Td>
+                                <Td px={0}>
+                                  <Button
+                                    size="xs"
+                                    onClick={e=>{
+                                      navigate(`/chat/room?title=${result.volumeInfo.title}&author=${result.volumeInfo.authors ? result.volumeInfo.authors[0] : ""}`)
+                                    }}
+                                    backgroundColor="black"
+                                    color="white"
+                                  >
+                                    <BsArrowRight/>
+                                  </Button>
+                                </Td>
+                              </Tr>
+                            )
+                          })}
+                        </Tbody>
+                      </Table>
+                    </TableContainer>
+                  ): null}
                 </Flex>
 
               </TabPanel>
