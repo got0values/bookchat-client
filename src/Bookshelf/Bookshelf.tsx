@@ -47,6 +47,7 @@ import {
   CheckboxGroup,
   useColorMode
 } from "@chakra-ui/react";
+import GooglePreviewLink from "../shared/GooglePreviewLink";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { MdOutlineChat } from 'react-icons/md';
 import { BiDotsHorizontalRounded, BiTrash, BiPlus } from 'react-icons/bi';
@@ -1263,7 +1264,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
         <Modal 
           isOpen={isOpenBookSearchModal} 
           onClose={onCloseBookSearchModal}
-          size="md"
+          size="xl"
           // maxW="90vw"
           isCentered
         >
@@ -1322,20 +1323,36 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             }}
                             key={i}
                           >
-                            <Box
-                              pointerEvents="none"
-                            >
-                              <Image
-                                maxW="100%" 
-                                w="100%"
-                                h="auto"
-                                pt={2} 
-                                mb={1}
-                                className="book-image"
-                                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
-                                alt="book image"
-                              />
+                            <Box>
+                              <Popover isLazy>
+                                <PopoverTrigger>
+                                  <Image
+                                    maxW="100%" 
+                                    w="100%"
+                                    h="auto"
+                                    pt={2} 
+                                    mb={1}
+                                    className="book-image"
+                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                    src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
+                                    alt="book image"
+                                    _hover={{
+                                      cursor: "pointer"
+                                    }}
+                                  />
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                  <PopoverArrow />
+                                  <PopoverCloseButton />
+                                  <PopoverBody
+                                    _dark={{
+                                      bg: "black"
+                                    }}
+                                  >
+                                    {book.volumeInfo.description}
+                                  </PopoverBody>
+                                </PopoverContent>
+                              </Popover>
                               <Heading
                                 as="h4"
                                 size="sm"
@@ -1347,21 +1364,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
                               </Text>
                             </Box>
-                            <Flex align="center" justify="space-between">
-                              <Popover isLazy>
-                                <PopoverTrigger>
-                                  <Button size="xs" m={2}>Description</Button>
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                  <PopoverArrow />
-                                  <PopoverCloseButton />
-                                  <PopoverBody
-                                    _dark={{
-                                      bg: "black"
-                                    }}
-                                  >{book.volumeInfo.description}</PopoverBody>
-                                </PopoverContent>
-                              </Popover>
+                            <Flex align="center" justify="space-between" gap={2}>
+                              <GooglePreviewLink book={book}/>
                               <Button 
                                 size="xs"
                                 data-title={book.volumeInfo.title}
@@ -1371,7 +1375,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 data-isbn={book.volumeInfo.industryIdentifiers ? book.volumeInfo.industryIdentifiers[0].identifier : null}
                                 data-publisheddate={book.volumeInfo.publishedDate ? book.volumeInfo.publishedDate : null}
                                 onClick={e=>selectBookToAdd(e)}
-                                colorScheme="green"
+                                backgroundColor="black"
+                                color="white"
                               >
                                 Set
                               </Button>

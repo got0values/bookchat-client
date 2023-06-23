@@ -37,6 +37,7 @@ import {
   Center,
   useDisclosure
 } from "@chakra-ui/react";
+import GooglePreviewLink from "./shared/GooglePreviewLink";
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
 import { BsReplyFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
@@ -846,20 +847,30 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                           }}
                           key={i}
                         >
-                          <Box
-                            pointerEvents="none"
-                          >
-                            <Image
-                              maxW="100%" 
-                              w="100%"
-                              h="auto"
-                              pt={2} 
-                              mb={1}
-                              className="book-image"
-                              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                              src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
-                              alt="book image"
-                            />
+                          <Box>
+                            <Popover isLazy>
+                              <PopoverTrigger>
+                                <Image
+                                  maxW="100%" 
+                                  w="100%"
+                                  h="auto"
+                                  pt={2} 
+                                  mb={1}
+                                  className="book-image"
+                                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                  src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
+                                  alt="book image"
+                                  _hover={{
+                                    cursor: "pointer"
+                                  }}
+                                />
+                              </PopoverTrigger>
+                              <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody>{book.volumeInfo.description}</PopoverBody>
+                              </PopoverContent>
+                            </Popover>
                             <Heading
                               as="h4"
                               size="sm"
@@ -871,17 +882,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                               {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
                             </Text>
                           </Box>
-                          <Flex align="center" justify="space-between">
-                            <Popover isLazy>
-                              <PopoverTrigger>
-                                <Button size="xs" m={2}>Description</Button>
-                              </PopoverTrigger>
-                              <PopoverContent>
-                                <PopoverArrow />
-                                <PopoverCloseButton />
-                                <PopoverBody>{book.volumeInfo.description}</PopoverBody>
-                              </PopoverContent>
-                            </Popover>
+                          <Flex align="center" justify="space-between" gap={2}>
+                            <GooglePreviewLink book={book}/>
                             <Button 
                               size="xs"
                               data-book={JSON.stringify(book)}

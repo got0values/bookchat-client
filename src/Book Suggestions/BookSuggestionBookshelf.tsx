@@ -31,6 +31,7 @@ import {
   PopoverArrow,
   useDisclosure
 } from "@chakra-ui/react";
+import GooglePreviewLink from "../shared/GooglePreviewLink";
 import { BsArrowRight } from 'react-icons/bs';
 import StarRating from "../shared/StarRating";
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
@@ -487,21 +488,31 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                           }}
                           key={i}
                         >
-                          <Box
-                            pointerEvents="none"
-                          >
-                            <Image
-                              maxW="100%" 
-                              w="100%"
-                              h="auto"
-                              pt={2} 
-                              mb={1}
-                              className="book-image"
-                              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                              src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
-                              alt="book image"
-                              boxShadow="1px 1px 1px 1px darkgrey"
-                            />
+                          <Box>
+                            <Popover isLazy>
+                              <PopoverTrigger>
+                              <Image
+                                maxW="100%" 
+                                w="100%"
+                                h="auto"
+                                pt={2} 
+                                mb={1}
+                                className="book-image"
+                                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
+                                alt="book image"
+                                boxShadow="1px 1px 1px 1px darkgrey"
+                                _hover={{
+                                  cursor: "pointer"
+                                }}
+                              />
+                              </PopoverTrigger>
+                              <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody>{book.volumeInfo.description}</PopoverBody>
+                              </PopoverContent>
+                            </Popover>
                             <Heading
                               as="h4"
                               size="sm"
@@ -513,17 +524,8 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                               {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
                             </Text>
                           </Box>
-                          <Flex align="center" justify="space-between">
-                            <Popover isLazy>
-                              <PopoverTrigger>
-                                <Button size="xs" m={2}>Description</Button>
-                              </PopoverTrigger>
-                              <PopoverContent>
-                                <PopoverArrow />
-                                <PopoverCloseButton />
-                                <PopoverBody>{book.volumeInfo.description}</PopoverBody>
-                              </PopoverContent>
-                            </Popover>
+                          <Flex align="center" justify="space-between" gap={2}>
+                            <GooglePreviewLink book={book}/>
                             <Button 
                               size="xs"
                               data-book={JSON.stringify(book)}

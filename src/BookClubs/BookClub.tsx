@@ -43,6 +43,7 @@ import {
   BreadcrumbItem,
   BreadcrumbLink
 } from "@chakra-ui/react";
+import GooglePreviewLink from "../shared/GooglePreviewLink";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ICalendarLink from "react-icalendar-link";
@@ -1950,35 +1951,24 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                           }}
                           key={i}
                         >
-                          <Box
-                            pointerEvents="none"
-                          >
-                            <Image
-                              maxW="100%" 
-                              w="100%"
-                              h="auto"
-                              pt={2} 
-                              mb={1}
-                              className="book-image"
-                              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                              src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
-                              alt="book image"
-                              boxShadow="1px 1px 1px 1px darkgrey"
-                            />
-                            <Heading
-                              as="h4"
-                              size="sm"
-                            >
-                              {book.volumeInfo.title}
-                            </Heading>
-                            <Text>
-                              {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
-                            </Text>
-                          </Box>
-                          <Flex align="center" justify="space-between">
+                          <Box>
                             <Popover isLazy>
                               <PopoverTrigger>
-                                <Button size="xs" m={2}>Description</Button>
+                              <Image
+                                maxW="100%" 
+                                w="100%"
+                                h="auto"
+                                pt={2} 
+                                mb={1}
+                                className="book-image"
+                                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
+                                alt="book image"
+                                boxShadow="1px 1px 1px 1px darkgrey"
+                                _hover={{
+                                  cursor: "pointer"
+                                }}
+                              />
                               </PopoverTrigger>
                               <PopoverContent>
                                 <PopoverArrow />
@@ -1990,6 +1980,18 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 >{book.volumeInfo.description}</PopoverBody>
                               </PopoverContent>
                             </Popover>
+                            <Heading
+                              as="h4"
+                              size="sm"
+                            >
+                              {book.volumeInfo.title}
+                            </Heading>
+                            <Text>
+                              {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
+                            </Text>
+                          </Box>
+                          <Flex align="center" justify="space-between" gap={2}>
+                            <GooglePreviewLink book={book}/>
                             <Button 
                               size="xs"
                               data-book={JSON.stringify(book)}
@@ -2073,34 +2075,23 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                           }}
                           key={i}
                         >
-                          <Box
-                            pointerEvents="none"
-                          >
-                            <Image
-                              maxW="100%" 
-                              w="100%"
-                              h="auto"
-                              pt={2} 
-                              mb={1}
-                              className="book-image"
-                              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                              src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
-                              boxShadow="1px 1px 1px 1px darkgrey"
-                            />
-                            <Heading
-                              as="h4"
-                              size="sm"
-                            >
-                              {book.volumeInfo.title}
-                            </Heading>
-                            <Text>
-                              {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
-                            </Text>
-                          </Box>
-                          <Flex align="center" justify="space-between">
+                          <Box>
                             <Popover isLazy>
                               <PopoverTrigger>
-                                <Button size="xs" m={2}>Description</Button>
+                              <Image
+                                maxW="100%" 
+                                w="100%"
+                                h="auto"
+                                pt={2} 
+                                mb={1}
+                                className="book-image"
+                                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
+                                boxShadow="1px 1px 1px 1px darkgrey"
+                                _hover={{
+                                  cursor: "pointer"
+                                }}
+                              />
                               </PopoverTrigger>
                               <PopoverContent>
                                 <PopoverArrow />
@@ -2112,9 +2103,22 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 >{book.volumeInfo.description}</PopoverBody>
                               </PopoverContent>
                             </Popover>
+                            <Heading
+                              as="h4"
+                              size="sm"
+                            >
+                              {book.volumeInfo.title}
+                            </Heading>
+                            <Text>
+                              {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
+                            </Text>
+                          </Box>
+                          <Flex align="center" justify="space-between" gap={2}>
+                            <GooglePreviewLink book={book}/>
                             <Button 
                               size="xs"
-                              colorScheme="green"
+                              backgroundColor="black"
+                              color="white"
                               onClick={e=>(
                                 pollBookOne === null ? (
                                   setPollBookOne({
@@ -2159,7 +2163,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                 <Box flex="0 1 125px">
                   {pollBookOne !== null ? (
                   <>
-                    <Box maxW="100px">
+                    <Box maxW="75px">
                       <Heading as="h5" size="sm" textAlign="center">1</Heading>
                       <Image
                         maxW="100%" 
@@ -2173,7 +2177,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                         boxShadow="1px 1px 1px 1px darkgrey"
                       />
                     </Box>
-                    <Text fontSize="sm" fontWeight="bold">
+                    <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
                       {pollBookOne.title}
                     </Text>
                     <Text fontSize="sm">
@@ -2191,7 +2195,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                 <Box flex="0 1 125px">
                   {pollBookTwo !== null ? (
                     <>
-                      <Box maxW="100px">
+                      <Box maxW="75px">
                         <Heading as="h5" size="sm" textAlign="center">2</Heading>
                         <Image
                           maxW="100%" 
@@ -2205,7 +2209,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                           boxShadow="1px 1px 1px 1px darkgrey"
                         />
                       </Box>
-                      <Text fontSize="sm" fontWeight="bold">
+                      <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
                         {pollBookTwo.title}
                       </Text>
                       <Text fontSize="sm">
@@ -2223,7 +2227,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                 <Box flex="0 1 125px">
                   {pollBookThree !== null ? (
                     <>
-                      <Box maxW="100px">
+                      <Box maxW="75px">
                         <Heading as="h5" size="sm" textAlign="center">3</Heading>
                         <Image
                           maxW="100%" 
@@ -2237,7 +2241,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                           boxShadow="1px 1px 1px 1px darkgrey"
                         />
                       </Box>
-                      <Text fontSize="sm" fontWeight="bold">
+                      <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
                         {pollBookThree.title}
                       </Text>
                       <Text fontSize="sm">

@@ -5,7 +5,7 @@ import {
 export default function GooglePreviewLink({book} : any) {
   return (
     <a
-      href={book.volumeInfo.infoLink}
+      href={book.volumeInfo.previewLink}
       target="blank"
     >
       <Image
