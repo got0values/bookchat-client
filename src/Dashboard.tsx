@@ -47,6 +47,7 @@ import Cookies from "js-cookie";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import axios from "axios";
+import googleWatermark from "/src/assets/google_watermark.gif";
 
 
 export default function Dashboard({server,gbooksapi}: DashboardProps) {
@@ -801,7 +802,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   ref={whatImReadingRef}
                   onKeyDown={e=>e.key === 'Enter' ? searchBook() : null}
                   style={{
-                    background: "white no-repeat url(/src/assets/google_watermark.gif)",
+                    background: `white no-repeat url(${googleWatermark})`,
                     backgroundPosition: "top 0px right 5px"
                   }}
                 />

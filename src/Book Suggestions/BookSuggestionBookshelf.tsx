@@ -38,6 +38,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
 import axios from "axios";
+import googleWatermark from "/src/assets/google_watermark.gif";
 
 
 export default function BookSuggestionBookshelf({server,gbooksapi}: {server: string, gbooksapi: string}) {
@@ -452,7 +453,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                     onKeyUp={e=>e.key === 'Enter' ? searchBook() : null}
                     ref={searchInputRef}
                     style={{
-                      background: "white no-repeat url(/src/assets/google_watermark.gif)",
+                      background: `white no-repeat url(${googleWatermark})`,
                       backgroundPosition: "top 0px right 5px"
                     }}
                   />

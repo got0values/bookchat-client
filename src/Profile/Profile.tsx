@@ -69,6 +69,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
 import axios from "axios";
+import googleWatermark from "/src/assets/google_watermark.gif";
 
 export const useProfile = ({server,gbooksapi}: ProfileProps) => {
   const { user, getUser } = useAuth();
@@ -2093,7 +2094,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           ref={whatImReadingRef}
                           onKeyDown={e=>e.key === 'Enter' ? searchBook() : null}
                           style={{
-                            background: "white no-repeat url(/src/assets/google_watermark.gif)",
+                            background: `white no-repeat url(${googleWatermark})`,
                             backgroundPosition: "top 0px right 5px"
                           }}
                         />

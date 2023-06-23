@@ -56,6 +56,7 @@ import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
 import axios from "axios";
 import StarRating from "../shared/StarRating";
+import googleWatermark from "/src/assets/google_watermark.gif";
 
 
 export default function Bookshelf({server, gbooksapi}: {server: string; gbooksapi: string;}) {
@@ -1282,7 +1283,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       onKeyUp={e=>e.key === 'Enter' ? searchBookButtonRef.current.click() : null}
                       borderColor="black"
                       style={{
-                        background: "white no-repeat url(/src/assets/google_watermark.gif)",
+                        background: `white no-repeat url(${googleWatermark})`,
                         backgroundPosition: "top 0px right 5px"
                       }}
                     />

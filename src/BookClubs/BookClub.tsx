@@ -59,6 +59,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import {genres} from "./genres";
+import googleWatermark from "/src/assets/google_watermark.gif";
 
 export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: string}) {
   const toast = useToast();
@@ -1915,7 +1916,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                     color="black"
                     onKeyDown={e=>e.key === "Enter" ? searchBook() : null}
                     style={{
-                      background: "white no-repeat url(/src/assets/google_watermark.gif)",
+                      background: `white no-repeat url(${googleWatermark})`,
                       backgroundPosition: "top 0px right 5px"
                     }}
                   />
@@ -2039,7 +2040,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                     color="black"
                     onKeyDown={e=>e.key === "Enter" ? searchBook() : null}
                     style={{
-                      background: "white no-repeat url(/src/assets/google_watermark.gif)",
+                      background: `white no-repeat url(${googleWatermark})`,
                       backgroundPosition: "top 0px right 5px"
                     }}
                   />
