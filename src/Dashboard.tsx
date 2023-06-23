@@ -443,14 +443,22 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               <Flex>
                 <Image 
                   src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
-                  maxH="100px"
+                  maxH="75px"
                   boxShadow="1px 1px 1px 1px darkgrey"
                 />
                 <Box 
                   mx={2}
                   w="100%"
                 >
-                  <Popover isLazy>
+                  <Box>
+                    <Heading as="h5" size="md" me={3}>
+                      {selectedBook.volumeInfo.title}
+                    </Heading>
+                    <Text fontSize="lg">
+                      {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
+                    </Text>
+                  </Box>
+                  {/* <Popover isLazy>
                     <PopoverTrigger>
                       <Box
                         _hover={{
@@ -479,7 +487,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                         {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
                       </PopoverBody>
                     </PopoverContent>
-                  </Popover>
+                  </Popover> */}
                   <Flex justify="flex-end">
                     <Button 
                       // size="sm"
@@ -622,11 +630,26 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   <Flex>
                     <Image 
                       src={reading.image}
-                      maxH="100px"
+                      maxH="75px"
                       boxShadow="1px 1px 1px 1px darkgrey"
                     />
                     <Box mx={2} w="100%">
-                      <Popover isLazy>
+                    <Box>
+                      <Heading as="h5" size="md" me={3} noOfLines={1}>
+                        {reading.title}
+                      </Heading>
+                      <Text fontSize="lg" noOfLines={1}>
+                        {reading.author}
+                      </Text>
+                      <Text fontSize="lg">
+                        {reading.published_date !== null ? 
+                          (
+                            dayjs(reading.published_date).format("YYYY")
+                          ) : null
+                        }
+                      </Text>
+                    </Box>
+                      {/* <Popover isLazy>
                         <PopoverTrigger>
                           <Box 
                             _hover={{
@@ -663,7 +686,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                             {reading.description}
                           </PopoverBody>
                         </PopoverContent>
-                      </Popover>
+                      </Popover> */}
                       <Flex justify="flex-end">
                         <Flex align="center" gap={0}>
                           <Button 

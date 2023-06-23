@@ -1000,11 +1000,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                             mx={2}
                             w="100%"
                           >
-                            <Box
-                              _hover={{
-                                cursor: "pointer"
-                              }}
-                            >
+                            <Box>
                               <Heading as="h5" size="md" me={3} noOfLines={1}>
                                 {selectedBook.volumeInfo.title}
                               </Heading>
