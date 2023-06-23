@@ -875,10 +875,11 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                             <Heading
                               as="h4"
                               size="sm"
+                              noOfLines={1}
                             >
                               {book.volumeInfo.title}
                             </Heading>
-                            <Text>
+                            <Text noOfLines={1}>
                               {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
                             </Text>
                           </Box>
@@ -897,7 +898,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                               size="xs"
                               data-book={JSON.stringify(book)}
                               onClick={e=>selectBook(e)}
-                              colorScheme="green"
+                              backgroundColor="black"
+                              color="white"
                             >
                               Set
                             </Button>
