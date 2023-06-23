@@ -14,6 +14,12 @@ import {
   Skeleton,
   Divider,
   Icon,
+  Popover,
+  PopoverTrigger,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
   useToast,
 } from "@chakra-ui/react";
 import StarRating from "../shared/StarRating";
@@ -180,11 +186,29 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                   >
                     {suggestion.published_date ? dayjs(suggestion.published_date).format("YYYY") : null}
                   </Text>
-                  <Text
-                    noOfLines={1}
-                  >
-                    {suggestion.description}
-                  </Text>
+                  <Popover isLazy>
+                    <PopoverTrigger>
+                      <Text
+                        noOfLines={1}
+                        _hover={{
+                          cursor: "pointer"
+                        }}
+                      >
+                        {suggestion.description}
+                      </Text>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <PopoverArrow />
+                      <PopoverCloseButton />
+                      <PopoverBody
+                        _dark={{
+                          bg: "black"
+                        }}
+                      >
+                        {suggestion.description}
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Popover>
                   <Text
                     fontStyle="italic"
                   >
