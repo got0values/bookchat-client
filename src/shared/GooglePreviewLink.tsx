@@ -1,6 +1,7 @@
 import { 
   Image
 } from "@chakra-ui/react";
+import googlePreviewButton from '/src/assets/google_preview_button.gif';
 
 export default function GooglePreviewLink({book} : any) {
   return (
@@ -9,7 +10,7 @@ export default function GooglePreviewLink({book} : any) {
       target="blank"
     >
       <Image
-        src="/src/assets/google_preview_button.gif"
+        src={googlePreviewButton}
         height="auto"
         maxWidth="60px"
       />
