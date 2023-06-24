@@ -37,6 +37,7 @@ import {
   MenuItem,
   useDisclosure,
   FormLabel,
+  Divider,
   Switch,
   Accordion,
   AccordionButton,
@@ -779,7 +780,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     <MenuItem
                       onClick={onOpenBookSearchModal}
                     >
-                      Search
+                      Add New
                     </MenuItem>
                   </MenuList>
                 </Menu>
@@ -1270,7 +1271,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
         <Modal 
           isOpen={isOpenBookSearchModal} 
           onClose={onCloseBookSearchModal}
-          size="xl"
           // maxW="90vw"
           isCentered
         >
@@ -1313,82 +1313,84 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       <Spinner size="xl"/>
                     </Center>
                   ) : (
-                    <Flex gap={1} align="center" justify="space-between" flexWrap="wrap">
+                    <Flex
+                      gap={1} 
+                      direction="column"
+                    >
                       {bookResults ? bookResults.map((book,i)=>{
                         return (
-                          <Flex
-                            m={1}
-                            p={2}
-                            maxW="165px"
-                            direction="column"
-                            align="center"
-                            rounded="md"
-                            bg="white"
-                            _dark={{
-                              bg: "gray.600"
-                            }}
-                            key={i}
-                          >
-                            <Box>
-                              <Popover isLazy>
-                                <PopoverTrigger>
-                                  <Image
-                                    maxW="100%" 
-                                    w="100%"
-                                    h="auto"
-                                    pt={2} 
-                                    mb={1}
-                                    className="book-image"
-                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                    src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
-                                    alt="book image"
-                                    _hover={{
-                                      cursor: "pointer"
-                                    }}
-                                  />
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                  <PopoverArrow />
-                                  <PopoverCloseButton />
-                                  <PopoverBody
-                                    _dark={{
-                                      bg: "black"
-                                    }}
+                          <React.Fragment>
+                            <Flex
+                              bg="white"
+                              gap={2}
+                              _dark={{
+                                bg: "gray.600"
+                              }}
+                            >
+                              <Box flex="1 1 auto" maxW="50px">
+                                <Popover isLazy>
+                                  <PopoverTrigger>
+                                    <Image
+                                      maxW="100%" 
+                                      w="100%"
+                                      h="auto"
+                                      className="book-image"
+                                      onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                      src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
+                                      alt="book image"
+                                      _hover={{
+                                        cursor: "pointer"
+                                      }}
+                                    />
+                                  </PopoverTrigger>
+                                  <PopoverContent>
+                                    <PopoverArrow />
+                                    <PopoverCloseButton />
+                                    <PopoverBody
+                                      _dark={{
+                                        bg: "black"
+                                      }}
+                                    >
+                                      {book.volumeInfo.description}
+                                    </PopoverBody>
+                                  </PopoverContent>
+                                </Popover>
+                              </Box>
+                              <Box flex="1 1 auto">
+                                <Heading
+                                  as="h4"
+                                  size="sm"
+                                  noOfLines={1}
+                                >
+                                  {book.volumeInfo.title}
+                                </Heading>
+                                <Text>
+                                  {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
+                                </Text>
+                                <Flex align="center" gap={2}>
+                                  <GooglePreviewLink book={book}/>
+                                  <Button 
+                                    size="xs"
+                                    data-title={book.volumeInfo.title}
+                                    data-author={book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
+                                    data-description={book.volumeInfo.description}
+                                    data-image={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : null}
+                                    data-isbn={book.volumeInfo.industryIdentifiers ? book.volumeInfo.industryIdentifiers[0].identifier : null}
+                                    data-pagecount={book.volumeInfo.pageCount ? book.volumeInfo.pageCount : null}
+                                    data-publisheddate={book.volumeInfo.publishedDate ? book.volumeInfo.publishedDate : null}
+                                    onClick={e=>selectBookToAdd(e)}
+                                    backgroundColor="black"
+                                    color="white"
                                   >
-                                    {book.volumeInfo.description}
-                                  </PopoverBody>
-                                </PopoverContent>
-                              </Popover>
-                              <Heading
-                                as="h4"
-                                size="sm"
-                                noOfLines={1}
-                              >
-                                {book.volumeInfo.title}
-                              </Heading>
-                              <Text>
-                                {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
-                              </Text>
-                            </Box>
-                            <Flex align="center" justify="space-between" gap={2}>
-                              <GooglePreviewLink book={book}/>
-                              <Button 
-                                size="xs"
-                                data-title={book.volumeInfo.title}
-                                data-author={book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
-                                data-description={book.volumeInfo.description}
-                                data-image={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : null}
-                                data-isbn={book.volumeInfo.industryIdentifiers ? book.volumeInfo.industryIdentifiers[0].identifier : null}
-                                data-pagecount={book.volumeInfo.pageCount ? book.volumeInfo.pageCount : null}
-                                data-publisheddate={book.volumeInfo.publishedDate ? book.volumeInfo.publishedDate : null}
-                                onClick={e=>selectBookToAdd(e)}
-                                backgroundColor="black"
-                                color="white"
-                              >
-                                Set
-                              </Button>
+                                    Add
+                                  </Button>
+                                </Flex>
+                              </Box>
                             </Flex>
-                          </Flex>
+                            {i !== bookResults.length - 1 ? (
+                              <Divider/>
+                            ): null}
+                          </React.Fragment>
                         )
                       }) : null}
                     </Flex>

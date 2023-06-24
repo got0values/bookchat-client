@@ -23,6 +23,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Divider,
   Popover,
   PopoverTrigger,
   PopoverCloseButton,
@@ -430,7 +431,6 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
         isOpen={isOpenSearchModal} 
         onClose={closeSearchModal}
         isCentered
-        size="xl"
       >
         <ModalOverlay />
         <ModalContent maxH="80vh">
@@ -475,71 +475,73 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                     <Spinner size="xl"/>
                   </Center>
                 ) : (
-                  <Flex gap={1} align="center" justify="space-between" flexWrap="wrap">
+                  <Flex
+                    gap={1}
+                    direction="column"
+                  >
                     {bookResults ? bookResults.map((book,i)=>{
                       return (
-                        <Flex
-                          m={3}
-                          p={2}
-                          maxW="135px"
-                          direction="column"
-                          align="center"
-                          rounded="md"
-                          bg="white"
-                          _dark={{
-                            bg: "gray.600"
-                          }}
-                          key={i}
-                        >
-                          <Box>
-                            <Popover isLazy>
-                              <PopoverTrigger>
-                              <Image
-                                maxW="100%" 
-                                w="100%"
-                                h="auto"
-                                pt={2} 
-                                mb={1}
-                                className="book-image"
-                                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
-                                alt="book image"
-                                boxShadow="1px 1px 1px 1px darkgrey"
-                                _hover={{
-                                  cursor: "pointer"
-                                }}
-                              />
-                              </PopoverTrigger>
-                              <PopoverContent>
-                                <PopoverArrow />
-                                <PopoverCloseButton />
-                                <PopoverBody>{book.volumeInfo.description}</PopoverBody>
-                              </PopoverContent>
-                            </Popover>
-                            <Heading
-                              as="h4"
-                              size="sm"
-                              noOfLines={1}
-                            >
-                              {book.volumeInfo.title}
-                            </Heading>
-                            <Text noOfLines={1}>
-                              {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
-                            </Text>
-                          </Box>
-                          <Flex align="center" justify="space-between" gap={2}>
-                            <GooglePreviewLink book={book}/>
-                            <Button 
-                              size="xs"
-                              data-book={JSON.stringify(book)}
-                              onClick={e=>selectBook(e)}
-                              backgroundColor="black"
-                              color="white"
-                            >
-                              Send
-                            </Button>
+                        <React.Fragment key={i}>
+                          <Flex
+                            bg="white"
+                            gap={2}
+                            _dark={{
+                              bg: "gray.600"
+                            }}
+                          >
+                            <Box flex="1 1 auto" maxW="50px">
+                              <Popover isLazy>
+                                <PopoverTrigger>
+                                <Image
+                                  maxW="100%" 
+                                  w="100%"
+                                  h="auto"
+                                  className="book-image"
+                                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                  src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
+                                  alt="book image"
+                                  boxShadow="1px 1px 1px 1px darkgrey"
+                                  _hover={{
+                                    cursor: "pointer"
+                                  }}
+                                />
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                  <PopoverArrow />
+                                  <PopoverCloseButton />
+                                  <PopoverBody>{book.volumeInfo.description}</PopoverBody>
+                                </PopoverContent>
+                              </Popover>
+                            </Box>
+                            <Box flex="1 1 auto">
+                              <Heading
+                                as="h4"
+                                size="sm"
+                                noOfLines={1}
+                              >
+                                {book.volumeInfo.title}
+                              </Heading>
+                              <Text noOfLines={1}>
+                                {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
+                              </Text>
+                              <Flex align="center" gap={2}>
+                                <GooglePreviewLink book={book}/>
+                                <Button 
+                                  size="xs"
+                                  data-book={JSON.stringify(book)}
+                                  onClick={e=>selectBook(e)}
+                                  backgroundColor="black"
+                                  color="white"
+                                >
+                                  Suggest
+                                </Button>
+                              </Flex>
+                            </Box>
                           </Flex>
-                        </Flex>
+                          {i !== bookResults.length - 1 ? (
+                            <Divider/>
+                          ): null}
+                        </React.Fragment>
                       )
                     }) : null}
                   </Flex>
