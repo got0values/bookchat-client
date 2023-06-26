@@ -2063,11 +2063,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                             return (
                               <React.Fragment key={i}>
                                 <Flex
-                                  bg="white"
                                   gap={2}
-                                  _dark={{
-                                    bg: "gray.600"
-                                  }}
                                 >
                                   <Box flex="1 1 auto" maxW="50px">
                                     <Popover isLazy>

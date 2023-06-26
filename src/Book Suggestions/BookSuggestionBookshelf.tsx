@@ -24,6 +24,9 @@ import {
   ModalBody,
   ModalCloseButton,
   Divider,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
   Popover,
   PopoverTrigger,
   PopoverCloseButton,
@@ -34,6 +37,7 @@ import {
 } from "@chakra-ui/react";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
 import { BsArrowRight } from 'react-icons/bs';
+import { MdChevronRight } from 'react-icons/md';
 import StarRating from "../shared/StarRating";
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import dayjs from "dayjs";
@@ -217,23 +221,17 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
             align="center"
             justify="space-between"
           >
-            <Flex
-              as={Link}
-              to={`/profile/${bookSuggestionBookshelf?.Profile?.username}`}
-              align="center"
-              gap={2}
+            <Breadcrumb 
+              spacing='8px' 
+              separator={<MdChevronRight color='gray.500' />}
             >
-              <Avatar 
-                src={bookSuggestionBookshelf?.Profile?.profile_photo} 
-                name={bookSuggestionBookshelf?.Profile?.username} 
-              />
-              <Text fontWeight="bold" fontSize="xl">
-                {bookSuggestionBookshelf?.Profile?.username} 
-              </Text>
-              {/* <Box w="1.4rem">
-                {bookSuggestionBookshelf.Flag ? <bookSuggestionBookshelf.Flag/> : null}
-              </Box> */}
-            </Flex>
+              <BreadcrumbItem>
+                <BreadcrumbLink href='/booksuggestions' fontWeight="bold">Book Suggestions</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbItem isCurrentPage>
+                <BreadcrumbLink href='#'>Bookshelf</BreadcrumbLink>
+              </BreadcrumbItem>
+            </Breadcrumb>
             {nextBookshelf ? (
               <a href={`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`}>
                 <Button
@@ -252,11 +250,39 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
               </a>
             ): null}
           </Flex>
-          <Box>
-            <Text>
-              {bookSuggestionBookshelf.suggestions_notes}
-            </Text>
-          </Box>
+          <Box
+            rounded="md"
+            border="1px solid black"
+            p={2}
+          >
+            <Flex
+              align="center"
+              justify="space-between"
+            >
+              <Flex
+                as={Link}
+                to={`/profile/${bookSuggestionBookshelf?.Profile?.username}`}
+                align="center"
+                gap={2}
+              >
+                <Avatar 
+                  src={bookSuggestionBookshelf?.Profile?.profile_photo} 
+                  name={bookSuggestionBookshelf?.Profile?.username} 
+                />
+                <Text fontWeight="bold" fontSize="xl">
+                  {bookSuggestionBookshelf?.Profile?.username} 
+                </Text>
+                {/* <Box w="1.4rem">
+                  {bookSuggestionBookshelf.Flag ? <bookSuggestionBookshelf.Flag/> : null}
+                </Box> */}
+              </Flex>
+            </Flex>
+            <Box>
+              <Text>
+                {bookSuggestionBookshelf.suggestions_notes}
+              </Text>
+            </Box>
+        </Box>
         </Flex>
         {previousSuggestions && previousSuggestions.length ? (
           <Box px={2}>
@@ -483,11 +509,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                       return (
                         <React.Fragment key={i}>
                           <Flex
-                            bg="white"
                             gap={2}
-                            _dark={{
-                              bg: "gray.600"
-                            }}
                           >
                             <Box flex="1 1 auto" maxW="50px">
                               <Popover isLazy>

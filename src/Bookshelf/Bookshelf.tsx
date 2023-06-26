@@ -1321,11 +1321,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         return (
                           <React.Fragment>
                             <Flex
-                              bg="white"
                               gap={2}
-                              _dark={{
-                                bg: "gray.600"
-                              }}
                             >
                               <Box flex="1 1 auto" maxW="50px">
                                 <Popover isLazy>

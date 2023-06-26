@@ -1942,11 +1942,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                       return (
                         <React.Fragment key={i}>
                           <Flex
-                            bg="white"
                             gap={2}
-                            _dark={{
-                              bg: "gray.600"
-                            }}
                           >
                             <Box flex="1 1 auto" maxW="50px">
                               <Popover isLazy>
@@ -2068,11 +2064,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                       return (
                         <React.Fragment key={i}>
                           <Flex
-                            bg="white"
                             gap={2}
-                            _dark={{
-                              bg: "gray.600"
-                            }}
                           >
                             <Box flex="1 1 auto" maxW="50px">
                               <Popover isLazy>
