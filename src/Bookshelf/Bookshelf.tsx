@@ -578,6 +578,14 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     }
   }
 
+  const { 
+    isOpen: isOpenImportBookshelfModal, 
+    onOpen: onOpenImportBookshelfModal, 
+    onClose: onCloseImportBookshelfModal 
+  } = useDisclosure()
+
+  
+
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['bookshelfKey'], 
     queryFn: getBookshelf
@@ -782,6 +790,11 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     >
                       Add New
                     </MenuItem>
+                    {/* <MenuItem
+                      onClick={onOpenImportBookshelfModal}
+                    >
+                      Import
+                    </MenuItem> */}
                   </MenuList>
                 </Menu>
               </Flex>
@@ -1394,6 +1407,28 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                 </Stack>
               </ModalBody>
               <ModalFooter flexDirection="column">
+              </ModalFooter>
+          </ModalContent>
+        </Modal>
+
+        <Modal 
+          isOpen={isOpenImportBookshelfModal} 
+          onClose={onCloseImportBookshelfModal}
+          isCentered
+        >
+          <ModalOverlay />
+          <ModalContent rounded="sm" boxShadow="1px 1px 2px 1px black">
+            <ModalHeader>
+              Import Bookshelf
+            </ModalHeader>
+            <ModalCloseButton />
+              <ModalBody>
+
+              </ModalBody>
+              <ModalFooter>
+                <Button>
+                  Import
+                </Button>
               </ModalFooter>
           </ModalContent>
         </Modal>
