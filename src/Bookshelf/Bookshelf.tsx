@@ -35,6 +35,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Progress,
   useDisclosure,
   FormLabel,
   Divider,
@@ -222,7 +223,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     const isbn = e.target.dataset.isbn;
     const page_count = parseInt(e.target.dataset.pagecount);
     const published_date = e.target.dataset.publisheddate;
-    setBookToAdd({title,author,image,description,isbn,published_date})
+    setBookToAdd({title,author,image,description,isbn,page_count,published_date})
     onCloseBookSearchModal();
   }
   const [bookToAddCategories,setBookToAddCategories] = useState([] as any);
@@ -584,6 +585,78 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     onClose: onCloseImportBookshelfModal 
   } = useDisclosure()
 
+  const importBookshelfRef = useRef({} as HTMLInputElement);
+  const [importProgressValue,setImportProgressValue] = useState(0);
+  async function importBookshelf() {
+    const files = importBookshelfRef.current.files;
+    const reader = new FileReader();
+    if (files && files.length > 0) {
+      reader.readAsText(files[0])
+      reader.onload = async (e)=>{
+        setImportProgressValue(1);
+        const csvdata = e.target!.result;
+        const rowData = (csvdata as string).split('\n');
+        for (let i=1;i<rowData.length;i++){
+          if (rowData[i] !== '') {
+            const cellData = rowData[i].split(",")
+            const title = cellData[1]?.replace(/\s/g,'+');
+            const author = cellData[2]?.replace(/\s/g,'+');
+            const isbn = cellData[6];
+            await axios
+              .get(`https://www.googleapis.com/books/v1/volumes?q=${title}+${author}+${isbn}&key=${gbooksapi}`)
+              .then(async (result)=>{
+                if (result?.data?.items?.length) {
+                  const bookResult = result.data.items[0]
+                  const book = {
+                    title: bookResult.volumeInfo.title,
+                    author: bookResult.volumeInfo.authors ? bookResult.volumeInfo.authors[0] : null,
+                    image: bookResult.volumeInfo.imageLinks?.smallThumbnail ? bookResult.volumeInfo.imageLinks.smallThumbnail : null,
+                    description: bookResult.volumeInfo.description ? bookResult.volumeInfo.description : "",
+                    isbn: bookResult.volumeInfo.industryIdentifiers ? bookResult.volumeInfo.industryIdentifiers[1].identifier : null,
+                    page_count: bookResult.volumeInfo.pageCount ? bookResult.volumeInfo.pageCount : null,
+                    published_date: bookResult.volumeInfo.publishedDate ? bookResult.volumeInfo.publishedDate : null
+                  }
+                  let tokenCookie: string | null = Cookies.get().token;
+                  await axios
+                    .post(server + "/api/addbookshelfbook", 
+                      {
+                        book: book,
+                        categories: bookToAddCategories,
+                        notes: notesRef.current.value
+                      },
+                      {headers: {
+                        'authorization': tokenCookie
+                      }}
+                    )
+                    .then((response)=>{
+                      setImportProgressValue(((i+2) / rowData.length) * 100)
+                    })
+                    .catch(({response})=>{
+                      console.log(response)
+                      return;
+                    })
+                }
+              })
+              .catch((response)=>{
+                console.log(response);
+                toast({
+                  description: "An error has occurred",
+                  status: "error",
+                  duration: 9000,
+                  isClosable: true
+                })
+              })
+          }
+        }
+        setTimeout(()=>{
+          setImportProgressValue(100)
+          setImportProgressValue(0)
+          onCloseImportBookshelfModal();
+          getBookshelf()
+        },1000)
+      }
+    }
+  }
   
 
   const { isLoading, isError, data, error } = useQuery({ 
@@ -790,11 +863,11 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     >
                       Add New
                     </MenuItem>
-                    {/* <MenuItem
+                    <MenuItem
                       onClick={onOpenImportBookshelfModal}
                     >
                       Import
-                    </MenuItem> */}
+                    </MenuItem>
                   </MenuList>
                 </Menu>
               </Flex>
@@ -1332,7 +1405,9 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     >
                       {bookResults ? bookResults.map((book,i)=>{
                         return (
-                          <React.Fragment>
+                          <React.Fragment
+                            key={i}
+                          >
                             <Flex
                               gap={2}
                             >
@@ -1419,16 +1494,74 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
           <ModalOverlay />
           <ModalContent rounded="sm" boxShadow="1px 1px 2px 1px black">
             <ModalHeader>
-              Import Bookshelf
+              Import Goodreads Library (Beta)
             </ModalHeader>
             <ModalCloseButton />
               <ModalBody>
-
+                <Flex
+                  direction="column"
+                  gap={3}
+                >
+                  <Box>
+                    <Heading as="h3" size="xs">
+                      Step 1
+                    </Heading>
+                    <Text>
+                      Export your Goodreads library
+                    </Text>
+                    <a
+                      href="http://www.goodreads.com/review/import"
+                      target="blank"
+                    >
+                      <Button
+                        size="xs"
+                        borderColor="black"
+                        variant="outline"
+                      >
+                        Goodreads Export
+                      </Button>
+                    </a>
+                  </Box>
+                  <Box>
+                    <Heading as="h3" size="xs">
+                      Step 2
+                    </Heading>
+                    <Text>
+                      Select the Goodreads .csv file
+                    </Text>
+                    <Input
+                      type="file"
+                      accept=".csv"
+                      border={0}
+                      p={0}
+                      rounded="xs"
+                      height="auto"
+                      ref={importBookshelfRef}
+                    />
+                    {importProgressValue > 0 ? (
+                      <Progress value={importProgressValue}/>
+                    ): null}
+                  </Box>
+                  <Box>
+                    <Heading as="h3" size="xs">
+                      Step 3
+                    </Heading>
+                    <Text>
+                      Click the button below
+                    </Text>
+                    <Button
+                      backgroundColor="black"
+                      color="white"
+                      size="sm"
+                      onClick={e=>importBookshelf()}
+                    >
+                      Import
+                    </Button>
+                  </Box>
+                </Flex>
               </ModalBody>
               <ModalFooter>
-                <Button>
-                  Import
-                </Button>
+
               </ModalFooter>
           </ModalContent>
         </Modal>
