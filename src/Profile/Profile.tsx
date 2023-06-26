@@ -1802,7 +1802,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
           <>
             <Modal isOpen={isOpenProfilePicModal} onClose={closeProfilePicModal}>
               <ModalOverlay />
-              <ModalContent>
+              <ModalContent rounded="sm" boxShadow="1px 1px 2px 1px black">
                 <ModalHeader>
                   <Heading as="h3" size="lg">
                     Change Profile Photo
@@ -1868,7 +1868,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
 
             <Modal isOpen={isOpenProfileDataModal} onClose={closeProfileDataModal}>
               <ModalOverlay />
-              <ModalContent>
+              <ModalContent rounded="sm" boxShadow="1px 1px 2px 1px black">
                 <ModalHeader>
                   <Heading as="h3" size="lg">
                     Update Profile
@@ -2146,7 +2146,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
             isCentered
           >
             <ModalOverlay />
-            <ModalContent maxH="80vh">
+            <ModalContent maxH="80vh" rounded="sm" boxShadow="1px 1px 2px 1px black">
               <ModalHeader>
                 Comment
               </ModalHeader>
@@ -2182,7 +2182,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
             isCentered
           >
             <ModalOverlay />
-            <ModalContent maxH="80vh">
+            <ModalContent maxH="80vh" rounded="sm" boxShadow="1px 1px 2px 1px black">
               <ModalHeader>
                 Followers
               </ModalHeader>
@@ -2243,7 +2243,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
             isCentered
           >
             <ModalOverlay />
-            <ModalContent maxH="80vh">
+            <ModalContent maxH="80vh" rounded="sm" boxShadow="1px 1px 2px 1px black">
               <ModalHeader>
                 Following
               </ModalHeader>

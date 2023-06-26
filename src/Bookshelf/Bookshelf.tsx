@@ -1361,9 +1361,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
           isCentered
         >
           <ModalOverlay />
-          <ModalContent 
-            // maxH="80vh"
-          >
+          <ModalContent rounded="sm" boxShadow="1px 1px 2px 1px black">
             <ModalHeader>
               New Bookshelf Book
             </ModalHeader>

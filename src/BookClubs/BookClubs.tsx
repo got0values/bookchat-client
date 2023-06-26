@@ -643,7 +643,7 @@ export default function BookClubs({server}: {server: string}) {
 
         <Modal isOpen={isOpenCreateBookClubModal} onClose={closeCreateBookClubModal} size="xl" isCentered>
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent rounded="sm" boxShadow="1px 1px 2px 1px black">
             <ModalHeader>
               What is your book club name?
             </ModalHeader>

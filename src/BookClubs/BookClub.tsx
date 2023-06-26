@@ -1731,7 +1731,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
       
       <Modal isOpen={isOpenEditModal} onClose={closeEditModal} size="xl" isCentered>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent rounded="sm" boxShadow="1px 1px 2px 1px black">
           <ModalHeader>
             Edit Book Club
           </ModalHeader>
@@ -1830,7 +1830,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
 
       <Modal isOpen={isOpenMeetingModal} onClose={closeMeetingModal} size="xl" isCentered>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent rounded="sm" boxShadow="1px 1px 2px 1px black">
           <ModalHeader>
             Edit Book Club Meeting
           </ModalHeader>
@@ -1900,7 +1900,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
         isCentered
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent rounded="sm" boxShadow="1px 1px 2px 1px black">
           <ModalHeader>
             New Book Club Book
           </ModalHeader>
@@ -2024,7 +2024,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
         isCentered
       >
         <ModalOverlay />
-        <ModalContent maxH="100vh">
+        <ModalContent maxH="100vh" rounded="sm" boxShadow="1px 1px 2px 1px black">
           <ModalHeader>
             Next Book Poll
           </ModalHeader>

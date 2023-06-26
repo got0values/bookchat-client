@@ -763,7 +763,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
         isCentered
       >
         <ModalOverlay />
-        <ModalContent maxH="80vh">
+        <ModalContent maxH="80vh" rounded="sm" boxShadow="1px 1px 2px 1px black">
           <ModalHeader>
             Comment
           </ModalHeader>
@@ -797,7 +797,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
         isCentered
       >
         <ModalOverlay />
-        <ModalContent maxH="80vh">
+        <ModalContent maxH="80vh" rounded="sm" boxShadow="1px 1px 2px 1px black">
           <ModalHeader>
             Choose a book
           </ModalHeader>

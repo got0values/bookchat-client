@@ -221,7 +221,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
         isCentered
       >
         <ModalOverlay />
-        <ModalContent maxH="80vh">
+        <ModalContent maxH="80vh" rounded="sm" boxShadow="1px 1px 2px 1px black">
           <ModalHeader>
             Reset Password
           </ModalHeader>

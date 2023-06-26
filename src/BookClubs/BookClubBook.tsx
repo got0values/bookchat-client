@@ -228,7 +228,7 @@ export default function BookClub({server}: {server: string}) {
       </Box>
       <Modal isOpen={isOpenEditQuestionModal} onClose={closeEditQuestionModal} size="xl" isCentered>
         <ModalOverlay />
-        <ModalContent maxH="80vh">
+        <ModalContent maxH="80vh" rounded="sm" boxShadow="1px 1px 2px 1px black">
           <ModalHeader>
             Topic/Questions
           </ModalHeader>

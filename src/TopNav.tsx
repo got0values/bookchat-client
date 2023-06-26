@@ -713,7 +713,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
 
         <Modal isOpen={isOpenNotificationsModal} onClose={onCloseNotificationsModal} size="xl">
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent rounded="sm" boxShadow="1px 1px 2px 1px black">
             <ModalHeader fontSize="2xl">Notifications</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
@@ -927,7 +927,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
 
         <Modal isOpen={isOpenSearchModal} onClose={closeSearchModal}>
           <ModalOverlay/>
-          <ModalContent>
+          <ModalContent rounded="sm" boxShadow="1px 1px 2px 1px black">
           <ModalHeader>
             <Heading as="h2" size="lg">Search Results</Heading>
           </ModalHeader>
