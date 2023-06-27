@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef, ReactHTMLElement } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState, useRef, ReactHTMLElement } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { BookClubMember, BookClubsType, BookClubBookType, BookClubRsvpType, BookClubBookPollVoteType } from "../types/types";
 import { 
@@ -12,7 +12,6 @@ import {
   Stack,
   Flex,
   Skeleton,
-  Link,
   Image,
   Center,
   Switch,
@@ -1113,8 +1112,9 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                       )}
                     </Flex>
                     <Box>
-                      <Link
-                        href={`/profile/${bookClub.Profile.username}`}
+                      <Box
+                        as={Link}
+                        to={`/profile/${bookClub.Profile.username}`}
                         _hover={{
                           textDecoration: "none",
                           color: "teal"
@@ -1124,7 +1124,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                         <Text as="span" fontSize="sm" fontStyle="italic">
                           {" "}admin
                         </Text>
-                      </Link>
+                      </Box>
                       {bookClub.BookClubMembers.length ? bookClub.BookClubMembers.map((member,i)=>{
                         return (
                           member.status === 2 ? (
@@ -1133,15 +1133,16 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                               align="center" 
                               justify="space-between"
                             >
-                              <Link 
-                                href={`/profile/${member.Profile.username}`}
+                              <Box
+                                as={Link} 
+                                to={`/profile/${member.Profile.username}`}
                                 _hover={{
                                   textDecoration: "none",
                                   color: "teal"
                                 }}
                               >
                                 {member.Profile.username}
-                              </Link>
+                              </Box>
                               {isBookClubCreator ? (
                                 <Button 
                                   size="xs" 
@@ -1236,7 +1237,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                               backgroundColor="black"
                               color="white"
                               leftIcon={<BsCardText size={20} />}
-                              onClick={e=>navigate(`${currentBook?.id}`)}
+                              as={Link}
+                              to={`${currentBook?.id}`}
                               mb={1}
                             >
                               Discussion
@@ -1332,7 +1334,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                               mb={2}
                               backgroundColor="black"
                               color="white"
-                              onClick={e=>navigate(`/chat/room?bookclub=${bookClub.name}`)}
+                              as={Link}
+                              to={`/chat/room?bookclub=${bookClub.name}`}
                             >
                               Join
                             </Button>
@@ -1341,21 +1344,35 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                         </>
                         ) : null}
                           <Flex align="center" justify="space-between">
-                            <Flex alignItems="center" flexWrap="wrap" gap={1} justifyContent="center" ms={2}>
-                              <Link target="_blank" href={`https://calendar.google.com/calendar/render?action=TEMPLATE&ctz=US/Eastern&location=Online&dates=${new Date(bookClub.next_meeting_start).toISOString().replace(/[\W_]+/g,"")}/${new Date(bookClub.next_meeting_end).toISOString().replace(/[\W_]+/g,"")}&text=${bookClub.name}&trp=false`}>
-                                <Button
-                                  variant="outline"
-                                  borderColor="black"
-                                  size="sm"
-                                  display="flex"
-                                  alignItems="center"
-                                  gap={1}
-                                  aria-label="add to google calendar"
-                                >
-                                  <Icon as={FcGoogle}/> GCal
-                                </Button>
-                              </Link>
-                              <Box
+                            <Flex 
+                              alignItems="center" 
+                              flexWrap="wrap" 
+                              gap={1} 
+                              justifyContent="center" 
+                              ms={2}
+                            >
+                              <Button
+                                variant="outline"
+                                borderColor="black"
+                                size="sm"
+                                display="flex"
+                                alignItems="center"
+                                gap={1}
+                                aria-label="add to google calendar"
+                                as={Link}
+                                target="_blank" 
+                                to={`https://calendar.google.com/calendar/render?action=TEMPLATE&ctz=US/Eastern&location=Online&dates=${new Date(bookClub.next_meeting_start).toISOString().replace(/[\W_]+/g,"")}/${new Date(bookClub.next_meeting_end).toISOString().replace(/[\W_]+/g,"")}&text=${bookClub.name}&trp=false`}
+                              >
+                                <Icon as={FcGoogle}/> GCal
+                              </Button>
+                              <Button
+                                variant="outline"
+                                borderColor="black"
+                                size="sm"
+                                display="flex"
+                                alignItems="center"
+                                gap={1}
+                                aria-label="add to icalendar"
                                 as={ICalendarLink}
                                 event={{
                                   title: bookClub.name + " Book Club Meeting",
@@ -1366,18 +1383,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                   attendees: []
                                 }}
                               >
-                                <Button
-                                  variant="outline"
-                                  borderColor="black"
-                                  size="sm"
-                                  display="flex"
-                                  alignItems="center"
-                                  gap={1}
-                                  aria-label="add to icalendar"
-                                >
-                                  <Icon as={BsApple} mb={1}/>ICal
-                                </Button>
-                              </Box>
+                                <Icon as={BsApple} mb={1}/>ICal
+                              </Button>
                             </Flex>
                             <Flex align="center">
                               <>
@@ -1430,7 +1437,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                           return (
                                             <Text key={i}>
                                               <Link
-                                                href={`/profile/${rsvp.Profile.username}`}
+                                                to={`/profile/${rsvp.Profile.username}`}
                                               >
                                                 {rsvp.Profile.username}
                                               </Link>

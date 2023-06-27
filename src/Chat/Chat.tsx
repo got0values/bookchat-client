@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { ActiveRoom } from "../types/types";
 import { 
   Box,
@@ -169,9 +169,8 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                                 <Td px={0}>
                                   <Button
                                     size="xs"
-                                    onClick={e=>{
-                                      navigate(`/chat/room?title=${result.volumeInfo.title}&author=${result.volumeInfo.authors ? result.volumeInfo.authors[0] : ""}`)
-                                    }}
+                                    as={Link}
+                                    to={`/chat/room?title=${result.volumeInfo.title}&author=${result.volumeInfo.authors ? result.volumeInfo.authors[0] : ""}`}
                                     backgroundColor="black"
                                     color="white"
                                   >
@@ -204,7 +203,8 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                       _hover={{
                         cursor: "pointer"
                       }}
-                      onClick={e=>navigate("/chat/room?generaltype=General")}
+                      as={Link}
+                      to="/chat/room?generaltype=General"
                     >
                       <Flex
                         justify="space-between"
@@ -229,7 +229,8 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                       _hover={{
                         cursor: "pointer"
                       }}
-                      onClick={e=>navigate("/chat/room?generaltype=Recommendations")}
+                      as={Link}
+                      to="/chat/room?generaltype=Recommendations"
                     >
                       <Flex
                         justify="space-between"
@@ -269,7 +270,8 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                             _hover={{
                               cursor: "pointer"
                             }}
-                            onClick={e=>navigate(`/chat/room?title=${room?.bookTitle ? room.bookTitle : ""}&author=${room?.bookAuthor ? room.bookAuthor : ""}`)}
+                            as={Link}
+                            to={`/chat/room?title=${room?.bookTitle ? room.bookTitle : ""}&author=${room?.bookAuthor ? room.bookAuthor : ""}`}
                             key={i}
                           >
                             <Flex

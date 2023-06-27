@@ -1101,7 +1101,8 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     Comment
                                   </MenuItem>
                                   <MenuItem 
-                                    onClick={e=>navigate(`/chat/room?title=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title}&author=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author}`)}
+                                    as={Link}
+                                    to={`/chat/room?title=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title}&author=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author}`}
                                     fontWeight="bold"
                                     icon={<MdOutlineChat size={20} />}
                                   >
@@ -1379,7 +1380,8 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       Comment
                                     </MenuItem>
                                     <MenuItem 
-                                      onClick={e=>navigate(`/chat/room?title=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title}&author=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author}`)}
+                                      as={Link}
+                                      to={`/chat/room?title=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title}&author=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author}`}
                                       fontWeight="bold"
                                       icon={<MdOutlineChat size={20} />}
                                     >
@@ -1587,7 +1589,8 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                             Comment
                                           </MenuItem>
                                           <MenuItem 
-                                            onClick={e=>navigate(`/chat/room?title=${readBook.title}&author=${readBook.author}`)}
+                                            as={Link}
+                                            to={`/chat/room?title=${readBook.title}&author=${readBook.author}`}
                                             fontWeight="bold"
                                             icon={<MdOutlineChat size={20} />}
                                           >
@@ -2018,7 +2021,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
               isCentered
             >
               <ModalOverlay />
-              <ModalContent maxH="80vh">
+              <ModalContent maxH="80vh" rounded="sm" boxShadow="1px 1px 2px 1px black">
                 <ModalHeader>
                   What are you reading?
                 </ModalHeader>
@@ -2201,10 +2204,9 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           <Flex 
                             align="center"
                             gap={2}
-                            onClick={e=>{
-                              closeFollowersModal()
-                              navigate(`/profile/${f.Profile_Following_self_profile_idToProfile!.username}`)
-                            }}
+                            onClick={e=>closeFollowersModal()}
+                            as={Link}
+                            to={`/profile/${f.Profile_Following_self_profile_idToProfile!.username}`}
                             cursor="pointer"
                           >
                             <Avatar
@@ -2258,10 +2260,9 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           mb={2} 
                           flexWrap="wrap"
                           gap={2}
-                          onClick={e=>{
-                            closeFollowersModal()
-                            navigate(`/profile/${f.Profile_Following_following_profile_idToProfile!.username}`)
-                          }}
+                          onClick={e=>closeFollowersModal()}
+                          as={Link}
+                          to={`/profile/${f.Profile_Following_following_profile_idToProfile!.username}`}
                           cursor="pointer"
                         >
                           <Avatar

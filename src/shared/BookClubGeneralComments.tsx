@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, MouseEvent, Fragment } from "react";
 // import dataEmoji from '@emoji-mart/data'
 import Picker from '@emoji-mart/react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { BookClubGeneralCommentsType, BookClubGeneralCommentsProps } from "../types/types";
 import dayjs from "dayjs";
@@ -324,22 +324,22 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                           <HStack 
                             align="flex-start" 
                           >
-                            <Avatar
-                              onClick={e=>navigate(`/profile/${comment.Profile.username}`)} 
-                              size="md"
-                              cursor="pointer"
-                              src={`${comment.Profile.profile_photo}?x=${new Date().getTime()}`}
-                              border="2px solid gray"
-                            />
+                            <Link to={`/profile/${comment.Profile.username}`}>
+                              <Avatar
+                                size="md"
+                                cursor="pointer"
+                                src={`${comment.Profile.profile_photo}?x=${new Date().getTime()}`}
+                                border="2px solid gray"
+                              />
+                            </Link>
                             <Box flex="1">
                               <Flex align="flex-start" justify="space-between">
-                                <Flex columnGap={2} align="center" flexWrap="wrap">
+                                <Flex columnGap={1} align="center" flexWrap="wrap">
                                   <Text as="span" fontWeight="bold">
                                     {comment.Profile.username}
                                   </Text>
-                                    ·
-                                  <Text fontSize="sm" title={new Date(comment.datetime).toLocaleDateString()}>
-                                    {dayjs(comment.datetime).format('MMM D')}
+                                  <Text fontSize="sm" fontStyle="italic" title={new Date(comment.datetime).toLocaleDateString()}>
+                                    {dayjs(comment.datetime).format('MMM D, YYYY h:mm A')}
                                   </Text>
                                 </Flex>
 
@@ -396,23 +396,23 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                                     rounded="md"
                                   >
                                     <Box pe={2}>
-                                      <Avatar
-                                        onClick={e=>navigate(`/profile/${reply.Profile.username}`)} 
-                                        size="sm"
-                                        cursor="pointer"
-                                        src={reply.Profile.profile_photo}
-                                        border="1px solid gray"
-                                      />
+                                      <Link to={`/profile/${reply.Profile.username}`}>
+                                        <Avatar
+                                          size="sm"
+                                          cursor="pointer"
+                                          src={reply.Profile.profile_photo}
+                                          border="1px solid gray"
+                                        />
+                                      </Link>
                                     </Box>
                                     <Box flex="1">
                                       <Flex align="flex-start" justify="space-between">
-                                        <Flex columnGap={2} align="center" flexWrap="wrap">
+                                        <Flex columnGap={1} align="center" flexWrap="wrap">
                                           <Text as="span" fontWeight="bold">
                                             {reply.Profile.username}
                                           </Text>
-                                          ·
-                                          <Text fontSize="sm" title={new Date(reply.datetime).toLocaleDateString()}>
-                                            {dayjs(reply.datetime).format('MMM D')}
+                                          <Text fontSize="sm" fontStyle="italic" title={new Date(reply.datetime).toLocaleDateString()}>
+                                            {dayjs(reply.datetime).format('MMM D, YYYY h:mm A')}
                                           </Text>
                                         </Flex>
                                         {reply.Profile.id === user.Profile.id || isBookClubCreator ? (
@@ -497,22 +497,22 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                   <HStack 
                     align="flex-start" 
                   >
-                    <Avatar
-                      onClick={e=>navigate(`/profile/${commentReplyData.Profile.username}`)} 
-                      size="md"
-                      cursor="pointer"
-                      src={commentReplyData?.Profile?.profile_photo}
-                      border="2px solid gray"
-                    />
+                    <Link to={`/profile/${commentReplyData.Profile.username}`}>
+                      <Avatar
+                        size="md"
+                        cursor="pointer"
+                        src={commentReplyData?.Profile?.profile_photo}
+                        border="2px solid gray"
+                      />
+                    </Link>
                     <Box flex="1">
                       <Flex align="flex-start" justify="space-between">
-                        <Flex columnGap={2} align="center" flexWrap="wrap">
+                        <Flex columnGap={1} align="center" flexWrap="wrap">
                           <Text as="span" fontWeight="bold">
                             {commentReplyData.Profile.username}
                           </Text>
-                          ·
-                          <Text fontSize="sm" title={new Date(commentReplyData.datetime).toLocaleDateString()}>
-                            {dayjs(commentReplyData.datetime).format('MMM D')}
+                          <Text fontSize="sm" fontStyle="italic" title={new Date(commentReplyData.datetime).toLocaleDateString()}>
+                            {dayjs(commentReplyData.datetime).format('MMM D, YYYY h:mm A')}
                           </Text>
                         </Flex>
                       </Flex>
@@ -540,23 +540,23 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                           }}
                         >
                           <Box pe={2}>
-                            <Avatar
-                              onClick={e=>navigate(`/profile/${reply.Profile.username}`)} 
-                              size="sm"
-                              cursor="pointer"
-                              src={reply.Profile.profile_photo}
-                              border="1px solid gray"
-                            />
+                            <Link to={`/profile/${reply.Profile.username}`}>
+                              <Avatar
+                                size="sm"
+                                cursor="pointer"
+                                src={reply.Profile.profile_photo}
+                                border="1px solid gray"
+                              />
+                            </Link>
                           </Box>
                           <Box flex="1">
                             <Flex align="flex-start" justify="space-between">
-                              <Flex columnGap={2} align="center" flexWrap="wrap">
+                              <Flex columnGap={1} align="center" flexWrap="wrap">
                                 <Text as="span" fontWeight="bold">
                                   {reply.Profile.username}
                                 </Text>
-                                ·
-                                <Text fontSize="sm" title={new Date(reply.datetime).toLocaleDateString()}>
-                                  {dayjs(reply.datetime).format('MMM D')}
+                                <Text fontSize="sm" fontStyle="italic" title={new Date(reply.datetime).toLocaleDateString()}>
+                                  {dayjs(reply.datetime).format('MMM D, h:mm A')}
                                 </Text>
                               </Flex>
                               {reply.Profile.id === user.Profile.id || isBookClubCreator ? (

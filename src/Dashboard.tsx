@@ -534,14 +534,15 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     mb={3}
                   >
                     <HStack>
-                      <Avatar
-                        onClick={e=>navigate(`/profile/${reading.Profile.username}`)} 
-                        size="md"
-                        cursor="pointer"
-                        src={`${reading.Profile.profile_photo}`}
-                        border="2px solid gray"
-                        title={`@${reading.Profile.username}`}
-                      />
+                      <Link to={`/profile/${reading.Profile.username}`}>
+                        <Avatar
+                          size="md"
+                          cursor="pointer"
+                          src={`${reading.Profile.profile_photo}`}
+                          border="2px solid gray"
+                          title={`@${reading.Profile.username}`}
+                        />
+                      </Link>
                       <Flex direction="column">
                         <Text fontWeight="bold">
                           {reading.Profile.username}
@@ -572,7 +573,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                             Comment
                           </MenuItem>
                           <MenuItem 
-                            onClick={e=>navigate(`/chat/room?title=${reading.title}&author=${reading.author}`)}
+                            as={Link}
+                            to={`/chat/room?title=${reading.title}&author=${reading.author}`}
                             fontWeight="bold"
                             icon={<MdOutlineChat size={20} />}
                           >

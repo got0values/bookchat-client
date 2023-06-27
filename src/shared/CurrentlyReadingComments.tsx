@@ -110,13 +110,14 @@ const Comments: Function = (
         ) : (
           <Flex key={i} my={2}>
             <Box pe={2}>
-              <Avatar
-                onClick={e=>navigate(`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile}`)} 
-                size="sm"
-                cursor="pointer"
-                src={comment.Profile_CurrentlyReadingComment_commenter_idToProfile.profile_photo}
-                border="1px solid gray"
-              />
+              <Link to={`/profile/${comment.Profile_CurrentlyReadingComment_commenter_idToProfile}`}>
+                <Avatar
+                  size="sm"
+                  cursor="pointer"
+                  src={comment.Profile_CurrentlyReadingComment_commenter_idToProfile.profile_photo}
+                  border="1px solid gray"
+                />
+              </Link>
             </Box>
             <Box w="100%">
               <Flex justify="space-between">

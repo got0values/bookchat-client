@@ -10,7 +10,6 @@ import {
   Button,
   Flex,
   Skeleton,
-  useToast,
 } from "@chakra-ui/react";
 import { BsArrowRight } from 'react-icons/bs';
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
@@ -105,10 +104,10 @@ export function BookSuggestionToList({server}: {server: string;}) {
                     <Text as="span" fontWeight="bold">Books:</Text> {(bookshelf as any)._count.BookshelfBook}
                   </Box>
                   <Button
-                    // size="lg"
+                    as={Link}
+                    to={`/booksuggestions/bookshelf?profile=${bookshelf.Profile.username}`}
                     variant="ghost"
                     p={0}
-                    onClick={e=>navigate(`/booksuggestions/bookshelf?profile=${bookshelf.Profile.username}`)}
                   >
                     <BsArrowRight size={20} />
                   </Button>

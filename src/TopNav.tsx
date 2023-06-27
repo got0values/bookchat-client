@@ -488,7 +488,6 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                 <Image 
                   src={colorMode === "light" ? logoIcon : logoIconWhite}
                   h="40px"
-                  onClick={e=>navigate("/")}
                   border="1px solid transparent"
                   borderRadius="4px"
                   p={1}
@@ -630,7 +629,8 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
               </MenuButton>
               <MenuList>
                 <MenuItem
-                  onClick={e=>navigate(`/profile/${user.Profile.username}`)}
+                  as={Link}
+                  to={`/profile/${user.Profile.username}`}
                   fontSize="lg"
                   fontWeight="600"
                 >
@@ -661,7 +661,8 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                 </MenuItem>
                 <MenuItem
                   aria-label="settings"
-                  onClick={e=>navigate("/settings")}
+                  as={Link}
+                  to="/settings"
                   icon={<FiSettings size={20}/>}
                   fontSize="lg"
                   fontWeight="600"
@@ -1010,10 +1011,9 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                             <Td px={0}>
                               <Button
                                 size="xs"
-                                onClick={e=>{
-                                  navigate(`/chat/room?title=${book.volumeInfo.title}&author=${book.volumeInfo.authors ? book.volumeInfo.authors[0] : ""}`)
-                                  closeSearchModal()
-                                }}
+                                as={Link}
+                                to={`/chat/room?title=${book.volumeInfo.title}&author=${book.volumeInfo.authors ? book.volumeInfo.authors[0] : ""}`}
+                                onClick={e=>closeSearchModal()}
                                 backgroundColor="black"
                                 color="white"
                               >
