@@ -277,6 +277,11 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                   {bookshelf.Flag ? <bookshelf.Flag/> : null}
                 </Box> */}
               </Flex>
+              {suggestion.notes ? (
+                <Text fontStyle="italic">
+                  "{suggestion.notes}"
+                </Text>
+              ) : null}
               <Divider />
               <Flex
                 gap={1}

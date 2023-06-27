@@ -15,7 +15,7 @@ import {
   Input,
   Flex,
   Skeleton,
-  useToast,
+  Textarea,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -23,7 +23,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Divider,
+  CloseButton,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
@@ -33,7 +33,8 @@ import {
   PopoverContent,
   PopoverBody,
   PopoverArrow,
-  useDisclosure
+  useDisclosure,
+  useToast
 } from "@chakra-ui/react";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
 import GoogleBooksSearch from "../shared/GoogleBooksSearch";
@@ -109,8 +110,13 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
   }
 
   const searchInputRef = useRef({} as HTMLInputElement);
-  async function selectBook(e: React.FormEvent) {
-    const selectedBook = JSON.parse((e.target as HTMLDivElement).dataset.book!);
+  const [selectedBook,setSelectedBook] = useState<any | null>(null);
+  function selectBook(e: React.FormEvent) {
+    setSelectedBook(JSON.parse((e.target as HTMLDivElement).dataset.book!));
+    onCloseSearchModal();
+  }
+  const notesRef = useRef({} as HTMLTextAreaElement);
+  async function suggestBook(e: React.FormEvent) {
     const image = selectedBook.volumeInfo.imageLinks ? selectedBook.volumeInfo.imageLinks.smallThumbnail : "";
     const title = selectedBook.volumeInfo.title;
     const author = selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : "";
@@ -118,6 +124,8 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
     const isbn = selectedBook.volumeInfo.industryIdentifiers ? selectedBook.volumeInfo.industryIdentifiers[0].identifier : "";
     const page_count = selectedBook.volumeInfo.pageCount ? selectedBook.volumeInfo.pageCount : "";
     const published_date = selectedBook.volumeInfo.publishedDate ? selectedBook.volumeInfo.publishedDate : "";
+    const notes = notesRef.current.value;
+
     let tokenCookie = Cookies.get().token;
     if (tokenCookie) {
       await axios
@@ -130,7 +138,8 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           description: description,
           published_date: published_date,
           isbn: isbn,
-          page_count: page_count
+          page_count: page_count,
+          notes: notes
 
         },
         {headers: {
@@ -160,6 +169,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
               isClosable: true
             })
           }
+          setSelectedBook(null);
           closeSearchModal();
         })
         .catch(({response})=>{
@@ -261,11 +271,11 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                 </Box> */}
               </Flex>
             </Flex>
-            <Box>
-              <Text>
-                {bookSuggestionBookshelf.suggestions_notes}
+            {bookSuggestionBookshelf.suggestions_notes ? (
+              <Text fontStyle="italic">
+                "{bookSuggestionBookshelf.suggestions_notes}"
               </Text>
-            </Box>
+            ): null}
           </Box>
         </Flex>
         {previousSuggestions && previousSuggestions.length ? (
@@ -346,6 +356,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
               justify="space-between"
               className="non-well"
               gap={1}
+              direction="column"
             >
               <Input
                 type="search"
@@ -365,6 +376,101 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                 readOnly={true}
                 onClick={e=>onOpenSearchModal()}
               />
+
+              {selectedBook ? (
+                <Box
+                  className="well"
+                  mx="0!important"
+                  position="relative"
+                >
+                  <CloseButton
+                    onClick={e=>setSelectedBook(null)}
+                    position="absolute"
+                    top={1}
+                    right={1}
+                  />
+                  <Flex>
+                    <Image
+                      src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
+                      height="100%"
+                      maxH="125px"
+                      boxShadow="1px 1px 1px 1px darkgrey"
+                    />
+                    <Box mx={2} w="100%">
+                      <Heading 
+                        as="h5" 
+                        size="md"
+                        me={3}
+                        noOfLines={1}
+                      >
+                        {selectedBook.volumeInfo.title}
+                      </Heading>
+                      <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
+                        {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
+                      </Text>
+                      {selectedBook.volumeInfo.pageCount ? (
+                        <Text fontSize="sm">
+                          {selectedBook.volumeInfo.pageCount} pages
+                        </Text>
+                      ): null}
+                      <Text fontStyle="italic">
+                        {selectedBook.volumeInfo.publishedDate !== null ? 
+                          (
+                            dayjs(selectedBook.volumeInfo.publishedDate).format("YYYY")
+                          ) : null
+                        }
+                      </Text>
+                      <Popover isLazy>
+                        <PopoverTrigger>
+                          <Box
+                            _hover={{
+                              cursor: "pointer"
+                            }}
+                          >
+                            <Text noOfLines={1}>
+                              {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
+                            </Text>
+                          </Box>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <PopoverArrow />
+                          <PopoverCloseButton />
+                          <PopoverBody 
+                          _dark={{
+                            bg: "black"
+                          }}
+                            fontSize="sm"
+                          >
+                            {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
+                          </PopoverBody>
+                        </PopoverContent>
+                      </Popover>
+                    </Box>
+                  </Flex>
+                  <Box
+                    mt={2}
+                  >
+                    <Textarea
+                      placeholder="Notes (optional)"
+                      ref={notesRef}
+                      maxLength={500}
+                    />
+                  </Box>
+                  <Flex
+                    justify="flex-end"
+                    mt={2}
+                  >
+                    <Button
+                      backgroundColor="black"
+                      color="white"
+                      onClick={e=>suggestBook(e)}
+                    >
+                      Suggest
+                    </Button>
+                  </Flex>
+                </Box>
+              ): null}
+
             </Flex>
             <Stack>
               {bookSuggestionBookshelf?.BookshelfBook?.length ? (
@@ -461,7 +567,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           </ModalHeader>
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-              <GoogleBooksSearch selectText="suggest" selectCallback={selectBook} gBooksApi={gbooksapi}/>
+              <GoogleBooksSearch selectText="select" selectCallback={selectBook} gBooksApi={gbooksapi}/>
             </ModalBody>
             <ModalFooter flexDirection="column">
             </ModalFooter>

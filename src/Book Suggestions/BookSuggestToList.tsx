@@ -127,9 +127,11 @@ export function BookSuggestionToList({server}: {server: string;}) {
                         cursor: "pointer"
                       }}
                     >
-                      <Text noOfLines={2}>
-                        {bookshelf.suggestions_notes}
-                      </Text>
+                      {bookshelf.suggestions_notes ? (
+                        <Text fontStyle="italic" noOfLines={2}>
+                          "{bookshelf.suggestions_notes}"
+                        </Text>
+                      ): null}
                     </Box>
                   </PopoverTrigger>
                   <PopoverContent>
