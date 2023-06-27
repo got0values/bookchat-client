@@ -20,10 +20,15 @@ import {
   PopoverContent,
   PopoverBody,
   PopoverArrow,
-  useToast,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
 import StarRating from "../shared/StarRating";
 import { AiFillStar } from "react-icons/ai";
+import { BiDotsHorizontalRounded } from 'react-icons/bi';
+import { BsArchiveFill } from "react-icons/bs";
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -94,6 +99,43 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
     ratingCallbackMutation.mutate([rating,starRatingId])
   }
 
+  const archiveCallbackMutation = useMutation({
+    mutationFn: async (id: number) => {
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+        .put(server + "/api/booksuggestionarchive",
+          {
+            id: id
+          },
+          {
+            headers: {
+              authorization: tokenCookie
+            }
+          }
+        )
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data?.message) {
+            throw new Error(response.data?.message)
+          }
+        })
+      }
+      else {
+        throw new Error("An error has occured")
+      }
+      return getBookSuggestionsForMe()
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['bookSuggestionsForMeKey'] })
+      queryClient.resetQueries({queryKey: ['bookSuggestionsForMeKey']})
+      queryClient.setQueryData(["bookSuggestionsForMeKey"],data)
+    }
+  })
+  function archiveCallback(id: number) {
+    archiveCallbackMutation.mutate(id)
+  }
+
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['bookSuggestionsForMeKey'], 
     queryFn: getBookSuggestionsForMe
@@ -120,36 +162,62 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
               key={i}
             >
               <Flex
-                as={Link}
-                to={`/profile/${suggestion.Profile_BookSuggestion_suggestorToProfile.username}`}
                 align="center"
                 gap={2}
               >
-                <Avatar 
-                  src={suggestion.Profile_BookSuggestion_suggestorToProfile.profile_photo}
-                />
-                <Box>
-                  <Flex align="center" gap={1}>
-                    <Text fontWeight="bold">
-                      {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
-                    </Text>
-                    {/* <StarRating
-                      ratingCallback={null} 
-                      starRatingId={suggestion.id}
-                      defaultRating={suggestion.suggestorRating ? suggestion.suggestorRating : 0}
-                    /> */}
-                    {suggestion.suggestorRating ? (
-                      <Flex align="center" gap={0}>
-                        <Icon
-                          as={AiFillStar}
-                          size={25}
-                          color="gold"
-                        />
-                        <Text fontStyle="italic" fontSize="sm">
-                          {suggestion.suggestorRating.toFixed(1)}
-                        </Text>
-                      </Flex>
-                    ): null}
+                <Link to={`/profile/${suggestion.Profile_BookSuggestion_suggestorToProfile.username}`}>
+                  <Avatar 
+                    src={suggestion.Profile_BookSuggestion_suggestorToProfile.profile_photo}
+                    name={suggestion.Profile_BookSuggestion_suggestorToProfile.username}
+                  />
+                </Link>
+                <Box w="100%">
+                  <Flex align="center" justify="space-between">
+                    <Flex align="center" gap={1}>
+                      <Text fontWeight="bold">
+                        {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
+                      </Text>
+                      {/* <StarRating
+                        ratingCallback={null} 
+                        starRatingId={suggestion.id}
+                        defaultRating={suggestion.suggestorRating ? suggestion.suggestorRating : 0}
+                      /> */}
+                      {suggestion.suggestorRating ? (
+                        <Flex align="center" gap={0}>
+                          <Icon
+                            as={AiFillStar}
+                            size={25}
+                            color="gold"
+                          />
+                          <Text fontStyle="italic" fontSize="sm">
+                            {suggestion.suggestorRating.toFixed(1)}
+                          </Text>
+                        </Flex>
+                      ): null}
+                    </Flex>
+                    <Box>
+                      <Menu>
+                        <MenuButton 
+                          as={Button}
+                          size="md"
+                          variant="ghost"
+                          rounded="full"
+                          height="25px"
+                        >
+                          <BiDotsHorizontalRounded/>
+                        </MenuButton>
+                        <MenuList>
+                          <MenuItem 
+                            // data-book={JSON.stringify(reading)}
+                            onClick={e=>archiveCallback(suggestion.id)}
+                            fontWeight="bold"
+                            icon={<BsArchiveFill size={20} />}
+                          >
+                            Archive
+                          </MenuItem>
+                        </MenuList>
+                      </Menu>
+                    </Box>
                   </Flex>
                   <Text fontStyle="italic" opacity="75%">
                     {dayjs(suggestion.created_on).local().format('MMM DD, YYYY')}
