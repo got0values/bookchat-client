@@ -392,6 +392,11 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                         <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
                           {book.author}
                         </Text>
+                        {book.page_count ? (
+                          <Text fontSize="sm">
+                            {book.page_count} pages
+                          </Text>
+                        ): null}
                         <Text fontStyle="italic">
                           {book.published_date ? dayjs(book.published_date).format("YYYY"): null}
                         </Text>
@@ -402,7 +407,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                                 cursor: "pointer"
                               }}
                             >
-                              <Text noOfLines={2}>
+                              <Text noOfLines={1}>
                                 {book.description}
                               </Text>
                             </Box>
