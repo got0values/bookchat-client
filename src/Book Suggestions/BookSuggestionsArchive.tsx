@@ -24,11 +24,13 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  useToast
 } from "@chakra-ui/react";
 import StarRating from "../shared/StarRating";
 import { AiFillStar } from "react-icons/ai";
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
-import { BsArchiveFill } from "react-icons/bs";
+import { BsArchive } from "react-icons/bs";
+import { ImBooks } from 'react-icons/im';
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -39,6 +41,7 @@ import axios from "axios";
 export function BookSuggestionsArchive({server}: {server: string;}) {
   dayjs.extend(utc);
   const queryClient = useQueryClient();
+  const toast = useToast();
 
   async function getBookSuggestionsArchive() {
     let tokenCookie: string | null = Cookies.get().token;
@@ -137,6 +140,37 @@ export function BookSuggestionsArchive({server}: {server: string;}) {
     unArchiveCallbackMutation.mutate(id)
   }
 
+  async function addToBookshelf(bookToAdd: any) {
+    let tokenCookie: string | null = Cookies.get().token;
+    await axios
+      .post(server + "/api/addbookshelfbook", 
+        {
+          book: bookToAdd,
+          categories: [],
+          notes: ""
+        },
+        {headers: {
+          'authorization': tokenCookie
+        }}
+      ).then((response)=>{
+        toast({
+          description: "Added to bookshelf",
+          status: "success",
+          duration: 9000,
+          isClosable: true
+        })
+      })
+      .catch(({response})=>{
+        console.log(response)
+        toast({
+          description: "An error has occurred",
+          status: "error",
+          duration: 9000,
+          isClosable: true
+        })
+      })
+  }
+
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['bookSuggestionsArchiveKey'], 
     queryFn: getBookSuggestionsArchive
@@ -211,9 +245,24 @@ export function BookSuggestionsArchive({server}: {server: string;}) {
                           <MenuItem 
                             onClick={e=>unArchiveCallback(suggestion.id)}
                             fontWeight="bold"
-                            icon={<BsArchiveFill size={20} />}
+                            icon={<BsArchive size={20} />}
                           >
                             Un-Archive
+                          </MenuItem>
+                          <MenuItem
+                            onClick={e=>addToBookshelf({
+                              image: suggestion.image,
+                              title: suggestion.title,
+                              author: suggestion.author,
+                              description: suggestion.description,
+                              isbn: suggestion.isbn ? suggestion.isbn : "",
+                              page_count: suggestion.page_count ? parseInt(suggestion.page_count as any) : null,
+                              published_date: suggestion.published_date ? suggestion.published_date : "",
+                            })}
+                            fontWeight="bold"
+                            icon={<ImBooks size={20} />}
+                          >
+                            Add to Bookshelf
                           </MenuItem>
                         </MenuList>
                       </Menu>
@@ -291,7 +340,7 @@ export function BookSuggestionsArchive({server}: {server: string;}) {
                     <Text
                       fontWeight="bold"
                     >
-                      Rate: 
+                      Rate Suggestion: 
                     </Text>
                     {/* <Text>
                       Coming soon!
