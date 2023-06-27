@@ -36,14 +36,14 @@ import Cookies from "js-cookie";
 import axios from "axios";
 
 
-export function BookSuggestionsForMe({server}: {server: string;}) {
+export function BookSuggestionsArchive({server}: {server: string;}) {
   dayjs.extend(utc);
   const queryClient = useQueryClient();
 
-  async function getBookSuggestionsForMe() {
+  async function getBookSuggestionsArchive() {
     let tokenCookie: string | null = Cookies.get().token;
-    const bookSuggestToList = axios
-      .get(server + "/api/getbooksuggestionsforme?archived=0",
+    const bookSuggestionsArchive = axios
+      .get(server + "/api/getbooksuggestionsforme?archived=1",
         {
           headers: {
             'authorization': tokenCookie
@@ -58,7 +58,7 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
         console.log(response)
         throw new Error(response.data.error)
       })
-    return bookSuggestToList;
+    return bookSuggestionsArchive;
   }
 
   const ratingCallbackMutation = useMutation({
@@ -87,19 +87,19 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
       else {
         throw new Error("An error has occured")
       }
-      return getBookSuggestionsForMe()
+      return getBookSuggestionsArchive()
     },
     onSuccess: (data,variables)=>{
-      queryClient.invalidateQueries({ queryKey: ['bookSuggestionsForMeKey'] })
-      queryClient.resetQueries({queryKey: ['bookSuggestionsForMeKey']})
-      queryClient.setQueryData(["bookSuggestionsForMeKey"],data)
+      queryClient.invalidateQueries({ queryKey: ['bookSuggestionsArchiveKey'] })
+      queryClient.resetQueries({queryKey: ['bookSuggestionsArchiveKey']})
+      queryClient.setQueryData(["bookSuggestionsArchiveKey"],data)
     }
   })
   function ratingCallback([rating,starRatingId]: [rating:number,starRatingId:number]) {
     ratingCallbackMutation.mutate([rating,starRatingId])
   }
 
-  const archiveCallbackMutation = useMutation({
+  const unArchiveCallbackMutation = useMutation({
     mutationFn: async (id: number) => {
       let tokenCookie: string | null = Cookies.get().token;
       if (tokenCookie) {
@@ -107,7 +107,7 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
         .put(server + "/api/booksuggestionarchive",
           {
             id: id,
-            toArchive: 1
+            toArchive: 0
           },
           {
             headers: {
@@ -125,24 +125,24 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
       else {
         throw new Error("An error has occured")
       }
-      return getBookSuggestionsForMe()
+      return getBookSuggestionsArchive()
     },
     onSuccess: (data,variables)=>{
-      queryClient.invalidateQueries({ queryKey: ['bookSuggestionsForMeKey'] })
-      queryClient.resetQueries({queryKey: ['bookSuggestionsForMeKey']})
-      queryClient.setQueryData(["bookSuggestionsForMeKey"],data)
+      queryClient.invalidateQueries({ queryKey: ['bookSuggestionsArchiveKey'] })
+      queryClient.resetQueries({queryKey: ['bookSuggestionsArchiveKey']})
+      queryClient.setQueryData(["bookSuggestionsArchiveKey"],data)
     }
   })
-  function archiveCallback(id: number) {
-    archiveCallbackMutation.mutate(id)
+  function unArchiveCallback(id: number) {
+    unArchiveCallbackMutation.mutate(id)
   }
 
   const { isLoading, isError, data, error } = useQuery({ 
-    queryKey: ['bookSuggestionsForMeKey'], 
-    queryFn: getBookSuggestionsForMe
+    queryKey: ['bookSuggestionsArchiveKey'], 
+    queryFn: getBookSuggestionsArchive
   });
 
-  let bookSuggestionsForMe: any = data ? data : null;
+  let bookSuggestionsArchive: any = data ? data : null;
 
   if (isError) {
     return <Flex align="center" justify="center" minH="90vh">
@@ -154,8 +154,8 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
     <Skeleton
       isLoaded={!isLoading}
     >
-      {bookSuggestionsForMe?.length ? (
-        bookSuggestionsForMe.map((suggestion: BookSuggestionType, i: number)=>{
+      {bookSuggestionsArchive?.length ? (
+        bookSuggestionsArchive.map((suggestion: BookSuggestionType, i: number)=>{
           return (
             <Stack 
               className="well"
@@ -209,12 +209,11 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                         </MenuButton>
                         <MenuList>
                           <MenuItem 
-                            // data-book={JSON.stringify(reading)}
-                            onClick={e=>archiveCallback(suggestion.id)}
+                            onClick={e=>unArchiveCallback(suggestion.id)}
                             fontWeight="bold"
                             icon={<BsArchiveFill size={20} />}
                           >
-                            Archive
+                            Un-Archive
                           </MenuItem>
                         </MenuList>
                       </Menu>

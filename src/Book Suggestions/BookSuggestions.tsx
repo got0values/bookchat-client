@@ -1,32 +1,20 @@
-import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent, HTMLInputTypeAttribute } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-// import { BookshelfCategory, BookshelfBook, BookshelfType } from "../types/types";
 import { 
   Box,
-  Text,
-  useToast,
   Tabs, 
   TabList, 
   TabPanels, 
   Tab, 
-  TabPanel,
-  useColorMode
+  TabPanel
 } from "@chakra-ui/react";
 import { BookSuggestionToList } from "./BookSuggestToList";
 import { BookSuggestionsForMe } from "./BookSuggestionsForMe";
+import { BookSuggestionsArchive } from "./BookSuggestionsArchive";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import Cookies from "js-cookie";
-import axios from "axios";
 
 
 export default function BookSuggestions({server, gbooksapi}: {server: string; gbooksapi: string;}) {
-  const toast = useToast();
-  const navigate = useNavigate();
-  const {colorMode} = useColorMode();
   dayjs.extend(utc);
-  const queryClient = useQueryClient();
 
   
 
@@ -35,6 +23,7 @@ export default function BookSuggestions({server, gbooksapi}: {server: string; gb
       <Tabs 
         variant="enclosed"
         p={2}
+        isLazy
       >
         <TabList
           borderBottom="none"
@@ -55,6 +44,14 @@ export default function BookSuggestions({server, gbooksapi}: {server: string; gb
           >
             For Me
           </Tab>
+          <Tab 
+            fontWeight="bold"
+            _selected={{
+              borderBottom: "2px solid gray"
+            }}
+          >
+            Archive
+          </Tab>
         </TabList>
         <TabPanels>
           <TabPanel px={0}>
@@ -62,11 +59,17 @@ export default function BookSuggestions({server, gbooksapi}: {server: string; gb
             <BookSuggestionToList server={server} />
 
           </TabPanel>
-
           <TabPanel px={0}>
             
 
             <BookSuggestionsForMe server={server} />
+
+
+          </TabPanel>
+          <TabPanel px={0}>
+            
+
+            <BookSuggestionsArchive server={server} />
 
 
           </TabPanel>
