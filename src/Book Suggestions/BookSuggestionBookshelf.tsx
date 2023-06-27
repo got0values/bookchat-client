@@ -122,7 +122,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
     const author = selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : "";
     const description = selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : "";
     const isbn = selectedBook.volumeInfo.industryIdentifiers ? selectedBook.volumeInfo.industryIdentifiers[0].identifier : "";
-    const page_count = selectedBook.volumeInfo.pageCount ? selectedBook.volumeInfo.pageCount : "";
+    const page_count = selectedBook.volumeInfo.pageCount ? selectedBook.volumeInfo.pageCount : null;
     const published_date = selectedBook.volumeInfo.publishedDate ? selectedBook.volumeInfo.publishedDate : "";
     const notes = notesRef.current.value;
 
@@ -138,7 +138,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           description: description,
           published_date: published_date,
           isbn: isbn,
-          page_count: page_count,
+          page_count: page_count ? parseInt(page_count) : null,
           notes: notes
 
         },
