@@ -266,15 +266,22 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                 {bookSuggestionBookshelf.suggestions_notes}
               </Text>
             </Box>
-        </Box>
+          </Box>
         </Flex>
         {previousSuggestions && previousSuggestions.length ? (
-          <Box px={2}>
+          <Box 
+            rounded="md"
+            border="1px solid black"
+            p={2}
+            className="non-well"
+          >
             <Heading as="h3" size="sm" mb={1}>Your previous suggestions:</Heading>
             <Flex
               // align="center"
               wrap="wrap"
               gap={2}
+              maxH="25vh"
+              overflow="auto"
             >
               {previousSuggestions.length ? (
                 previousSuggestions.map((suggestion,i)=>{

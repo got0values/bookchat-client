@@ -9,6 +9,12 @@ import {
   Avatar,
   Button,
   Flex,
+  Popover,
+  PopoverTrigger,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
   Skeleton,
 } from "@chakra-ui/react";
 import { BsArrowRight } from 'react-icons/bs';
@@ -101,7 +107,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
                   gap={2}
                 >
                   <Box>
-                    <Text as="span" fontWeight="bold">Books:</Text> {(bookshelf as any)._count.BookshelfBook}
+                    <Text as="span" fontWeight="bold">Books on shelf:</Text> {(bookshelf as any)._count.BookshelfBook}
                   </Box>
                   <Button
                     as={Link}
@@ -113,9 +119,33 @@ export function BookSuggestionToList({server}: {server: string;}) {
                   </Button>
                 </Flex>
               </Flex>
-              <Text>
-                {bookshelf.suggestions_notes}
-              </Text>
+              <Box>
+                <Popover isLazy>
+                  <PopoverTrigger>
+                    <Box
+                      _hover={{
+                        cursor: "pointer"
+                      }}
+                    >
+                      <Text noOfLines={2}>
+                        {bookshelf.suggestions_notes}
+                      </Text>
+                    </Box>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <PopoverArrow />
+                    <PopoverCloseButton />
+                    <PopoverBody 
+                      fontSize="sm"
+                      _dark={{
+                        bg: "black"
+                      }}
+                    >
+                      {bookshelf.suggestions_notes}
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
+              </Box>
             </Box>
           )
         })

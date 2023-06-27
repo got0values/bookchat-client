@@ -537,10 +537,15 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
           duration: 9000,
           isClosable: true
         })
-        throw new Error(response.data.message)
       })
       .catch((response)=>{
         console.log(response)
+        toast({
+          description: "Error: BSN101",
+          status: "error",
+          duration: 9000,
+          isClosable: true
+        })
         if (response.data?.message) {
           throw new Error(response.data?.message)
         }
@@ -718,7 +723,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     placeholder="Suggestion notes"
                     defaultValue={suggestionsNotesDefaultValue}
                     ref={suggestionsNotesRef}
-                    maxLength={150}
+                    maxLength={500}
                     borderColor="black"
                   >
                   </Textarea>
