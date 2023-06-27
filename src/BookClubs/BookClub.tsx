@@ -43,6 +43,7 @@ import {
   BreadcrumbLink
 } from "@chakra-ui/react";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
+import GoogleBooksSearch from "../shared/GoogleBooksSearch";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ICalendarLink from "react-icalendar-link";
@@ -1913,105 +1914,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
           </ModalHeader>
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-              <Stack gap={2} position="relative">
-                <Flex gap={1} position="sticky" top={0} zIndex={200}>
-                  <Input
-                    type="text"
-                    size="lg"
-                    ref={searchBookRef}
-                    bg="white"
-                    color="black"
-                    onKeyDown={e=>e.key === "Enter" ? searchBook() : null}
-                    style={{
-                      background: `no-repeat url(${googleWatermark})`,
-                      backgroundPosition: "top 0px right 5px"
-                    }}
-                  />
-                  <Button
-                    onClick={searchBook}
-                    size="lg"
-                    borderColor="black"
-                    variant="outline"
-                  >
-                    Search
-                  </Button>
-                </Flex>
-                {bookResultsLoading ? (
-                  <Center>
-                    <Spinner size="xl"/>
-                  </Center>
-                ) : (
-                  <Flex 
-                    gap={1} 
-                    direction="column"
-                  >
-                    {bookResults ? bookResults.map((book,i)=>{
-                      return (
-                        <React.Fragment key={i}>
-                          <Flex
-                            gap={2}
-                          >
-                            <Box flex="1 1 auto" maxW="50px">
-                              <Popover isLazy>
-                                <PopoverTrigger>
-                                <Image
-                                  maxW="100%" 
-                                  w="100%"
-                                  h="auto"
-                                  className="book-image"
-                                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                  src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
-                                  alt="book image"
-                                  boxShadow="1px 1px 1px 1px darkgrey"
-                                  _hover={{
-                                    cursor: "pointer"
-                                  }}
-                                />
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                  <PopoverArrow />
-                                  <PopoverCloseButton />
-                                  <PopoverBody
-                                    _dark={{
-                                      bg: "black"
-                                    }}
-                                  >{book.volumeInfo.description}</PopoverBody>
-                                </PopoverContent>
-                              </Popover>
-                            </Box>
-                            <Box flex="1 1 auto">
-                              <Heading
-                                as="h4"
-                                size="sm"
-                              >
-                                {book.volumeInfo.title}
-                              </Heading>
-                              <Text>
-                                {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
-                              </Text>
-                              <Flex align="center" gap={2}>
-                                <GooglePreviewLink book={book}/>
-                                <Button 
-                                  size="xs"
-                                  data-book={JSON.stringify(book)}
-                                  onClick={e=>selectBook(e)}
-                                  backgroundColor="black"
-                                  color="white"
-                                >
-                                  Set
-                                </Button>
-                              </Flex>
-                            </Box>
-                          </Flex>
-                          {i !== bookResults.length - 1 ? (
-                            <Divider/>
-                          ): null}
-                        </React.Fragment>
-                      )
-                    }) : null}
-                  </Flex>
-                )}
-              </Stack>
+              <GoogleBooksSearch selectText="Select" selectCallback={selectBook} gBooksApi={gbooksapi}/>
             </ModalBody>
             <ModalFooter flexDirection="column">
             <> 
@@ -2041,17 +1944,19 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                 <Flex gap={1} position="sticky" top={0} zIndex={200}>
                   <Input
                     type="text"
+                    size="lg"
                     ref={searchBookRef}
                     bg="white"
                     color="black"
                     onKeyDown={e=>e.key === "Enter" ? searchBook() : null}
-                    style={{
-                      background: `no-repeat url(${googleWatermark})`,
-                      backgroundPosition: "top 0px right 5px"
-                    }}
+                    // style={{
+                    //   background: `no-repeat url(${googleWatermark})`,
+                    //   backgroundPosition: "top 0px right 5px"
+                    // }}
                   />
                   <Button
                     onClick={searchBook}
+                    size="lg"
                     borderColor="black"
                     variant="outline"
                   >
@@ -2111,7 +2016,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
                               </Text>
                               <Flex align="center" gap={2}>
-                                <GooglePreviewLink book={book}/>
+                                {/* <GooglePreviewLink book={book}/> */}
                                 <Button 
                                   size="xs"
                                   backgroundColor="black"
@@ -2145,7 +2050,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                                 ) : null)
                                   )}
                                 >
-                                  Set
+                                  Select
                                 </Button>
                               </Flex>
                             </Box>

@@ -38,6 +38,7 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import GooglePreviewLink from "./shared/GooglePreviewLink";
+import GoogleBooksSearch from "./shared/GoogleBooksSearch";
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
 import { BsReplyFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
@@ -209,27 +210,10 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   } = useDisclosure()
 
   function closeReadingModal() {
-    setBookResults(null)
     onCloseReadingModal();
   }
 
   const whatImReadingRef = useRef({} as HTMLInputElement);
-  const [bookResults,setBookResults] = useState<any[] | null>(null);
-  const [bookResultsLoading,setBookResultsLoading] = useState(false)
-  async function searchBook() {
-    setBookResultsLoading(true)
-    await axios
-      .get("https://www.googleapis.com/books/v1/volumes?q=" + whatImReadingRef.current.value + "&key=" + gbooksapi)
-      .then((response)=>{
-        setBookResults(response.data.items)
-        setBookResultsLoading(false)
-        // onOpenReadingModal();
-      })
-      .catch((error)=>{
-        console.log(error)
-      })
-  }
-
   const [selectedBook,setSelectedBook] = useState<any | null>(null);
   function selectBook(e: React.FormEvent) {
     setSelectedBook(JSON.parse((e.target as HTMLDivElement).dataset.book!))
@@ -805,103 +789,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           </ModalHeader>
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-              <Stack gap={2} position="relative">
-              <Flex gap={2} className="non-well">
-                <Input 
-                  type="search" 
-                  placeholder="What are you reading?" 
-                  border="1px solid black"
-                  size="lg"
-                  _dark={{
-                    bg: "whiteAlpha.50"
-                  }}
-                  ref={whatImReadingRef}
-                  onKeyDown={e=>e.key === 'Enter' ? searchBook() : null}
-                  style={{
-                    background: `no-repeat url(${googleWatermark})`,
-                    backgroundPosition: "top 0px right 5px"
-                  }}
-                />
-                <Button 
-                  size="lg"
-                  colorScheme="black"
-                  variant="outline"
-                >
-                  Search
-                </Button>
-              </Flex>
-                {bookResultsLoading ? (
-                  <Center>
-                    <Spinner size="xl"/>
-                  </Center>
-                ) : (
-                  <Flex 
-                    gap={1}  
-                    direction="column"
-                  >
-                    {bookResults ? bookResults.map((book,i)=>{
-                      return (
-                        <React.Fragment key={i}>
-                          <Flex
-                            gap={2}
-                          >
-                            <Box flex="1 1 auto" maxW="50px">
-                              <Popover isLazy>
-                                <PopoverTrigger>
-                                  <Image
-                                    maxW="100%" 
-                                    w="100%"
-                                    h="auto"
-                                    className="book-image"
-                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                    src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
-                                    alt="book image"
-                                    _hover={{
-                                      cursor: "pointer"
-                                    }}
-                                  />
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                  <PopoverArrow />
-                                  <PopoverCloseButton />
-                                  <PopoverBody>{book.volumeInfo.description}</PopoverBody>
-                                </PopoverContent>
-                              </Popover>
-                            </Box>
-                            <Box flex="1 1 auto">
-                              <Heading
-                                as="h4"
-                                size="sm"
-                                noOfLines={1}
-                              >
-                                {book.volumeInfo.title}
-                              </Heading>
-                              <Text noOfLines={1}>
-                                {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
-                              </Text>
-                              <Flex align="center" gap={2}>
-                                <GooglePreviewLink book={book}/>
-                                <Button 
-                                  size="xs"
-                                  data-book={JSON.stringify(book)}
-                                  onClick={e=>selectBook(e)}
-                                  backgroundColor="black"
-                                  color="white"
-                                >
-                                  Set
-                                </Button>
-                              </Flex>
-                            </Box>
-                          </Flex>
-                          {i !== bookResults.length - 1 ? (
-                            <Divider/>
-                          ): null}
-                        </React.Fragment>
-                      )
-                    }) : null}
-                  </Flex>
-                )}
-              </Stack>
+              <GoogleBooksSearch selectText="set" selectCallback={selectBook} gBooksApi={gbooksapi}/>
             </ModalBody>
             <ModalFooter flexDirection="column">
             </ModalFooter>

@@ -50,6 +50,7 @@ import {
   useColorMode
 } from "@chakra-ui/react";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
+import GoogleBooksSearch from "../shared/GoogleBooksSearch";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { MdOutlineChat } from 'react-icons/md';
 import { BiDotsHorizontalRounded, BiTrash, BiPlus } from 'react-icons/bi';
@@ -216,13 +217,15 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   }
   const [bookToAdd,setBookToAdd] = useState<any | null>(null);
   function selectBookToAdd(e: any) {
-    const title = e.target.dataset.title;
-    const author = e.target.dataset.author;
-    const image = e.target.dataset.image;
-    const description = e.target.dataset.description;
-    const isbn = e.target.dataset.isbn;
-    const page_count = parseInt(e.target.dataset.pagecount);
-    const published_date = e.target.dataset.publisheddate;
+    const selectedBook = JSON.parse((e.target as HTMLDivElement).dataset.book!);
+    const image = selectedBook.volumeInfo.imageLinks ? selectedBook.volumeInfo.imageLinks.smallThumbnail : null;
+    const title = selectedBook.volumeInfo.title;
+    const author = selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null;
+    const description = selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null;
+    const isbn = selectedBook.volumeInfo.industryIdentifiers ? selectedBook.volumeInfo.industryIdentifiers[0].identifier : null;
+    const page_count = selectedBook.volumeInfo.pageCount ? parseInt(selectedBook.volumeInfo.pageCount) : null;
+    const published_date = selectedBook.volumeInfo.publishedDate ? selectedBook.volumeInfo.publishedDate : null;
+
     setBookToAdd({title,author,image,description,isbn,page_count,published_date})
     onCloseBookSearchModal();
   }
@@ -741,7 +744,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
               <Box>
                 <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
                   <Heading as="h3" size="md">
-                    Filter by Category
+                    Filter by Tags
                   </Heading>
 
                   {!showAddCategory && (
@@ -919,6 +922,9 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         </Popover>
                         <Text fontSize="lg">
                           {bookToAdd.author}
+                        </Text>
+                        <Text fontSize="lg">
+                          {bookToAdd.page_count} pages
                         </Text>
                         <Text>
                           {bookToAdd.published_date ? dayjs(bookToAdd.published_date).format("YYYY") : null}
@@ -1367,117 +1373,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             </ModalHeader>
             <ModalCloseButton />
               <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-                <Stack gap={2} position="relative">
-                  <Flex
-                    justify="space-between"
-                    align="center"
-                    gap={1}
-                  >
-                    <Input
-                      type="search"
-                      ref={searchBookRef}
-                      onKeyUp={e=>e.key === 'Enter' ? searchBookButtonRef.current.click() : null}
-                      borderColor="black"
-                      style={{
-                        background: `no-repeat url(${googleWatermark})`,
-                        backgroundPosition: "top 0px right 5px"
-                      }}
-                    />
-                    <Button
-                      onClick={e=>searchBook()}
-                      ref={searchBookButtonRef}
-                      borderColor="black"
-                      variant="outline"
-                    >
-                      Search
-                    </Button>
-                  </Flex>
-                  {bookResultsLoading ? (
-                    <Center>
-                      <Spinner size="xl"/>
-                    </Center>
-                  ) : (
-                    <Flex
-                      gap={1} 
-                      direction="column"
-                    >
-                      {bookResults ? bookResults.map((book,i)=>{
-                        return (
-                          <React.Fragment
-                            key={i}
-                          >
-                            <Flex
-                              gap={2}
-                            >
-                              <Box flex="1 1 auto" maxW="50px">
-                                <Popover isLazy>
-                                  <PopoverTrigger>
-                                    <Image
-                                      maxW="100%" 
-                                      w="100%"
-                                      h="auto"
-                                      className="book-image"
-                                      onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                      src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
-                                      alt="book image"
-                                      _hover={{
-                                        cursor: "pointer"
-                                      }}
-                                    />
-                                  </PopoverTrigger>
-                                  <PopoverContent>
-                                    <PopoverArrow />
-                                    <PopoverCloseButton />
-                                    <PopoverBody
-                                      _dark={{
-                                        bg: "black"
-                                      }}
-                                    >
-                                      {book.volumeInfo.description}
-                                    </PopoverBody>
-                                  </PopoverContent>
-                                </Popover>
-                              </Box>
-                              <Box flex="1 1 auto">
-                                <Heading
-                                  as="h4"
-                                  size="sm"
-                                  noOfLines={1}
-                                >
-                                  {book.volumeInfo.title}
-                                </Heading>
-                                <Text>
-                                  {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
-                                </Text>
-                                <Flex align="center" gap={2}>
-                                  <GooglePreviewLink book={book}/>
-                                  <Button 
-                                    size="xs"
-                                    data-title={book.volumeInfo.title}
-                                    data-author={book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
-                                    data-description={book.volumeInfo.description}
-                                    data-image={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : null}
-                                    data-isbn={book.volumeInfo.industryIdentifiers ? book.volumeInfo.industryIdentifiers[0].identifier : null}
-                                    data-pagecount={book.volumeInfo.pageCount ? book.volumeInfo.pageCount : null}
-                                    data-publisheddate={book.volumeInfo.publishedDate ? book.volumeInfo.publishedDate : null}
-                                    onClick={e=>selectBookToAdd(e)}
-                                    backgroundColor="black"
-                                    color="white"
-                                  >
-                                    Add
-                                  </Button>
-                                </Flex>
-                              </Box>
-                            </Flex>
-                            {i !== bookResults.length - 1 ? (
-                              <Divider/>
-                            ): null}
-                          </React.Fragment>
-                        )
-                      }) : null}
-                    </Flex>
-                  )}
-                </Stack>
+                <GoogleBooksSearch selectText="Add" selectCallback={selectBookToAdd} gBooksApi={gbooksapi}/>
               </ModalBody>
               <ModalFooter flexDirection="column">
               </ModalFooter>

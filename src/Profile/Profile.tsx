@@ -51,6 +51,7 @@ import {
 } from "@chakra-ui/react";
 import collectionToArray from "../utils/collectionToArray";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
+import GoogleBooksSearch from "../shared/GoogleBooksSearch";
 import { FiFile } from 'react-icons/fi';
 import { MdEdit, MdOutlineChat } from 'react-icons/md';
 import { BsPlusLg } from 'react-icons/bs';
@@ -328,31 +329,13 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
   } = useDisclosure()
 
   function closeReadingModal() {
-    setBookResults(null)
     onCloseReadingModal();
   }
 
   const whatImReadingRef = useRef({} as HTMLInputElement);
-  const [bookResults,setBookResults] = useState<any[] | null>(null);
-  const [bookResultsLoading,setBookResultsLoading] = useState(false)
-  async function searchBook() {
-    setBookResultsLoading(true)
-    await axios
-      .get("https://www.googleapis.com/books/v1/volumes?q=" + whatImReadingRef.current.value + "&key=" + gbooksapi)
-      .then((response)=>{
-        setBookResults(response.data.items)
-        setBookResultsLoading(false)
-        // onOpenReadingModal();
-      })
-      .catch((error)=>{
-        console.log(error)
-      })
-  }
-
   const [selectedBook,setSelectedBook] = useState<any | null>(null);
   function selectBook(e: React.FormEvent) {
     setSelectedBook(JSON.parse((e.target as HTMLDivElement).dataset.book!))
-    whatImReadingRef.current.value = "";
     closeReadingModal();
   }
 
@@ -694,12 +677,12 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
       })
   }
 
-  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf};
+  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf};
 }
 
 
 export default function Profile({server,gbooksapi}: ProfileProps) {
-  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,searchBook,bookResults,bookResultsLoading,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf} = useProfile({server,gbooksapi});
+  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf} = useProfile({server,gbooksapi});
 
   
 
@@ -2027,109 +2010,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                 </ModalHeader>
                 <ModalCloseButton />
                   <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-                    <Stack gap={2} position="relative">
-                      <Flex gap={2} align="center">
-                        <Input 
-                          type="text" 
-                          borderColor="black"
-                          size="lg"
-                          placeholder="What are you reading?" 
-                          _dark={{
-                            bg: "blackAlpha.400"
-                          }}
-                          ref={whatImReadingRef}
-                          onKeyDown={e=>e.key === 'Enter' ? searchBook() : null}
-                          style={{
-                            background: `no-repeat url(${googleWatermark})`,
-                            backgroundPosition: "top 0px right 5px"
-                          }}
-                        />
-                        <Button 
-                          borderColor="black"
-                          size="lg"
-                          variant="outline"
-                          onClick={searchBook}
-                        >
-                          Search
-                        </Button>
-                      </Flex>
-                      {bookResultsLoading ? (
-                        <Center>
-                          <Spinner size="xl"/>
-                        </Center>
-                      ) : (
-                        <Flex 
-                          gap={1} 
-                          direction="column"
-                        >
-                          {bookResults ? bookResults.map((book,i)=>{
-                            return (
-                              <React.Fragment key={i}>
-                                <Flex
-                                  gap={2}
-                                >
-                                  <Box flex="1 1 auto" maxW="50px">
-                                    <Popover isLazy>
-                                      <PopoverTrigger>
-                                      <Image
-                                        maxW="100%" 
-                                        w="100%"
-                                        h="auto"
-                                        className="book-image"
-                                        onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                        src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
-                                        alt="book image"
-                                        _hover={{
-                                          cursor: "pointer"
-                                        }}
-                                      />
-                                      </PopoverTrigger>
-                                      <PopoverContent>
-                                        <PopoverArrow />
-                                        <PopoverCloseButton />
-                                        <PopoverBody
-                                          _dark={{
-                                            bg: "black"
-                                          }}
-                                        >
-                                          {book.volumeInfo.description}
-                                        </PopoverBody>
-                                      </PopoverContent>
-                                    </Popover>
-                                  </Box>
-                                  <Box flex="1 1 auto">
-                                    <Heading
-                                      as="h4"
-                                      size="sm"
-                                    >
-                                      {book.volumeInfo.title}
-                                    </Heading>
-                                    <Text>
-                                      {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
-                                    </Text>
-                                    <Flex align="center" gap={2}>
-                                      <GooglePreviewLink book={book}/>
-                                      <Button 
-                                        size="xs"
-                                        data-book={JSON.stringify(book)}
-                                        onClick={e=>selectBook(e)}
-                                        backgroundColor="black"
-                                        color="white"
-                                      >
-                                        Set
-                                      </Button>
-                                    </Flex>
-                                  </Box>
-                                </Flex>
-                                {i !== bookResults.length - 1 ? (
-                                  <Divider/>
-                                ): null}
-                              </React.Fragment>
-                            )
-                          }) : null}
-                        </Flex>
-                      )}
-                    </Stack>
+                    <GoogleBooksSearch selectText="set" selectCallback={selectBook} gBooksApi={gbooksapi!}/>
                   </ModalBody>
                   <ModalFooter flexDirection="column">
                   <> 

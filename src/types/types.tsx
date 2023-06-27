@@ -392,3 +392,9 @@ export interface StarRatingType {
   starRatingId: number;
   defaultRating: number;
 }
+
+export interface GoogleBooksSearchType {
+  selectText: string;
+  selectCallback: (e: React.FormEvent<Element>)=>(Promise<void> | void);
+  gBooksApi: string;
+}
