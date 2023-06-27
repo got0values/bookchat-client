@@ -43,6 +43,7 @@ import {
   useToast,
   Link as ChakraLink,
 } from '@chakra-ui/react';
+import { SkipNavLink, SkipNavContent } from '@chakra-ui/skip-nav';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { BsArrowRight } from 'react-icons/bs';
 import { MdClose, MdLogout } from 'react-icons/md';
@@ -455,6 +456,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
 
   return (
     <>
+      <SkipNavLink zIndex="100">Skip to Content</SkipNavLink>
       <Box 
         as="nav" 
         bg="white" 
@@ -1034,6 +1036,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
       </Box>
 
       <Box as="main" id="main">
+        <SkipNavContent/>
         <Outlet />
       </Box>
     </>
