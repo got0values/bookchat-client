@@ -15,6 +15,7 @@ import {
   Popover,
   PopoverTrigger,
   PopoverCloseButton,
+  PopoverHeader,
   PopoverContent,
   PopoverBody,
   PopoverArrow
@@ -108,6 +109,7 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
                       <PopoverContent>
                         <PopoverArrow />
                         <PopoverCloseButton />
+                        <PopoverHeader>{book.volumeInfo.title}</PopoverHeader>
                         <PopoverBody>{book.volumeInfo.description}</PopoverBody>
                       </PopoverContent>
                     </Popover>
