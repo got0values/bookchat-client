@@ -823,6 +823,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                               <Avatar 
                                 key={i}
                                 src={follower.Profile_Following_self_profile_idToProfile?.profile_photo}
+                                name={follower.Profile_Following_self_profile_idToProfile?.username}
                                 title={follower.Profile_Following_self_profile_idToProfile?.username}
                                 cursor="pointer"
                               />
@@ -849,6 +850,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                               <Avatar 
                                 key={i}
                                 src={follower.Profile_Following_following_profile_idToProfile?.profile_photo}
+                                name={follower.Profile_Following_self_profile_idToProfile?.username}
                                 title={follower.Profile_Following_following_profile_idToProfile?.username}
                                 cursor="pointer"
                               />
@@ -2093,6 +2095,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                             <Avatar
                               size="sm"
                               src={f.Profile_Following_self_profile_idToProfile!.profile_photo}
+                              name={f.Profile_Following_self_profile_idToProfile!.username}
                               border="2px solid gray"
                             />
                             <Text>
@@ -2149,6 +2152,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           <Avatar
                             size="sm"
                             src={f.Profile_Following_following_profile_idToProfile!.profile_photo}
+                            name={f.Profile_Following_following_profile_idToProfile!.username}
                             border="2px solid gray"
                           />
                           <Text>

@@ -324,6 +324,7 @@ export default function BookClubs({server}: {server: string}) {
                                       size="xs"
                                       cursor="pointer"
                                       src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
+                                      name={bookClub.Profile.username}
                                       border="2px solid gray"
                                       title={`${bookClub.Profile.username}`}
                                     />
@@ -455,6 +456,7 @@ export default function BookClubs({server}: {server: string}) {
                                         size="xs"
                                         cursor="pointer"
                                         src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
+                                        name={bookClub.Profile.username}
                                         border="2px solid gray"
                                         title={`${bookClub.Profile.username}`}
                                       />
@@ -575,6 +577,7 @@ export default function BookClubs({server}: {server: string}) {
                                       size="xs"
                                       cursor="pointer"
                                       src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
+                                      name={bookClub.Profile.username}
                                       border="2px solid gray"
                                       title={`${bookClub.Profile.username}`}
                                     />

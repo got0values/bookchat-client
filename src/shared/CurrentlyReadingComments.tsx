@@ -115,6 +115,7 @@ const Comments: Function = (
                   size="sm"
                   cursor="pointer"
                   src={comment.Profile_CurrentlyReadingComment_commenter_idToProfile.profile_photo}
+                  name={comment.Profile_CurrentlyReadingComment_commenter_idToProfile.username}
                   border="1px solid gray"
                 />
               </Link>

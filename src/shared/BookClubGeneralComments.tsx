@@ -329,6 +329,7 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                                 size="md"
                                 cursor="pointer"
                                 src={`${comment.Profile.profile_photo}?x=${new Date().getTime()}`}
+                                name={comment.Profile.username}
                                 border="2px solid gray"
                               />
                             </Link>
@@ -401,6 +402,7 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                                           size="sm"
                                           cursor="pointer"
                                           src={reply.Profile.profile_photo}
+                                          name={reply.Profile.username}
                                           border="1px solid gray"
                                         />
                                       </Link>
@@ -502,6 +504,7 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                         size="md"
                         cursor="pointer"
                         src={commentReplyData?.Profile?.profile_photo}
+                        name={commentReplyData?.Profile?.username}
                         border="2px solid gray"
                       />
                     </Link>
@@ -545,6 +548,7 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                                 size="sm"
                                 cursor="pointer"
                                 src={reply.Profile.profile_photo}
+                                name={reply.Profile.username}
                                 border="1px solid gray"
                               />
                             </Link>

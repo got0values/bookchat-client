@@ -369,6 +369,7 @@ export default function ChatRoom({server}: {server: string}) {
               <Avatar
                 size="xs"
                 src={roomUser.profilePhoto}
+                name={roomUser.userName}
                 border="2px solid gray"
               />
               <Text>

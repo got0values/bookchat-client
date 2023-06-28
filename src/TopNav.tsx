@@ -607,6 +607,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                 <Avatar
                   size={'sm'}
                   src={profilePhoto ? profilePhoto : ""}
+                  name={user?.Profile.username}
                 >
                   {totalNotifications ? (
                   <AvatarBadge 
@@ -732,7 +733,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                       key={i}
                     >
                       <Flex align="center" gap={1}>
-                        <Avatar src={followRequest.Profile_Following_self_profile_idToProfile.profile_photo} size="sm"/>
+                        <Avatar src={followRequest.Profile_Following_self_profile_idToProfile.profile_photo} size="sm" name={followRequest.Profile_Following_self_profile_idToProfile.username}/>
                         <Text>
                           <Text
                             as={Link} 
@@ -779,7 +780,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                       key={i}
                     >
                       <Flex align="center" gap={1}>
-                        <Avatar src={bookClubRequest.Profile.profile_photo} size="sm"/>
+                        <Avatar src={bookClubRequest.Profile.profile_photo} size="sm" name={bookClubRequest.Profile.username}/>
                         <Text>
                           <Text
                             as={Link} 
@@ -833,7 +834,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                       key={i}
                     >
                       <Flex align="center" gap={1}>
-                        <Avatar src={comment.from_data?.profile_photo} size="sm"/>
+                        <Avatar src={comment.from_data?.profile_photo} size="sm" name={comment.from_data?.username}/>
                         <Text>
                           <Text
                             as={Link} 
@@ -881,7 +882,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                       key={i}
                     >
                       <Flex align="center" gap={1}>
-                        <Avatar src={reply.from_data?.profile_photo} size="sm"/>
+                        <Avatar src={reply.from_data?.profile_photo} size="sm" name={reply.from_data?.username}/>
                         <Text>
                           <Text
                             as={Link} 
@@ -952,6 +953,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                         <HStack>
                           <Avatar 
                             size="xs"
+                            name={profile.username}
                           />
                           <Text>
                             @{profile.username}
