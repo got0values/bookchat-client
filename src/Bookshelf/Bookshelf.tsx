@@ -53,7 +53,7 @@ import GooglePreviewLink from "../shared/GooglePreviewLink";
 import GoogleBooksSearch from "../shared/GoogleBooksSearch";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { MdOutlineChat } from 'react-icons/md';
-import { BiDotsHorizontalRounded, BiTrash, BiPlus } from 'react-icons/bi';
+import { BiDotsHorizontalRounded, BiTrash, BiPlus, BiHide } from 'react-icons/bi';
 import ReactQuill from 'react-quill';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -730,6 +730,47 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     saveDateMutation.mutate(id)
   }
 
+  const hideOrShowBookshelfBookMutation = useMutation({
+    mutationFn: async ([id,hideOrShow]: [number,string]) => {
+      let tokenCookie: string | null = Cookies.get().token;
+        await axios
+        .put(server + "/api/hideorshowbookshelfbook",
+          {
+            id: id,
+            hideOrShow: hideOrShow
+          },
+          {
+            headers: {
+              authorization: tokenCookie
+            }
+          }
+        )
+        .then((response)=>{
+          toast({
+            description: "Sucess",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          })
+        })
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data?.message) {
+            throw new Error(response.data?.message)
+          }
+        })
+      return getBookshelf()
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
+      queryClient.resetQueries({queryKey: ['bookshelfKey']})
+      queryClient.setQueryData(["bookshelfKey"],data)
+    }
+  })
+  function hideOrShowBookshelfBook([id,hideOrShow]:[number,string]) {
+    hideOrShowBookshelfBookMutation.mutate([id,hideOrShow])
+  }
+
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['bookshelfKey'], 
     queryFn: getBookshelf
@@ -1179,6 +1220,15 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             }}
                           >
                             {dayjs(book.created_on).local().format('MMM DD, YYYY')}
+                            {book.hidden ? (
+                              <Text 
+                                as="span"
+                                fontWeight="bold"
+                                fontSize="sm"
+                              >
+                                {" "} (Hidden)
+                              </Text>
+                            ): null}
                           </Text>
                           <Flex 
                             gap={1} 
@@ -1231,6 +1281,16 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             >
                               Chat Room
                             </MenuItem>
+
+                            <MenuItem
+                              data-id={book.id}
+                              onClick={e=>hideOrShowBookshelfBook([book.id,book.hidden ? "show" : "hide"])}
+                              fontWeight="bold"
+                              icon={<BiHide size={20} />}
+                            >
+                              {book.hidden ? "Unhide" : "Hide"} From Suggestions
+                            </MenuItem>
+
                             <MenuItem
                               color="tomato"
                               data-id={book.id}

@@ -366,6 +366,7 @@ export interface BookshelfBook {
   notes: string;
   rating: number;
   created_on: string;
+  hidden: number;
   BookshelfBookCategory: BookshelfCategory[];
 }
 
