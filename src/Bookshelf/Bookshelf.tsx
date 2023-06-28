@@ -1198,6 +1198,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             <Button
                               size="sm"
                               onClick={e=>hideInputBlock(book.id)}
+                              variant="outline"
+                              borderColor="black"
                             >
                               Cancel
                             </Button>
