@@ -1314,146 +1314,150 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                       </Flex>
                       <Stack>
                         {bookClub.next_meeting_start || bookClub.next_meeting_end ? (
-                        <Box
-                          className="well-card"
-                        >
-                        {bookClub.next_meeting_start || bookClub.next_meeting_end ? (
-                        <> 
-                          <Flex 
-                            gap={2} 
-                            fontWeight="bold" 
-                            justify="center"
-                            // p={2}
+                          <Box
+                            className="well-card"
                           >
-                            <Text>{bookClub.next_meeting_start ? dayjs(bookClub.next_meeting_start).local().format('MMM DD, h:mm a') : null}</Text>
-                            <Text>-</Text>
-                            <Text>{bookClub.next_meeting_end ? dayjs(bookClub.next_meeting_end).local().format('MMM DD, h:mm a'): null}</Text>
-                          </Flex>
-                          {dayjs(new Date()) < dayjs(bookClub.next_meeting_end) && dayjs(new Date()) > dayjs(bookClub.next_meeting_start) ? (
-                          <Center>
-                            <Button
-                              mb={2}
-                              backgroundColor="black"
-                              color="white"
-                              as={Link}
-                              to={`/chat/room?bookclub=${bookClub.name}`}
-                            >
-                              Join
-                            </Button>
-                          </Center>
-                          ) : null}
-                        </>
-                        ) : null}
-                          <Flex align="center" justify="space-between">
+                          {bookClub.next_meeting_start || bookClub.next_meeting_end ? (
+                          <> 
                             <Flex 
-                              alignItems="center" 
-                              flexWrap="wrap" 
-                              gap={1} 
-                              justifyContent="center" 
-                              ms={2}
+                              gap={2} 
+                              fontWeight="bold" 
+                              justify="center"
+                              // p={2}
                             >
+                              <Text>{bookClub.next_meeting_start ? dayjs(bookClub.next_meeting_start).local().format('MMM DD, h:mm a') : null}</Text>
+                              <Text>-</Text>
+                              <Text>{bookClub.next_meeting_end ? dayjs(bookClub.next_meeting_end).local().format('MMM DD, h:mm a'): null}</Text>
+                            </Flex>
+                            {dayjs(new Date()) < dayjs(bookClub.next_meeting_end) && dayjs(new Date()) > dayjs(bookClub.next_meeting_start) ? (
+                            <Center>
                               <Button
-                                variant="outline"
-                                borderColor="black"
-                                size="sm"
-                                display="flex"
-                                alignItems="center"
-                                gap={1}
-                                aria-label="add to google calendar"
+                                mb={2}
+                                backgroundColor="black"
+                                color="white"
                                 as={Link}
-                                target="_blank" 
-                                to={`https://calendar.google.com/calendar/render?action=TEMPLATE&ctz=US/Eastern&location=Online&dates=${new Date(bookClub.next_meeting_start).toISOString().replace(/[\W_]+/g,"")}/${new Date(bookClub.next_meeting_end).toISOString().replace(/[\W_]+/g,"")}&text=${bookClub.name}&trp=false`}
+                                to={`/chat/room?bookclub=${bookClub.name}`}
                               >
-                                <Icon as={FcGoogle}/> GCal
+                                Join
                               </Button>
-                              <Button
-                                variant="outline"
-                                borderColor="black"
-                                size="sm"
-                                display="flex"
-                                alignItems="center"
-                                gap={1}
-                                aria-label="add to icalendar"
-                                as={ICalendarLink}
-                                event={{
-                                  title: bookClub.name + " Book Club Meeting",
-                                  description: "",
-                                  startTime: dayjs(new Date(bookClub.next_meeting_start)).toISOString(),
-                                  endTime: dayjs(new Date(bookClub.next_meeting_end)).toISOString(),
-                                  location: "Online",
-                                  attendees: []
-                                }}
+                            </Center>
+                            ) : null}
+                          </>
+                          ) : null}
+                            <Flex align="center" justify="space-between">
+                              <Flex 
+                                alignItems="center" 
+                                flexWrap="wrap" 
+                                gap={1} 
+                                justifyContent="center" 
+                                ms={2}
                               >
-                                <Icon as={BsApple} mb={1}/>ICal
-                              </Button>
-                            </Flex>
-                            <Flex align="center">
-                              <>
-                                {rsvpCallbackMutation.error && (
-                                    <Text color="red">{(rsvpCallbackMutation.error as Error).message}</Text>
-                                  )
-                                }
-                                {unRsvpCallbackMutation.error && (
-                                    <Text color="red">{(unRsvpCallbackMutation.error as Error).message}</Text>
-                                  )
-                                }
+                                <Button
+                                  variant="outline"
+                                  borderColor="black"
+                                  size="sm"
+                                  display="flex"
+                                  alignItems="center"
+                                  gap={1}
+                                  aria-label="add to google calendar"
+                                  as={Link}
+                                  target="_blank" 
+                                  to={`https://calendar.google.com/calendar/render?action=TEMPLATE&ctz=US/Eastern&location=Online&dates=${new Date(bookClub.next_meeting_start).toISOString().replace(/[\W_]+/g,"")}/${new Date(bookClub.next_meeting_end).toISOString().replace(/[\W_]+/g,"")}&text=${bookClub.name}&trp=false`}
+                                >
+                                  <Icon as={FcGoogle}/> GCal
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  borderColor="black"
+                                  size="sm"
+                                  display="flex"
+                                  alignItems="center"
+                                  gap={1}
+                                  aria-label="add to icalendar"
+                                  as={ICalendarLink}
+                                  event={{
+                                    title: bookClub.name + " Book Club Meeting",
+                                    description: "",
+                                    startTime: dayjs(new Date(bookClub.next_meeting_start)).toISOString(),
+                                    endTime: dayjs(new Date(bookClub.next_meeting_end)).toISOString(),
+                                    location: "Online",
+                                    attendees: []
+                                  }}
+                                >
+                                  <Icon as={BsApple} mb={1}/>ICal
+                                </Button>
+                              </Flex>
+                              <Flex align="center">
+                                <>
+                                  {rsvpCallbackMutation.error && (
+                                      <Text color="red">{(rsvpCallbackMutation.error as Error).message}</Text>
+                                    )
+                                  }
+                                  {unRsvpCallbackMutation.error && (
+                                      <Text color="red">{(unRsvpCallbackMutation.error as Error).message}</Text>
+                                    )
+                                  }
 
-                                {!rsvpStatus ? (
-                                  <Button
-                                    backgroundColor="black"
-                                    color="white"
-                                    size="sm"
-                                    m={1}
-                                    disabled={rsvpCallbackMutation.isLoading}
-                                    onClick={rsvpCallback}
-                                  >
-                                    RSVP
-                                  </Button>
-                                ) : (
-                                  <Button
-                                    colorScheme="red"
-                                    variant="outline"
-                                    size="sm"
-                                    disabled={rsvpCallbackMutation.isLoading}
-                                    onClick={unRsvpCallback}
-                                  >
-                                    Un-RSVP
-                                  </Button>
-                                )}
-                                {bookClub?.BookClubMeetingRsvp.length ? (
-                                  <Popover isLazy>
-                                    <PopoverTrigger>
-                                      <Button size="xs" opacity="65%" variant="ghost" m={1}>View RSVP List</Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent>
-                                      <PopoverArrow />
-                                      <PopoverCloseButton />
-                                      <PopoverHeader>RSVP List</PopoverHeader>
-                                      <PopoverBody
-                                        _dark={{
-                                          bg: "black"
-                                        }}
-                                      >
-                                        {bookClub?.BookClubMeetingRsvp.map((rsvp,i)=>{
-                                          return (
-                                            <Text key={i}>
-                                              <Link
-                                                to={`/profile/${rsvp.Profile.username}`}
-                                              >
-                                                {rsvp.Profile.username}
-                                              </Link>
-                                            </Text>
-                                          )
-                                        })}
-                                      </PopoverBody>
-                                    </PopoverContent>
-                                  </Popover>
-                                ) : null}
-                              </>
+                                  {!rsvpStatus ? (
+                                    <Button
+                                      backgroundColor="black"
+                                      color="white"
+                                      size="sm"
+                                      m={1}
+                                      disabled={rsvpCallbackMutation.isLoading}
+                                      onClick={rsvpCallback}
+                                    >
+                                      RSVP
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      colorScheme="red"
+                                      variant="outline"
+                                      size="sm"
+                                      disabled={rsvpCallbackMutation.isLoading}
+                                      onClick={unRsvpCallback}
+                                    >
+                                      Un-RSVP
+                                    </Button>
+                                  )}
+                                  {bookClub?.BookClubMeetingRsvp.length ? (
+                                    <Popover isLazy>
+                                      <PopoverTrigger>
+                                        <Button size="xs" opacity="65%" variant="ghost" m={1}>View RSVP List</Button>
+                                      </PopoverTrigger>
+                                      <PopoverContent>
+                                        <PopoverArrow />
+                                        <PopoverCloseButton />
+                                        <PopoverHeader>RSVP List</PopoverHeader>
+                                        <PopoverBody
+                                          _dark={{
+                                            bg: "black"
+                                          }}
+                                        >
+                                          {bookClub?.BookClubMeetingRsvp.map((rsvp,i)=>{
+                                            return (
+                                              <Text key={i}>
+                                                <Link
+                                                  to={`/profile/${rsvp.Profile.username}`}
+                                                >
+                                                  {rsvp.Profile.username}
+                                                </Link>
+                                              </Text>
+                                            )
+                                          })}
+                                        </PopoverBody>
+                                      </PopoverContent>
+                                    </Popover>
+                                  ) : null}
+                                </>
+                              </Flex>
                             </Flex>
-                          </Flex>
-                        </Box>
-                      ) : null}
+                          </Box>
+                        ) : (
+                          <Text fontStyle="italic">
+                            No meetings scheduled yet
+                          </Text>
+                        )}
                       </Stack>
                     </Flex>
 

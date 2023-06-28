@@ -278,6 +278,8 @@ export default function BookClubs({server}: {server: string}) {
                         (bookClubsJoined as BookClubsType[]).map((bookClub, i)=>{
                           return (
                             <Flex 
+                              as={Link}
+                              to={`/bookclubs/${bookClub.id}`}
                               className="well-card"
                               direction="column"
                               justify="space-between"
@@ -291,52 +293,50 @@ export default function BookClubs({server}: {server: string}) {
                               onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
                               key={i}
                             >
-                              <Link to={`/bookclubs/${bookClub.id}`}>
-                                <Flex
-                                  align="start" 
-                                  justify="space-between" 
-                                  wrap="wrap"
-                                  rowGap={2}
-                                >
-                                  <Flex direction="column" gap={1}>
-                                    <Heading as="h4" size="sm" noOfLines={1}>
-                                      {bookClub.name}
-                                    </Heading>
-                                    {bookClub.BookClubBook[0] ? (
-                                    <Flex gap={2}>
-                                      <Box>
-                                        <Image 
-                                          src={bookClub.BookClubBook[0].image}
-                                          alt={bookClub.BookClubBook[0].title}
-                                          maxH="50px"
-                                          boxShadow="1px 1px 1px 1px darkgrey"
-                                        />
-                                      </Box>
-                                      <Box>
-                                        <Text fontStyle="italic">{bookClub.BookClubBook[0].title}</Text>
-                                        <Text>{bookClub.BookClubBook[0].author}</Text>
-                                      </Box>
-                                    </Flex>
-                                    ) : null}
+                              <Flex
+                                align="start" 
+                                justify="space-between" 
+                                wrap="wrap"
+                                rowGap={2}
+                              >
+                                <Flex direction="column" gap={1}>
+                                  <Heading as="h4" size="sm" noOfLines={1}>
+                                    {bookClub.name}
+                                  </Heading>
+                                  {bookClub.BookClubBook[0] ? (
+                                  <Flex gap={2}>
+                                    <Box>
+                                      <Image 
+                                        src={bookClub.BookClubBook[0].image}
+                                        alt={bookClub.BookClubBook[0].title}
+                                        maxH="50px"
+                                        boxShadow="1px 1px 1px 1px darkgrey"
+                                      />
+                                    </Box>
+                                    <Box>
+                                      <Text fontStyle="italic">{bookClub.BookClubBook[0].title}</Text>
+                                      <Text>{bookClub.BookClubBook[0].author}</Text>
+                                    </Box>
                                   </Flex>
-                                  <Flex align="center" gap={1} marginLeft="auto">
-                                    <Avatar
-                                      size="xs"
-                                      cursor="pointer"
-                                      src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
-                                      name={bookClub.Profile.username}
-                                      border="2px solid gray"
-                                      title={`${bookClub.Profile.username}`}
-                                    />
-                                    <Text fontWeight="bold">
-                                      {bookClub.Profile.username}
-                                    </Text>
-                                  </Flex>
+                                  ) : null}
                                 </Flex>
-                                <Text>
-                                    {bookClub.about}
-                                </Text>
-                              </Link>
+                                <Flex align="center" gap={1} marginLeft="auto">
+                                  <Avatar
+                                    size="xs"
+                                    cursor="pointer"
+                                    src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
+                                    name={bookClub.Profile.username}
+                                    border="2px solid gray"
+                                    title={`${bookClub.Profile.username}`}
+                                  />
+                                  <Text fontWeight="bold">
+                                    {bookClub.Profile.username}
+                                  </Text>
+                                </Flex>
+                              </Flex>
+                              <Text>
+                                  {bookClub.about}
+                              </Text>
                             </Flex>
                           )
                         })
@@ -412,6 +412,8 @@ export default function BookClubs({server}: {server: string}) {
                           return (
                             <Fade in={true} key={i}>
                               <Flex 
+                                as={Link}
+                                to={`/bookclubs/${bookClub.id}`}
                                 className="well-card"
                                 direction="column"
                                 justify="space-between"
@@ -423,129 +425,7 @@ export default function BookClubs({server}: {server: string}) {
                                 }}
                                 overflowX="auto"
                               >
-                                <Link to={`/bookclubs/${bookClub.id}`}>
-                                  <Flex 
-                                    align="start" 
-                                    justify="space-between" 
-                                    wrap="wrap"
-                                    rowGap={2}
-                                  >
-                                    <Flex direction="column" gap={1}>
-                                      <Heading as="h4" size="sm" noOfLines={1}>
-                                        {bookClub.name}
-                                      </Heading>
-                                      {bookClub.BookClubBook[0] ? (
-                                      <Flex gap={2}>
-                                        <Box>
-                                          <Image 
-                                            src={bookClub.BookClubBook[0].image}
-                                            alt={bookClub.BookClubBook[0].title}
-                                            maxH="50px"
-                                            boxShadow="1px 1px 1px 1px darkgrey"
-                                          />
-                                        </Box>
-                                        <Box>
-                                          <Text fontStyle="italic">{bookClub.BookClubBook[0].title}</Text>
-                                          <Text>{bookClub.BookClubBook[0].author}</Text>
-                                        </Box>
-                                      </Flex>
-                                      ) : null}
-                                    </Flex>
-                                    <Flex align="center" gap={1} marginLeft="auto">
-                                      <Avatar
-                                        size="xs"
-                                        cursor="pointer"
-                                        src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
-                                        name={bookClub.Profile.username}
-                                        border="2px solid gray"
-                                        title={`${bookClub.Profile.username}`}
-                                      />
-                                        <Text fontWeight="bold">
-                                          {bookClub.Profile.username}
-                                        </Text>
-                                    </Flex>
-                                  </Flex>
-                                  <Flex align="center" justify="space-between" flexWrap="wrap">
-                                    <Text>
-                                      {bookClub.about}
-                                    </Text>
-                                    <Flex align="center" flexWrap="wrap" gap={1}>
-                                      {JSON.parse(bookClub.groups).length ? (
-                                        JSON.parse(bookClub.groups).map((group: string, i: number, array: any[])=>{
-                                          const cScheme = genres.filter((genre)=>genre.value === group)[0].color;
-                                          const genreName = genres.filter((genre)=>genre.value === group)[0].name;
-                                          if (i < 3) {
-                                            return (
-                                              <Tag 
-                                                colorScheme={cScheme}
-                                                size="sm"
-                                                fontWeight="bold"
-                                                key={i}
-                                              >
-                                                {genreName}
-                                              </Tag>
-                                            )
-                                          }
-                                          else if (i === array.length - 1) {
-                                            return (
-                                              <Tag
-                                                size="sm"
-                                                fontWeight="bold"
-                                                key={i}
-                                              >
-                                                {`+${(array.length - 3).toString()} more`}
-                                              </Tag>
-                                            )
-                                          }
-                                        })
-                                      ) : (
-                                        <Tag
-                                          colorScheme="yellow"
-                                          size="sm"
-                                          fontWeight="bold"
-                                        >
-                                          All genres
-                                        </Tag>
-                                      )}
-                                    </Flex>
-                                  </Flex>
-                                </Link>
-                              </Flex>
-                            </Fade>
-                          )
-                        })
-                      ) : null}
-                    </Box>
-                  </Box>
-
-                  <Box className="well">
-                  <Flex align="center" justify="space-between" gap={2} mb={2}>
-                    <Heading as="h3" size="md">
-                      Public
-                    </Heading>
-                  </Flex>
-
-                  <Box>
-                    {bookClubsPublic && bookClubsPublic.length ? (
-                      (bookClubsPublic as BookClubsType[]).map((bookClub, i)=>{
-                        return (
-                          <Fade in={true} key={i}>
-                            <Flex 
-                              className="well-card"
-                              direction="column"
-                              justify="space-between"
-                              mx={0}
-                              _hover={{
-                                bg: "gray.200",
-                                cursor: "pointer"
-                              }}
-                              overflowX="auto"
-                              onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
-                              minH="125px"
-                              key={i}
-                            >
-                              <Link to={`/bookclubs/${bookClub.id}`}>
-                                <Flex
+                                <Flex 
                                   align="start" 
                                   justify="space-between" 
                                   wrap="wrap"
@@ -573,7 +453,7 @@ export default function BookClubs({server}: {server: string}) {
                                     ) : null}
                                   </Flex>
                                   <Flex align="center" gap={1} marginLeft="auto">
-                                    <Avatar 
+                                    <Avatar
                                       size="xs"
                                       cursor="pointer"
                                       src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
@@ -581,9 +461,9 @@ export default function BookClubs({server}: {server: string}) {
                                       border="2px solid gray"
                                       title={`${bookClub.Profile.username}`}
                                     />
-                                    <Text fontWeight="bold">
-                                      {bookClub.Profile.username}
-                                    </Text>
+                                      <Text fontWeight="bold">
+                                        {bookClub.Profile.username}
+                                      </Text>
                                   </Flex>
                                 </Flex>
                                 <Flex align="center" justify="space-between" flexWrap="wrap">
@@ -630,7 +510,127 @@ export default function BookClubs({server}: {server: string}) {
                                     )}
                                   </Flex>
                                 </Flex>
-                              </Link>
+                              </Flex>
+                            </Fade>
+                          )
+                        })
+                      ) : null}
+                    </Box>
+                  </Box>
+
+                  <Box className="well">
+                  <Flex align="center" justify="space-between" gap={2} mb={2}>
+                    <Heading as="h3" size="md">
+                      Public
+                    </Heading>
+                  </Flex>
+
+                  <Box>
+                    {bookClubsPublic && bookClubsPublic.length ? (
+                      (bookClubsPublic as BookClubsType[]).map((bookClub, i)=>{
+                        return (
+                          <Fade in={true} key={i}>
+                            <Flex 
+                              as={Link}
+                              to={`/bookclubs/${bookClub.id}`}
+                              className="well-card"
+                              direction="column"
+                              justify="space-between"
+                              mx={0}
+                              _hover={{
+                                bg: "gray.200",
+                                cursor: "pointer"
+                              }}
+                              overflowX="auto"
+                              onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
+                              minH="125px"
+                              key={i}
+                            >
+                              <Flex
+                                align="start" 
+                                justify="space-between" 
+                                wrap="wrap"
+                                rowGap={2}
+                              >
+                                <Flex direction="column" gap={1}>
+                                  <Heading as="h4" size="sm" noOfLines={1}>
+                                    {bookClub.name}
+                                  </Heading>
+                                  {bookClub.BookClubBook[0] ? (
+                                  <Flex gap={2}>
+                                    <Box>
+                                      <Image 
+                                        src={bookClub.BookClubBook[0].image}
+                                        alt={bookClub.BookClubBook[0].title}
+                                        maxH="50px"
+                                        boxShadow="1px 1px 1px 1px darkgrey"
+                                      />
+                                    </Box>
+                                    <Box>
+                                      <Text fontStyle="italic">{bookClub.BookClubBook[0].title}</Text>
+                                      <Text>{bookClub.BookClubBook[0].author}</Text>
+                                    </Box>
+                                  </Flex>
+                                  ) : null}
+                                </Flex>
+                                <Flex align="center" gap={1} marginLeft="auto">
+                                  <Avatar 
+                                    size="xs"
+                                    cursor="pointer"
+                                    src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
+                                    name={bookClub.Profile.username}
+                                    border="2px solid gray"
+                                    title={`${bookClub.Profile.username}`}
+                                  />
+                                  <Text fontWeight="bold">
+                                    {bookClub.Profile.username}
+                                  </Text>
+                                </Flex>
+                              </Flex>
+                              <Flex align="center" justify="space-between" flexWrap="wrap">
+                                <Text>
+                                  {bookClub.about}
+                                </Text>
+                                <Flex align="center" flexWrap="wrap" gap={1}>
+                                  {JSON.parse(bookClub.groups).length ? (
+                                    JSON.parse(bookClub.groups).map((group: string, i: number, array: any[])=>{
+                                      const cScheme = genres.filter((genre)=>genre.value === group)[0].color;
+                                      const genreName = genres.filter((genre)=>genre.value === group)[0].name;
+                                      if (i < 3) {
+                                        return (
+                                          <Tag 
+                                            colorScheme={cScheme}
+                                            size="sm"
+                                            fontWeight="bold"
+                                            key={i}
+                                          >
+                                            {genreName}
+                                          </Tag>
+                                        )
+                                      }
+                                      else if (i === array.length - 1) {
+                                        return (
+                                          <Tag
+                                            size="sm"
+                                            fontWeight="bold"
+                                            key={i}
+                                          >
+                                            {`+${(array.length - 3).toString()} more`}
+                                          </Tag>
+                                        )
+                                      }
+                                    })
+                                  ) : (
+                                    <Tag
+                                      colorScheme="yellow"
+                                      size="sm"
+                                      fontWeight="bold"
+                                    >
+                                      All genres
+                                    </Tag>
+                                  )}
+                                </Flex>
+                              </Flex>
                             </Flex>
                           </Fade>
                         )
