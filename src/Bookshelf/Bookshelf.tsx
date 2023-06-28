@@ -239,7 +239,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
           {
             book: bookToAdd,
             categories: bookToAddCategories,
-            notes: notesRef.current.value
+            notes: notesRef.current.value,
+            rating: null
           },
           {headers: {
             'authorization': tokenCookie
@@ -606,10 +607,12 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
         const rowData = (csvdata as string).split('\n');
         for (let i=1;i<rowData.length;i++){
           if (rowData[i] !== '') {
-            const cellData = rowData[i].split(",")
-            const title = cellData[1]?.replace(/\s/g,'+');
-            const author = cellData[2]?.replace(/\s/g,'+');
-            const isbn = cellData[6];
+            const cellData = rowData[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/g);
+            const title = cellData[1]?.replace(/\s/g,'+').replace(/[="]/g,"");
+            const author = cellData[2]?.replace(/\s/g,'+').replace(/[="]/g,"");
+            const isbn = cellData[5].replace(/[="]/g,"");
+            const rating = parseInt(cellData[7]);
+            const dateAdded = dayjs(cellData[15]).utc().format('YYYY-MM-DD mm:HH:ss');
             await axios
               .get(`https://www.googleapis.com/books/v1/volumes?q=${title}+${author}+${isbn}&key=${gbooksapi}`)
               .then(async (result)=>{
@@ -620,7 +623,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     author: bookResult.volumeInfo.authors ? bookResult.volumeInfo.authors[0] : null,
                     image: bookResult.volumeInfo.imageLinks?.smallThumbnail ? bookResult.volumeInfo.imageLinks.smallThumbnail : null,
                     description: bookResult.volumeInfo.description ? bookResult.volumeInfo.description : "",
-                    isbn: bookResult.volumeInfo.industryIdentifiers ? bookResult.volumeInfo.industryIdentifiers[1].identifier : null,
+                    isbn: bookResult.volumeInfo.industryIdentifiers ? bookResult.volumeInfo.industryIdentifiers[0].identifier : null,
                     page_count: bookResult.volumeInfo.pageCount ? bookResult.volumeInfo.pageCount : null,
                     published_date: bookResult.volumeInfo.publishedDate ? bookResult.volumeInfo.publishedDate : null
                   }
@@ -630,6 +633,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       {
                         book: book,
                         categories: bookToAddCategories,
+                        rating: rating,
+                        dateAdded: dateAdded,
                         notes: notesRef.current.value
                       },
                       {headers: {
