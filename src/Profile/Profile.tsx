@@ -850,7 +850,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                               <Avatar 
                                 key={i}
                                 src={follower.Profile_Following_following_profile_idToProfile?.profile_photo}
-                                name={follower.Profile_Following_self_profile_idToProfile?.username}
+                                name={follower.Profile_Following_following_profile_idToProfile?.username}
                                 title={follower.Profile_Following_following_profile_idToProfile?.username}
                                 cursor="pointer"
                               />
