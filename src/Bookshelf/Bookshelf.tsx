@@ -1165,10 +1165,12 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             id={`date-text-${book.id}`}
                             rounded="md"
                             px={1}
+                            role="button"
                             onClick={e=>editDate(book.id)}
                             _hover={{
                               bg: "lightgray",
-                              cursor: "pointer"
+                              cursor: "pointer",
+                              color: "black"
                             }}
                           >
                             {dayjs(book.created_on).local().format('MMM DD, YYYY')}
