@@ -666,6 +666,64 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     }
   }
   
+  function editDate(id: number) {
+    const dateText = document.getElementById(`date-text-${id}`);
+    const dateInputBlock = document.getElementById(`date-input-block-${id}`)
+    dateText!.style.display = "none";
+    dateInputBlock!.style.display = "flex";
+  }
+  function hideInputBlock(id: number) {
+    const dateText = document.getElementById(`date-text-${id}`);
+    const dateInputBlock = document.getElementById(`date-input-block-${id}`);
+    dateText!.style.display = "block";
+    dateInputBlock!.style.display = "none";
+  }
+  const saveDateMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const dateInput = document.getElementById(`date-input-${id}`);
+      const date = dayjs((dateInput as HTMLInputElement)!.value).utc().format('YYYY-MM-DD mm:HH:ss');
+      let tokenCookie: string | null = Cookies.get().token;
+        await axios
+        .put(server + "/api/savebookshelfbookdate",
+          {
+            id: id,
+            date: date
+          },
+          {
+            headers: {
+              authorization: tokenCookie
+            }
+          }
+        )
+        .then((response)=>{
+          const dateText = document.getElementById(`date-text-${id}`);
+          const dateInputBlock = document.getElementById(`date-input-block-${id}`);
+          dateInputBlock!.style.display = "none";
+          dateText!.style.display = "block";
+          toast({
+            description: "Date saved",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          })
+        })
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data?.message) {
+            throw new Error(response.data?.message)
+          }
+        })
+      return getBookshelf()
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
+      queryClient.resetQueries({queryKey: ['bookshelfKey']})
+      queryClient.setQueryData(["bookshelfKey"],data)
+    }
+  })
+  function saveDate(id: number) {
+    saveDateMutation.mutate(id)
+  }
 
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['bookshelfKey'], 
@@ -1101,9 +1159,48 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         align="center"
                         justify="space-between"
                       >
-                        <Text fontStyle="italic">
-                          {dayjs(book.created_on).local().format('MMM DD, YYYY')}
-                        </Text>
+                        <Box>
+                          <Text 
+                            fontStyle="italic"
+                            id={`date-text-${book.id}`}
+                            rounded="md"
+                            px={1}
+                            onClick={e=>editDate(book.id)}
+                            _hover={{
+                              bg: "lightgray",
+                              cursor: "pointer"
+                            }}
+                          >
+                            {dayjs(book.created_on).local().format('MMM DD, YYYY')}
+                          </Text>
+                          <Flex 
+                            gap={1} 
+                            align="center"
+                            id={`date-input-block-${book.id}`}
+                            display="none"
+                          >
+                            <Input
+                              type="date"
+                              defaultValue={dayjs(book.created_on).local().format("YYYY-MM-DD")}
+                              id={`date-input-${book.id}`}
+                              size="sm"
+                            />
+                            <Button
+                              backgroundColor="black"
+                              color="white"
+                              size="sm"
+                              onClick={e=>saveDate(book.id)}
+                            >
+                              Save
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={e=>hideInputBlock(book.id)}
+                            >
+                              Cancel
+                            </Button>
+                          </Flex>
+                        </Box>
                         <Menu>
                           <MenuButton 
                             as={Button}
