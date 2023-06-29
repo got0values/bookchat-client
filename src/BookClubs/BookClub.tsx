@@ -1112,7 +1112,10 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                         )
                       )}
                     </Flex>
-                    <Box>
+                    <Box
+                      maxHeight="25vh"
+                      overflowX="auto"
+                    >
                       <Box
                         as={Link}
                         to={`/profile/${bookClub.Profile.username}`}
