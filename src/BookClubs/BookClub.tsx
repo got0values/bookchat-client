@@ -38,6 +38,7 @@ import {
   useDisclosure,
   useToast,
   Input,
+  Tooltip,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink
@@ -54,6 +55,7 @@ import { AiOutlinePlus } from 'react-icons/ai';
 import { TbBooks } from 'react-icons/tb';
 import { MdChevronRight } from 'react-icons/md';
 import { BookClubGeneralComments } from "../shared/BookClubGeneralComments";
+import { ImInfo } from 'react-icons/im';
 import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -1303,7 +1305,18 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
 
                     <Flex className="well" direction="column" gap={2}>
                       <Flex align="center" justify="space-between">
-                        <Heading as="h4" size="md">Next Chat Meeting</Heading>
+                        <Flex align="center" gap={2}>
+                          <Heading as="h4" size="md">Next Chat Meeting</Heading>
+                          <Tooltip
+                            label="The meeting link will appear at start time"
+                            aria-label="meeting tooltip"
+                            hasArrow
+                          >
+                            <Box>
+                              <ImInfo size={20}/>
+                            </Box>
+                          </Tooltip>
+                        </Flex>
                         {isBookClubCreator ? (
                           <Button
                             variant="ghost"
@@ -1326,6 +1339,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                               gap={2} 
                               fontWeight="bold" 
                               justify="center"
+                              mb={2}
                               // p={2}
                             >
                               <Text>{bookClub.next_meeting_start ? dayjs(bookClub.next_meeting_start).local().format('MMM DD, h:mm a') : null}</Text>
