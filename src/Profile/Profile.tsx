@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent, Key, ReactComponentElement } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent, Suspense } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ProfileProps, HTMLInputEvent, ProfileType, Following_Following_following_profile_idToProfile, BookshelfBook } from '../types/types';
@@ -84,6 +84,9 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
 
   //self, nonFollower, requesting, follower
   const [ viewer, setViewer ] = useState("nonFollower");
+  const [items, setItems] = useState(5);
+  const [theEnd,setTheEnd] = useState(false);
+  const [currentlyReadingLength,setCurrentlyReadingLength] = useState(0)
   async function getProfile() {
     const tokenCookie = Cookies.get().token;
     if (tokenCookie) {
@@ -117,6 +120,7 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
                 setViewer("nonFollower")
                 break;
             }
+            setCurrentlyReadingLength(responseProfileData.CurrentlyReading.length)
             return responseProfileData;
           }
       })
@@ -129,6 +133,32 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
       throw new Error("TCP102")
     }
   }
+
+  //lazy loading
+  const [isFetching,setIsFetching] = useState(false)
+  function handleScroll() {
+    if (Math.ceil(window.innerHeight + document.documentElement.scrollTop) !== document.documentElement.offsetHeight || isFetching) {
+      return;
+    }
+    setIsFetching(true);
+  }
+  useEffect(()=>{
+    window.addEventListener("scroll",handleScroll)
+  },[])
+  useEffect(()=>{
+    if (!isFetching || theEnd) return;
+    setItems(prev=>{
+      if (prev + 3 > currentlyReadingLength) {
+        const left = currentlyReadingLength - prev;
+        setTheEnd(true)
+        return prev + left;
+      }
+      else {
+        return prev + 5;
+      }
+    })
+    setIsFetching(false)
+  },[isFetching])
 
   const [profileActionError,setProfileActionError] = useState<string>("")
 
@@ -677,12 +707,12 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
       })
   }
 
-  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf};
+  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf,isFetching,items,theEnd};
 }
 
 
 export default function Profile({server,gbooksapi}: ProfileProps) {
-  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf} = useProfile({server,gbooksapi});
+  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf,isFetching,items,theEnd} = useProfile({server,gbooksapi});
 
   
 
@@ -1070,13 +1100,13 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           <Text fontStyle="italic">
                             {
                               dayjs(profileData
-                                .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                .CurrentlyReading[0]
                                 .created_on).local().format('MMM DD, h:mm a')
                             }
                           </Text>
                           <Flex align="center" gap={1}>
                             <Text>
-                              {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? <i>hidden</i> : ""}
+                              {profileData.CurrentlyReading[0].hidden ? <i>hidden</i> : ""}
                             </Text>
                             <Box>
                               <Menu>
@@ -1091,7 +1121,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 </MenuButton>
                                 <MenuList>
                                   <MenuItem 
-                                    data-book={JSON.stringify(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1])}
+                                    data-book={JSON.stringify(profileData.CurrentlyReading[0])}
                                     onClick={e=>openCommentModal(e)}
                                     fontWeight="bold"
                                     icon={<BsReplyFill size={20} />}
@@ -1100,7 +1130,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   </MenuItem>
                                   <MenuItem 
                                     as={Link}
-                                    to={`/chat/room?title=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title}&author=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author}`}
+                                    to={`/chat/room?title=${profileData.CurrentlyReading[0].title}&author=${profileData.CurrentlyReading[0].author}`}
                                     fontWeight="bold"
                                     icon={<MdOutlineChat size={20} />}
                                   >
@@ -1110,13 +1140,13 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   <>
                                     <MenuItem
                                       onClick={e=>addToBookshelf({
-                                        image: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].image,
-                                        title: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title,
-                                        author: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author,
-                                        description: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].description,
-                                        isbn: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].isbn ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].isbn : "",
-                                        page_count: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].page_count ? parseInt(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].page_count as any) : null,
-                                        published_date: profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].published_date ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].published_date : "",
+                                        image: profileData.CurrentlyReading[0].image,
+                                        title: profileData.CurrentlyReading[0].title,
+                                        author: profileData.CurrentlyReading[0].author,
+                                        description: profileData.CurrentlyReading[0].description,
+                                        isbn: profileData.CurrentlyReading[0].isbn ? profileData.CurrentlyReading[0].isbn : "",
+                                        page_count: profileData.CurrentlyReading[0].page_count ? parseInt(profileData.CurrentlyReading[0].page_count as any) : null,
+                                        published_date: profileData.CurrentlyReading[0].published_date ? profileData.CurrentlyReading[0].published_date : "",
                                       })}
                                       fontWeight="bold"
                                       icon={<ImBooks size={20} />}
@@ -1124,17 +1154,17 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       Add to Bookshelf
                                     </MenuItem>
                                     <MenuItem
-                                      data-readingid={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}
-                                      data-hide={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? false : true}
+                                      data-readingid={profileData.CurrentlyReading[0].id}
+                                      data-hide={profileData.CurrentlyReading[0].hidden ? false : true}
                                       onClick={e=>hideReading(e as any)}
                                       fontWeight="bold"
                                       icon={<BiHide size={20} />}
                                     >
-                                      {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].hidden ? "Unhide" : "Hide"}
+                                      {profileData.CurrentlyReading[0].hidden ? "Unhide" : "Hide"}
                                     </MenuItem>
                                     <MenuItem
                                       color="tomato"
-                                      onClick={e=>deleteReading(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
+                                      onClick={e=>deleteReading(profileData.CurrentlyReading[0].id)}
                                       fontWeight="bold"
                                       icon={<BiTrash size={20} />}
                                     >
@@ -1155,26 +1185,26 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                             cursor: viewer === "self" ? "pointer" : "default",
                             backgroundColor: viewer === "self" ? "gray" : "unset"
                           }}
-                          id={`currently-reading-text-${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}`}
-                          onClick={e=>editCurrentlyReadingThoughts(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
+                          id={`currently-reading-text-${profileData.CurrentlyReading[0].id}`}
+                          onClick={e=>editCurrentlyReadingThoughts(profileData.CurrentlyReading[0].id)}
                         >
-                          {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].thoughts ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].thoughts : null}
+                          {profileData.CurrentlyReading[0].thoughts ? profileData.CurrentlyReading[0].thoughts : null}
                         </Text>
                         <Flex 
                           align="center" 
                           gap={1}
                           display="none"
-                          id={`currently-reading-input-div-${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}`}
+                          id={`currently-reading-input-div-${profileData.CurrentlyReading[0].id}`}
                         >
                           <Input
                             my={2}
                             type="text"
                             borderColor="black"
-                            defaultValue={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].thoughts ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].thoughts : ""}
-                            id={`currently-reading-input-${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}`}
+                            defaultValue={profileData.CurrentlyReading[0].thoughts ? profileData.CurrentlyReading[0].thoughts : ""}
+                            id={`currently-reading-input-${profileData.CurrentlyReading[0].id}`}
                           />
                           <Button
-                            onClick={e=>updateCurrentlyReadingThoughts(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
+                            onClick={e=>updateCurrentlyReadingThoughts(profileData.CurrentlyReading[0].id)}
                             disabled={updateCurrentlyReadingThoughtsMutation.isLoading}
                             backgroundColor="black"
                             color="white"
@@ -1182,7 +1212,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                             Update
                           </Button>
                           <Button
-                            onClick={e=>cancelEditCurrentlyReadingThoughts(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id)}
+                            onClick={e=>cancelEditCurrentlyReadingThoughts(profileData.CurrentlyReading[0].id)}
                             colorScheme="gray"
                           >
                             Cancel
@@ -1192,7 +1222,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           <Image 
                             src={
                               profileData
-                              .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                              .CurrentlyReading[0]
                               .image
                             }
                             maxH="100px"
@@ -1203,14 +1233,14 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                               <Heading as="h5" size="md" me={3} noOfLines={1}>
                                 {
                                   profileData
-                                  .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                  .CurrentlyReading[0]
                                   .title
                                 }
                               </Heading>
                               <Text fontSize="lg" noOfLines={1}>
                                 {
                                   profileData
-                                  .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                  .CurrentlyReading[0]
                                   .author
                                 }
                               </Text>
@@ -1224,7 +1254,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     <Text fontSize="lg" noOfLines={1}>
                                       {
                                         profileData
-                                        .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                        .CurrentlyReading[0]
                                         .description
                                       }
                                     </Text>
@@ -1241,7 +1271,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   >
                                     {
                                       profileData
-                                      .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                      .CurrentlyReading[0]
                                       .description
                                     }
                                   </PopoverBody>
@@ -1249,9 +1279,9 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                               </Popover>
                               <Text fontSize="lg" noOfLines={1}>
                                 {
-                                  profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].published_date ? (
+                                  profileData.CurrentlyReading[0].published_date ? (
                                     dayjs(profileData
-                                    .CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                    .CurrentlyReading[0]
                                     .published_date).format("YYYY")
                                   ) : null
                                 }
@@ -1264,18 +1294,18 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   pb={0.5}
                                   size="xs"
                                   variant="ghost"
-                                  data-currentlyreading={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}
+                                  data-currentlyreading={profileData.CurrentlyReading[0].id}
                                   onClick={e=>likeUnlikeCurrentlyReading(e)}
                                 >
-                                  {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                                  {profileData.CurrentlyReading[0].CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
                                 </Button>
-                                {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? (
+                                {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? (
                                   <Popover isLazy size="sm">
                                     <PopoverTrigger>
                                       <Text
                                         cursor="pointer"
                                       >
-                                        {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike.length.toString() : "0"}
+                                        {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[0].CurrentlyReadingLike.length.toString() : "0"}
                                       </Text>
                                     </PopoverTrigger>
                                     <PopoverContent>
@@ -1286,8 +1316,8 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                           bg: "black"
                                         }}
                                       >
-                                        {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? (
-                                          profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.map((like,i)=>{
+                                        {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? (
+                                          profileData.CurrentlyReading[0].CurrentlyReadingLike?.map((like,i)=>{
                                             return (
                                               <Box mb={1} key={i}>
                                                 <Link 
@@ -1307,18 +1337,18 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   <Text
                                     cursor="pointer"
                                   >
-                                    {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike.length.toString() : "0"}
+                                    {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[0].CurrentlyReadingLike.length.toString() : "0"}
                                   </Text>
                                 )}
                               </Flex>
                             </Flex>
                           </Box>
                         </Flex>
-                        {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment.length ? (
+                        {profileData.CurrentlyReading[0].CurrentlyReadingComment.length ? (
                             <>
                               <Divider my={3} />
                               <Comments 
-                                comments={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment} 
+                                comments={profileData.CurrentlyReading[0].CurrentlyReadingComment} 
                                 getProfile={getProfile} 
                                 location="profile"
                                 server={server}
@@ -1331,7 +1361,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                 ) : (
                   <>
                   {viewer === "following" ? (
-                    profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]?.hidden ? (
+                    profileData.CurrentlyReading[0]?.hidden ? (
                       null
                     ) : (
                       <>
@@ -1347,7 +1377,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                             <Flex justify="space-between" align="center">
                               <Text fontStyle="italic">
                                 {
-                                  dayjs(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                  dayjs(profileData.CurrentlyReading[0]
                                     .created_on)
                                     .local()
                                     .format('MMM DD, m a')
@@ -1370,7 +1400,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   </MenuButton>
                                   <MenuList>
                                     <MenuItem 
-                                      data-book={JSON.stringify(profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1])}
+                                      data-book={JSON.stringify(profileData.CurrentlyReading[0])}
                                       onClick={e=>openCommentModal(e)}
                                       fontWeight="bold"
                                       icon={<BsReplyFill size={20} />}
@@ -1379,7 +1409,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     </MenuItem>
                                     <MenuItem 
                                       as={Link}
-                                      to={`/chat/room?title=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].title}&author=${profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].author}`}
+                                      to={`/chat/room?title=${profileData.CurrentlyReading[0].title}&author=${profileData.CurrentlyReading[0].author}`}
                                       fontWeight="bold"
                                       icon={<MdOutlineChat size={20} />}
                                     >
@@ -1394,12 +1424,12 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                               rounded="md"
                               p={1}
                             >
-                              {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].thoughts ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].thoughts : null}
+                              {profileData.CurrentlyReading[0].thoughts ? profileData.CurrentlyReading[0].thoughts : null}
                             </Text>
                             <Flex>
                               <Image 
                                 src={
-                                  profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].image
+                                  profileData.CurrentlyReading[0].image
                                 }
                                 maxH="100px"
                                 boxShadow="1px 1px 1px 1px darkgrey"
@@ -1408,13 +1438,13 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 <Box>
                                   <Heading as="h5" size="md" me={3} noOfLines={1}>
                                     {
-                                      profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                      profileData.CurrentlyReading[0]
                                       .title
                                     }
                                   </Heading>
                                   <Text fontSize="lg" noOfLines={1}>
                                     {
-                                      profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1]
+                                      profileData.CurrentlyReading[0]
                                       .author
                                     }
                                   </Text>
@@ -1467,18 +1497,18 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       pb={0.5}
                                       size="xs"
                                       variant="ghost"
-                                      data-currentlyreading={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].id}
+                                      data-currentlyreading={profileData.CurrentlyReading[0].id}
                                       onClick={e=>likeUnlikeCurrentlyReading(e)}
                                     >
-                                      {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                                      {profileData.CurrentlyReading[0].CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
                                     </Button>
-                                    {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? (
+                                    {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? (
                                       <Popover isLazy size="sm">
                                         <PopoverTrigger>
                                           <Text
                                             cursor="pointer"
                                           >
-                                            {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike.length.toString() : "0"}
+                                            {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[0].CurrentlyReadingLike.length.toString() : "0"}
                                           </Text>
                                         </PopoverTrigger>
                                         <PopoverContent>
@@ -1489,8 +1519,8 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                               bg: "black"
                                             }}
                                           >
-                                            {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? (
-                                              profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.map((like,i)=>{
+                                            {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? (
+                                              profileData.CurrentlyReading[0].CurrentlyReadingLike?.map((like,i)=>{
                                                 return (
                                                   <Box mb={1} key={i}>
                                                     <Link 
@@ -1510,16 +1540,16 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       <Text
                                         cursor="pointer"
                                       >
-                                        {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingLike.length.toString() : "0"}
+                                        {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[0].CurrentlyReadingLike.length.toString() : "0"}
                                       </Text>
                                     )}
                                   </Flex>
                                 </Flex>
                               </Box>
                             </Flex>
-                            {profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment ? (
+                            {profileData.CurrentlyReading[0].CurrentlyReadingComment ? (
                               <Comments 
-                                comments={profileData.CurrentlyReading[profileData.CurrentlyReading.length - 1].CurrentlyReadingComment} 
+                                comments={profileData.CurrentlyReading[0].CurrentlyReadingComment} 
                                 getProfile={getProfile} 
                                 location="profile"
                                 server={server}
@@ -1551,13 +1581,16 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           viewer !== "self" && readBook.hidden ? (
                             null
                           ) : (
-                            i !== profileData.CurrentlyReading.length - 1 ? (
+                            i !== 0 && i + 1 <= items ? (
                               <Box 
                                 key={i}
                                 my={2}
                                 className="well-card"
                                 position="relative"
                               >
+                                <Suspense
+                                  fallback={<Box>...</Box>}
+                                />
                                 <Flex justify="space-between" align="center">
                                   <Text fontStyle="italic">
                                     {dayjs(readBook.created_on).local().format('MMM DD, h:mm a')}
@@ -1788,8 +1821,13 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                             ) : null
                           )
                         )
-                      }).reverse()
+                      })
                     ) : null}
+                    {isFetching && !theEnd && (
+                      <Flex justify="center">
+                        <Spinner size="xl"/>
+                      </Flex>
+                    )}
                   </>
                 </Box>
               ): null}
