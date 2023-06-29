@@ -117,6 +117,7 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
                 setViewer("nonFollower")
                 break;
             }
+            console.log(responseProfileData)
             return responseProfileData;
           }
       })
@@ -732,7 +733,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                 <Heading fontSize={'3xl'}>
                   {`${profileData.User?.first_name} ${profileData.User?.last_name}`}
                 </Heading>
-                <Flex align="center" wrap="nowrap" gap={2}>
+                <Flex align="center" wrap="nowrap" gap={2} mb={1}>
                   {profileData?.country ? (
                     <Box w="1.4rem">
                       <Flag alt={profileData.country} title={profileData.country}/>
@@ -743,19 +744,32 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                   </Text>
                 </Flex>
                 {profileData.rating ? (
-                  <Flex
-                    align="center"
-                    gap={2}
-                  >
-                    <StarRating
-                      ratingCallback={null} 
-                      starRatingId={0}
-                      defaultRating={profileData.rating}
-                    />
-                    <Text fontWeight={600} color={'gray.600'}>
-                      {profileData.rating.toFixed(2)}
+                  <Box mb={1}>
+                    <Flex
+                      align="center"
+                      gap={1}
+                      mb={-1}
+                    >
+                      <StarRating
+                        ratingCallback={null} 
+                        starRatingId={0}
+                        defaultRating={profileData.rating}
+                      />
+                      <Text 
+                        fontWeight={600} 
+                        fontSize="sm"
+                        opacity="80%"
+                      >
+                        {profileData.rating.toFixed(1)}
+                      </Text>
+                    </Flex>
+                    <Text
+                      fontSize="sm"
+                      opacity="80%"
+                    >
+                      {profileData._count?.BookSuggestion_BookSuggestion_suggestorToProfile ? profileData._count?.BookSuggestion_BookSuggestion_suggestorToProfile + " ratings" : null}
                     </Text>
-                  </Flex>
+                  </Box>
                 ): null}
                 {profileData?.about ? (
                   <Text

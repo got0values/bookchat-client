@@ -69,6 +69,7 @@ export interface ProfileType {
   BookClubMembers_BookClubMembers_book_club_creatorToProfile: BookClubMember[];
   BookSuggestion_BookSuggestion_suggestorToProfile: BookSuggestionType[];
   Bookshelf: BookshelfType;
+  _count: any;
 }
 
 export interface Interests {
