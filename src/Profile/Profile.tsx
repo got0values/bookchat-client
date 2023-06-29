@@ -117,7 +117,6 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
                 setViewer("nonFollower")
                 break;
             }
-            console.log(responseProfileData)
             return responseProfileData;
           }
       })
