@@ -109,7 +109,7 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                   borderBottom: "2px solid gray"
                 }}
               >
-                Search
+                Browse
               </Tab>
               <Tab 
                 fontWeight="bold"
@@ -117,12 +117,115 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                   borderBottom: "2px solid gray"
                 }}
               >
-                Browse
+                Search
               </Tab>
             </TabList>
 
             <TabPanels>
 
+              <TabPanel px={0}>
+                <Box
+                  className="well"
+                >
+                  <Heading size="md" mb={2}>General</Heading>
+                  <TableContainer>
+                    <Table size='sm' colorScheme="facebook">
+                      <Tbody>
+                        <Tr>
+                          <Td>
+                            General
+                          </Td>
+                          <Td textAlign="right">
+                            {generalNumberOfPeople}
+                          </Td>
+                          <Td textAlign="right">
+                            <Button
+                              size="xs"
+                              as={Link}
+                              to="/chat/room?generaltype=General"
+                              backgroundColor="black"
+                              color="white"
+                            >
+                              <BsArrowRight/>
+                            </Button>
+                          </Td>
+                        </Tr>
+                        <Tr>
+                          <Td>
+                            Recommendations
+                          </Td>
+                          <Td textAlign="right">
+                            {recommendationsNumberOfPeople}
+                          </Td>
+                          <Td textAlign="right">
+                            <Button
+                              size="xs"
+                              as={Link}
+                              to="/chat/room?generaltype=Recommendations"
+                              backgroundColor="black"
+                              color="white"
+                            >
+                              <BsArrowRight/>
+                            </Button>
+                          </Td>
+                        </Tr>
+                      </Tbody>
+                    </Table>
+                  </TableContainer>
+                </Box>
+
+                <Box
+                  className="well"
+                >
+                  <Heading size="md" mb={2}>Active</Heading>
+                  <Flex
+                    direction="column"
+                    gap={2}
+                  >
+                    {activeRooms.length ? (
+                    <TableContainer>
+                      <Table size='sm' colorScheme="facebook">
+                        <Tbody>
+                          {activeRooms.map((room,i,arr)=>{
+                            return (
+                              room.typeOfRoom !== "generalType" ? (
+                                <Tr key={i} w="100%">
+                                  <Td>
+                                    <Text fontStyle="italic">{room?.bookTitle ? room?.bookTitle : ""} </Text>
+                                    <Text>{room?.bookAuthor ? room?.bookAuthor : ""}</Text>
+                                  </Td>
+                                  <Td textAlign="right">
+                                    {room?.numberOfUsers ? room.numberOfUsers : "0"}
+                                  </Td>
+                                  <Td textAlign="right">
+                                    <Button
+                                      size="xs"
+                                      as={Link}
+                                      to={`/chat/room?title=${room?.bookTitle ? room.bookTitle : ""}&author=${room?.bookAuthor ? room.bookAuthor : ""}`}
+                                      backgroundColor="black"
+                                      color="white"
+                                    >
+                                      <BsArrowRight/>
+                                    </Button>
+                                  </Td>
+                                </Tr>
+                              ) : null
+                            )
+                          })}
+                        </Tbody>
+                      </Table>
+                    </TableContainer>
+                    ):(
+                      <Text
+                        fontStyle="italic"
+                        fontSize="sm"
+                      >
+                        No Rooms Active
+                      </Text>
+                    )}
+                  </Flex>
+                </Box>
+              </TabPanel>
               <TabPanel px={0}>
                 <Flex
                   direction="column"
@@ -185,120 +288,6 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                     </TableContainer>
                   ): null}
                 </Flex>
-
-              </TabPanel>
-              <TabPanel px={0}>
-
-                <Box
-                  className="well"
-                >
-                  <Heading size="md" mb={2}>General</Heading>
-                  <Flex
-                    direction="column"
-                    gap={2}
-                  >
-                    <Flex 
-                      className="well-card"
-                      justify="space-between"
-                      _hover={{
-                        cursor: "pointer"
-                      }}
-                      as={Link}
-                      to="/chat/room?generaltype=General"
-                    >
-                      <Flex
-                        justify="space-between"
-                        align="center"
-                        w="100%"
-                        wrap="wrap"
-                      >
-                        <Heading
-                          as="h3"
-                          size="sm"
-                        >
-                          General
-                        </Heading>
-                        <Text>
-                          {generalNumberOfPeople}
-                        </Text>
-                      </Flex>
-                    </Flex>
-                    <Flex 
-                      className="well-card"
-                      justify="space-between"
-                      _hover={{
-                        cursor: "pointer"
-                      }}
-                      as={Link}
-                      to="/chat/room?generaltype=Recommendations"
-                    >
-                      <Flex
-                        justify="space-between"
-                        align="center"
-                        w="100%"
-                        wrap="wrap"
-                      >
-                        <Heading
-                          as="h3"
-                          size="sm"
-                        >
-                          Recommendations
-                        </Heading>
-                        <Text>
-                          {recommendationsNumberOfPeople}
-                        </Text>
-                      </Flex>
-                    </Flex>
-                  </Flex>
-                </Box>
-
-                <Box
-                  className="well"
-                >
-                  <Heading size="md" mb={2}>Active</Heading>
-                  <Flex
-                    direction="column"
-                    gap={2}
-                  >
-                  {activeRooms.length ? (
-                    activeRooms.map((room,i,arr)=>{
-                      return (
-                        room.typeOfRoom !== "generalType" ? (
-                          <Flex 
-                            className="well-card"
-                            justify="space-between"
-                            _hover={{
-                              cursor: "pointer"
-                            }}
-                            as={Link}
-                            to={`/chat/room?title=${room?.bookTitle ? room.bookTitle : ""}&author=${room?.bookAuthor ? room.bookAuthor : ""}`}
-                            key={i}
-                          >
-                            <Flex
-                              gap={1}
-                              wrap="wrap"
-                            >
-                              <Text fontStyle="italic">{room?.bookTitle ? room?.bookTitle : ""} </Text>
-                              <Text>{room?.bookAuthor ? room?.bookAuthor : ""}</Text>
-                            </Flex>
-                            <Text>
-                              {room?.numberOfUsers ? room.numberOfUsers : "0"}
-                            </Text>
-                          </Flex>
-                        ) : null
-                      )
-                    })
-                  ) : (
-                    <Heading
-                      as="h4"
-                      size="sm"
-                      fontStyle="italic"
-                    >
-                      No Rooms Active
-                    </Heading>
-                  )}
-                  </Flex>
-                </Box>
 
               </TabPanel>
 

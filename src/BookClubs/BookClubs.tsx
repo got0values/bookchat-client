@@ -203,7 +203,7 @@ export default function BookClubs({server}: {server: string}) {
                 borderBottom: "2px solid gray"
               }}
             >
-              My Book Clubs
+              Browse
             </Tab>
             <Tab 
               fontWeight="bold"
@@ -211,199 +211,64 @@ export default function BookClubs({server}: {server: string}) {
                 borderBottom: "2px solid gray"
               }}
             >
-              Browse
+              My Book Clubs
             </Tab>
           </TabList>
 
           <TabPanels>
-            <TabPanel px={0}>
 
+            <TabPanel px={0}>
               <Flex flexWrap="wrap">
                 <Stack flex="1 1 30%" minW="200px">
-                  <Box className="well">
-                    <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
-                      <Heading as="h3" size="md">
-                        My Book Clubs
-                      </Heading>
-                      <Button
-                        variant="ghost"
-                        size="xs"
-                        px={0}
-                        onClick={createBookClubModalOpen}
-                      >
-                        <IoIosAdd size={25} />
-                      </Button>
-                    </Flex>
-                    <Box>
-                      {bookClubsOwned ? (
-                        (bookClubsOwned as BookClubsType[]).map((bookClub, i)=>{
-                          return (
-                            <Box 
-                              className="well-card"
-                              mx={0}
-                              _hover={{
-                                bg: "gray.200"
-                              }}
-                              key={i}
-                            >
-                              <Link to={`/bookclubs/${bookClub.id}`}>
-                                <Heading as="h4" size="sm" noOfLines={1}>
-                                  {bookClub.name}
-                                </Heading>
-                                <Text
-                                  opacity="75%"
-                                  noOfLines={2}
-                                  fontSize="sm"
-                                >
-                                    {bookClub.about}
-                                </Text>
-                              </Link>
-                            </Box>
-                          )
-                        })
-                      ) : null}
-                    </Box>
-                  </Box>
-                </Stack>
-                <Stack flex="1 1 65%" maxW="100%">
-                  <Box className="well">
-                    <Flex align="center" justify="space-between" gap={2} mb={2}>
-                      <Heading as="h3" size="md">
-                        Joined
-                      </Heading>
-                    </Flex>
-
-                    <Box>
-                      {bookClubsJoined && bookClubsJoined.length ? (
-                        (bookClubsJoined as BookClubsType[]).map((bookClub, i)=>{
-                          return (
-                            <Flex 
-                              as={Link}
-                              to={`/bookclubs/${bookClub.id}`}
-                              className="well-card"
-                              direction="column"
-                              justify="space-between"
-                              minH="110px"
-                              mx={0}
-                              _hover={{
-                                bg: "gray.200",
-                                cursor: "pointer"
-                              }}
-                              overflowX="auto"
-                              onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
-                              key={i}
+                  <Accordion
+                    className="well"
+                    p={0}
+                    defaultIndex={[1]} 
+                    allowMultiple
+                  >
+                    <AccordionItem
+                      border={0}
+                    >
+                      <Flex as={AccordionButton} justify="space-between" slign="center">
+                        <Heading as="h3" size="md">
+                          Filter
+                        </Heading>
+                        <AccordionIcon/>
+                      </Flex>
+                      <AccordionPanel>
+                        <Flex 
+                            flexWrap="wrap"
+                          >
+                            <CheckboxGroup 
+                              onChange={e=>filterBookClubsByGroup(e as string[])}
                             >
                               <Flex
-                                align="start" 
-                                justify="space-between" 
+                                direction="column"
                                 wrap="wrap"
-                                rowGap={2}
+                                gap={1}
                               >
-                                <Flex direction="column" gap={1}>
-                                  <Heading as="h4" size="sm" noOfLines={1}>
-                                    {bookClub.name}
-                                  </Heading>
-                                  {bookClub.BookClubBook[0] ? (
-                                  <Flex gap={2}>
-                                    <Box>
-                                      <Image 
-                                        src={bookClub.BookClubBook[0].image}
-                                        alt={bookClub.BookClubBook[0].title}
-                                        maxH="50px"
-                                        boxShadow="1px 1px 1px 1px darkgrey"
-                                      />
-                                    </Box>
-                                    <Box>
-                                      <Text fontStyle="italic">{bookClub.BookClubBook[0].title}</Text>
-                                      <Text>{bookClub.BookClubBook[0].author}</Text>
-                                    </Box>
-                                  </Flex>
-                                  ) : null}
-                                </Flex>
-                                <Flex align="center" gap={1} marginLeft="auto">
-                                  <Avatar
-                                    size="xs"
-                                    cursor="pointer"
-                                    src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
-                                    name={bookClub.Profile.username}
-                                    border="2px solid gray"
-                                    title={`${bookClub.Profile.username}`}
-                                  />
-                                  <Text fontWeight="bold">
-                                    {bookClub.Profile.username}
-                                  </Text>
-                                </Flex>
+                                {genres.map((genre,i)=>{
+                                  return (
+                                    <Checkbox 
+                                      value={genre.value}
+                                      key={i}
+                                    >
+                                      <Text fontSize="xs">{genre.name}</Text>
+                                    </Checkbox>
+                                      )
+                                })}
                               </Flex>
-                              <Text>
-                                  {bookClub.about}
-                              </Text>
-                            </Flex>
-                          )
-                        })
-                      ) : (
-                        <Text>You are not a member of any book clubs at the moment.</Text>
-                      )}
-                    </Box>
-                  </Box>
-                </Stack>
-              </Flex>
-
-            </TabPanel>
-            <TabPanel px={0}>
-              <Flex flexWrap="wrap">
-                <Stack flex="1 1 30%" minW="200px">
-                  <Box className="well">
-                    <Accordion
-                      className="well-card"
-                      p={0}
-                      defaultIndex={[1]} 
-                      allowMultiple
-                    >
-                      <AccordionItem
-                        border={0}
-                      >
-                        <Flex as={AccordionButton} justify="space-between" slign="center">
-                          <Heading as="h3" size="md">
-                            Filter
-                          </Heading>
-                          <AccordionIcon/>
-                        </Flex>
-                        <AccordionPanel>
-                          <Flex 
-                              flexWrap="wrap"
-                            >
-                              <CheckboxGroup 
-                                onChange={e=>filterBookClubsByGroup(e as string[])}
-                              >
-                                <Flex
-                                  direction="column"
-                                  wrap="wrap"
-                                  gap={1}
-                                >
-                                  {genres.map((genre,i)=>{
-                                    return (
-                                      <Checkbox 
-                                        value={genre.value}
-                                        key={i}
-                                      >
-                                        <Text fontSize="xs">{genre.name}</Text>
-                                      </Checkbox>
-                                        )
-                                  })}
-                                </Flex>
-                              </CheckboxGroup>
-                            </Flex>
-                        </AccordionPanel>
-                      </AccordionItem>
-                    </Accordion>
-
-                  </Box>
+                            </CheckboxGroup>
+                          </Flex>
+                      </AccordionPanel>
+                    </AccordionItem>
+                  </Accordion>
                 </Stack>
                 <Stack flex="1 1 65%" maxW="100%">
                   <Box className="well">
                     <Flex align="center" justify="space-between" gap={2} mb={2}>
                       <Heading as="h3" size="md">
-                        Friends
+                        Following Users
                       </Heading>
                     </Flex>
                     <Box>
@@ -640,6 +505,139 @@ export default function BookClubs({server}: {server: string}) {
                     )}
                   </Box>
                 </Box>
+                </Stack>
+              </Flex>
+
+            </TabPanel>
+            <TabPanel px={0}>
+
+              <Flex flexWrap="wrap">
+                <Stack flex="1 1 30%" minW="200px">
+                  <Box className="well">
+                    <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
+                      <Heading as="h3" size="md">
+                        My Book Clubs
+                      </Heading>
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        px={0}
+                        onClick={createBookClubModalOpen}
+                      >
+                        <IoIosAdd size={25} />
+                      </Button>
+                    </Flex>
+                    <Box>
+                      {bookClubsOwned ? (
+                        (bookClubsOwned as BookClubsType[]).map((bookClub, i)=>{
+                          return (
+                            <Box 
+                              className="well-card"
+                              mx={0}
+                              _hover={{
+                                bg: "gray.200"
+                              }}
+                              key={i}
+                            >
+                              <Link to={`/bookclubs/${bookClub.id}`}>
+                                <Heading as="h4" size="sm" noOfLines={1}>
+                                  {bookClub.name}
+                                </Heading>
+                                <Text
+                                  opacity="75%"
+                                  noOfLines={2}
+                                  fontSize="sm"
+                                >
+                                    {bookClub.about}
+                                </Text>
+                              </Link>
+                            </Box>
+                          )
+                        })
+                      ) : null}
+                    </Box>
+                  </Box>
+                </Stack>
+                <Stack flex="1 1 65%" maxW="100%">
+                  <Box className="well">
+                    <Flex align="center" justify="space-between" gap={2} mb={2}>
+                      <Heading as="h3" size="md">
+                        Joined
+                      </Heading>
+                    </Flex>
+
+                    <Box>
+                      {bookClubsJoined && bookClubsJoined.length ? (
+                        (bookClubsJoined as BookClubsType[]).map((bookClub, i)=>{
+                          return (
+                            <Flex 
+                              as={Link}
+                              to={`/bookclubs/${bookClub.id}`}
+                              className="well-card"
+                              direction="column"
+                              justify="space-between"
+                              minH="110px"
+                              mx={0}
+                              _hover={{
+                                bg: "gray.200",
+                                cursor: "pointer"
+                              }}
+                              overflowX="auto"
+                              onClick={e=>navigate(`/bookclubs/${bookClub.id}`)}
+                              key={i}
+                            >
+                              <Flex
+                                align="start" 
+                                justify="space-between" 
+                                wrap="wrap"
+                                rowGap={2}
+                              >
+                                <Flex direction="column" gap={1}>
+                                  <Heading as="h4" size="sm" noOfLines={1}>
+                                    {bookClub.name}
+                                  </Heading>
+                                  {bookClub.BookClubBook[0] ? (
+                                  <Flex gap={2}>
+                                    <Box>
+                                      <Image 
+                                        src={bookClub.BookClubBook[0].image}
+                                        alt={bookClub.BookClubBook[0].title}
+                                        maxH="50px"
+                                        boxShadow="1px 1px 1px 1px darkgrey"
+                                      />
+                                    </Box>
+                                    <Box>
+                                      <Text fontStyle="italic">{bookClub.BookClubBook[0].title}</Text>
+                                      <Text>{bookClub.BookClubBook[0].author}</Text>
+                                    </Box>
+                                  </Flex>
+                                  ) : null}
+                                </Flex>
+                                <Flex align="center" gap={1} marginLeft="auto">
+                                  <Avatar
+                                    size="xs"
+                                    cursor="pointer"
+                                    src={`${bookClub.Profile.profile_photo}?x=${new Date().getTime()}`}
+                                    name={bookClub.Profile.username}
+                                    border="2px solid gray"
+                                    title={`${bookClub.Profile.username}`}
+                                  />
+                                  <Text fontWeight="bold">
+                                    {bookClub.Profile.username}
+                                  </Text>
+                                </Flex>
+                              </Flex>
+                              <Text>
+                                  {bookClub.about}
+                              </Text>
+                            </Flex>
+                          )
+                        })
+                      ) : (
+                        <Text>You are not a member of any book clubs at the moment.</Text>
+                      )}
+                    </Box>
+                  </Box>
                 </Stack>
               </Flex>
 
