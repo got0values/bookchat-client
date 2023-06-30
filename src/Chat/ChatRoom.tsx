@@ -110,7 +110,7 @@ export default function ChatRoom({server}: {server: string}) {
     }
     getIp()
 
-    getChatHistory()
+    // getChatHistory()
     
     // let typeOfRoomVar = searchParams.get("generaltype") ? "generaltype" : searchParams.get("bookclub") ? "bookclub" : "book";
     let typeOfRoomVar;
