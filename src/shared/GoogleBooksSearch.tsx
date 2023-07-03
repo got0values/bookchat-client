@@ -54,7 +54,7 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
           bg="white"
           borderColor="black"
           size="lg"
-          placeholder="Search for a suggestion"
+          placeholder="Search"
           _dark={{
             bg: "gray.800"
           }}
