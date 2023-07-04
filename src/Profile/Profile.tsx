@@ -120,7 +120,7 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
                 setViewer("nonFollower")
                 break;
             }
-            setCurrentlyReadingLength(responseProfileData.CurrentlyReading ? esponseProfileData.CurrentlyReading : 0)
+            setCurrentlyReadingLength(responseProfileData.CurrentlyReading ? responseProfileData.CurrentlyReading : 0)
             return responseProfileData;
           }
       })
