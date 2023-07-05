@@ -6,11 +6,12 @@ import {
   Button, 
   Box,
   Flex,
-  Checkbox,
+  Switch,
   Skeleton,
   Stack,
   Heading,
-  Badge,
+  Text,
+  Divider,
   useToast
 } from "@chakra-ui/react";
 import { useAuth } from './hooks/useAuth';
@@ -91,6 +92,7 @@ export default function Settings({server}: SettingsProps) {
 
   const firstNameRef = useRef({} as HTMLInputElement);
   const lastNameRef = useRef({} as HTMLInputElement);
+  const notificationsEmailRef = useRef({} as HTMLInputElement)
   const updateSettingsMutation = useMutation({
     mutationFn: async ()=>{
       let tokenCookie: string | null = Cookies.get().token;
@@ -98,7 +100,8 @@ export default function Settings({server}: SettingsProps) {
         .put(server + "/api/settings", 
         {
           firstName: firstNameRef.current.value,
-          lastName: lastNameRef.current.value
+          lastName: lastNameRef.current.value,
+          emailNotifications: notificationsEmailRef.current.checked === true ? 1 : 0
         },
         {headers: {
           'authorization': tokenCookie
@@ -139,6 +142,7 @@ export default function Settings({server}: SettingsProps) {
   const role = settings?.role;
   const firstName = settings?.first_name;
   const lastName = settings?.last_name;
+  const emailNotifications = settings?.email_notifications;
 
   if (isError) {
     return (
@@ -153,9 +157,9 @@ export default function Settings({server}: SettingsProps) {
       <Skeleton
         isLoaded={!isLoading}
       >
-        <Stack>
+        <Flex direction="column" gap={4}>
 
-          <Flex className="well" direction="column">
+          <Flex direction="column" gap={2}>
             <Stack>
               <Heading as="h4" size="md">
                 Name
@@ -181,9 +185,23 @@ export default function Settings({server}: SettingsProps) {
                 </Box>
               </Flex>
             </Stack>
+            <Stack>
+              <Heading as="h4" size="md">
+                Email
+              </Heading>
+              <Flex align="center" gap={2}>
+                <Text>Notifications:</Text>
+                <Switch
+                  ref={notificationsEmailRef}
+                  defaultChecked={emailNotifications === 1 ? true : false}
+                />
+              </Flex>
+            </Stack>
           </Flex>
 
-          <Flex justify="space-between" m=".5rem!important">
+          <Divider/>
+
+          <Flex justify="space-between">
             <Button
               colorScheme="red"
               onClick={e=>deleteAccount()}
@@ -198,7 +216,8 @@ export default function Settings({server}: SettingsProps) {
               Save
             </Button>
           </Flex>
-        </Stack>
+
+        </Flex>
       </Skeleton>
     </Box>
   );
