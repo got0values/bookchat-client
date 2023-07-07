@@ -93,7 +93,8 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
       followRequests: [],
       bookClubRequests: [],
       comments: [],
-      replies: []
+      replies: [],
+      likes: []
     }
     let totalNotifications = 0;
     try {
@@ -133,10 +134,21 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
               }
             )
           })
+          let likeData = otherNotifications?.filter((on: OtherNotificationsType)=>on.type === 3);
+          likeData = likeData.map((like: any)=>{
+            return (
+              {
+                ...like,
+                from_data: JSON.parse(like.from_data),
+                subject: JSON.parse(like.subject)
+              }
+            )
+          })
           userNotifications = {
             ...userNotifications, 
             comments: [...userNotifications.comments as any[], ...commentData],
-            replies: [...userNotifications.replies as any[], ...replyData]
+            replies: [...userNotifications.replies as any[], ...replyData],
+            likes: [...userNotifications.likes as any[], ...likeData]
           }
 
         //check if any follow requests
@@ -162,7 +174,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
             }
           }
         }
-        totalNotifications = userNotifications.followRequests.length + userNotifications.bookClubRequests.length + userNotifications.comments.length + userNotifications.replies.length;
+        totalNotifications = userNotifications.followRequests.length + userNotifications.bookClubRequests.length + userNotifications.comments.length + userNotifications.replies.length + userNotifications.likes.length;
         return {
           userNotifications,
           totalNotifications
@@ -370,13 +382,13 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
     rejectBookClubRequestMutation.mutate(requestId);
   }
 
-  const readCommentNotificationMutation = useMutation({
-    mutationFn: async (commentId: number) => {
+  const readNotificationMutation = useMutation({
+    mutationFn: async (notificationId: number) => {
       const tokenCookie = Cookies.get().token;
       await axios
-        .put(server + "/api/readcommentnotification",
+        .put(server + "/api/readnotification",
         {
-          commentId
+          notificationId
         },
         {headers: {
             'authorization': tokenCookie,
@@ -405,8 +417,8 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
       queryClient.setQueryData(["notificationKey"],data)
     }
   })
-  function readCommentNotification(commentId: number) {
-    readCommentNotificationMutation.mutate(commentId);
+  function readNotification(commentId: number) {
+    readNotificationMutation.mutate(commentId);
   }
 
   const { 
@@ -870,7 +882,8 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                       <Flex m={1} gap={1} justify="flex-end">
                         <Button 
                           size="sm"
-                          onClick={e=>readCommentNotification(comment.id)}
+                          onClick={e=>readNotification(comment.id)}
+                          isLoading={readNotificationMutation.isLoading}
                         >
                           OK
                         </Button>
@@ -918,7 +931,68 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                       <Flex m={1} gap={1} justify="flex-end">
                         <Button 
                           size="sm"
-                          onClick={e=>readCommentNotification(reply.id)}
+                          onClick={e=>readNotification(reply.id)}
+                          isLoading={readNotificationMutation.isLoading}
+                        >
+                          OK
+                        </Button>
+                      </Flex>
+                    </Flex>
+                  )
+                })}
+
+                {userNotifications?.likes?.map((like,i)=>{
+                  return (
+                    <Flex 
+                      align="center" 
+                      gap={1} 
+                      justify="space-between" 
+                      flexWrap="wrap"
+                      width="100%"
+                      key={i}
+                    >
+                      <Flex align="flex-start" gap={1}>
+                        <Avatar src={like.from_data?.profile_photo} size="sm" name={like.from_data?.username}/>
+                        <Box>
+                          <Box>
+                            <Text>
+                              <Text
+                                as={Link} 
+                                to={`/profile/${like.from_data?.username}`}
+                                onClick={onCloseNotificationsModal}
+                              >
+                                <Text 
+                                  as="span"
+                                  fontWeight="bold"
+                                >
+                                @{like.from_data?.username}
+                                </Text> 
+                              </Text>
+                                {" "} liked your post: {" "}
+                            </Text>
+                          </Box>
+                          <Flex align="center" gap={1} fontSize="sm">
+                            <Text 
+                              fontWeight="bold"
+                              as="span"
+                            >
+                              {like.subject?.title}
+                            </Text>
+                            by
+                            <Text 
+                              fontWeight="bold"
+                              as="span"
+                            >
+                              {like.subject?.author}
+                            </Text>
+                          </Flex>
+                        </Box>
+                      </Flex>
+                      <Flex m={1} gap={1} justify="flex-end">
+                        <Button 
+                          size="sm"
+                          onClick={e=>readNotification(like.id)}
+                          isLoading={readNotificationMutation.isLoading}
                         >
                           OK
                         </Button>

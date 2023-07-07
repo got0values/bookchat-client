@@ -297,7 +297,8 @@ export interface CurrentlyReadingComment {
 //Notifications
 export enum Notifications {
   Comment = 1,
-  GeneralReply = 2
+  GeneralReply = 2,
+  Like = 3
 }
 
 export interface UserNotificationsType {
@@ -305,6 +306,7 @@ export interface UserNotificationsType {
   bookClubRequests: BookClubMember[];
   comments: OtherNotificationsType[];
   replies: OtherNotificationsType[];
+  likes: OtherNotificationsType[];
 }
 
 export interface OtherNotificationsType {
@@ -312,7 +314,17 @@ export interface OtherNotificationsType {
   profile_id: number;
   type: Notifications;
   from_data: ProfileType;
-  subject: any;
+  subject: {
+    id: string;
+    profile_id: number;
+    currenty_reading_id: number;
+    uri: string;
+    commenter_id: number;
+    comment: string;
+    datetime: string;
+    title: string;
+    author: string;
+  };
   read: number | any;
   datetime: string;
 }
