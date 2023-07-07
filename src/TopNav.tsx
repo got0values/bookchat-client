@@ -217,6 +217,10 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
         })
         throw new Error(response.data?.message)
       })
+      await getUser();
+      setTimeout(()=>{
+        getNotifications()
+      },100)
       return getNotifications();
     },
     onSuccess: (data)=>{
@@ -261,6 +265,10 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
         })
         throw new Error(response.data?.message)
       })
+      await getUser();
+      setTimeout(()=>{
+        getNotifications()
+      },100)
       return getNotifications();
     },
     onSuccess: (data)=>{
