@@ -93,6 +93,7 @@ export default function Settings({server}: SettingsProps) {
   const firstNameRef = useRef({} as HTMLInputElement);
   const lastNameRef = useRef({} as HTMLInputElement);
   const notificationsEmailRef = useRef({} as HTMLInputElement)
+  const newsletterEmailRef = useRef({} as HTMLInputElement)
   const updateSettingsMutation = useMutation({
     mutationFn: async ()=>{
       let tokenCookie: string | null = Cookies.get().token;
@@ -101,7 +102,8 @@ export default function Settings({server}: SettingsProps) {
         {
           firstName: firstNameRef.current.value,
           lastName: lastNameRef.current.value,
-          emailNotifications: notificationsEmailRef.current.checked === true ? 1 : 0
+          emailNotifications: notificationsEmailRef.current.checked === true ? 1 : 0,
+          emailNewsletter: newsletterEmailRef.current.checked === true ? 1 : 0
         },
         {headers: {
           'authorization': tokenCookie
@@ -116,7 +118,7 @@ export default function Settings({server}: SettingsProps) {
               isClosable: true
             })
           }
-          window.location.reload();
+          // window.location.reload();
         })
         .catch(({response})=>{
           console.log(response)
@@ -143,6 +145,7 @@ export default function Settings({server}: SettingsProps) {
   const firstName = settings?.first_name;
   const lastName = settings?.last_name;
   const emailNotifications = settings?.email_notifications;
+  const emailNewsletter = settings?.email_newsletter;
 
   if (isError) {
     return (
@@ -157,7 +160,7 @@ export default function Settings({server}: SettingsProps) {
       <Skeleton
         isLoaded={!isLoading}
       >
-        <Flex direction="column" gap={4}>
+        <Flex direction="column" gap={4} px={2}>
 
           <Flex direction="column" gap={2}>
             <Stack>
@@ -185,15 +188,22 @@ export default function Settings({server}: SettingsProps) {
                 </Box>
               </Flex>
             </Stack>
-            <Stack>
+            <Stack maxW="25%">
               <Heading as="h4" size="md">
                 Email
               </Heading>
-              <Flex align="center" gap={2}>
+              <Flex align="center" justify="space-between" gap={2}>
                 <Text>Notifications:</Text>
                 <Switch
                   ref={notificationsEmailRef}
                   defaultChecked={emailNotifications === 1 ? true : false}
+                />
+              </Flex>
+              <Flex align="center" justify="space-between" gap={2}>
+                <Text>Newsletter:</Text>
+                <Switch
+                  ref={newsletterEmailRef}
+                  defaultChecked={emailNewsletter === 1 ? true : false}
                 />
               </Flex>
             </Stack>
