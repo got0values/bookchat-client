@@ -195,6 +195,13 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
     Flag: bookSuggestionBookshelf?.Profile.country ? (countryFlagIconsReact as any)[bookSuggestionBookshelf.Profile.country] : <Box></Box>
   }
 
+  if (isLoading) {
+    return (
+      <Flex align="center" justify="center" minH="80vh">
+        <Spinner size="xl"/>
+      </Flex>
+    )
+  }
   if (isError) {
     return <Flex align="center" justify="center" minH="90vh">
       <Heading as="h1" size="xl">Error: {(error as Error).message}</Heading>
