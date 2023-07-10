@@ -27,13 +27,13 @@ import googleWatermark from "/src/assets/google_watermark.gif";
 export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}: GoogleBooksSearchType) {
   const searchInputRef = useRef({} as HTMLInputElement);
   const [bookResults,setBookResults] = useState<any[] | null>(null);
+  const [bookResultsError,setBookResultsError] = useState("");
   const [bookResultsLoading,setBookResultsLoading] = useState(false)
   async function searchBook() {
     setBookResultsLoading(true)
     await axios
       .get("https://www.googleapis.com/books/v1/volumes?q=" + searchInputRef.current.value + "&key=" + gBooksApi)
       .then((response)=>{
-        setBookResultsLoading(false)
         if (response.data.items) {
           setBookResults(response.data.items)
         }
@@ -43,8 +43,10 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
         // onOpenSearchModal();
       })
       .catch((error)=>{
+        setBookResultsError(error.message);
         console.log(error)
       })
+    setBookResultsLoading(false)
   }
 
   return (
@@ -153,8 +155,8 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
               </React.Fragment>
             )
           }) : (
-            <Text fontStyle="italic">
-              An error has occurred, please try again later
+            <Text fontStyle="italic" color="red">
+              {bookResultsError ? bookResultsError + ". Please try again later." : "An error has occurred, please try again later"}
             </Text>
           )}
         </Flex>
