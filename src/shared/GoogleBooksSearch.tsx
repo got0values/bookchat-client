@@ -60,10 +60,10 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
           }}
           onKeyUp={e=>e.key === 'Enter' ? searchBook() : null}
           ref={searchInputRef}
-          // style={{
-          //   background: `no-repeat url(${googleWatermark})`,
-          //   backgroundPosition: "top 0px right 5px"
-          // }}
+          style={{
+            background: `no-repeat url(${googleWatermark})`,
+            backgroundPosition: "top 0px right 5px"
+          }}
         />
         <Button
           borderColor="black"

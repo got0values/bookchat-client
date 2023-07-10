@@ -527,16 +527,16 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
           console.log(response)
           throw new Error(response.data.message)
         })
-      await axios
-        .get("https://www.googleapis.com/books/v1/volumes?q=" + navSearchRef.current.value + "&key=" + gbooksapi)
-        .then((response)=>{
-          setSearchData(prev=>{
-            return {...prev,books: response.data.items }
-          })
-        })
-        .catch((error)=>{
-          console.log(error)
-        })
+      // await axios
+      //   .get("https://www.googleapis.com/books/v1/volumes?q=" + navSearchRef.current.value + "&key=" + gbooksapi)
+      //   .then((response)=>{
+      //     setSearchData(prev=>{
+      //       return {...prev,books: response.data.items }
+      //     })
+      //   })
+      //   .catch((error)=>{
+      //     console.log(error)
+      //   })
     }
   })
   function navSearch() {
@@ -1148,7 +1148,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                 <i>No book clubs based on the search term</i>
               )}
             </Box>
-            <Box my={2}>
+            {/* <Box my={2}>
               <Heading as="h3" size="md">Book Chat Rooms</Heading>
               {searchData && searchData.books?.length > 0 ? (
                 <TableContainer>
@@ -1185,7 +1185,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                   </Table>
                 </TableContainer>
               ): null}
-            </Box>
+            </Box> */}
 
           </ModalBody>
           </ModalContent>
