@@ -33,8 +33,13 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
     await axios
       .get("https://www.googleapis.com/books/v1/volumes?q=" + searchInputRef.current.value + "&key=" + gBooksApi)
       .then((response)=>{
-        setBookResults(response.data.items)
         setBookResultsLoading(false)
+        if (response.data.items) {
+          setBookResults(response.data.items)
+        }
+        else {
+          setBookResults(null)
+        }
         // onOpenSearchModal();
       })
       .catch((error)=>{
@@ -147,7 +152,11 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
                 ): null}
               </React.Fragment>
             )
-          }) : null}
+          }) : (
+            <Text fontStyle="italic">
+              An error has occurred, please try again later
+            </Text>
+          )}
         </Flex>
       )}
     </Stack>
