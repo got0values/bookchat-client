@@ -1195,19 +1195,26 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
           <ModalOverlay/>
           <ModalContent rounded="sm" boxShadow="1px 1px 2px 1px black">
             <ModalHeader>
-              <Heading as="h2" size="md">Confirm Email Address</Heading>
+              <Heading as="h2" size="md">Confirm Your Account</Heading>
             </ModalHeader>
             <ModalCloseButton/>
             <ModalBody>
-              <Flex direction="column" align="center" justify="center">
-                Please check your email to confirm your account
-                <Button
-                  onClick={e=>resendConfirmEmail()}
-                >
-                  Resend Email
-                </Button>
-              </Flex>
+              Please check your email to confirm your account
             </ModalBody>
+            <ModalFooter>
+              <Button
+                onClick={e=>resendConfirmEmail()}
+                colorScheme="yellow"
+                me={2}
+              >
+                Resend Email
+              </Button>
+              <Button
+                onClick={e=>onCloseConfirmModal()}
+              >
+                Close
+              </Button>
+            </ModalFooter>
           </ModalContent>
         </Modal>
 
