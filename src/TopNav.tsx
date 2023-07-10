@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useRef } from 'react';
+import { useState, useLayoutEffect, useRef, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
 import { SearchData, OtherNotificationsType } from './types/types';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -430,6 +430,80 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
   function closeSearchModal() {
     setSearchData({} as SearchData)
     onCloseSearchModal()
+  }
+
+  const { 
+    isOpen: isOpenConfirmModal, 
+    onOpen: onOpenConfirmModal, 
+    onClose: onCloseConfirmModal 
+  } = useDisclosure()
+
+  useEffect(()=>{
+    async function getConfirmed() {
+      let tokenCookie: string | null = Cookies.get().token;
+      await axios
+        .get(server + "/api/checkconfirmed",
+          {
+            headers: {
+              authorization: tokenCookie
+            }
+          }
+        )
+        .then((response)=>{
+          const confirmed = response.data.message.confirmed;
+          if (!confirmed) {
+            onOpenConfirmModal()
+          }
+          else {
+            onCloseConfirmModal()
+          }
+        })
+        .catch((response)=>{
+          console.log(response)
+        })
+    }
+    getConfirmed()
+  },[])
+
+  async function resendConfirmEmail() {
+    let tokenCookie: string | null = Cookies.get().token;
+    await axios
+      .post(server + "/api/resendconfirmemail",
+        {},
+        {
+          headers: {
+            authorization: tokenCookie
+          }
+        }
+      )
+      .then((response)=>{
+        if (response.data.success) {
+          toast({
+            description: "Email sent",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          })
+        }
+        else {
+          toast({
+            description: "An error occured",
+            status: "error",
+            duration: 9000,
+            isClosable: true
+          })
+        }
+      })
+      .catch(({response})=>{
+        console.log(response)
+        toast({
+          description: "An error occured",
+          status: "error",
+          duration: 9000,
+          isClosable: true
+        })
+        throw new Error(response.data?.message)
+      })
   }
 
   const navSearchRef = useRef({} as HTMLInputElement);
@@ -1114,6 +1188,26 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
             </Box>
 
           </ModalBody>
+          </ModalContent>
+        </Modal>
+
+        <Modal isOpen={isOpenConfirmModal} onClose={onCloseConfirmModal} isCentered>
+          <ModalOverlay/>
+          <ModalContent rounded="sm" boxShadow="1px 1px 2px 1px black">
+            <ModalHeader>
+              <Heading as="h2" size="md">Confirm Email Address</Heading>
+            </ModalHeader>
+            <ModalCloseButton/>
+            <ModalBody>
+              <Flex direction="column" align="center" justify="center">
+                Please check your email to confirm your account
+                <Button
+                  onClick={e=>resendConfirmEmail()}
+                >
+                  Resend Email
+                </Button>
+              </Flex>
+            </ModalBody>
           </ModalContent>
         </Modal>
 

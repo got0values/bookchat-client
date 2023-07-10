@@ -16,6 +16,7 @@ import Bookshelf from './Bookshelf/Bookshelf';
 import BookSuggestions from "./Book Suggestions/BookSuggestions";
 import BookSuggestionBookshelf from "./Book Suggestions/BookSuggestionBookshelf";
 import Settings from './Settings';
+import Confirm from './Confirm';
 import ResetPassword from "./ResetPassword";
 import Terms from "./Terms";
 import { useAuth } from './hooks/useAuth';
@@ -40,6 +41,10 @@ function App() {
       <Route 
         path="/terms" 
         element={<Terms/>} 
+      />
+      <Route 
+        path="/confirm" 
+        element={<Confirm server={server} />} 
       />
       <Route 
         path="/resetpassword" 
