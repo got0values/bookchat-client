@@ -93,7 +93,6 @@ export default function Settings({server}: SettingsProps) {
   const firstNameRef = useRef({} as HTMLInputElement);
   const lastNameRef = useRef({} as HTMLInputElement);
   const notificationsEmailRef = useRef({} as HTMLInputElement)
-  const newsletterEmailRef = useRef({} as HTMLInputElement)
   const updateSettingsMutation = useMutation({
     mutationFn: async ()=>{
       let tokenCookie: string | null = Cookies.get().token;
@@ -102,8 +101,7 @@ export default function Settings({server}: SettingsProps) {
         {
           firstName: firstNameRef.current.value,
           lastName: lastNameRef.current.value,
-          emailNotifications: notificationsEmailRef.current.checked === true ? 1 : 0,
-          emailNewsletter: newsletterEmailRef.current.checked === true ? 1 : 0
+          emailNotifications: notificationsEmailRef.current.checked === true ? 1 : 0
         },
         {headers: {
           'authorization': tokenCookie
@@ -197,13 +195,6 @@ export default function Settings({server}: SettingsProps) {
                 <Switch
                   ref={notificationsEmailRef}
                   defaultChecked={emailNotifications === 1 ? true : false}
-                />
-              </Flex>
-              <Flex align="center" justify="space-between" gap={2}>
-                <Text>Newsletter:</Text>
-                <Switch
-                  ref={newsletterEmailRef}
-                  defaultChecked={emailNewsletter === 1 ? true : false}
                 />
               </Flex>
             </Stack>
