@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { BookshelfCategory, BookshelfBook } from "../types/types";
@@ -247,7 +247,16 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
           }}
         )
         .then((response)=>{
-          setBookToAdd(null)
+          setBookToAdd(null);
+          getImportLimit();
+          if (response.data.success === false) {
+            toast({
+              description: response.data?.message ? response.data.message : "An error has occurred",
+              status: "error",
+              duration: 9000,
+              isClosable: true
+            })
+          }
         })
         .catch(({response})=>{
           console.log(response)
@@ -594,7 +603,30 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     onClose: onCloseImportBookshelfModal 
   } = useDisclosure()
 
+  const [importLimit,setImportLimit] = useState(500);
+  async function getImportLimit() {
+    const tokenCookie = Cookies.get().token;
+    await axios
+      .get(server + "/api/bookshelfimportlimit",
+        {
+          headers: {
+            Authorization: tokenCookie
+          }
+        }
+      )
+      .then((response)=>{
+        setImportLimit(response.data.message)
+      })
+      .catch(({response})=>{
+        console.log(response)
+      })
+  }
+  useEffect(()=>{
+    getImportLimit();
+  },[importLimit])
+
   const importBookshelfRef = useRef({} as HTMLInputElement);
+  const [importBookshelfError,setImportBookshelfError] = useState("");
   const [importProgressValue,setImportProgressValue] = useState(0);
   async function importBookshelf() {
     const files = importBookshelfRef.current.files;
@@ -605,68 +637,81 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
         setImportProgressValue(1);
         const csvdata = e.target!.result;
         const rowData = (csvdata as string).split('\n');
-        for (let i=1;i<rowData.length;i++){
-          if (rowData[i] !== '') {
-            const cellData = rowData[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/g);
-            const title = cellData[1]?.replace(/\s/g,'+').replace(/[="]/g,"");
-            const author = cellData[2]?.replace(/\s/g,'+').replace(/[="]/g,"");
-            const isbn = cellData[5].replace(/[="]/g,"");
-            const rating = parseInt(cellData[7]);
-            const dateAdded = dayjs(cellData[15]).utc().format('YYYY-MM-DD mm:HH:ss');
-            await axios
-              .get(`https://www.googleapis.com/books/v1/volumes?q=${title}+${author}+${isbn}&key=${gbooksapi}`)
-              .then(async (result)=>{
-                if (result?.data?.items?.length) {
-                  const bookResult = result.data.items[0]
-                  const book = {
-                    title: bookResult.volumeInfo.title,
-                    author: bookResult.volumeInfo.authors ? bookResult.volumeInfo.authors[0] : null,
-                    image: bookResult.volumeInfo.imageLinks?.smallThumbnail ? bookResult.volumeInfo.imageLinks.smallThumbnail : null,
-                    description: bookResult.volumeInfo.description ? bookResult.volumeInfo.description : "",
-                    isbn: bookResult.volumeInfo.industryIdentifiers ? bookResult.volumeInfo.industryIdentifiers[0].identifier : null,
-                    page_count: bookResult.volumeInfo.pageCount ? bookResult.volumeInfo.pageCount : null,
-                    published_date: bookResult.volumeInfo.publishedDate ? bookResult.volumeInfo.publishedDate : null
-                  }
-                  let tokenCookie: string | null = Cookies.get().token;
-                  await axios
-                    .post(server + "/api/addbookshelfbook", 
-                      {
-                        book: book,
-                        categories: bookToAddCategories,
-                        rating: rating,
-                        dateAdded: dateAdded,
-                        notes: notesRef.current.value
-                      },
-                      {headers: {
-                        'authorization': tokenCookie
-                      }}
-                    )
-                    .then((response)=>{
-                      setImportProgressValue(((i+2) / rowData.length) * 100)
-                    })
-                    .catch(({response})=>{
-                      console.log(response)
-                      return;
-                    })
-                }
-              })
-              .catch((response)=>{
-                console.log(response);
-                toast({
-                  description: "An error has occurred",
-                  status: "error",
-                  duration: 9000,
-                  isClosable: true
-                })
-              })
-          }
+        if (rowData.length > importLimit) {
+          setImportBookshelfError(`File (${rowData.length} rows) exceeds today's limit (${importLimit}).`);
+          return
         }
-        setTimeout(()=>{
-          setImportProgressValue(100)
-          setImportProgressValue(0)
-          onCloseImportBookshelfModal();
-          getBookshelf()
-        },1000)
+        else {
+          for (let i=1;i<rowData.length;i++){
+            if (rowData[i] !== '') {
+              const cellData = rowData[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/g);
+              const title = cellData[1]?.replace(/\s/g,'+').replace(/[="]/g,"");
+              const author = cellData[2]?.replace(/\s/g,'+').replace(/[="]/g,"");
+              const isbn = cellData[5].replace(/[="]/g,"");
+              const rating = parseInt(cellData[7]);
+              const dateAdded = dayjs(cellData[15]).utc().format('YYYY-MM-DD mm:HH:ss');
+              await axios
+                .get(`https://www.googleapis.com/books/v1/volumes?q=${title}+${author}+${isbn}&key=${gbooksapi}`)
+                .then(async (result)=>{
+                  if (result?.data?.items?.length) {
+                    const bookResult = result.data.items[0]
+                    const book = {
+                      title: bookResult.volumeInfo.title,
+                      author: bookResult.volumeInfo.authors ? bookResult.volumeInfo.authors[0] : null,
+                      image: bookResult.volumeInfo.imageLinks?.smallThumbnail ? bookResult.volumeInfo.imageLinks.smallThumbnail : null,
+                      description: bookResult.volumeInfo.description ? bookResult.volumeInfo.description : "",
+                      isbn: bookResult.volumeInfo.industryIdentifiers ? bookResult.volumeInfo.industryIdentifiers[0].identifier : null,
+                      page_count: bookResult.volumeInfo.pageCount ? bookResult.volumeInfo.pageCount : null,
+                      published_date: bookResult.volumeInfo.publishedDate ? bookResult.volumeInfo.publishedDate : null
+                    }
+                    let tokenCookie: string | null = Cookies.get().token;
+                    await axios
+                      .post(server + "/api/addbookshelfbook", 
+                        {
+                          book: book,
+                          categories: bookToAddCategories,
+                          rating: rating,
+                          dateAdded: dateAdded,
+                          notes: notesRef.current.value
+                        },
+                        {headers: {
+                          'authorization': tokenCookie
+                        }}
+                      )
+                      .then((response)=>{
+                        if (response.data.success) {
+                          setImportProgressValue(((i+2) / rowData.length) * 100)
+                        }
+                        else {
+                          setImportBookshelfError(response.data?.message ? response.data.message : "")
+                          return;
+                        }
+                      })
+                      .catch(({response})=>{
+                        console.log(response)
+                        return;
+                      })
+                  }
+                })
+                .catch((response)=>{
+                  console.log(response);
+                  toast({
+                    description: "An error has occurred",
+                    status: "error",
+                    duration: 9000,
+                    isClosable: true
+                  })
+                })
+            }
+          }
+          setTimeout(()=>{
+            setImportProgressValue(100)
+            setImportProgressValue(0)
+            onCloseImportBookshelfModal();
+            getImportLimit();
+            getBookshelf()
+          },1000)
+        }
       }
     }
   }
@@ -1567,6 +1612,9 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   direction="column"
                   gap={3}
                 >
+                  <Text fontStyle="italic">
+                    Today's remaining imports: {importLimit}.
+                  </Text>
                   <Box>
                     <Heading as="h3" size="xs">
                       Step 1
@@ -1622,6 +1670,9 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     >
                       Import
                     </Button>
+                    <Text color="red" fontStyle="italic">
+                      {importBookshelfError}
+                    </Text>
                   </Box>
                 </Flex>
               </ModalBody>

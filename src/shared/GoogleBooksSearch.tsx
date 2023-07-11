@@ -156,7 +156,7 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
             )
           }) : (
             <Text fontStyle="italic" color="red">
-              {bookResultsError ? bookResultsError + ". Please try again later." : "An error has occurred, please try again later"}
+              {bookResultsError ? bookResultsError + ". Please try again later." : null}
             </Text>
           )}
         </Flex>
