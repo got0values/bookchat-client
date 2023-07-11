@@ -169,7 +169,7 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
   const [previewImage,setPreviewImage] = useState("");
   const [profileImageFile,setProfileImageFile] = useState<Blob | string | ArrayBuffer | null>(null);
   function photoImageChange(e: HTMLInputEvent | any) {
-    imagePreviewRef.current.style.display = "block";
+    imagePreviewRef.current.style ? imagePreviewRef.current.style.display = "block" : null;
     let targetFiles = e.target.files as FileList
     let previewImageFile = targetFiles[0];
     setPreviewImage(URL.createObjectURL(previewImageFile))
@@ -298,7 +298,7 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
 
   const [userProfilePhoto,setUserProfilePhoto] = useState<string>("");
   useLayoutEffect(()=>{
-    setUserProfilePhoto(`${user.Profile.profile_photo}?x=${new Date().getTime()}`)
+    setUserProfilePhoto(user.Profile.profile_photo ? `${user.Profile.profile_photo}?x=${new Date().getTime()}` : "")
   },[user.Profile])
 
   const interestsInputRef = useRef({} as HTMLInputElement);
@@ -1877,8 +1877,9 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                       maxW="80%"
                     />
                     ) : (
-                    <Box p="15%">
-                    <Icon as={FiFile} />
+                    <Box p="15%" textAlign="center">
+                      <Icon as={FiFile} />
+                      <Text fontSize="sm">Upload Image</Text>
                     </Box>
                     )}
                   </Flex>
