@@ -480,7 +480,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     const searchInput = searchInputRef.current.value.toLowerCase();
     setBookshelfBooks(prev=>{
       return prev.filter((book)=>{
-        return book.title.toLowerCase().includes(searchInput) || book.author.toLowerCase().includes(searchInput) || book.isbn.toLowerCase().includes(searchInput);
+        return book.title.toLowerCase().includes(searchInput) || book.author?.toLowerCase().includes(searchInput) || book.isbn?.toLowerCase().includes(searchInput);
       })
     })
   }
