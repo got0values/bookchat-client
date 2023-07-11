@@ -65,7 +65,9 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
     axios
       .get('/meta.json')
       .then((response)=>{
-        const metaVersion = response.data.version
+        const metaVersion = response.data.version;
+        console.log(`ClientVersion: ${clientAppVersion}`);
+        console.log(`MetaVersion: ${metaVersion}`);
         if (clientAppVersion < metaVersion) {
           window.location.reload();
         }
