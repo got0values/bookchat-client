@@ -56,6 +56,7 @@ import { TbBooks } from 'react-icons/tb';
 import { MdChevronRight } from 'react-icons/md';
 import { BookClubGeneralComments } from "../shared/BookClubGeneralComments";
 import { ImInfo } from 'react-icons/im';
+import { FaShoppingCart } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -1238,7 +1239,18 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                           <Flex justify="center">
                             <Divider borderColor="gray.400" my={3} w="95%" />
                           </Flex>
-                          <Center flexDirection="column">
+                          <Center flexDirection="column" gap={1}>
+                            <Button 
+                              as={Link}
+                              to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(currentBook.title + " " + currentBook.author + " " + currentBook.isbn)}`}
+                              target="blank"
+                              fontWeight="bold"
+                              size="sm"
+                              variant="ghost"
+                              leftIcon={<FaShoppingCart size={20} />}
+                            >
+                              Shop
+                            </Button>
                             <Button 
                               backgroundColor="black"
                               color="white"

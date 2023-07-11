@@ -43,6 +43,7 @@ import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
 import { BsReplyFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { MdOutlineChat } from 'react-icons/md';
+import { FaShoppingCart } from 'react-icons/fa';
 import Comments from "./shared/CurrentlyReadingComments";
 import { useAuth } from './hooks/useAuth';
 import Cookies from "js-cookie";
@@ -563,6 +564,15 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                             icon={<MdOutlineChat size={20} />}
                           >
                             Chat Room
+                          </MenuItem>
+                          <MenuItem 
+                            as={Link}
+                            to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(reading.title + " " + reading.author + " " + reading.isbn)}`}
+                            target="blank"
+                            fontWeight="bold"
+                            icon={<FaShoppingCart size={20} />}
+                          >
+                            Shop
                           </MenuItem>
                           {reading.Profile.id === user?.Profile.id ? (
                             <MenuItem

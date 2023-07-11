@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { BookshelfCategory, BookshelfBook } from "../types/types";
 import { 
@@ -54,6 +54,7 @@ import GoogleBooksSearch from "../shared/GoogleBooksSearch";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { MdOutlineChat } from 'react-icons/md';
 import { BiDotsHorizontalRounded, BiTrash, BiPlus, BiHide } from 'react-icons/bi';
+import { FaShoppingCart } from 'react-icons/fa';
 import ReactQuill from 'react-quill';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -1358,7 +1359,15 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             >
                               Chat Room
                             </MenuItem>
-
+                            <MenuItem 
+                              as={Link}
+                              to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.title + " " + book.author + " " + book.isbn)}`}
+                              target="blank"
+                              fontWeight="bold"
+                              icon={<FaShoppingCart size={20} />}
+                            >
+                              Shop
+                            </MenuItem>
                             <MenuItem
                               data-id={book.id}
                               onClick={e=>hideOrShowBookshelfBook([book.id,book.hidden ? "show" : "hide"])}

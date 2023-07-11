@@ -59,6 +59,7 @@ import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
 import { BsReplyFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { ImBooks } from 'react-icons/im';
+import { FaShoppingCart } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import { FollowProfileButton, CancelRequestButton, UnFollowProfileButton } from "./profileButtons";
 import Comments from "../shared/CurrentlyReadingComments";
@@ -1137,6 +1138,15 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   >
                                     Chat Room
                                   </MenuItem>
+                                  <MenuItem 
+                                    as={Link}
+                                    to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(profileData.CurrentlyReading[0].title + " " + profileData.CurrentlyReading[0].author + " " + profileData.CurrentlyReading[0].isbn)}`}
+                                    target="blank"
+                                    fontWeight="bold"
+                                    icon={<FaShoppingCart size={20} />}
+                                  >
+                                    Shop
+                                  </MenuItem>
                                   {viewer === "self" ? (
                                   <>
                                     <MenuItem
@@ -1416,6 +1426,15 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     >
                                       Chat Room
                                     </MenuItem>
+                                    <MenuItem 
+                                      as={Link}
+                                      to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(profileData.CurrentlyReading[0].title + " " + profileData.CurrentlyReading[0].author + " " + profileData.CurrentlyReading[0].isbn)}`}
+                                      target="blank"
+                                      fontWeight="bold"
+                                      icon={<FaShoppingCart size={20} />}
+                                    >
+                                      Shop
+                                    </MenuItem>
                                   </MenuList>
                                 </Menu>
                               </Box>
@@ -1627,6 +1646,15 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                             icon={<MdOutlineChat size={20} />}
                                           >
                                             Chat Room
+                                          </MenuItem>
+                                          <MenuItem 
+                                            as={Link}
+                                            to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(readBook.title + " " + readBook.author + " " + readBook.isbn)}`}
+                                            target="blank"
+                                            fontWeight="bold"
+                                            icon={<FaShoppingCart size={20} />}
+                                          >
+                                            Shop
                                           </MenuItem>
                                           {viewer === "self" ? (
                                           <>
