@@ -51,6 +51,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import axios from "axios";
 import googleWatermark from "/src/assets/google_watermark.gif";
+import packageJson from '../package.json';
 
 
 export default function Dashboard({server,gbooksapi}: DashboardProps) {
@@ -58,6 +59,18 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   const navigate = useNavigate();
   const { user, getUser } = useAuth();
   const queryClient = useQueryClient();
+
+  useEffect(()=>{
+    const clientAppVersion = packageJson.version;
+    axios
+      .get('/meta.json')
+      .then((response)=>{
+        const metaVersion = response.data.version
+        if (clientAppVersion < metaVersion) {
+          window.location.reload();
+        }
+      })
+  },[])
 
   const [items,setItems] = useState(5);
   const [followingSorted,setFollowingSorted] = useState([] as any)
