@@ -68,7 +68,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
         const metaVersion = response.data.version;
         console.log(`ClientVersion: ${clientAppVersion}`);
         console.log(`MetaVersion: ${metaVersion}`);
-        if (clientAppVersion < metaVersion) {
+        if (clientAppVersion !== metaVersion) {
           window.location.reload();
         }
       })
