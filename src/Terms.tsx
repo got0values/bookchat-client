@@ -51,7 +51,7 @@ const Terms = () => {
             The Book Chat Noir Product enables people to connect with each other and build communities. These Terms govern your use of Book Chat Noir.
           </Text>
           <Text>
-            We get commissions for purchases made through links to products and/or get paid to show you ads. As an Amazon Associate, we earn from qualifying purchases. By using Book Chat Noir, you agree that we can show you ads that we think may be relevant to you and your interests. Protecting people's privacy is central to how we've designed our ad system. We don't sell your personal data.
+            We get commissions for purchases made through links to products and/or get paid to show you ads. As a Bookshop Affiliate (bookshop.org) and Amazon Associate (amazon.com), we earn from qualifying purchases. By using Book Chat Noir, you agree that we can show you ads that we think may be relevant to you and your interests. Protecting people's privacy is central to how we've designed our ad system. We don't sell your personal data.
           </Text>
           <Heading as="h2" size="md">
             Your commitments to Book Chat Noir and our community
@@ -90,6 +90,9 @@ const Terms = () => {
                 You are a convicted sex offender.
               </ListItem>
               <ListItem>
+                You are under 16 years of age.
+              </ListItem>
+              <ListItem>
                 We've previously disabled your account for violations of our Terms or other terms and policies that apply to your use of Book Chat Noir. If we disable your account for a violation of our Terms or other terms and policies, you agree not to create another account without our permission. Receiving permission to create a new account is provided at our sole discretion, and does not mean or imply that the disciplinary action was wrong or without cause.
               </ListItem>
               <ListItem>
@@ -107,13 +110,13 @@ const Terms = () => {
             You may not use our Product to do or share anything:
           </Text>
           <Text>
-            That violates these Terms, the Community Standards, or other terms and policies that apply to your use of our Products.
+            That violates these Terms or other terms and policies that apply to your use of our Products.
           </Text>
           <Text>
             That is unlawful, misleading, discriminatory or fraudulent (or assists someone else in using our Products in such a way).
           </Text>
           <Text>
-            That infringes or violates someone else's rights, including their intellectual property rights (such as by infringing another's copyright or trademark, or distributing or selling counterfeit or pirated goods), unless an exception or limitation applies under applicable law.
+            That infringes or violates someone else's rights.
           </Text>
           <Text>
             You may not upload viruses or malicious code, use the services to send spam, or do anything else that could disable, overburden, interfere with, or impair the proper working, integrity, operation, or appearance of our services, systemes, or Product.
