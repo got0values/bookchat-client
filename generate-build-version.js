@@ -1,5 +1,5 @@
-import fs from 'fs';
-import packageJson from'./package.json';
+import fs from "fs";
+import packageJson from "./package.json" assert { type: "json" };
 
 const appVersion = packageJson.version;
 
