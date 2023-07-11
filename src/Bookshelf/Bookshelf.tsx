@@ -71,6 +71,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   const queryClient = useQueryClient();
 
   const [bookshelfBooks,setBookshelfBooks] = useState([] as BookshelfBook[])
+  const [bookshelfBooksOriginal,setBookshelfBooksOriginal] = useState([] as BookshelfBook[])
   const [showAddCategory,setShowAddCategory] = useState(false)
   const [showSuggestionsNotes,setShowSuggestionsNotes] = useState(false)
 
@@ -86,6 +87,11 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
       .then((response)=>{
         const responseMessage = response.data.message;
         setBookshelfBooks(prev=>{
+          return responseMessage.BookshelfBook.sort((a: BookshelfBook,b: BookshelfBook)=>{
+            return (new Date(a.created_on) as any) - (new Date(b.created_on) as any)
+          }).reverse()
+        });
+        setBookshelfBooksOriginal(prev=>{
           return responseMessage.BookshelfBook.sort((a: BookshelfBook,b: BookshelfBook)=>{
             return (new Date(a.created_on) as any) - (new Date(b.created_on) as any)
           }).reverse()
@@ -198,23 +204,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     onClose: onCloseBookSearchModal 
   } = useDisclosure()
   
-  const [bookResults,setBookResults] = useState<any[] | null>(null);
-  const [bookResultsLoading,setBookResultsLoading] = useState(false);
-  const searchBookRef = useRef({} as HTMLInputElement);
-  const searchBookButtonRef = useRef({} as HTMLButtonElement)
-  async function searchBook() {
-    setBookResultsLoading(true)
-    await axios
-      .get("https://www.googleapis.com/books/v1/volumes?q=" + searchBookRef.current.value + "&key=" + gbooksapi)
-      .then((response)=>{
-        setBookResults(response.data.items)
-        setBookResultsLoading(false)
-        onOpenBookSearchModal();
-      })
-      .catch((error)=>{
-        console.log(error)
-      })
-  }
   const [bookToAdd,setBookToAdd] = useState<any | null>(null);
   function selectBookToAdd(e: any) {
     const selectedBook = JSON.parse((e.target as HTMLDivElement).dataset.book!);
@@ -484,6 +473,20 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
         )
       })
     }
+  }
+
+  const searchInputRef = useRef({} as any);
+  function searchFilter() {
+    const searchInput = searchInputRef.current.value.toLowerCase();
+    setBookshelfBooks(prev=>{
+      return prev.filter((book)=>{
+        return book.title.toLowerCase().includes(searchInput) || book.author.toLowerCase().includes(searchInput) || book.isbn.toLowerCase().includes(searchInput);
+      })
+    })
+  }
+  function resetSearchFilter() {
+    searchInputRef.current.value = "";
+    setBookshelfBooks(bookshelfBooksOriginal);
   }
 
   const ratingCallbackMutation = useMutation({
@@ -995,6 +998,33 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   ): null}
                 </Stack>
               </CheckboxGroup>
+              <Divider/>
+              <Heading as="h3" size="md">
+                Search Bookshelf
+              </Heading>
+              <Flex
+                justify="space-between"
+                align="center"
+                gap={1}
+              >
+                <Input
+                  type="search"
+                  ref={searchInputRef}
+                  onKeyDown={e=> e.key === "Enter" ? searchFilter() : null}
+                />
+                <Button
+                  onClick={e=>resetSearchFilter()}
+                >
+                  Reset
+                </Button>
+                <Button
+                  onClick={e=>searchFilter()}
+                  backgroundColor="black"
+                  color="white"
+                >
+                  Search
+                </Button>
+              </Flex>
             </Stack>
           </Box>
           <Stack flex="1 1 65%" maxW="100%" className="well">
