@@ -1281,20 +1281,51 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         justify="space-between"
                       >
                         <Box>
-                          <Text 
-                            fontStyle="italic"
-                            id={`date-text-${book.id}`}
-                            rounded="md"
-                            px={1}
-                            role="button"
-                            onClick={e=>editDate(book.id)}
-                            _hover={{
-                              bg: "lightgray",
-                              cursor: "pointer",
-                              color: "black"
-                            }}
-                          >
-                            {dayjs(book.created_on).local().format('MMM DD, YYYY')}
+                          <Flex align="center" gap={1} wrap="wrap">
+                            <Text 
+                              fontStyle="italic"
+                              id={`date-text-${book.id}`}
+                              rounded="md"
+                              px={1}
+                              role="button"
+                              onClick={e=>editDate(book.id)}
+                              _hover={{
+                                bg: "lightgray",
+                                cursor: "pointer",
+                                color: "black"
+                              }}
+                            >
+                              {dayjs(book.created_on).local().format('MMM DD, YYYY')}
+                            </Text>
+                            <Flex 
+                              gap={1} 
+                              align="center"
+                              id={`date-input-block-${book.id}`}
+                              display="none"
+                            >
+                              <Input
+                                type="date"
+                                defaultValue={dayjs(book.created_on).local().format("YYYY-MM-DD")}
+                                id={`date-input-${book.id}`}
+                                size="sm"
+                              />
+                              <Button
+                                backgroundColor="black"
+                                color="white"
+                                size="sm"
+                                onClick={e=>saveDate(book.id)}
+                              >
+                                Save
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={e=>hideInputBlock(book.id)}
+                                variant="outline"
+                                borderColor="black"
+                              >
+                                Cancel
+                              </Button>
+                            </Flex>
                             {book.hidden ? (
                               <Text 
                                 as="span"
@@ -1304,35 +1335,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 {" "} (Hidden)
                               </Text>
                             ): null}
-                          </Text>
-                          <Flex 
-                            gap={1} 
-                            align="center"
-                            id={`date-input-block-${book.id}`}
-                            display="none"
-                          >
-                            <Input
-                              type="date"
-                              defaultValue={dayjs(book.created_on).local().format("YYYY-MM-DD")}
-                              id={`date-input-${book.id}`}
-                              size="sm"
-                            />
-                            <Button
-                              backgroundColor="black"
-                              color="white"
-                              size="sm"
-                              onClick={e=>saveDate(book.id)}
-                            >
-                              Save
-                            </Button>
-                            <Button
-                              size="sm"
-                              onClick={e=>hideInputBlock(book.id)}
-                              variant="outline"
-                              borderColor="black"
-                            >
-                              Cancel
-                            </Button>
                           </Flex>
                         </Box>
                         <Menu>
