@@ -1,4 +1,5 @@
 import React, {useState,useRef} from 'react';
+import { Link } from 'react-router-dom';
 import { GoogleBooksSearchType } from '../types/types';
 import { 
   Box,
@@ -135,8 +136,21 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
                     <Text fontSize="sm" fontStyle="italic">
                       {book.volumeInfo.publishedDate ? dayjs(book.volumeInfo.publishedDate).format('YYYY') : null}
                     </Text>
-                    <Flex align="center" gap={2}>
+                    <Flex align="center" gap={1}>
                       {/* <GooglePreviewLink book={book}/> */}
+                      <a
+                        href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.volumeInfo.title + " " + (book.volumeInfo.authors ? book.volumeInfo.authors[0] : null) + " " + book.volumeInfo.industryIdentifiers[0]?.identifier)}`}
+                        target="blank"
+                      >
+                        <Button 
+                          size="xs"
+                          variant="outline"
+                          backgroundColor="white"
+                          color="black"
+                        >
+                          Shop
+                        </Button>
+                      </a>
                       <Button 
                         size="xs"
                         data-book={JSON.stringify(book)}
