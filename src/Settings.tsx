@@ -12,6 +12,11 @@ import {
   Heading,
   Text,
   Divider,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+  CloseButton,
   useToast
 } from "@chakra-ui/react";
 import { useAuth } from './hooks/useAuth';
@@ -92,7 +97,8 @@ export default function Settings({server}: SettingsProps) {
 
   const firstNameRef = useRef({} as HTMLInputElement);
   const lastNameRef = useRef({} as HTMLInputElement);
-  const notificationsEmailRef = useRef({} as HTMLInputElement)
+  const notificationsEmailRef = useRef({} as HTMLInputElement);
+  const [settingsError,setSettingsError] = useState("");
   const updateSettingsMutation = useMutation({
     mutationFn: async ()=>{
       let tokenCookie: string | null = Cookies.get().token;
@@ -115,11 +121,13 @@ export default function Settings({server}: SettingsProps) {
               duration: 9000,
               isClosable: true
             })
+            setSettingsError("");
           }
           // window.location.reload();
         })
         .catch(({response})=>{
           console.log(response)
+          setSettingsError(response.data.message)
           throw new Error(response.data.message)
         })
       return getSettings()
@@ -155,11 +163,29 @@ export default function Settings({server}: SettingsProps) {
 
   return (
     <Box className="main-content-smaller">
+
       <Skeleton
         isLoaded={!isLoading}
       >
         <Flex direction="column" gap={4} px={2}>
-
+          {settingsError && (
+            <Alert status='error'>
+              <AlertIcon />
+              <Box>
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>
+                  {settingsError}
+                </AlertDescription>
+              </Box>
+              <CloseButton
+                alignSelf='flex-start'
+                position='absolute'
+                right={1}
+                top={1}
+                onClick={e=>setSettingsError("")}
+              />
+            </Alert>
+          )}
           <Flex direction="column" gap={2}>
             <Stack>
               <Heading as="h4" size="md">
