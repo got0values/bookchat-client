@@ -69,7 +69,12 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
         console.log(`ClientVersion: ${clientAppVersion}`);
         console.log(`MetaVersion: ${metaVersion}`);
         if (clientAppVersion !== metaVersion) {
-          window.location.reload();
+          // window.location.reload();
+          const form = document.createElement('form');
+          form.method = "POST";
+          form.action = location.href;
+          document.body.appendChild(form);
+          form.submit();
         }
       })
   },[])
