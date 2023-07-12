@@ -31,6 +31,7 @@ import { AiFillStar } from "react-icons/ai";
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import { BsArchiveFill } from "react-icons/bs";
 import { ImBooks } from 'react-icons/im';
+import { FaShoppingCart } from 'react-icons/fa';
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -292,72 +293,90 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                   maxH="125px"
                   boxShadow="1px 1px 1px 1px darkgrey"
                 />
-                <Box>
-                  <Text
-                    noOfLines={1}
-                    fontWeight="bold"
-                  >
-                    {suggestion.title}
-                  </Text>
-                  <Text
-                    noOfLines={1}
-                  >
-                    {suggestion.author}
-                  </Text>
-                  {suggestion.published_date ? (
+                <Flex direction="column" justify="space-between">
+                  <Box>
                     <Text
-                      fontStyle="italic"
-                    >
-                      {dayjs(suggestion.published_date).format("YYYY")}
-                    </Text>
-                  ): null}
-                  <Popover isLazy>
-                    <PopoverTrigger>
-                      <Text
-                        noOfLines={1}
-                        _hover={{
-                          cursor: "pointer"
-                        }}
-                      >
-                        {suggestion.description}
-                      </Text>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <PopoverArrow />
-                      <PopoverCloseButton />
-                      <PopoverBody
-                        _dark={{
-                          bg: "black"
-                        }}
-                      >
-                        {suggestion.description}
-                      </PopoverBody>
-                    </PopoverContent>
-                  </Popover>
-                  {suggestion.page_count ? (
-                    <Text>
-                      {suggestion.page_count} pages
-                    </Text>
-                  ): null}
-                  <Flex
-                    align="center"
-                    gap={1}
-                  >
-                    <Text
+                      noOfLines={1}
                       fontWeight="bold"
                     >
-                      Rate Suggestion: 
+                      {suggestion.title}
                     </Text>
-                    {/* <Text>
-                      Coming soon!
-                    </Text> */}
-                    <StarRating
-                      ratingCallback={ratingCallback} 
-                      starRatingId={suggestion.id}
-                      defaultRating={suggestion.rating ? suggestion.rating : 0}
-                    />
+                    <Text
+                      noOfLines={1}
+                    >
+                      {suggestion.author}
+                    </Text>
+                    {suggestion.published_date ? (
+                      <Text
+                        fontStyle="italic"
+                      >
+                        {dayjs(suggestion.published_date).format("YYYY")}
+                      </Text>
+                    ): null}
+                    <Popover isLazy>
+                      <PopoverTrigger>
+                        <Text
+                          noOfLines={1}
+                          _hover={{
+                            cursor: "pointer"
+                          }}
+                        >
+                          {suggestion.description}
+                        </Text>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <PopoverArrow />
+                        <PopoverCloseButton />
+                        <PopoverBody
+                          _dark={{
+                            bg: "black"
+                          }}
+                        >
+                          {suggestion.description}
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Popover>
+                    {suggestion.page_count ? (
+                      <Text>
+                        {suggestion.page_count} pages
+                      </Text>
+                    ): null}
+                  </Box>
+                  <Flex align="center" justify="space-between" wrap="wrap">
+                    <Flex
+                      align="center"
+                      gap={1}
+                    >
+                      <Text
+                        fontWeight="bold"
+                      >
+                        Rate Suggestion: 
+                      </Text>
+                      {/* <Text>
+                        Coming soon!
+                      </Text> */}
+                      <StarRating
+                        ratingCallback={ratingCallback} 
+                        starRatingId={suggestion.id}
+                        defaultRating={suggestion.rating ? suggestion.rating : 0}
+                      />
+                    </Flex>
+                    <a 
+                      href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(suggestion.title + " " + suggestion.author + " " + suggestion.isbn)}`}
+                      target="blank"
+                    >
+                      <Button
+                        size="xs"
+                        variant="outline"
+                        backgroundColor="white"
+                        color="black"
+                        leftIcon={<FaShoppingCart size={15} />}
+                      >
+                        Shop
+                      </Button>
+                    </a>
                   </Flex>
-                </Box>
+                </Flex>
               </Flex>
             </Stack>
           )
