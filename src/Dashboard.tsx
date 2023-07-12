@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, Suspense } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { DashboardProps, CurrentlyReading } from './types/types';
+import { DashboardProps, CurrentlyReading, SelectedBook } from './types/types';
 import { 
   Box,
   Heading,
@@ -239,8 +239,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
 
   const whatImReadingRef = useRef({} as HTMLInputElement);
   const [selectedBook,setSelectedBook] = useState<any | null>(null);
-  function selectBook(e: React.FormEvent) {
-    setSelectedBook(JSON.parse((e.target as HTMLDivElement).dataset.book!))
+  function selectBook(book: SelectedBook) {
+    setSelectedBook(book)
     whatImReadingRef.current.value = "";
     closeReadingModal();
   }
@@ -452,7 +452,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               />
               <Flex>
                 <Image 
-                  src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
+                  src={selectedBook.image}
                   maxH="100px"
                   boxShadow="1px 1px 1px 1px darkgrey"
                 />
@@ -462,10 +462,10 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 >
                   <Box>
                     <Heading as="h5" size="md" me={3}>
-                      {selectedBook.volumeInfo.title}
+                      {selectedBook.title}
                     </Heading>
                     <Text fontSize="lg">
-                      {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
+                      {selectedBook.author}
                     </Text>
                     <Popover isLazy>
                       <PopoverTrigger>
@@ -475,7 +475,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                           }}
                         >
                           <Text fontSize="lg" noOfLines={1}>
-                            {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
+                            {selectedBook.description}
                           </Text>
                         </Box>
                       </PopoverTrigger>
@@ -487,14 +487,14 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                             bg: "black"
                           }}
                         >
-                          {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
+                          {selectedBook.description ? selectedBook.description: null}
                         </PopoverBody>
                       </PopoverContent>
                     </Popover>
                     <Text fontSize="lg">
-                      {selectedBook.volumeInfo.publishedDate !== null ? 
+                      {selectedBook.published_date !== null && selectedBook.published_date !== "" ? 
                         (
-                          dayjs(selectedBook.volumeInfo.publishedDate).format("YYYY")
+                          dayjs(selectedBook.published_date).format("YYYY")
                         ) : null
                       }
                     </Text>
@@ -504,13 +504,13 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       // size="sm"
                       backgroundColor="black"
                       color="white"
-                      data-image={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
-                      data-title={selectedBook.volumeInfo.title}
-                      data-author={selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
-                      data-description={selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
-                      data-isbn={selectedBook.volumeInfo.industryIdentifiers ? selectedBook.volumeInfo.industryIdentifiers[0].identifier : null}
-                      data-pagecount={selectedBook.volumeInfo.pageCount ? selectedBook.volumeInfo.pageCount : null}
-                      data-publisheddate={selectedBook.volumeInfo.publishedDate ? selectedBook.volumeInfo.publishedDate : null}
+                      data-image={selectedBook.image}
+                      data-title={selectedBook.title}
+                      data-author={selectedBook.author}
+                      data-description={selectedBook.description}
+                      data-isbn={selectedBook.isbn}
+                      data-pagecount={selectedBook.page_count}
+                      data-publisheddate={selectedBook.published_date}
                       onClick={e=>postCurrentlyReading(e)}
                     >
                       Post
@@ -822,7 +822,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           </ModalHeader>
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-              <GoogleBooksSearch selectText="set" selectCallback={selectBook} gBooksApi={gbooksapi}/>
+              <GoogleBooksSearch selectText="set" selectCallback={selectBook as any} gBooksApi={gbooksapi}/>
             </ModalBody>
             <ModalFooter flexDirection="column">
             </ModalFooter>

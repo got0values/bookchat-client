@@ -412,3 +412,14 @@ export interface GoogleBooksSearchType {
   selectCallback: (e: React.FormEvent<Element>)=>(Promise<void> | void);
   gBooksApi: string;
 }
+
+
+export interface SelectedBook {
+  title: string;
+  author: string;
+  image: string;
+  description: string;
+  isbn: string;
+  page_count: number;
+  published_date: string;
+}

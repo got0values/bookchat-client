@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent, Suspense } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ProfileProps, HTMLInputEvent, ProfileType, Following_Following_following_profile_idToProfile, BookshelfBook } from '../types/types';
+import { ProfileProps, HTMLInputEvent, ProfileType, Following_Following_following_profile_idToProfile, BookshelfBook, SelectedBook } from '../types/types';
 import { 
   Box,
   Heading,
@@ -366,8 +366,8 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
 
   const whatImReadingRef = useRef({} as HTMLInputElement);
   const [selectedBook,setSelectedBook] = useState<any | null>(null);
-  function selectBook(e: React.FormEvent) {
-    setSelectedBook(JSON.parse((e.target as HTMLDivElement).dataset.book!))
+  function selectBook(book: SelectedBook) {
+    setSelectedBook(book);
     closeReadingModal();
   }
 
@@ -1023,8 +1023,9 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                         />
                         <Flex>
                           <Image 
-                            src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
+                            src={selectedBook.image}
                             maxH="100px"
+                            minW="60px"
                             boxShadow="1px 1px 1px 1px darkgrey"
                           />
                           <Box 
@@ -1033,10 +1034,10 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           >
                             <Box>
                               <Heading as="h5" size="md" me={3} noOfLines={1}>
-                                {selectedBook.volumeInfo.title}
+                                {selectedBook.title}
                               </Heading>
                               <Text fontSize="lg" noOfLines={1}>
-                                {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
+                                {selectedBook.author}
                               </Text>
                             </Box>
                             <Box>
@@ -1048,7 +1049,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     }}
                                   >
                                     <Text fontSize="lg" noOfLines={1}>
-                                      {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
+                                      {selectedBook.description ? selectedBook.description: null}
                                     </Text>
                                   </Box>
                                 </PopoverTrigger>
@@ -1061,12 +1062,12 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       bg: "black"
                                     }}
                                   >
-                                    {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
+                                    {selectedBook.description ? selectedBook.description: null}
                                   </PopoverBody>
                                 </PopoverContent>
                               </Popover>
                               <Text fontSize="lg" noOfLines={1}>
-                                {selectedBook.volumeInfo.publishedDate ? dayjs(selectedBook.volumeInfo.publishedDate).format("YYYY"): null}
+                                {selectedBook.published_date ? dayjs(selectedBook.published_date).format("YYYY"): null}
                               </Text>
                             </Box>
                             <Flex justify="flex-end">
@@ -1075,13 +1076,13 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 backgroundColor="black"
                                 color="white"
                                 // variant="outline"
-                                data-image={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
-                                data-title={selectedBook.volumeInfo.title}
-                                data-author={selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
-                                data-description={selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null}
-                                data-isbn={selectedBook.volumeInfo.industryIdentifiers ? selectedBook.volumeInfo.industryIdentifiers[0].identifier : null}
-                                data-pagecount={selectedBook.volumeInfo.pageCount ? selectedBook.volumeInfo.pageCount : null}
-                                data-publisheddate={selectedBook.volumeInfo.publishedDate ? selectedBook.volumeInfo.publishedDate : null}
+                                data-image={selectedBook.image}
+                                data-title={selectedBook.title}
+                                data-author={selectedBook.author}
+                                data-description={selectedBook.description}
+                                data-isbn={selectedBook.isbn}
+                                data-pagecount={selectedBook.page_count}
+                                data-publisheddate={selectedBook.published_date}
                                 onClick={e=>postCurrentlyReading(e)}
                               >
                                 Post
@@ -1237,6 +1238,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                               .image
                             }
                             maxH="100px"
+                            minW="60px"
                             boxShadow="1px 1px 1px 1px darkgrey"
                           />
                           <Box mx={2} w="100%">
@@ -1452,6 +1454,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   profileData.CurrentlyReading[0].image
                                 }
                                 maxH="100px"
+                                minW="60px"
                                 boxShadow="1px 1px 1px 1px darkgrey"
                               />
                               <Box mx={2} w="100%">
@@ -1741,6 +1744,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   <Image 
                                     src={readBook.image}
                                     maxH="100px"
+                                    minW="60px"
                                     boxShadow="1px 1px 1px 1px darkgrey"
                                   />
                                   <Box mx={2} w="100%">
@@ -2093,7 +2097,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                 </ModalHeader>
                 <ModalCloseButton />
                   <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-                    <GoogleBooksSearch selectText="set" selectCallback={selectBook} gBooksApi={gbooksapi!}/>
+                    <GoogleBooksSearch selectText="set" selectCallback={selectBook as any} gBooksApi={gbooksapi!}/>
                   </ModalBody>
                   <ModalFooter flexDirection="column">
                   <> 

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useNavigate, Link, useSearchParams, redirect } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { BookshelfBook, BookshelfType, BookSuggestionType } from "../types/types";
+import { BookshelfBook, BookshelfType, BookSuggestionType, SelectedBook } from "../types/types";
 import { 
   Box,
   Heading,
@@ -111,19 +111,19 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
 
   const searchInputRef = useRef({} as HTMLInputElement);
   const [selectedBook,setSelectedBook] = useState<any | null>(null);
-  function selectBook(e: React.FormEvent) {
-    setSelectedBook(JSON.parse((e.target as HTMLDivElement).dataset.book!));
+  function selectBook(book: SelectedBook) {
+    setSelectedBook(book);
     onCloseSearchModal();
   }
   const notesRef = useRef({} as HTMLTextAreaElement);
   async function suggestBook(e: React.FormEvent) {
-    const image = selectedBook.volumeInfo.imageLinks ? selectedBook.volumeInfo.imageLinks.smallThumbnail : "";
-    const title = selectedBook.volumeInfo.title;
-    const author = selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : "";
-    const description = selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : "";
-    const isbn = selectedBook.volumeInfo.industryIdentifiers ? selectedBook.volumeInfo.industryIdentifiers[0].identifier : "";
-    const page_count = selectedBook.volumeInfo.pageCount ? selectedBook.volumeInfo.pageCount : null;
-    const published_date = selectedBook.volumeInfo.publishedDate ? selectedBook.volumeInfo.publishedDate : "";
+    const image = selectedBook.image;
+    const title = selectedBook.title;
+    const author = selectedBook.author;
+    const description = selectedBook.description;
+    const isbn = selectedBook.isbn;
+    const page_count = selectedBook.page_count;
+    const published_date = selectedBook.published_date;
     const notes = notesRef.current.value;
 
     let tokenCookie = Cookies.get().token;
@@ -398,7 +398,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                   />
                   <Flex>
                     <Image
-                      src={selectedBook.volumeInfo.imageLinks?.smallThumbnail}
+                      src={selectedBook.image}
                       height="100%"
                       maxH="125px"
                       boxShadow="1px 1px 1px 1px darkgrey"
@@ -410,20 +410,20 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                         me={3}
                         noOfLines={1}
                       >
-                        {selectedBook.volumeInfo.title}
+                        {selectedBook.title}
                       </Heading>
                       <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
-                        {selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null}
+                        {selectedBook.author}
                       </Text>
-                      {selectedBook.volumeInfo.pageCount ? (
+                      {selectedBook.page_count ? (
                         <Text fontSize="sm">
-                          {selectedBook.volumeInfo.pageCount} pages
+                          {selectedBook.page_count} pages
                         </Text>
                       ): null}
                       <Text fontStyle="italic">
-                        {selectedBook.volumeInfo.publishedDate !== null ? 
+                        {selectedBook.published_date !== null ? 
                           (
-                            dayjs(selectedBook.volumeInfo.publishedDate).format("YYYY")
+                            dayjs(selectedBook.published_date).format("YYYY")
                           ) : null
                         }
                       </Text>
@@ -435,7 +435,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                             }}
                           >
                             <Text noOfLines={1}>
-                              {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
+                              {selectedBook.description ? selectedBook.description: null}
                             </Text>
                           </Box>
                         </PopoverTrigger>
@@ -448,7 +448,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                           }}
                             fontSize="sm"
                           >
-                            {selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description: null}
+                            {selectedBook.description ? selectedBook.description: null}
                           </PopoverBody>
                         </PopoverContent>
                       </Popover>
@@ -574,7 +574,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           </ModalHeader>
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-              <GoogleBooksSearch selectText="select" selectCallback={selectBook} gBooksApi={gbooksapi}/>
+              <GoogleBooksSearch selectText="select" selectCallback={selectBook as any} gBooksApi={gbooksapi}/>
             </ModalBody>
             <ModalFooter flexDirection="column">
             </ModalFooter>

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BookshelfCategory, BookshelfBook } from "../types/types";
+import { BookshelfCategory, BookshelfBook, SelectedBook } from "../types/types";
 import { 
   Box,
   Tag,
@@ -206,17 +206,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   } = useDisclosure()
   
   const [bookToAdd,setBookToAdd] = useState<any | null>(null);
-  function selectBookToAdd(e: any) {
-    const selectedBook = JSON.parse((e.target as HTMLDivElement).dataset.book!);
-    const image = selectedBook.volumeInfo.imageLinks ? selectedBook.volumeInfo.imageLinks.smallThumbnail : null;
-    const title = selectedBook.volumeInfo.title;
-    const author = selectedBook.volumeInfo.authors ? selectedBook.volumeInfo.authors[0] : null;
-    const description = selectedBook.volumeInfo.description ? selectedBook.volumeInfo.description : null;
-    const isbn = selectedBook.volumeInfo.industryIdentifiers ? selectedBook.volumeInfo.industryIdentifiers[0].identifier : null;
-    const page_count = selectedBook.volumeInfo.pageCount ? parseInt(selectedBook.volumeInfo.pageCount) : null;
-    const published_date = selectedBook.volumeInfo.publishedDate ? selectedBook.volumeInfo.publishedDate : null;
-
-    setBookToAdd({title,author,image,description,isbn,page_count,published_date})
+  function selectBookToAdd(book: SelectedBook) {
+    setBookToAdd(book)
     onCloseBookSearchModal();
   }
   const [bookToAddCategories,setBookToAddCategories] = useState([] as any);
@@ -1070,7 +1061,9 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   <Flex mb={1}>
                     <Image
                       src={bookToAdd.image}
+                      onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                       maxH="100px"
+                      minW="60px"
                       boxShadow="1px 1px 1px 1px darkgrey"
                     />
                     <Box mx={2} w="100%">
@@ -1393,6 +1386,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         <Image
                           src={book.image}
                           maxH="125px"
+                          minW="60px"
+                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                           boxShadow="1px 1px 1px 1px darkgrey"
                         />
                         <Box mx={2} w="100%">
@@ -1630,7 +1625,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             </ModalHeader>
             <ModalCloseButton />
               <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-                <GoogleBooksSearch selectText="Add" selectCallback={selectBookToAdd} gBooksApi={gbooksapi}/>
+                <GoogleBooksSearch selectText="Add" selectCallback={selectBookToAdd as any} gBooksApi={gbooksapi}/>
               </ModalBody>
               <ModalFooter flexDirection="column">
               </ModalFooter>

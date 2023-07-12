@@ -1,7 +1,7 @@
 import React, { useState, useRef, ReactHTMLElement } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BookClubMember, BookClubsType, BookClubBookType, BookClubRsvpType, BookClubBookPollVoteType } from "../types/types";
+import { BookClubMember, BookClubsType, BookClubBookType, BookClubRsvpType, BookClubBookPollVoteType, SelectedBook } from "../types/types";
 import { 
   Box,
   Tag,
@@ -450,8 +450,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
   }
 
   const selectBookMutation = useMutation({
-    mutationFn: async (e: React.FormEvent) => {
-      const bookData = JSON.parse((e.target as HTMLDivElement).dataset.book!);
+    mutationFn: async (book: SelectedBook) => {
       setBookResultsLoading(true)
       let tokenCookie: string | null = Cookies.get().token;
       if (tokenCookie) {
@@ -461,11 +460,10 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
               {
                 bookClubId: parseInt(paramsBookClubId!),
                 bookClubBookId: bookClubBook,
-                bookImage: bookData.volumeInfo.imageLinks ? bookData.volumeInfo.imageLinks.smallThumbnail : "",
-                bookTitle: bookData.volumeInfo.title,
-                bookAuthor: bookData.volumeInfo.authors ? bookData.volumeInfo.authors[0] : "",
-                bookDescription: bookData.volumeInfo.description ? bookData.volumeInfo.description : "",
-                bookLink: bookData.volumeInfo.previewLink ? bookData.volumeInfo.previewLink : ""
+                bookImage: book.image,
+                bookTitle: book.title,
+                bookAuthor: book.author,
+                bookDescription: book.description ? book.description : ""
               },
               {
                 headers: {
@@ -483,11 +481,10 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
           .post(server + "/api/setbookclubbook",
             {
               bookClubId: parseInt(paramsBookClubId!),
-              bookImage: bookData.volumeInfo.imageLinks ? bookData.volumeInfo.imageLinks.smallThumbnail : "",
-              bookTitle: bookData.volumeInfo.title,
-              bookAuthor: bookData.volumeInfo.authors ? bookData.volumeInfo.authors[0] : "",
-              bookDescription: bookData.volumeInfo.description ? bookData.volumeInfo.description : "",
-              bookLink: bookData.volumeInfo.previewLink ? bookData.volumeInfo.previewLink : ""
+              bookImage: book.image,
+              bookTitle: book.title,
+              bookAuthor: book.author,
+              bookDescription: book.description ? book.description : ""
             },
             {
               headers: {
@@ -520,8 +517,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
       })
     }
   })
-  function selectBook(e: React.FormEvent) {
-    selectBookMutation.mutate(e);
+  function selectBook(book: SelectedBook) {
+    selectBookMutation.mutate(book);
   }
 
   const { 
@@ -1947,7 +1944,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
           </ModalHeader>
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-              <GoogleBooksSearch selectText="Select" selectCallback={selectBook} gBooksApi={gbooksapi}/>
+              <GoogleBooksSearch selectText="Select" selectCallback={selectBook as any} gBooksApi={gbooksapi}/>
             </ModalBody>
             <ModalFooter flexDirection="column">
             <> 
