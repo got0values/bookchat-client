@@ -77,7 +77,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               })
             );
           });
-          window.location.reload();
+          // window.location.reload();
         }
       })
   },[])
