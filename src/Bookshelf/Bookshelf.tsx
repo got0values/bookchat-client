@@ -1063,7 +1063,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       src={bookToAdd.image}
                       onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                       maxH="100px"
-                      minW="60px"
+                      // minW="60px"
                       boxShadow="1px 1px 1px 1px darkgrey"
                     />
                     <Box mx={2} w="100%">
@@ -1386,7 +1386,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         <Image
                           src={book.image}
                           maxH="125px"
-                          minW="60px"
+                          // minW="60px"
                           onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                           boxShadow="1px 1px 1px 1px darkgrey"
                         />
