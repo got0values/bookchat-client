@@ -69,8 +69,15 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
         console.log(`ClientVersion: ${clientAppVersion}`);
         console.log(`MetaVersion: ${metaVersion}`);
         if (clientAppVersion !== metaVersion) {
-          // window.location.reload();
           console.log("Not current version, please hard reload")
+          caches.keys().then((keyList) => {
+            return Promise.all(
+              keyList.map((key) => {
+                return caches.delete(key);
+              })
+            );
+          });
+          window.location.reload();
         }
       })
   },[])
