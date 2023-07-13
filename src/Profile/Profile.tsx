@@ -40,6 +40,11 @@ import {
   PopoverContent,
   PopoverBody,
   PopoverArrow,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
   Menu,
   MenuButton,
   MenuList,
@@ -49,6 +54,8 @@ import {
   useDisclosure,
   useToast
 } from "@chakra-ui/react";
+import { editPagesRead, cancelEditPagesRead } from "../shared/editCancelPagesRead";
+import { editCurrentlyReadingThoughts, cancelEditCurrentlyReadingThoughts } from "../shared/editCancelCurrentlyReadingThoughts";
 import collectionToArray from "../utils/collectionToArray";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
 import GoogleBooksSearch from "../shared/GoogleBooksSearch";
@@ -372,6 +379,7 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
   }
 
   const thoughtsRef = useRef({} as HTMLInputElement);
+  const pagesReadRef = useRef({} as HTMLInputElement);
   const postCurrentlyReadingMutation = useMutation({
     mutationFn: async (e: React.FormEvent)=>{
       let tokenCookie: string | null = Cookies.get().token;
@@ -386,7 +394,8 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
           isbn: (e.target as HTMLDivElement).dataset.isbn,
           page_count: parseInt((e.target as HTMLDivElement).dataset.pagecount as string),
           published_date: (e.target as HTMLDivElement).dataset.publisheddate,
-          thoughts: thoughtsRef.current.value
+          thoughts: thoughtsRef.current.value,
+          pages_read: parseInt(pagesReadRef.current.value)
         },
         {
           headers: {
@@ -621,20 +630,6 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
     likeUnlikeCurrentlyReadingMutation.mutate(e);
   }
 
-  function editCurrentlyReadingThoughts(bookId: number) {
-    if (viewer === "self") {
-      const currentlyReadingText = document.getElementById(`currently-reading-text-${bookId}`);
-      const currentlyReadingInputDiv = document.getElementById(`currently-reading-input-div-${bookId}`);
-      currentlyReadingText!.style.display = "none";
-      currentlyReadingInputDiv!.style.display = "flex";
-    }
-  }
-  function cancelEditCurrentlyReadingThoughts(bookId: number) {
-    const currentlyReadingText = document.getElementById(`currently-reading-text-${bookId}`);
-    const currentlyReadingInputDiv = document.getElementById(`currently-reading-input-div-${bookId}`);
-    currentlyReadingText!.style.display = "block";
-    currentlyReadingInputDiv!.style.display = "none";
-  }
   const updateCurrentlyReadingThoughtsMutation = useMutation({
     mutationFn: async (bookId: number)=>{
       const currentlyReadingText = document.getElementById(`currently-reading-text-${bookId}`);
@@ -678,6 +673,49 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
     updateCurrentlyReadingThoughtsMutation.mutate(bookId)
   }
 
+  const updatePagesReadMutation = useMutation({
+    mutationFn: async (bookId: number)=>{
+      const pagesReadText = document.getElementById(`pages-read-text-${bookId}`);
+      const pagesReadInputDiv = document.getElementById(`pages-read-input-div-${bookId}`);
+      const pagesReadInput = document.getElementById(`pages-read-input-${bookId}`);
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+        .put(server + "/api/updatepagesread",
+        {
+          currentlyReadingId: bookId,
+          pages_read: parseInt((pagesReadInput as HTMLInputElement)!.value)
+        },
+        {
+          headers: {
+            'authorization': tokenCookie
+          }
+        }
+        )
+        .then((response)=>{
+          pagesReadText!.style.display = "block";
+          pagesReadInputDiv!.style.display = "none";
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.message)
+        })
+      }
+      else {
+        throw new Error("Please login again")
+      }
+      return getProfile();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['profileKey',paramsUsername] })
+      queryClient.resetQueries({queryKey: ['profileKey',paramsUsername]})
+      queryClient.setQueryData(['profileKey',paramsUsername],data)
+    }
+  })
+  function updatePagesRead(bookId: number) {
+    updatePagesReadMutation.mutate(bookId)
+  }
+
   async function addToBookshelf(bookToAdd: any) {
     let tokenCookie: string | null = Cookies.get().token;
     await axios
@@ -709,12 +747,12 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
       })
   }
 
-  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf,isFetching,items,theEnd};
+  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead};
 }
 
 
 export default function Profile({server,gbooksapi}: ProfileProps) {
-  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,editCurrentlyReadingThoughts,cancelEditCurrentlyReadingThoughts,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf,isFetching,items,theEnd} = useProfile({server,gbooksapi});
+  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead} = useProfile({server,gbooksapi});
 
   
 
@@ -1070,7 +1108,21 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 {selectedBook.published_date ? dayjs(selectedBook.published_date).format("YYYY"): null}
                               </Text>
                             </Box>
-                            <Flex justify="flex-end">
+                            <Flex justify="space-between" align="center" wrap="wrap">
+                              <Flex align="center" gap={1}>
+                                Pages read:
+                                <NumberInput
+                                  maxWidth="75px"
+                                  size="sm"
+                                  min={0}
+                                >
+                                  <NumberInputField ref={pagesReadRef} />
+                                  <NumberInputStepper>
+                                    <NumberIncrementStepper />
+                                    <NumberDecrementStepper />
+                                  </NumberInputStepper>
+                                </NumberInput>
+                              </Flex>
                               <Button 
                                 // size="sm"
                                 backgroundColor="black"
@@ -1300,7 +1352,57 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 }
                               </Text>
                             </Box>
-                            <Flex justify="flex-end">
+                            <Flex justify="space-between" align="center" wrap="wrap">
+                              <Box>
+                                <Text 
+                                  padding={0}
+                                  rounded="md"
+                                  _hover={{
+                                    cursor: viewer === "self" ? "pointer" : "default",
+                                    backgroundColor: viewer === "self" ? "gray" : "unset",
+                                  }}
+                                  id={`pages-read-text-${profileData.CurrentlyReading[0].id}`}
+                                  onClick={e=>viewer === "self" ? editPagesRead(profileData.CurrentlyReading[0].id) : null}
+                                >
+                                  Pages read: {profileData.CurrentlyReading[0].pages_read ? profileData.CurrentlyReading[0].pages_read : 0}
+                                </Text>
+                                <Flex 
+                                  align="center" 
+                                  gap={1}
+                                  id={`pages-read-input-div-${profileData.CurrentlyReading[0].id}`}
+                                  display="none"
+                                  wrap="wrap"
+                                  padding={0}
+                                >
+                                  Pages read:
+                                  <NumberInput
+                                    maxWidth="75px"
+                                    size="sm"
+                                    min={0}
+                                    defaultValue={profileData.CurrentlyReading[0].pages_read}
+                                  >
+                                    <NumberInputField id={`pages-read-input-${profileData.CurrentlyReading[0].id}`} />
+                                    <NumberInputStepper>
+                                      <NumberIncrementStepper />
+                                      <NumberDecrementStepper />
+                                    </NumberInputStepper>
+                                  </NumberInput>
+                                  <Button
+                                    size="sm"
+                                    backgroundColor="black"
+                                    color="white"
+                                    onClick={e=>updatePagesRead(profileData.CurrentlyReading[0].id)}
+                                  >
+                                    Update
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    onClick={e=>cancelEditPagesRead(profileData.CurrentlyReading[0].id)}
+                                  >
+                                    Cancel
+                                  </Button>
+                                </Flex>
+                              </Box>
                               <Flex align="center" gap={0}>
                                 <Button 
                                   px={0}
@@ -1513,7 +1615,10 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     }
                                   </Text>
                                 </Box>
-                                <Flex justify="flex-end">
+                                <Flex justify="space-between" align="center" wrap="wrap">
+                                  <Text>
+                                    Pages read: {profileData.CurrentlyReading[0].pages_read ? profileData.CurrentlyReading[0].pages_read : 0}
+                                  </Text>
                                   <Flex align="center" gap={0}>
                                     <Button 
                                       px={0}
@@ -1782,7 +1887,57 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                         {readBook.published_date ? dayjs(readBook.published_date).format("YYYY") : null}
                                       </Text>
                                     </Box>
-                                    <Flex justify="flex-end">
+                                    <Flex justify="space-between" align="center" wrap="wrap">
+                                      <Box>
+                                        <Text 
+                                          padding={0}
+                                          rounded="md"
+                                          _hover={{
+                                            cursor: viewer === "self" ? "pointer" : "default",
+                                            backgroundColor: viewer === "self" ? "gray" : "unset",
+                                          }}
+                                          id={`pages-read-text-${readBook.id}`}
+                                          onClick={e=>viewer === "self" ? editPagesRead(readBook.id) : null}
+                                        >
+                                          Pages read: {readBook.pages_read ? readBook.pages_read : 0}
+                                        </Text>
+                                        <Flex 
+                                          align="center" 
+                                          gap={1}
+                                          id={`pages-read-input-div-${readBook.id}`}
+                                          display="none"
+                                          wrap="wrap"
+                                          padding={0}
+                                        >
+                                          Pages read:
+                                          <NumberInput
+                                            maxWidth="75px"
+                                            size="sm"
+                                            min={0}
+                                            defaultValue={readBook.pages_read}
+                                          >
+                                            <NumberInputField id={`pages-read-input-${readBook.id}`} />
+                                            <NumberInputStepper>
+                                              <NumberIncrementStepper />
+                                              <NumberDecrementStepper />
+                                            </NumberInputStepper>
+                                          </NumberInput>
+                                          <Button
+                                            size="sm"
+                                            backgroundColor="black"
+                                            color="white"
+                                            onClick={e=>updatePagesRead(readBook.id)}
+                                          >
+                                            Update
+                                          </Button>
+                                          <Button
+                                            size="sm"
+                                            onClick={e=>cancelEditPagesRead(readBook.id)}
+                                          >
+                                            Cancel
+                                          </Button>
+                                        </Flex>
+                                      </Box>
                                       <Flex align="center" gap={0}>
                                         <Button 
                                           px={0}

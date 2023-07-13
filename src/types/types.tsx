@@ -63,6 +63,7 @@ export interface ProfileType {
   User: User;
   BookClubs: BookClubsType[];
   rating: number;
+  PagesRead: PagesRead[];
   CurrentlyReading: CurrentlyReading[];
   Following_Following_self_profile_idToProfile?: Following_Following_self_profile_idToProfile[];
   Following_Following_following_profile_idToProfile?: Following_Following_following_profile_idToProfile[];
@@ -74,6 +75,13 @@ export interface ProfileType {
 
 export interface Interests {
   interest: string;
+}
+
+export interface PagesRead {
+  id: number;
+  pages_read: number;
+  profile: number;
+  created_on: string;
 }
 
 export interface Following_Following_self_profile_idToProfile {
@@ -267,6 +275,7 @@ export interface CurrentlyReading {
   page_count: number;
   published_date: string;
   created_on: Date;
+  pages_read: number;
   Profile: ProfileType;
   CurrentlyReadingComment: CurrentlyReadingComment[];
   CurrentlyReadingLike: CurrentlyReadingLike[];

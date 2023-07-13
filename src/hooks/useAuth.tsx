@@ -41,6 +41,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
       }
     })
     .catch(({response})=>{
+      console.log(response)
       setUser(null)
       toast({
         description: response.data.message,

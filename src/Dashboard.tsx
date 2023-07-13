@@ -33,10 +33,15 @@ import {
   PopoverContent,
   PopoverBody,
   PopoverArrow,
-  Stack,
-  Center,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
   useDisclosure
 } from "@chakra-ui/react";
+import { editPagesRead, cancelEditPagesRead } from "./shared/editCancelPagesRead";
+import { editCurrentlyReadingThoughts, cancelEditCurrentlyReadingThoughts } from "./shared/editCancelCurrentlyReadingThoughts";
 import GooglePreviewLink from "./shared/GooglePreviewLink";
 import GoogleBooksSearch from "./shared/GoogleBooksSearch";
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
@@ -61,25 +66,27 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   const queryClient = useQueryClient();
 
   useEffect(()=>{
-    const clientAppVersion = packageJson.version;
-    axios
-      .get('/meta.json')
-      .then((response)=>{
-        const metaVersion = response.data.version;
-        console.log(`ClientVersion: ${clientAppVersion}`);
-        console.log(`MetaVersion: ${metaVersion}`);
-        if (clientAppVersion !== metaVersion) {
-          console.log("Not current version, please hard reload")
-          caches.keys().then((keyList) => {
-            return Promise.all(
-              keyList.map((key) => {
-                return caches.delete(key);
-              })
-            );
-          });
-          // window.location.reload();
-        }
-      })
+    setTimeout(()=>{
+      const clientAppVersion = packageJson.version;
+      axios
+        .get('/meta.json')
+        .then((response)=>{
+          const metaVersion = response.data.version;
+          console.log(`ClientVersion: ${clientAppVersion}`);
+          console.log(`MetaVersion: ${metaVersion}`);
+          if (clientAppVersion !== metaVersion) {
+            console.log("Not current version, please hard reload")
+            caches.keys().then((keyList) => {
+              return Promise.all(
+                keyList.map((key) => {
+                  return caches.delete(key);
+                })
+              );
+            });
+            // window.location.reload();
+          }
+        })
+    },1000)
   },[])
 
   const [items,setItems] = useState(5);
@@ -327,19 +334,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
     likeUnlikeCurrentlyReadingMutation.mutate(e);
   }
 
-
-  function editCurrentlyReadingThoughts(bookId: number) {
-    const currentlyReadingText = document.getElementById(`currently-reading-text-${bookId}`);
-    const currentlyReadingInputDiv = document.getElementById(`currently-reading-input-div-${bookId}`);
-    currentlyReadingText!.style.display = "none";
-    currentlyReadingInputDiv!.style.display = "flex";
-  }
-  function cancelEditCurrentlyReadingThoughts(bookId: number) {
-    const currentlyReadingText = document.getElementById(`currently-reading-text-${bookId}`);
-    const currentlyReadingInputDiv = document.getElementById(`currently-reading-input-div-${bookId}`);
-    currentlyReadingText!.style.display = "block";
-    currentlyReadingInputDiv!.style.display = "none";
-  }
   const updateCurrentlyReadingThoughtsMutation = useMutation({
     mutationFn: async (bookId: number)=>{
       const currentlyReadingText = document.getElementById(`currently-reading-text-${bookId}`);
@@ -382,7 +376,49 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   function updateCurrentlyReadingThoughts(bookId: number) {
     updateCurrentlyReadingThoughtsMutation.mutate(bookId)
   }
-  
+
+  const updatePagesReadMutation = useMutation({
+    mutationFn: async (bookId: number)=>{
+      const pagesReadText = document.getElementById(`pages-read-text-${bookId}`);
+      const pagesReadInputDiv = document.getElementById(`pages-read-input-div-${bookId}`);
+      const pagesReadInput = document.getElementById(`pages-read-input-${bookId}`);
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+        .put(server + "/api/updatepagesread",
+        {
+          currentlyReadingId: bookId,
+          pages_read: parseInt((pagesReadInput as HTMLInputElement)!.value)
+        },
+        {
+          headers: {
+            'authorization': tokenCookie
+          }
+        }
+        )
+        .then((response)=>{
+          pagesReadText!.style.display = "block";
+          pagesReadInputDiv!.style.display = "none";
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.message)
+        })
+      }
+      else {
+        throw new Error("Please login again")
+      }
+      return getDashboard();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ["dashboardKey"] })
+      queryClient.resetQueries({queryKey: ["dashboardKey"]})
+      queryClient.setQueryData(["dashboardKey"],data)
+    }
+  })
+  function updatePagesRead(bookId: number) {
+    updatePagesReadMutation.mutate(bookId)
+  }
   
   const dashboard = useQuery({
     queryKey: ["dashboardKey"],
@@ -638,7 +674,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       id={`currently-reading-input-${reading.id}`}
                     />
                     <Button
-                      colorScheme="green"
+                      backgroundColor="black"
+                      color="white"
                       onClick={e=>updateCurrentlyReadingThoughts(reading.id)}
                       disabled={updateCurrentlyReadingThoughtsMutation.isLoading}
                     >
@@ -697,7 +734,57 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                           }
                         </Text>
                       </Box>
-                      <Flex justify="flex-end">
+                      <Flex justify="space-between">
+                        <Box>
+                          <Text 
+                            padding={0}
+                            rounded="md"
+                            _hover={{
+                              cursor: reading.Profile.id === user?.Profile.id ? "pointer" : "default",
+                              backgroundColor: reading.Profile.id === user?.Profile.id ? "gray" : "unset",
+                            }}
+                            id={`pages-read-text-${reading.id}`}
+                            onClick={e=>reading.Profile.id === user?.Profile.id ? editPagesRead(reading.id) : null}
+                          >
+                            Pages read: {reading.pages_read ? reading.pages_read : 0}
+                          </Text>
+                          <Flex 
+                            align="center" 
+                            gap={1}
+                            id={`pages-read-input-div-${reading.id}`}
+                            display="none"
+                            wrap="wrap"
+                            padding={0}
+                          >
+                            Pages read:
+                            <NumberInput
+                              maxWidth="75px"
+                              size="sm"
+                              min={0}
+                              defaultValue={reading.pages_read}
+                            >
+                              <NumberInputField id={`pages-read-input-${reading.id}`} />
+                              <NumberInputStepper>
+                                <NumberIncrementStepper />
+                                <NumberDecrementStepper />
+                              </NumberInputStepper>
+                            </NumberInput>
+                            <Button
+                              size="sm"
+                              backgroundColor="black"
+                              color="white"
+                              onClick={e=>updatePagesRead(reading.id)}
+                            >
+                              Update
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={e=>cancelEditPagesRead(reading.id)}
+                            >
+                              Cancel
+                            </Button>
+                          </Flex>
+                        </Box>
                         <Flex align="center" gap={0}>
                           <Button 
                             px={0}

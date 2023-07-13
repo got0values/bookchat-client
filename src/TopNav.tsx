@@ -87,6 +87,12 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
   const activeLinkColor = useColorModeValue("black","white");
   dayjs.extend(utc);
 
+  // const [pagesRead,setPagesRead] = useState(0);
+  // useEffect(()=>{
+  //   const pagesReadArray = user.Profile.PagesRead.map((pr)=>pr.pages_read);
+  //   setPagesRead(pagesReadArray.reduce((partialSum,a)=>partialSum + a,0))
+  // },[])
+
   async function getNotifications() {
     // resetNotifications();
     let userNotifications: UserNotificationsType = {
@@ -702,6 +708,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                   size={'sm'}
                   src={profilePhoto ? profilePhoto : ""}
                   name={user?.Profile.username}
+                  position="relative"
                 >
                   {totalNotifications ? (
                   <AvatarBadge 
@@ -720,6 +727,15 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                     }}
                   />
                   ) : null}
+                  
+                  {/* <Badge
+                    position="absolute"
+                    left={-1}
+                    bottom={-1.5}
+                    bg="lightblue"
+                  >
+                    10
+                  </Badge> */}
                 </Avatar>
               </MenuButton>
               <MenuList>
