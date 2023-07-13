@@ -750,8 +750,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                           }
                         </Text>
                       </Box>
-                      <Flex justify="space-between">
-                        <Box>
+                      <Flex justify="space-between" wrap="wrap">
+                        <Box minHeight="5px" minWidth="100px">
                           <Text 
                             padding={0}
                             rounded="md"
@@ -759,6 +759,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                               cursor: reading.Profile.id === user?.Profile.id ? "pointer" : "default",
                               backgroundColor: reading.Profile.id === user?.Profile.id ? "gray" : "unset",
                             }}
+                            h="100%"
+                            w="100%"
                             id={`pages-read-text-${reading.id}`}
                             onClick={e=>reading.Profile.id === user?.Profile.id ? editPagesRead(reading.id) : null}
                           >
