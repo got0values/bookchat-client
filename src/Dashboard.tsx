@@ -253,6 +253,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   }
 
   const thoughtsRef = useRef({} as HTMLInputElement);
+  const pagesReadRef = useRef({} as HTMLInputElement);
   const postCurrentlyReadingMutation = useMutation({
     mutationFn: async (e: React.FormEvent)=>{
       let tokenCookie: string | null = Cookies.get().token;
@@ -267,7 +268,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           isbn: (e.target as HTMLDivElement).dataset.isbn,
           page_count: parseInt((e.target as HTMLDivElement).dataset.pagecount as string),
           published_date: (e.target as HTMLDivElement).dataset.publisheddate,
-          thoughts: thoughtsRef.current.value
+          thoughts: thoughtsRef.current.value,
+          pages_read: parseInt(pagesReadRef.current.value)
         },
         {
           headers: {
@@ -535,7 +537,21 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       }
                     </Text>
                   </Box>
-                  <Flex justify="flex-end">
+                  <Flex justify="space-between">
+                    <Flex align="center" gap={1}>
+                      Pages read:
+                      <NumberInput
+                        maxWidth="75px"
+                        size="sm"
+                        min={0}
+                      >
+                        <NumberInputField ref={pagesReadRef} />
+                        <NumberInputStepper>
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                      </NumberInput>
+                    </Flex>
                     <Button 
                       // size="sm"
                       backgroundColor="black"
@@ -746,7 +762,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                             id={`pages-read-text-${reading.id}`}
                             onClick={e=>reading.Profile.id === user?.Profile.id ? editPagesRead(reading.id) : null}
                           >
-                            Pages read: {reading.pages_read ? reading.pages_read : 0}
+                            {reading.pages_read ? `Pages read: ${reading.pages_read}` : null}
                           </Text>
                           <Flex 
                             align="center" 
