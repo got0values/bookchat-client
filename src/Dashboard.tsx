@@ -876,7 +876,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           ) : null}
         </Box>
 
-        {followingSorted?.length && (
+        {followingSorted?.length ? (
           <Box
             mb={5}
           >
@@ -902,9 +902,9 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               )}
             </Box>
           </Box>
-        )}
+        ): null}
 
-        {randomSorted?.length && (
+        {randomSorted?.length ? (
           <Box>
             {followingSorted?.length && (
               <Heading 
@@ -932,7 +932,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               )}
             </Box>
           </Box>
-        )}
+        ): null}
       </Box>
 
       <Modal 

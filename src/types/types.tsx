@@ -63,6 +63,7 @@ export interface ProfileType {
   User: User;
   BookClubs: BookClubsType[];
   rating: number;
+  hidden: number;
   PagesRead: PagesRead[];
   CurrentlyReading: CurrentlyReading[];
   Following_Following_self_profile_idToProfile?: Following_Following_self_profile_idToProfile[];
