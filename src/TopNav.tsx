@@ -672,19 +672,26 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
               </Box>
             ))}
           </HStack>
-          <Flex alignItems={'center'} justify="space-between" gap={3}>
+          <Flex alignItems={'center'} justify="space-between" gap={3} lineHeight={1.1}>
             <Box
               display={["none","block","block"]}
             >
               <Text
                 fontWeight="bold"
+                fontSize="sm"
               >
               {`${user?.first_name} ${user?.last_name}`}
               </Text>
               <Text
                 fontSize="xs"
+                mb={.5}
               >
                 {`@${user?.Profile.username}`}
+              </Text>
+              <Text
+                fontSize="xs"
+              >
+                {user.Profile.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0) > 0 ? user.Profile.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0) : 0} pages this week
               </Text>
             </Box>
             <Menu>
@@ -705,37 +712,32 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                 }}
               >
                 <Avatar
-                  size={'sm'}
+                  // size={'sm'}
+                  height={10}
+                  width={10}
                   src={profilePhoto ? profilePhoto : ""}
                   name={user?.Profile.username}
                   position="relative"
                 >
-                  {totalNotifications ? (
-                  <AvatarBadge 
-                    borderColor="papayawhip" 
-                    borderBottomLeftRadius="1px"
-                    borderBottomRightRadius="1px"
-                    borderWidth="1.5px"
-                    bg="tomato" 
-                    boxSize="1.25em"
-                    _before={{
-                      content: `"${totalNotifications > 0 ? totalNotifications : ''}"`,
-                      fontWeight: "800",
-                      fontSize: "13",
-                      fontFamily: "Inter",
-                      padding: "1px"
-                    }}
-                  />
-                  ) : null}
-                  
-                  {/* <Badge
-                    position="absolute"
-                    left={-1}
-                    bottom={-1.5}
-                    bg="lightblue"
-                  >
-                    10
-                  </Badge> */}
+                  <>
+                    {totalNotifications ? (
+                    <AvatarBadge 
+                      borderColor="papayawhip" 
+                      borderBottomLeftRadius="1px"
+                      borderBottomRightRadius="1px"
+                      borderWidth="1.5px"
+                      bg="tomato" 
+                      boxSize="1.25em"
+                      _before={{
+                        content: `"${totalNotifications > 0 ? totalNotifications : ''}"`,
+                        fontWeight: "800",
+                        fontSize: "13",
+                        fontFamily: "Inter",
+                        padding: "1px"
+                      }}
+                    />
+                    ) : null}
+                  </>
                 </Avatar>
               </MenuButton>
               <MenuList>

@@ -956,6 +956,14 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                     </Stack>
     
                     <Box>
+                      {profileData.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0) > 0 ? (
+                        <Text 
+                          fontStyle="italic"
+                          mb={1}
+                        >
+                          {profileData.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0)} pages read this week
+                        </Text>
+                      ): null}
                       {viewer === "self" ? (
                         <>
                           {profileData.hidden ? (

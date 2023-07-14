@@ -19,6 +19,7 @@ import {
   MenuItem,
   Divider,
   Skeleton,
+  Badge,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -471,7 +472,23 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   src={`${reading.Profile.profile_photo}`}
                   border="2px solid gray"
                   title={`@${reading.Profile.username}`}
-                />
+                  position="relative"
+                >
+                  {reading.Profile.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0) > 0 ? (
+                    <Badge
+                      position="absolute"
+                      left={-1}
+                      bottom={-1.5}
+                      bg="lightblue"
+                      p="2px"
+                      fontSize="10px"
+                      lineHeight={1}
+                      title="Pages read this week"
+                    >
+                      {reading.Profile.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0)}
+                    </Badge>
+                  ) : null}
+                </Avatar>
               </Link>
               <Flex direction="column">
                 <Text fontWeight="bold">
