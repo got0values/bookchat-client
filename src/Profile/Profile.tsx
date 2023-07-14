@@ -405,6 +405,7 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
         )
         .then((response)=>{
           setSelectedBook(null)
+          getUser()
         })
         .catch(({response})=>{
           console.log(response)
@@ -441,6 +442,9 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
               }
             }
           )
+          .then(()=>{
+            getUser()
+          })
           .catch(({response})=>{
             console.log(response)
             throw new Error(response.message)
@@ -695,6 +699,7 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
         .then((response)=>{
           pagesReadText!.style.display = "block";
           pagesReadInputDiv!.style.display = "none";
+          getUser();
         })
         .catch(({response})=>{
           console.log(response)
