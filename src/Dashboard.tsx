@@ -91,6 +91,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
 
   const [items,setItems] = useState(5);
   const [followingSorted,setFollowingSorted] = useState([] as any)
+  const [randomSorted,setRandomSorted] = useState([] as any)
   async function getDashboard() {
     const tokenCookie = Cookies.get().token
     if (tokenCookie) {
@@ -106,6 +107,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           getUser();
           setItems(items + 5)
           setFollowingSorted(response.data.message.followingCurrentlyReadingSorted)
+          setRandomSorted(response.data.message.randomCurrentlyReadingSorted)
           return response.data.message
         })
         .catch(({response})=>{
@@ -442,6 +444,306 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
     )
   }
 
+  const CurrentlyReadingFeed = ({reading}:{reading:CurrentlyReading}) => {
+    return (
+      reading.hidden ? (
+        null
+      ) : (
+        <Box
+          my={3}
+          // mx=".5rem"
+          className="well"
+          // key={reading.id}
+        >
+          <Suspense
+            fallback={<Box>...</Box>}
+          />
+          <Flex
+            align="flex-start"
+            justify="space-between"
+            mb={3}
+          >
+            <HStack>
+              <Link to={`/profile/${reading.Profile.username}`}>
+                <Avatar
+                  size="md"
+                  cursor="pointer"
+                  src={`${reading.Profile.profile_photo}`}
+                  border="2px solid gray"
+                  title={`@${reading.Profile.username}`}
+                />
+              </Link>
+              <Flex direction="column">
+                <Text fontWeight="bold">
+                  {reading.Profile.username}
+                </Text>
+                <Text fontStyle="italic">
+                  {dayjs(reading.created_on).local().format('MMM DD, h:mm a')}
+                </Text>
+              </Flex>
+            </HStack>
+            <Box>
+              <Menu>
+                <MenuButton 
+                  as={Button}
+                  size="md"
+                  variant="ghost"
+                  rounded="full"
+                  height="25px"
+                >
+                  <BiDotsHorizontalRounded/>
+                </MenuButton>
+                <MenuList>
+                  <MenuItem 
+                    data-book={JSON.stringify(reading)}
+                    onClick={e=>openCommentModal(e)}
+                    fontWeight="bold"
+                    icon={<BsReplyFill size={20} />}
+                  >
+                    Comment
+                  </MenuItem>
+                  <MenuItem 
+                    as={Link}
+                    to={`/chat/room?title=${reading.title}&author=${reading.author}`}
+                    fontWeight="bold"
+                    icon={<MdOutlineChat size={20} />}
+                  >
+                    Chat Room
+                  </MenuItem>
+                  <MenuItem 
+                    as={Link}
+                    to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(reading.title + " " + reading.author + " " + reading.isbn)}`}
+                    target="blank"
+                    fontWeight="bold"
+                    icon={<FaShoppingCart size={20} />}
+                  >
+                    Shop
+                  </MenuItem>
+                  {reading.Profile.id === user?.Profile.id ? (
+                    <MenuItem
+                      color="tomato"
+                      onClick={e=>deleteReading(reading.id)}
+                      fontWeight="bold"
+                      icon={<BiTrash size={20} />}
+                    >
+                      Delete
+                    </MenuItem>
+                  ): null}
+                </MenuList>
+              </Menu>
+            </Box>
+          </Flex>
+          <Divider />
+          <Text 
+            my={2}
+            rounded="md"
+            p={1}
+            _hover={{
+              cursor: reading.Profile.id === user?.Profile.id ? "pointer" : "default",
+              backgroundColor: reading.Profile.id === user?.Profile.id ? "gray" : "unset"
+            }}
+            id={`currently-reading-text-${reading.id}`}
+            onClick={e=> reading.Profile.id === user?.Profile.id ? editCurrentlyReadingThoughts(reading.id) : null}
+          >
+            {reading.thoughts ? reading.thoughts : null}
+          </Text>
+          <Flex 
+            align="center" 
+            gap={1}
+            display="none"
+            id={`currently-reading-input-div-${reading.id}`}
+          >
+            <Input
+              my={2}
+              type="text"
+              defaultValue={reading.thoughts ? reading.thoughts : ""}
+              id={`currently-reading-input-${reading.id}`}
+            />
+            <Button
+              backgroundColor="black"
+              color="white"
+              onClick={e=>updateCurrentlyReadingThoughts(reading.id)}
+              disabled={updateCurrentlyReadingThoughtsMutation.isLoading}
+            >
+              Update
+            </Button>
+            <Button
+              onClick={e=>cancelEditCurrentlyReadingThoughts(reading.id)}
+            >
+              Cancel
+            </Button>
+          </Flex>
+          <Flex>
+            <Image 
+              src={reading.image}
+              maxH="100px"
+              boxShadow="1px 1px 1px 1px darkgrey"
+            />
+            <Box mx={2} w="100%">
+              <Box>
+                <Heading as="h5" size="md" me={3} noOfLines={1}>
+                  {reading.title}
+                </Heading>
+                <Text fontSize="lg" noOfLines={1}>
+                  {reading.author}
+                </Text>
+                <Popover isLazy>
+                  <PopoverTrigger>
+                    <Box 
+                      _hover={{
+                        cursor: "pointer"
+                      }}
+                    >
+                      <Text fontSize="lg" noOfLines={1}>
+                        {reading.description ? reading.description: null}
+                      </Text>
+                    </Box>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <PopoverArrow />
+                    <PopoverCloseButton />
+                    <PopoverBody 
+                      fontSize="sm"
+                      _dark={{
+                        bg: "black"
+                      }}
+                    >
+                      {reading.description}
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
+                <Text fontSize="lg">
+                  {reading.published_date !== null ? 
+                    (
+                      dayjs(reading.published_date).format("YYYY")
+                    ) : null
+                  }
+                </Text>
+              </Box>
+              <Flex justify="space-between" wrap="wrap">
+                <Box minHeight="5px" minWidth="100px">
+                  <Text 
+                    padding={0}
+                    rounded="md"
+                    _hover={{
+                      cursor: reading.Profile.id === user?.Profile.id ? "pointer" : "default",
+                      backgroundColor: reading.Profile.id === user?.Profile.id ? "gray" : "unset",
+                    }}
+                    h="100%"
+                    w="100%"
+                    id={`pages-read-text-${reading.id}`}
+                    onClick={e=>reading.Profile.id === user?.Profile.id ? editPagesRead(reading.id) : null}
+                  >
+                    {reading.pages_read ? `Pages read: ${reading.pages_read}` : null}
+                  </Text>
+                  <Flex 
+                    align="center" 
+                    gap={1}
+                    id={`pages-read-input-div-${reading.id}`}
+                    display="none"
+                    wrap="wrap"
+                    padding={0}
+                  >
+                    Pages read:
+                    <NumberInput
+                      maxWidth="75px"
+                      size="sm"
+                      min={0}
+                      defaultValue={reading.pages_read}
+                    >
+                      <NumberInputField id={`pages-read-input-${reading.id}`} />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                    <Button
+                      size="sm"
+                      backgroundColor="black"
+                      color="white"
+                      onClick={e=>updatePagesRead(reading.id)}
+                    >
+                      Update
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={e=>cancelEditPagesRead(reading.id)}
+                    >
+                      Cancel
+                    </Button>
+                  </Flex>
+                </Box>
+                <Flex align="center" gap={0}>
+                  <Button 
+                    px={0}
+                    pb={0.5}
+                    size="xs"
+                    variant="ghost"
+                    data-currentlyreading={reading.id}
+                    onClick={e=>likeUnlikeCurrentlyReading(e)}
+                  >
+                    {reading.CurrentlyReadingLike?.filter((like)=>like.profile===user?.Profile?.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                  </Button>
+                  {reading.CurrentlyReadingLike?.length ? (
+                    <Popover isLazy size="sm">
+                      <PopoverTrigger>
+                        <Text
+                          cursor="pointer"
+                        >
+                          {reading.CurrentlyReadingLike?.length ? reading.CurrentlyReadingLike.length.toString() : "0"}
+                        </Text>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <PopoverArrow />
+                        <PopoverCloseButton />
+                        <PopoverBody
+                          _dark={{
+                            bg: "black"
+                          }}
+                        >
+                          {reading.CurrentlyReadingLike?.length ? (
+                            reading.CurrentlyReadingLike?.map((like,i)=>{
+                              return (
+                                <Box mb={1} key={i}>
+                                  <Link 
+                                    to={`/profile/${like.Profile.username}`}
+                                  >
+                                    {like.Profile.username}
+                                  </Link>
+                                </Box>
+                              )
+                            })
+                          ) : null}
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Popover>
+                  ) : (
+                    <Text
+                      cursor="pointer"
+                    >
+                      {reading.CurrentlyReadingLike?.length ? reading.CurrentlyReadingLike.length.toString() : "0"}
+                    </Text>
+                  )}
+                </Flex>
+              </Flex>
+            </Box>
+          </Flex>
+          {reading.CurrentlyReadingComment && reading.CurrentlyReadingComment.length ? (
+            <>
+            <Divider my={3} w="50%" mx="auto" borderColor="gray" />
+              <Comments 
+                comments={reading.CurrentlyReadingComment} 
+                getDashboard={getDashboard} 
+                location="dashboard"
+                server={server} 
+              />
+            </>
+          ): null}
+        </Box>
+      )
+    )
+  }
+
   return (
     <>
       <Box className="main-content-smaller" pb={5}>
@@ -574,310 +876,62 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           ) : null}
         </Box>
 
-        {followingSorted.map((reading: CurrentlyReading,i: number)=>{
-            return (
-              reading.hidden ? (
-                null
-              ) : (
-                <Box
-                  my={3}
-                  // mx=".5rem"
-                  className="well"
-                  key={i}
-                >
-                  <Suspense
-                    fallback={<Box>...</Box>}
-                  />
-                  <Flex
-                    align="flex-start"
-                    justify="space-between"
-                    mb={3}
-                  >
-                    <HStack>
-                      <Link to={`/profile/${reading.Profile.username}`}>
-                        <Avatar
-                          size="md"
-                          cursor="pointer"
-                          src={`${reading.Profile.profile_photo}`}
-                          border="2px solid gray"
-                          title={`@${reading.Profile.username}`}
-                        />
-                      </Link>
-                      <Flex direction="column">
-                        <Text fontWeight="bold">
-                          {reading.Profile.username}
-                        </Text>
-                        <Text fontStyle="italic">
-                          {dayjs(reading.created_on).local().format('MMM DD, h:mm a')}
-                        </Text>
-                      </Flex>
-                    </HStack>
-                    <Box>
-                      <Menu>
-                        <MenuButton 
-                          as={Button}
-                          size="md"
-                          variant="ghost"
-                          rounded="full"
-                          height="25px"
-                        >
-                          <BiDotsHorizontalRounded/>
-                        </MenuButton>
-                        <MenuList>
-                          <MenuItem 
-                            data-book={JSON.stringify(reading)}
-                            onClick={e=>openCommentModal(e)}
-                            fontWeight="bold"
-                            icon={<BsReplyFill size={20} />}
-                          >
-                            Comment
-                          </MenuItem>
-                          <MenuItem 
-                            as={Link}
-                            to={`/chat/room?title=${reading.title}&author=${reading.author}`}
-                            fontWeight="bold"
-                            icon={<MdOutlineChat size={20} />}
-                          >
-                            Chat Room
-                          </MenuItem>
-                          <MenuItem 
-                            as={Link}
-                            to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(reading.title + " " + reading.author + " " + reading.isbn)}`}
-                            target="blank"
-                            fontWeight="bold"
-                            icon={<FaShoppingCart size={20} />}
-                          >
-                            Shop
-                          </MenuItem>
-                          {reading.Profile.id === user?.Profile.id ? (
-                            <MenuItem
-                              color="tomato"
-                              onClick={e=>deleteReading(reading.id)}
-                              fontWeight="bold"
-                              icon={<BiTrash size={20} />}
-                            >
-                              Delete
-                            </MenuItem>
-                          ): null}
-                        </MenuList>
-                      </Menu>
-                    </Box>
-                  </Flex>
-                  <Divider />
-                  <Text 
-                    my={2}
-                    rounded="md"
-                    p={1}
-                    _hover={{
-                      cursor: reading.Profile.id === user?.Profile.id ? "pointer" : "default",
-                      backgroundColor: reading.Profile.id === user?.Profile.id ? "gray" : "unset"
-                    }}
-                    id={`currently-reading-text-${reading.id}`}
-                    onClick={e=> reading.Profile.id === user?.Profile.id ? editCurrentlyReadingThoughts(reading.id) : null}
-                  >
-                    {reading.thoughts ? reading.thoughts : null}
-                  </Text>
-                  <Flex 
-                    align="center" 
-                    gap={1}
-                    display="none"
-                    id={`currently-reading-input-div-${reading.id}`}
-                  >
-                    <Input
-                      my={2}
-                      type="text"
-                      defaultValue={reading.thoughts ? reading.thoughts : ""}
-                      id={`currently-reading-input-${reading.id}`}
-                    />
-                    <Button
-                      backgroundColor="black"
-                      color="white"
-                      onClick={e=>updateCurrentlyReadingThoughts(reading.id)}
-                      disabled={updateCurrentlyReadingThoughtsMutation.isLoading}
-                    >
-                      Update
-                    </Button>
-                    <Button
-                      onClick={e=>cancelEditCurrentlyReadingThoughts(reading.id)}
-                    >
-                      Cancel
-                    </Button>
-                  </Flex>
-                  <Flex>
-                    <Image 
-                      src={reading.image}
-                      maxH="100px"
-                      boxShadow="1px 1px 1px 1px darkgrey"
-                    />
-                    <Box mx={2} w="100%">
-                      <Box>
-                        <Heading as="h5" size="md" me={3} noOfLines={1}>
-                          {reading.title}
-                        </Heading>
-                        <Text fontSize="lg" noOfLines={1}>
-                          {reading.author}
-                        </Text>
-                        <Popover isLazy>
-                          <PopoverTrigger>
-                            <Box 
-                              _hover={{
-                                cursor: "pointer"
-                              }}
-                            >
-                              <Text fontSize="lg" noOfLines={1}>
-                                {reading.description ? reading.description: null}
-                              </Text>
-                            </Box>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <PopoverArrow />
-                            <PopoverCloseButton />
-                            <PopoverBody 
-                              fontSize="sm"
-                              _dark={{
-                                bg: "black"
-                              }}
-                            >
-                              {reading.description}
-                            </PopoverBody>
-                          </PopoverContent>
-                        </Popover>
-                        <Text fontSize="lg">
-                          {reading.published_date !== null ? 
-                            (
-                              dayjs(reading.published_date).format("YYYY")
-                            ) : null
-                          }
-                        </Text>
-                      </Box>
-                      <Flex justify="space-between" wrap="wrap">
-                        <Box minHeight="5px" minWidth="100px">
-                          <Text 
-                            padding={0}
-                            rounded="md"
-                            _hover={{
-                              cursor: reading.Profile.id === user?.Profile.id ? "pointer" : "default",
-                              backgroundColor: reading.Profile.id === user?.Profile.id ? "gray" : "unset",
-                            }}
-                            h="100%"
-                            w="100%"
-                            id={`pages-read-text-${reading.id}`}
-                            onClick={e=>reading.Profile.id === user?.Profile.id ? editPagesRead(reading.id) : null}
-                          >
-                            {reading.pages_read ? `Pages read: ${reading.pages_read}` : null}
-                          </Text>
-                          <Flex 
-                            align="center" 
-                            gap={1}
-                            id={`pages-read-input-div-${reading.id}`}
-                            display="none"
-                            wrap="wrap"
-                            padding={0}
-                          >
-                            Pages read:
-                            <NumberInput
-                              maxWidth="75px"
-                              size="sm"
-                              min={0}
-                              defaultValue={reading.pages_read}
-                            >
-                              <NumberInputField id={`pages-read-input-${reading.id}`} />
-                              <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                              </NumberInputStepper>
-                            </NumberInput>
-                            <Button
-                              size="sm"
-                              backgroundColor="black"
-                              color="white"
-                              onClick={e=>updatePagesRead(reading.id)}
-                            >
-                              Update
-                            </Button>
-                            <Button
-                              size="sm"
-                              onClick={e=>cancelEditPagesRead(reading.id)}
-                            >
-                              Cancel
-                            </Button>
-                          </Flex>
-                        </Box>
-                        <Flex align="center" gap={0}>
-                          <Button 
-                            px={0}
-                            pb={0.5}
-                            size="xs"
-                            variant="ghost"
-                            data-currentlyreading={reading.id}
-                            onClick={e=>likeUnlikeCurrentlyReading(e)}
-                          >
-                            {reading.CurrentlyReadingLike?.filter((like)=>like.profile===user?.Profile?.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
-                          </Button>
-                          {reading.CurrentlyReadingLike?.length ? (
-                            <Popover isLazy size="sm">
-                              <PopoverTrigger>
-                                <Text
-                                  cursor="pointer"
-                                >
-                                  {reading.CurrentlyReadingLike?.length ? reading.CurrentlyReadingLike.length.toString() : "0"}
-                                </Text>
-                              </PopoverTrigger>
-                              <PopoverContent>
-                                <PopoverArrow />
-                                <PopoverCloseButton />
-                                <PopoverBody
-                                  _dark={{
-                                    bg: "black"
-                                  }}
-                                >
-                                  {reading.CurrentlyReadingLike?.length ? (
-                                    reading.CurrentlyReadingLike?.map((like,i)=>{
-                                      return (
-                                        <Box mb={1} key={i}>
-                                          <Link 
-                                            to={`/profile/${like.Profile.username}`}
-                                          >
-                                            {like.Profile.username}
-                                          </Link>
-                                        </Box>
-                                      )
-                                    })
-                                  ) : null}
-                                </PopoverBody>
-                              </PopoverContent>
-                            </Popover>
-                          ) : (
-                            <Text
-                              cursor="pointer"
-                            >
-                              {reading.CurrentlyReadingLike?.length ? reading.CurrentlyReadingLike.length.toString() : "0"}
-                            </Text>
-                          )}
-                        </Flex>
-                      </Flex>
-                    </Box>
-                  </Flex>
-                  {reading.CurrentlyReadingComment && reading.CurrentlyReadingComment.length ? (
-                    <>
-                    <Divider my={3} w="50%" mx="auto" borderColor="gray" />
-                      <Comments 
-                        comments={reading.CurrentlyReadingComment} 
-                        getDashboard={getDashboard} 
-                        location="dashboard"
-                        server={server} 
-                      />
-                    </>
-                  ): null}
-                </Box>
-              )
-            )
-          })
-        }
-        {isFetching && (
-          <Flex justify="center">
-            <Spinner size="xl"/>
-          </Flex>
+        {followingSorted?.length && (
+          <Box
+            mb={5}
+          >
+            <Heading 
+              size="md"
+              className="non-well"
+            >
+              Following
+            </Heading>
+          
+            <Box
+              maxH="60vh"
+              overflowY="auto"
+            >
+              {followingSorted?.length && (
+                followingSorted.map((reading: CurrentlyReading,i: number)=>{
+                  return (
+                    <React.Fragment key={reading.id}>
+                      <CurrentlyReadingFeed reading={reading} />
+                    </React.Fragment>
+                  )
+                })
+              )}
+            </Box>
+          </Box>
+        )}
+
+        {randomSorted?.length && (
+          <Box>
+            {followingSorted?.length && (
+              <Heading 
+                size="md"
+                className="non-well"
+              >
+                Public
+              </Heading>
+            )}
+          
+            <Box>
+              {randomSorted.length && (
+                randomSorted.map((reading: CurrentlyReading,i:number)=>{
+                  return (
+                    <React.Fragment key={reading.id}>
+                      <CurrentlyReadingFeed reading={reading}/>
+                    </React.Fragment>
+                  )
+                })
+              )}
+              {isFetching && (
+                <Flex justify="center">
+                  <Spinner size="xl"/>
+                </Flex>
+              )}
+            </Box>
+          </Box>
         )}
       </Box>
 
