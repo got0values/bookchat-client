@@ -150,7 +150,7 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
                     </Text>
                     <Flex align="center" gap={1}>
                       {/* <GooglePreviewLink book={book}/> */}
-                      <a
+                      {/* <a
                         href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.volumeInfo.title + " " + (book.volumeInfo.authors ? book.volumeInfo.authors[0] : null) + " " + (book.volumeInfo.industryIdentifiers ? book.volumeInfo.industryIdentifiers[0]?.identifier : null))}`}
                         target="blank"
                       >
@@ -162,7 +162,7 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
                         >
                           Shop
                         </Button>
-                      </a>
+                      </a> */}
                       <Button 
                         size="xs"
                         data-book={JSON.stringify(book)}

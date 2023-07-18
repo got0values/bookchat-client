@@ -998,7 +998,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           </ModalHeader>
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-              <GoogleBooksSearch selectText="set" selectCallback={selectBook as any} gBooksApi={gbooksapi}/>
+              <GoogleBooksSearch selectText="Set" selectCallback={selectBook as any} gBooksApi={gbooksapi}/>
             </ModalBody>
             <ModalFooter flexDirection="column">
             </ModalFooter>
