@@ -11,7 +11,7 @@ import {
   AvatarBadge,
   HStack,
   Image,
-  IconButton,
+  Portal,
   Button,
   Menu,
   MenuButton,
@@ -562,22 +562,18 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
         bg="white" 
         overflow="hidden" px={4} 
         // boxShadow="1px 1px 6px lightgrey"
-        boxShadow="1px 1px 2px 1px black" 
+        boxShadow={["-1px -1px 2px 1px black","1px 1px 2px 1px black"]}
         _dark={{
           boxShadow: "0 0 0",
           bg: "blackAlpha.700"
         }}
+        position={["fixed", "static"]}
+        bottom="0"
+        left="0"
+        right="0"
+        zIndex="100"
       >
         <Flex py={2} flexWrap="nowrap" alignItems={'center'} justifyContent={'space-between'}>
-          <IconButton
-            size={'md'}
-            icon={isOpen ? <MdClose /> : <GiHamburgerMenu />}
-            p="10px"
-            aria-label={'Open Menu'}
-            display={{ md: 'none' }}
-            onClick={isOpen ? onClose : onOpen}
-            bg="transparent"
-          />
           <HStack spacing={8} alignItems={'center'}>
             <Box 
               position="relative" 
@@ -610,7 +606,11 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                 ) : null}
               </Link>
             </Box>
-            <Box marginInlineStart="2!important" position="relative">
+            <Box 
+              marginInlineStart="2!important" 
+              position="relative"
+              display={["none","block"]}
+            >
               <Input 
                 type="search"
                 rounded="2xl"
@@ -636,8 +636,9 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
           <HStack
             as={'nav'}
             spacing={3}
-            pr="175px"
-            display={{ base: 'none', md: 'flex' }}>
+            pr={["0","175px"]}
+            display="flex"
+          >
             {LinkItems.map((linkItem, index) => (
               <Box
                 as={NavLink} 
@@ -656,11 +657,6 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                   bg: window.location.pathname === linkItem.linkTo ? activeLinkBg : "",
                   color: window.location.pathname === linkItem.linkTo ? activeLinkColor : ""
                 }}
-                // _dark={{
-                //   '&:hover': {
-                //     bg: 'whiteAlpha.50'
-                //   }
-                // }}
               >
                 <Tooltip hasArrow label={linkItem.tooltip}>
                   <Flex align="center" gap={2}>
@@ -740,92 +736,63 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                   </>
                 </Avatar>
               </MenuButton>
-              <MenuList>
-                <MenuItem
-                  as={Link}
-                  to={`/profile/${user.Profile.username}`}
-                  fontSize="lg"
-                  fontWeight="600"
-                >
-                  Profile
-                </MenuItem>
-                <MenuDivider/>
-                <MenuItem
-                  aria-label="notifications"
-                  onClick={onOpenNotificationsModal}
-                  icon={<AiOutlineBell size={20}/>}
-                  fontSize="lg"
-                  fontWeight="600"
-                >
-                    Notifications
-                    {totalNotifications > 0 ? (
-                      <Icon as={RxDotFilled} boxSize="1.5em" color="red" verticalAlign="middle" />
-                    ) : null}
-                </MenuItem>
-                <MenuDivider/>
-                <MenuItem
-                  aria-label="toggle color mode"
-                  onClick={toggleColorMode}
-                  icon={colorMode === "light" ? <BsFillMoonFill size={20}/> : <BsFillSunFill size={20}/>}
-                  fontSize="lg"
-                  fontWeight="600"
-                >
-                  {colorMode === "light" ? "Dark" : "Light"} Mode
-                </MenuItem>
-                <MenuItem
-                  aria-label="settings"
-                  as={Link}
-                  to="/settings"
-                  icon={<FiSettings size={20}/>}
-                  fontSize="lg"
-                  fontWeight="600"
-                >
-                  Settings
-                </MenuItem>
-                <MenuItem
-                  aria-label="logout"
-                  onClick={e=>onLogout()}
-                  icon={<MdLogout size={25}/>} 
-                  fontSize="lg"
-                  fontWeight="600"
-                >
-                  Log out
-                </MenuItem>
-              </MenuList>
+              <Portal>
+                <MenuList>
+                  <MenuItem
+                    as={Link}
+                    to={`/profile/${user.Profile.username}`}
+                    fontSize="lg"
+                    fontWeight="600"
+                  >
+                    Profile
+                  </MenuItem>
+                  <MenuDivider/>
+                  <MenuItem
+                    aria-label="notifications"
+                    onClick={onOpenNotificationsModal}
+                    icon={<AiOutlineBell size={20}/>}
+                    fontSize="lg"
+                    fontWeight="600"
+                  >
+                      Notifications
+                      {totalNotifications > 0 ? (
+                        <Icon as={RxDotFilled} boxSize="1.5em" color="red" verticalAlign="middle" />
+                      ) : null}
+                  </MenuItem>
+                  <MenuDivider/>
+                  <MenuItem
+                    aria-label="toggle color mode"
+                    onClick={toggleColorMode}
+                    icon={colorMode === "light" ? <BsFillMoonFill size={20}/> : <BsFillSunFill size={20}/>}
+                    fontSize="lg"
+                    fontWeight="600"
+                  >
+                    {colorMode === "light" ? "Dark" : "Light"} Mode
+                  </MenuItem>
+                  <MenuItem
+                    aria-label="settings"
+                    as={Link}
+                    to="/settings"
+                    icon={<FiSettings size={20}/>}
+                    fontSize="lg"
+                    fontWeight="600"
+                  >
+                    Settings
+                  </MenuItem>
+                  <MenuItem
+                    aria-label="logout"
+                    onClick={e=>onLogout()}
+                    icon={<MdLogout size={25}/>} 
+                    fontSize="lg"
+                    fontWeight="600"
+                  >
+                    Log out
+                  </MenuItem>
+                </MenuList>
+              </Portal>
             </Menu>
           </Flex>
         </Flex>
-
-        {isOpen ? (
-          <Box pb={4} display={{ md: 'none' }}>
-            <Stack as={'nav'} spacing={1}>
-              {LinkItems.map((linkItem,index) => (
-                <Box
-                  as={NavLink} 
-                  key={index} 
-                  to={linkItem.linkTo}
-                  onClick={onClose}
-                  p={2}
-                  rounded={'md'}
-                  fontWeight="bold"
-                  _hover={{
-                    textDecoration: 'none',
-                    // color: 'blue',
-                    bg: 'gray.200'
-                  }}
-                  _dark={{
-                    '&:hover': {
-                      bg: 'blackAlpha.700',
-                      color: 'white'
-                    }
-                  }}
-                >
-                  {linkItem.name}
-                </Box>
-              ))}
-            </Stack>
-          </Box>
-        ) : null}
 
         <Modal isOpen={isOpenNotificationsModal} onClose={onCloseNotificationsModal} size="xl">
           <ModalOverlay />

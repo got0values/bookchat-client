@@ -44,12 +44,14 @@ const customTheme = {
       },
       '.main-content': {
         w: "100%",
-        py: "20px",
+        pt: ["5px","20px"],
+        pb: ["80px","20px"],
         maxW: '1200px'
       },
       '.main-content-smaller': {
         w: "100%",
-        py: "20px",
+        pt: ["5px","20px"],
+        pb: ["80px","20px"],
         maxW: '700px'
       },
       '.well': {
