@@ -74,7 +74,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   const [bookshelfBooks,setBookshelfBooks] = useState([] as BookshelfBook[])
   const [bookshelfBooksOriginal,setBookshelfBooksOriginal] = useState([] as BookshelfBook[])
   const [showAddCategory,setShowAddCategory] = useState(false)
-  const [showSuggestionsNotes,setShowSuggestionsNotes] = useState(false)
+  const [allowSuggestions,setAllowSuggestions] = useState(false);
 
   async function getBookshelf() {
     const tokenCookie: string | null = Cookies.get().token;
@@ -97,7 +97,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             return (new Date(a.created_on) as any) - (new Date(b.created_on) as any)
           }).reverse()
         });
-        setShowSuggestionsNotes(responseMessage.allow_suggestions);
+        setAllowSuggestions(responseMessage.allow_suggestions === 1 ? true : false);
         return responseMessage
       })
       .catch(({response})=>{
@@ -578,7 +578,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
         }
       )
       .then((response)=>{
-        setShowSuggestionsNotes(prev=>!prev)
+        setAllowSuggestions(prev=>!prev)
       })
       .catch(({response})=>{
         console.log(response)
@@ -816,7 +816,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     queryFn: getBookshelf
   });
   const bookshelf = data ? data : null;
-  const allowSuggestions = bookshelf?.allow_suggestions;
   const suggestionsNotesDefaultValue = bookshelf?.suggestions_notes;
   const categories = bookshelf?.BookshelfCategory;
   const books = bookshelf?.BookshelfBook;
@@ -851,12 +850,12 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                 </FormLabel>
                 <Switch
                   id="allow-suggestions"
-                  defaultChecked={allowSuggestions}
+                  isChecked={allowSuggestions}
                   ref={allowSuggestionsRef}
                   onChange={e=>allowSuggestionsToggle()}
                 />
               </Flex>
-              {showSuggestionsNotes ? (
+              {allowSuggestions ? (
                 <Flex
                   direction="column"
                   align="center"
