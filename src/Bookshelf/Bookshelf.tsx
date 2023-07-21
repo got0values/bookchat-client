@@ -8,7 +8,7 @@ import {
   Heading,
   Text,
   Image,
-  Center,
+  Tooltip,
   Spinner,
   Stack,
   Button,
@@ -55,6 +55,7 @@ import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { MdOutlineChat } from 'react-icons/md';
 import { BiDotsHorizontalRounded, BiTrash, BiPlus, BiHide } from 'react-icons/bi';
 import { FaShoppingCart } from 'react-icons/fa';
+import { ImInfo } from 'react-icons/im';
 import ReactQuill from 'react-quill';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -871,9 +872,14 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   >
                   </Textarea>
                   <Flex
-                    justify="flex-end"
+                    justify="space-between"
                     w="100%"
                   >
+                    <Tooltip label="To receive more suggestions, try suggesting books to other users. Also, in your suggestion notes, be descriptive about what you're looking for." hasArrow>
+                      <Flex align="center" justify="center">
+                        <ImInfo size={20} color="gray" />
+                      </Flex>
+                    </Tooltip>
                     <Button
                       onClick={e=>saveSuggestionNotes()}
                       colorScheme="black"
