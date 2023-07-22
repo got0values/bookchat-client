@@ -448,7 +448,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   }
 
   const CurrentlyReadingFeed = ({reading}:{reading:CurrentlyReading}) => {
-    let suggestionCount = reading.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile;
+    let suggestionCount = reading.Profile._count?.BookSuggestion_BookSuggestion_suggestorToProfile;
     return (
       reading.hidden ? (
         null
