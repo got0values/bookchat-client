@@ -20,6 +20,7 @@ import {
   Divider,
   Skeleton,
   Badge,
+  Tag,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -105,6 +106,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
         }
         )
         .then((response)=>{
+          console.log(response.data)
           getUser();
           setItems(items + 5)
           setFollowingSorted(response.data.message.followingCurrentlyReadingSorted)
@@ -491,9 +493,21 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 </Avatar>
               </Link>
               <Flex direction="column">
-                <Text fontWeight="bold">
-                  {reading.Profile.username}
-                </Text>
+                <Flex align="center" gap={1}>
+                  <Text fontWeight="bold">
+                    {reading.Profile.username}
+                  </Text>
+                    {/* {reading.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile > 0 ? (
+                      <Badge
+                        fontSize=".65rem"
+                        textTransform="none"
+                      >
+                        Top Advisor
+                      </Badge>
+                    ) : (
+                      null
+                    )} */}
+                </Flex>
                 <Text fontStyle="italic">
                   {dayjs(reading.created_on).local().format('MMM DD, h:mm a')}
                 </Text>

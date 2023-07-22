@@ -47,6 +47,7 @@ import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
 import axios from "axios";
 import googleWatermark from "/src/assets/google_watermark.gif";
+import { useAuth } from "../hooks/useAuth";
 
 
 export default function BookSuggestionBookshelf({server,gbooksapi}: {server: string, gbooksapi: string}) {
@@ -55,6 +56,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
   dayjs.extend(utc);
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
+  const {user} = useAuth();
 
   const [bookshelfProfileName,setBookshelfProfileName] = useState(searchParams.get("profile"))
   const [nextBookshelf,setNextBookshelf] = useState<BookshelfType | null>(null);
@@ -365,24 +367,30 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
               gap={1}
               direction="column"
             >
-              <Input
-                type="search"
-                bg="white"
-                borderColor="black"
-                size="lg"
-                placeholder="Suggest a book"
-                _dark={{
-                  bg: "gray.800"
-                }}
-                sx={{
-                  cursor: 'none',
-                  '&:hover': {
-                    cursor: 'pointer'
-                  }
-                }}
-                readOnly={true}
-                onClick={e=>onOpenSearchModal()}
-              />
+              {bookSuggestionBookshelf.Profile.id === user.Profile.id ? (
+                <Text>
+                  This is your bookshelf.
+                </Text>
+              ): (
+                <Input
+                  type="search"
+                  bg="white"
+                  borderColor="black"
+                  size="lg"
+                  placeholder="Suggest a book"
+                  _dark={{
+                    bg: "gray.800"
+                  }}
+                  sx={{
+                    cursor: 'none',
+                    '&:hover': {
+                      cursor: 'pointer'
+                    }
+                  }}
+                  readOnly={true}
+                  onClick={e=>onOpenSearchModal()}
+                />
+              )}
 
               {selectedBook ? (
                 <Box
