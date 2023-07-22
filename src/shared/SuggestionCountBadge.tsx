@@ -9,7 +9,7 @@ import { FaChessKnight, FaChessBishop, FaChessRook } from "react-icons/fa"
 export default function SuggestionCountBadge({suggestionCount}: {suggestionCount: number}) {
   return (
     <>
-      {suggestionCount > 0 && suggestionCount < 9 ? (
+      {suggestionCount > 0 && suggestionCount <= 9 ? (
         <Badge
           fontSize=".65rem"
           textTransform="none"
@@ -22,7 +22,7 @@ export default function SuggestionCountBadge({suggestionCount}: {suggestionCount
           <Box as={GiChessPawn} size={15} mt={-.5}/> Level 1 Advisor
         </Badge>
       ) : (
-        suggestionCount > 9 && suggestionCount < 24 ? (
+        suggestionCount > 9 && suggestionCount <= 24 ? (
           <Badge
             fontSize=".65rem"
             textTransform="none"
@@ -36,7 +36,7 @@ export default function SuggestionCountBadge({suggestionCount}: {suggestionCount
             <FaChessKnight size={13}/> Level 2 Advisor
           </Badge>
         ) : (
-          suggestionCount > 24 && suggestionCount < 49 ? (
+          suggestionCount > 24 && suggestionCount <= 49 ? (
             <Badge
               fontSize=".65rem"
               textTransform="none"
@@ -50,7 +50,7 @@ export default function SuggestionCountBadge({suggestionCount}: {suggestionCount
               <FaChessBishop size={13}/> Level 3 Advisor
             </Badge>
           ) : (
-            suggestionCount > 49 && suggestionCount < 99 ? (
+            suggestionCount > 49 && suggestionCount <= 99 ? (
               <Badge
                 fontSize=".65rem"
                 textTransform="none"
