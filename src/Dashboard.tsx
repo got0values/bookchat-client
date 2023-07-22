@@ -46,6 +46,7 @@ import { editPagesRead, cancelEditPagesRead } from "./shared/editCancelPagesRead
 import { editCurrentlyReadingThoughts, cancelEditCurrentlyReadingThoughts } from "./shared/editCancelCurrentlyReadingThoughts";
 import GooglePreviewLink from "./shared/GooglePreviewLink";
 import GoogleBooksSearch from "./shared/GoogleBooksSearch";
+import SuggestionCountBadge from "./shared/SuggestionCountBadge";
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
 import { BsReplyFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
@@ -106,7 +107,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
         }
         )
         .then((response)=>{
-          console.log(response.data)
           getUser();
           setItems(items + 5)
           setFollowingSorted(response.data.message.followingCurrentlyReadingSorted)
@@ -448,6 +448,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   }
 
   const CurrentlyReadingFeed = ({reading}:{reading:CurrentlyReading}) => {
+    let suggestionCount = reading.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile;
     return (
       reading.hidden ? (
         null
@@ -497,16 +498,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   <Text fontWeight="bold">
                     {reading.Profile.username}
                   </Text>
-                    {/* {reading.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile > 0 ? (
-                      <Badge
-                        fontSize=".65rem"
-                        textTransform="none"
-                      >
-                        Top Advisor
-                      </Badge>
-                    ) : (
-                      null
-                    )} */}
+                    <SuggestionCountBadge suggestionCount={suggestionCount}/>
                 </Flex>
                 <Text fontStyle="italic">
                   {dayjs(reading.created_on).local().format('MMM DD, h:mm a')}

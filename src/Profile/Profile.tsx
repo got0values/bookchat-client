@@ -56,6 +56,7 @@ import {
 } from "@chakra-ui/react";
 import { editPagesRead, cancelEditPagesRead } from "../shared/editCancelPagesRead";
 import { editCurrentlyReadingThoughts, cancelEditCurrentlyReadingThoughts } from "../shared/editCancelCurrentlyReadingThoughts";
+import SuggestionCountBadge from "../shared/SuggestionCountBadge";
 import collectionToArray from "../utils/collectionToArray";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
 import GoogleBooksSearch from "../shared/GoogleBooksSearch";
@@ -95,6 +96,7 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
   const [items, setItems] = useState(5);
   const [theEnd,setTheEnd] = useState(false);
   const [currentlyReadingLength,setCurrentlyReadingLength] = useState(0)
+  const [advisorCount,setAdvisorCount] = useState(0);
   async function getProfile() {
     const tokenCookie = Cookies.get().token;
     if (tokenCookie) {
@@ -128,7 +130,8 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
                 setViewer("nonFollower")
                 break;
             }
-            setCurrentlyReadingLength(responseProfileData.CurrentlyReading ? responseProfileData.CurrentlyReading : 0)
+            setCurrentlyReadingLength(responseProfileData.CurrentlyReading ? responseProfileData.CurrentlyReading : 0);
+            setAdvisorCount(response.data.advisorCount)
             return responseProfileData;
           }
       })
@@ -752,12 +755,12 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
       })
   }
 
-  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead};
+  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount};
 }
 
 
 export default function Profile({server,gbooksapi}: ProfileProps) {
-  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead} = useProfile({server,gbooksapi});
+  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount} = useProfile({server,gbooksapi});
 
   
 
@@ -826,6 +829,9 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                         {`@${profileData.username}`}
                       </Text>
                     </Flex>
+                    <Box mb={1}>
+                      <SuggestionCountBadge suggestionCount={advisorCount}/>
+                    </Box>
                     {profileData.rating ? (
                       <Box mb={1}>
                         <Flex
