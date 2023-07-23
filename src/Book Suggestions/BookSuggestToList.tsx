@@ -17,6 +17,7 @@ import {
   PopoverArrow,
   Skeleton,
 } from "@chakra-ui/react";
+import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import { BsArrowRight } from 'react-icons/bs';
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import dayjs from "dayjs";
@@ -85,22 +86,30 @@ export function BookSuggestionToList({server}: {server: string;}) {
                 justify="space-between"
               >
                 <Flex
-                  as={Link}
-                  to={`/profile/${bookshelf.Profile.username}`}
                   align="center"
                   gap={2}
+                  wrap="wrap"
                 >
                   <Avatar 
+                    as={Link}
+                    to={`/profile/${bookshelf.Profile.username}`}
                     src={bookshelf.Profile.profile_photo} 
                     size="sm"
                     name={bookshelf.Profile.username}
                   />
-                  <Text fontWeight="bold">
-                    {bookshelf.Profile.username}
-                  </Text>
-                  {/* <Box w="1.4rem">
-                    {bookshelf.Flag ? <bookshelf.Flag/> : null}
-                  </Box> */}
+                  <Flex align="center" gap={1}>
+                    <Text 
+                      fontWeight="bold"
+                      as={Link}
+                      to={`/profile/${bookshelf.Profile.username}`}
+                    >
+                      {bookshelf.Profile.username}
+                    </Text>
+                    {/* <Box w="1.4rem">
+                      {bookshelf.Flag ? <bookshelf.Flag/> : null}
+                    </Box> */}
+                    <SuggestionCountBadge suggestionCount={bookshelf.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile}/>
+                  </Flex>
                 </Flex>
                 <Flex
                   align="center"

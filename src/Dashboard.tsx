@@ -46,7 +46,7 @@ import { editPagesRead, cancelEditPagesRead } from "./shared/editCancelPagesRead
 import { editCurrentlyReadingThoughts, cancelEditCurrentlyReadingThoughts } from "./shared/editCancelCurrentlyReadingThoughts";
 import GooglePreviewLink from "./shared/GooglePreviewLink";
 import GoogleBooksSearch from "./shared/GoogleBooksSearch";
-import SuggestionCountBadge from "./shared/SuggestionCountBadge";
+import {SuggestionCountBadge} from "./shared/SuggestionCount";
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
 import { BsReplyFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';

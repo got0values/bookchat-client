@@ -56,7 +56,7 @@ import {
 } from "@chakra-ui/react";
 import { editPagesRead, cancelEditPagesRead } from "../shared/editCancelPagesRead";
 import { editCurrentlyReadingThoughts, cancelEditCurrentlyReadingThoughts } from "../shared/editCancelCurrentlyReadingThoughts";
-import SuggestionCountBadge from "../shared/SuggestionCountBadge";
+import {SuggestionCountBadge} from "../shared/SuggestionCount";
 import collectionToArray from "../utils/collectionToArray";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
 import GoogleBooksSearch from "../shared/GoogleBooksSearch";
@@ -828,10 +828,8 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                       <Text fontWeight={600} color={'gray.500'}>
                         {`@${profileData.username}`}
                       </Text>
-                    </Flex>
-                    <Box mb={1}>
                       <SuggestionCountBadge suggestionCount={advisorCount}/>
-                    </Box>
+                    </Flex>
                     {profileData.rating ? (
                       <Box mb={1}>
                         <Flex
