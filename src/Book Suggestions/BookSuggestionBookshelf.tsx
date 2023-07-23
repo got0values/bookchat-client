@@ -38,6 +38,7 @@ import {
 } from "@chakra-ui/react";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
 import GoogleBooksSearch from "../shared/GoogleBooksSearch";
+import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import { BsArrowRight } from 'react-icons/bs';
 import { MdChevronRight } from 'react-icons/md';
 import StarRating from "../shared/StarRating";
@@ -263,21 +264,27 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
               justify="space-between"
             >
               <Flex
-                as={Link}
-                to={`/profile/${bookSuggestionBookshelf?.Profile?.username}`}
                 align="center"
                 gap={2}
               >
                 <Avatar 
+                  as={Link}
+                  to={`/profile/${bookSuggestionBookshelf?.Profile?.username}`}
                   src={bookSuggestionBookshelf?.Profile?.profile_photo} 
                   name={bookSuggestionBookshelf?.Profile?.username} 
                 />
-                <Text fontWeight="bold" fontSize="xl">
+                <Text 
+                  as={Link}
+                  to={`/profile/${bookSuggestionBookshelf?.Profile?.username}`}
+                  fontWeight="bold" 
+                  fontSize="xl"
+                >
                   {bookSuggestionBookshelf?.Profile?.username} 
                 </Text>
                 {/* <Box w="1.4rem">
                   {bookSuggestionBookshelf.Flag ? <bookSuggestionBookshelf.Flag/> : null}
                 </Box> */}
+                <SuggestionCountBadge suggestionCount={bookSuggestionBookshelf?.Profile?._count.BookSuggestion_BookSuggestion_suggestorToProfile}/>
               </Flex>
             </Flex>
             {bookSuggestionBookshelf.suggestions_notes ? (

@@ -5,6 +5,7 @@ import {
   Flex,
   Popover,
   PopoverTrigger,
+  PopoverHeader,
   PopoverContent,
   PopoverFooter,
   PopoverBody,
@@ -97,8 +98,13 @@ export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number
           <PopoverContent maxW="260px" fontSize="sm">
             <PopoverArrow/>
             <PopoverCloseButton/>
+            {/* <PopoverHeader
+              fontWeight="bold"
+            >
+              Novice Reader's Advisor
+            </PopoverHeader> */}
             <PopoverBody>
-              {suggestionCount} suggestions given to other users
+              <Text as="span" fontStyle="italic" >{suggestionCount}</Text> suggestion{suggestionCount > 1 ? "s" : null} given to other users
             </PopoverBody>
           </PopoverContent>
         </Popover>
@@ -122,8 +128,13 @@ export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number
             <PopoverContent maxW="260px" fontSize="sm">
               <PopoverArrow/>
               <PopoverCloseButton/>
+              {/* <PopoverHeader
+                fontWeight="bold"
+              >
+                Intermediate Reader's Advisor
+              </PopoverHeader> */}
               <PopoverBody>
-                {suggestionCount} suggestions given to other users
+                <Text as="span" fontStyle="italic" >{suggestionCount}</Text> suggestions given to other users
               </PopoverBody>
             </PopoverContent>
           </Popover>
@@ -147,8 +158,13 @@ export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number
               <PopoverContent maxW="260px" fontSize="sm">
                 <PopoverArrow/>
                 <PopoverCloseButton/>
+                {/* <PopoverHeader
+                  fontWeight="bold"
+                >
+                  Proficient Reader's Advisor
+                </PopoverHeader> */}
                 <PopoverBody>
-                  {suggestionCount} suggestions given to other users
+                  <Text as="span" fontStyle="italic" >{suggestionCount}</Text> suggestions given to other users
                 </PopoverBody>
               </PopoverContent>
             </Popover>
@@ -172,8 +188,13 @@ export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number
                 <PopoverContent maxW="260px" fontSize="sm">
                   <PopoverArrow/>
                   <PopoverCloseButton/>
+                  {/* <PopoverHeader
+                    fontWeight="bold"
+                  >
+                    Master Reader's Advisor
+                  </PopoverHeader> */}
                   <PopoverBody>
-                    {suggestionCount} suggestions given to other users
+                    <Text as="span" fontStyle="italic" >{suggestionCount}</Text> suggestions given to other users
                   </PopoverBody>
                 </PopoverContent>
               </Popover>
@@ -197,8 +218,13 @@ export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number
                   <PopoverContent maxW="260px" fontSize="sm">
                     <PopoverArrow/>
                     <PopoverCloseButton/>
+                    {/* <PopoverHeader
+                      fontWeight="bold"
+                    >
+                      Supreme Master Reader's Advisor
+                    </PopoverHeader> */}
                     <PopoverBody>
-                      {suggestionCount} suggestions given to other users
+                      <Text as="span" fontStyle="italic" >{suggestionCount}</Text> suggestions given to other users
                     </PopoverBody>
                   </PopoverContent>
                 </Popover>
