@@ -590,6 +590,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                   _hover={{
                     bg: "gray.400"
                   }}
+                  alt="book chat noir logo"
                 />
                 {user && user.role === "admin" ? (
                 <Badge
@@ -657,6 +658,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                   bg: window.location.pathname === linkItem.linkTo ? activeLinkBg : "",
                   color: window.location.pathname === linkItem.linkTo ? activeLinkColor : ""
                 }}
+                title={linkItem.tooltip}
               >
                 <Tooltip hasArrow label={linkItem.tooltip}>
                   <Flex align="center" gap={2}>

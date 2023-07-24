@@ -474,7 +474,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   cursor="pointer"
                   src={`${reading.Profile.profile_photo}`}
                   border="2px solid gray"
-                  title={`@${reading.Profile.username}`}
+                  name={`${reading.Profile.username}`}
                   position="relative"
                 >
                   {reading.Profile.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0) > 0 ? (
@@ -513,6 +513,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   variant="ghost"
                   rounded="full"
                   height="25px"
+                  title="menu"
                 >
                   <BiDotsHorizontalRounded/>
                 </MenuButton>
@@ -601,6 +602,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               src={reading.image}
               maxH="100px"
               boxShadow="1px 1px 1px 1px darkgrey"
+              alt={`${reading.title} image`}
             />
             <Box mx={2} w="100%">
               <Box>
@@ -704,6 +706,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     variant="ghost"
                     data-currentlyreading={reading.id}
                     onClick={e=>likeUnlikeCurrentlyReading(e)}
+                    title="like post"
                   >
                     {reading.CurrentlyReadingLike?.filter((like)=>like.profile===user?.Profile?.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
                   </Button>
