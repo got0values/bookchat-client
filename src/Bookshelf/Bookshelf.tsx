@@ -1593,17 +1593,27 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 }
                                 id={`notes-input-${book.id}`}
                               />
-                              <Button
-                                w="auto"
-                                alignSelf="flex-end"
-                                data-bookid={book.id}
-                                onClick={e=>updateNotes(e)}
-                                size="sm"
-                                backgroundColor="black"
-                                color="white"
+                              <Flex
+                                justify="space-between"
+                                w="100%"
                               >
-                                Save Notes
-                              </Button>
+                                <Tooltip label="Private notes are only visible to you" hasArrow>
+                                  <Flex align="center" justify="center">
+                                    <ImInfo size={20} color="gray" />
+                                  </Flex>
+                                </Tooltip>
+                                <Button
+                                  w="auto"
+                                  alignSelf="flex-end"
+                                  data-bookid={book.id}
+                                  onClick={e=>updateNotes(e)}
+                                  size="sm"
+                                  backgroundColor="black"
+                                  color="white"
+                                >
+                                  Save Notes
+                                </Button>
+                              </Flex>
                             </Flex>
                           </AccordionPanel>
                         </AccordionItem>
