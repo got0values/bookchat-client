@@ -120,6 +120,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
   }
   const notesRef = useRef({} as HTMLTextAreaElement);
   async function suggestBook(e: React.FormEvent) {
+    const google_books_id = selectedBook.google_books_id;
     const image = selectedBook.image;
     const title = selectedBook.title;
     const author = selectedBook.author;
@@ -135,6 +136,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
         .post(server + "/api/setbooksuggestion", 
         {
           suggestee: bookSuggestionBookshelf.Profile.id,
+          google_books_id: google_books_id,
           image: image,
           title: title,
           author: author,

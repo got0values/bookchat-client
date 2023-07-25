@@ -652,6 +652,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   if (result?.data?.items?.length) {
                     const bookResult = result.data.items[0]
                     const book = {
+                      google_books_id: bookResult.id,
                       title: bookResult.volumeInfo.title,
                       author: bookResult.volumeInfo.authors ? bookResult.volumeInfo.authors[0] : null,
                       image: bookResult.volumeInfo.imageLinks?.smallThumbnail ? bookResult.volumeInfo.imageLinks.smallThumbnail : null,
@@ -668,7 +669,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           categories: bookToAddCategories,
                           rating: rating,
                           dateAdded: dateAdded,
-                          notes: notesRef.current.value
+                          notes: null
                         },
                         {headers: {
                           'authorization': tokenCookie

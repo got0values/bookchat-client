@@ -460,6 +460,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
               {
                 bookClubId: parseInt(paramsBookClubId!),
                 bookClubBookId: bookClubBook,
+                googleBooksId: book.google_books_id,
                 bookImage: book.image,
                 bookTitle: book.title,
                 bookAuthor: book.author,
@@ -481,6 +482,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
           .post(server + "/api/setbookclubbook",
             {
               bookClubId: parseInt(paramsBookClubId!),
+              googleBooksId: book.google_books_id,
               bookImage: book.image,
               bookTitle: book.title,
               bookAuthor: book.author,

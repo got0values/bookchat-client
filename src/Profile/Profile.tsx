@@ -390,6 +390,7 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
         await axios
         .post(server + "/api/currentlyreading",
         {
+          google_books_id: (e.target as HTMLDivElement).dataset.googlebooksid,
           image: (e.target as HTMLDivElement).dataset.image,
           title: (e.target as HTMLDivElement).dataset.title,
           author: (e.target as HTMLDivElement).dataset.author,
@@ -1167,6 +1168,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     backgroundColor="black"
                                     color="white"
                                     // variant="outline"
+                                    data-googlebooksid={selectedBook.google_books_id}
                                     data-image={selectedBook.image}
                                     data-title={selectedBook.title}
                                     data-author={selectedBook.author}

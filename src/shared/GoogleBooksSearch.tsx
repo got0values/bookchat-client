@@ -168,6 +168,7 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
                         data-book={JSON.stringify(book)}
                         // onClick={selectCallback}
                         onClick={e=>selectCallback({
+                          google_books_id: book.id,
                           title: book.volumeInfo.title,
                           author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : "",
                           image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
@@ -258,6 +259,7 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
                         data-book={JSON.stringify(book)}
                         onClick={e=>selectCallback({
                           title: book.title,
+                          google_books_id: null,
                           author: book.author_name ? book.author_name[0] : "",
                           image: book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn[0] || book.isbn.length >= 2 ? book.isbn[1] : "1"}-M.jpg?default=false` : "https://via.placeholder.com/165x215",
                           isbn: book.isbn ? book.isbn[0] : book.isbn.length > 1 ? book.isbn[1] : "",

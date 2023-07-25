@@ -268,6 +268,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
         await axios
         .post(server + "/api/currentlyreading",
         {
+          google_books_id: (e.target as HTMLDivElement).dataset.googlebooksid,
           image: (e.target as HTMLDivElement).dataset.image,
           title: (e.target as HTMLDivElement).dataset.title,
           author: (e.target as HTMLDivElement).dataset.author,
@@ -911,6 +912,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       // size="sm"
                       backgroundColor="black"
                       color="white"
+                      data-googlebooksid={selectedBook.google_books_id}
                       data-image={selectedBook.image}
                       data-title={selectedBook.title}
                       data-author={selectedBook.author}
