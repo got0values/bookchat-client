@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, Suspense } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { DashboardProps, CurrentlyReading, SelectedBook } from './types/types';
+import { DashboardProps, CurrentlyReading, SelectedBook, User } from './types/types';
 import { 
   Box,
   Heading,
@@ -95,7 +95,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   const [items,setItems] = useState(5);
   const [followingSorted,setFollowingSorted] = useState([] as any)
   const [randomSorted,setRandomSorted] = useState([] as any)
-  const [firstBookshelf,setFirstBookshelf] = useState({} as any)
+  const [firstBookshelf,setFirstBookshelf] = useState<User | null>(null)
   async function getDashboard() {
     const tokenCookie = Cookies.get().token
     if (tokenCookie) {
