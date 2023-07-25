@@ -2386,7 +2386,6 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   src={f.Profile_Following_self_profile_idToProfile!.profile_photo}
                                   name={f.Profile_Following_self_profile_idToProfile!.username}
                                   border="2px solid gray"
-                                  alt="profile image"
                                 />
                                 <Text>
                                   @{f.Profile_Following_self_profile_idToProfile!.username}
@@ -2444,7 +2443,6 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 src={f.Profile_Following_following_profile_idToProfile!.profile_photo}
                                 name={f.Profile_Following_following_profile_idToProfile!.username}
                                 border="2px solid gray"
-                                alt="profile photo"
                               />
                               <Text>
                                 @{f.Profile_Following_following_profile_idToProfile!.username}
