@@ -788,6 +788,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
   
   return (
     <Box className="main-content">
+      <Heading as="h1" className="visually-hidden">Profile</Heading>
       <Skeleton isLoaded={!isLoading}>
         {viewer !== "self" && profileData.hidden ? (
           <Center
@@ -815,6 +816,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                       cursor={viewer === "self" ? "pointer": "default"}
                       src={viewer === "self" ? (userProfilePhoto ? userProfilePhoto : "") : profileData.profile_photo ? profileData.profile_photo : ""}
                       border="2px solid gray"
+                      name={profileData.username}
                     />
                     <Heading fontSize={'3xl'}>
                       {`${profileData.User?.first_name} ${profileData.User?.last_name}`}
@@ -825,7 +827,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           <Flag alt={profileData.country} title={profileData.country}/>
                         </Box>
                       ):null}
-                      <Text fontWeight={600} color={'gray.500'}>
+                      <Text fontWeight={600} color={'gray.600'}>
                         {`@${profileData.username}`}
                       </Text>
                       <SuggestionCountBadge suggestionCount={advisorCount}/>
@@ -908,7 +910,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                     <Stack mb={1}>
                       <Flex justify="space-between" gap={3} flexWrap="wrap">
                         <Box flex="1">
-                          <Heading as="h5" size="sm" whiteSpace="nowrap">
+                          <Heading as="h3" size="sm" whiteSpace="nowrap">
                             {profileData.Following_Following_following_profile_idToProfile?.length} followers
                           </Heading>
                           <Flex justify="center">
@@ -935,7 +937,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           </Flex>
                         </Box>
                         <Box flex="1">
-                          <Heading as="h5" size="sm" whiteSpace="nowrap">
+                          <Heading as="h3" size="sm" whiteSpace="nowrap">
                             {profileData.Following_Following_self_profile_idToProfile?.length} following
                           </Heading>
                           <Flex justify="center">
@@ -1055,7 +1057,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                   <Box className="well">
                     {viewer === "self" ? (
                       <>
-                        <Heading as="h3" size="md" mb={2}>
+                        <Heading as="h2" size="md" mb={2}>
                           Currently Reading
                         </Heading>
                         <Flex gap={2} align="center">
@@ -1101,13 +1103,14 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 maxH="100px"
                                 minW="60px"
                                 boxShadow="1px 1px 1px 1px darkgrey"
+                                alt={selectedBook.title}
                               />
                               <Box 
                                 mx={2}
                                 w="100%"
                               >
                                 <Box>
-                                  <Heading as="h5" size="md" me={3} noOfLines={1}>
+                                  <Heading as="h3" size="md" me={3} noOfLines={1}>
                                     {selectedBook.title}
                                   </Heading>
                                   <Text fontSize="lg" noOfLines={1}>
@@ -1207,6 +1210,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       variant="ghost"
                                       rounded="full"
                                       height="25px"
+                                      aria-label="like/unlike"
                                     >
                                       <BiDotsHorizontalRounded/>
                                     </MenuButton>
@@ -1328,10 +1332,11 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 maxH="100px"
                                 minW="60px"
                                 boxShadow="1px 1px 1px 1px darkgrey"
+                                alt={profileData.CurrentlyReading[0].title}
                               />
                               <Box mx={2} w="100%">
                                 <Box>
-                                  <Heading as="h5" size="md" me={3} noOfLines={1}>
+                                  <Heading as="h3" size="md" me={3} noOfLines={1}>
                                     {
                                       profileData
                                       .CurrentlyReading[0]
@@ -1447,6 +1452,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       variant="ghost"
                                       data-currentlyreading={profileData.CurrentlyReading[0].id}
                                       onClick={e=>likeUnlikeCurrentlyReading(e)}
+                                      aria-label="like/unlike"
                                     >
                                       {profileData.CurrentlyReading[0].CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
                                     </Button>
@@ -1516,7 +1522,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           null
                         ) : (
                           <>
-                            <Heading as="h3" size="md" mb={2}>
+                            <Heading as="h2" size="md" mb={2}>
                               Currently Reading
                             </Heading>
                             {profileData?.CurrentlyReading?.length ? (
@@ -1546,6 +1552,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                         variant="ghost"
                                         rounded="full"
                                         height="25px"
+                                        aria-label="menu"
                                       >
                                         <BiDotsHorizontalRounded/>
                                       </MenuButton>
@@ -1594,10 +1601,11 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     maxH="100px"
                                     minW="60px"
                                     boxShadow="1px 1px 1px 1px darkgrey"
+                                    alt={profileData.CurrentlyReading[0].title}
                                   />
                                   <Box mx={2} w="100%">
                                     <Box>
-                                      <Heading as="h5" size="md" me={3} noOfLines={1}>
+                                      <Heading as="h3" size="md" me={3} noOfLines={1}>
                                         {
                                           profileData.CurrentlyReading[0]
                                           .title
@@ -1663,6 +1671,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                           variant="ghost"
                                           data-currentlyreading={profileData.CurrentlyReading[0].id}
                                           onClick={e=>likeUnlikeCurrentlyReading(e)}
+                                          aria-label="like/unlike"
                                         >
                                           {profileData.CurrentlyReading[0].CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
                                         </Button>
@@ -1735,7 +1744,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                     <Box 
                       className="well" 
                     >
-                      <Heading as="h3" size="md" mb={2}>
+                      <Heading as="h2" size="md" mb={2}>
                         Past Reads
                       </Heading>
                       <>
@@ -1771,6 +1780,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                               variant="ghost"
                                               rounded="full"
                                               height="25px"
+                                              aria-label="menu"
                                             >
                                               <BiDotsHorizontalRounded/>
                                             </MenuButton>
@@ -1887,10 +1897,11 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                         maxH="100px"
                                         minW="60px"
                                         boxShadow="1px 1px 1px 1px darkgrey"
+                                        title={readBook.title}
                                       />
                                       <Box mx={2} w="100%">
                                         <Box>
-                                          <Heading as="h5" size="md" me={3} noOfLines={1}>
+                                          <Heading as="h3" size="md" me={3} noOfLines={1}>
                                             {readBook.title}
                                           </Heading>
                                           <Text fontSize="lg" noOfLines={1}>{readBook.author}</Text>
@@ -1982,6 +1993,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                               variant="ghost"
                                               data-currentlyreading={readBook.id}
                                               onClick={e=>likeUnlikeCurrentlyReading(e)}
+                                              aria-label="like/unlike"
                                             >
                                               {readBook.CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
                                             </Button>
@@ -2067,7 +2079,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                   <ModalOverlay />
                   <ModalContent rounded="sm" boxShadow="1px 1px 2px 1px black">
                     <ModalHeader>
-                      <Heading as="h3" size="lg">
+                      <Heading as="h2" size="lg">
                         Change Profile Photo
                       </Heading>
                     </ModalHeader>
@@ -2098,6 +2110,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           ref={imagePreviewRef}
                           p={5}
                           maxW="80%"
+                          alt="profile preview image"
                         />
                         ) : (
                         <Box p="15%" textAlign="center">
@@ -2134,7 +2147,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                   <ModalOverlay />
                   <ModalContent rounded="sm" boxShadow="1px 1px 2px 1px black">
                     <ModalHeader>
-                      <Heading as="h3" size="lg">
+                      <Heading as="h2" size="lg">
                         Update Profile
                       </Heading>
                     </ModalHeader>
@@ -2373,6 +2386,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   src={f.Profile_Following_self_profile_idToProfile!.profile_photo}
                                   name={f.Profile_Following_self_profile_idToProfile!.username}
                                   border="2px solid gray"
+                                  alt="profile image"
                                 />
                                 <Text>
                                   @{f.Profile_Following_self_profile_idToProfile!.username}
@@ -2430,6 +2444,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 src={f.Profile_Following_following_profile_idToProfile!.profile_photo}
                                 name={f.Profile_Following_following_profile_idToProfile!.username}
                                 border="2px solid gray"
+                                alt="profile photo"
                               />
                               <Text>
                                 @{f.Profile_Following_following_profile_idToProfile!.username}
