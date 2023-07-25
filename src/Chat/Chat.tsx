@@ -95,6 +95,7 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
   return (
     <>
       <Box className="main-content-smaller">
+        <Heading as="h1" className="visually-hidden">Chat Rooms</Heading>
         <Skeleton isLoaded={true}>
           <Tabs 
             variant="enclosed"
@@ -145,6 +146,7 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                               to="/chat/room?generaltype=General"
                               backgroundColor="black"
                               color="white"
+                              aria-label="go to room"
                             >
                               <BsArrowRight/>
                             </Button>
@@ -164,6 +166,7 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                               to="/chat/room?generaltype=Recommendations"
                               backgroundColor="black"
                               color="white"
+                              aria-label="go to room"
                             >
                               <BsArrowRight/>
                             </Button>
@@ -204,6 +207,7 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                                       to={`/chat/room?title=${room?.bookTitle ? room.bookTitle : ""}&author=${room?.bookAuthor ? room.bookAuthor : ""}`}
                                       backgroundColor="black"
                                       color="white"
+                                      aria-label="go to room"
                                     >
                                       <BsArrowRight/>
                                     </Button>
@@ -276,6 +280,7 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                                     to={`/chat/room?title=${result.volumeInfo.title}&author=${result.volumeInfo.authors ? result.volumeInfo.authors[0] : ""}`}
                                     backgroundColor="black"
                                     color="white"
+                                    aria-label="go to room"
                                   >
                                     <BsArrowRight/>
                                   </Button>

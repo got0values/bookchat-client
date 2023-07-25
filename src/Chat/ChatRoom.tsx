@@ -395,6 +395,7 @@ export default function ChatRoom({server}: {server: string}) {
         pb={2}
       >
         <Skeleton isLoaded={true}>
+          <Heading as="h1" className="visually-hidden">Book Chat Room</Heading>
           <Flex 
             flexWrap="wrap" 
             gap={0} 
@@ -438,6 +439,7 @@ export default function ChatRoom({server}: {server: string}) {
                   bg: "blackAlpha.500"
                 }}
                 ref={chatBoxRef as any}
+                tabIndex={0}
               >
                 <>
                   <Flex 
@@ -616,11 +618,12 @@ export default function ChatRoom({server}: {server: string}) {
                       bg: "blackAlpha.500"
                     }}
                     disabled={!isConnected}
+                    aria-label="enter chat text"
                   />
                   <InputRightElement display={["none","none","inline-flex"]}>
                     <Popover>
                       <PopoverTrigger>
-                        <Button variant="ghost" p={0}>
+                        <Button variant="ghost" p={0} aria-label="emojis">
                           <BsEmojiSmile size={15}/>
                         </Button>
                       </PopoverTrigger>
@@ -670,7 +673,7 @@ export default function ChatRoom({server}: {server: string}) {
               {isLargerThan650 ? (
                 <>
                   <Heading 
-                    as="h1" 
+                    as="h2" 
                     size="md" 
                     textAlign="center" 
                     mt={1}
