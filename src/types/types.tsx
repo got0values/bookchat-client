@@ -181,6 +181,7 @@ export interface BookClubMember {
 export interface BookClubBookType {
   id?: number;
   book_club?: number;
+  google_books_id: string;
   author: string;
   image: string;
   title: string;
@@ -264,6 +265,7 @@ export interface BookClubGeneralReply {
 //Currently Reading
 export interface CurrentlyReading {
   id: number;
+  google_books_id: string;
   profile: number;
   thoughts: string;
   image: string;
@@ -379,6 +381,7 @@ export interface BookshelfCategory {
 export interface BookshelfBook {
   id: number;
   profile: number;
+  google_books_id: string;
   title: string;
   author: string;
   image: string;
@@ -397,6 +400,7 @@ export interface BookSuggestionType {
   id: number;
   suggestor: number;
   suggestee: number;
+  google_books_id: string;
   title: string;
   author: string;
   image: string;
