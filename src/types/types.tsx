@@ -181,7 +181,7 @@ export interface BookClubMember {
 export interface BookClubBookType {
   id?: number;
   book_club?: number;
-  google_books_id: string;
+  google_books_id?: string;
   author: string;
   image: string;
   title: string;
