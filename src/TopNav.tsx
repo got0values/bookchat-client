@@ -816,9 +816,9 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                 <Text
                   fontSize=".55rem"
                 >
-                  {user.Profile._count?.BookSuggestion_BookSuggestion_suggestorToProfile ? user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile : 0} books suggested
+                  {user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile ? user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile : 0} books suggested
                 </Text>
-                {user.Profile._count?.BookSuggestion_BookSuggestion_suggestorToProfile && user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile === 0 ? (
+                {user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile === 0 ? (
                   <Popover placement='left'>
                     <PopoverTrigger>
                       <Badge
