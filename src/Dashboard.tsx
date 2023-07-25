@@ -781,7 +781,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           m={0}
           // p={1}
         >
-          {firstBookshelf && user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile < 1 ? (
+          {firstBookshelf && user.Profile._count?.BookSuggestion_BookSuggestion_suggestorToProfile < 1 ? (
             <>
               <Flex
                 pb={1}
