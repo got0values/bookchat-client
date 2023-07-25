@@ -88,7 +88,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
           if (response.data.success) {
             let responseBookClub = response.data.message
             let isCreatorsFriend = response.data.isCreatorsFriend
-            const currentBook1 = responseBookClub.BookClubBook.reverse()[0]
+            const currentBook1 = responseBookClub.BookClubBook ? responseBookClub.BookClubBook.reverse()[0] : null
 
             let pollBookOneRcvd;
             let pollVotesBookOne;
@@ -140,7 +140,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
               bookClub: responseBookClub,
               groups: responseBookClub.groups,
               isCreatorsFriend: isCreatorsFriend,
-              currentBook: currentBook1,
+              currentBook: currentBook1 ? currentBook1 : null,
               pollBookOneReceived: pollBookOneRcvd,
               pollBookTwoReceived: pollBookTwoRcvd,
               pollBookThreeReceived: pollBookThreeRcvd,
@@ -423,7 +423,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
 
   const [bookClubBook,setBookClubBook] = useState<number | null>(null)
   function openEditCurrentBookModal(bookClubBookId: number) {
-    setBookClubBook(bookClubBookId)
+    setBookClubBook(bookClubBookId ? bookClubBookId : null)
     onOpenCurrentBookModal();
   }
 
@@ -1176,11 +1176,11 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                         <Flex>
                           {isBookClubCreator ? (
                             <>
-                              {isBookClubCreator ? (
+                              {currentBook ? (
                                 <Button 
                                   variant="ghost"
                                   size="sm"
-                                  onClick={e=>openEditCurrentBookModal(currentBook?.id!)}
+                                  onClick={e=>openEditCurrentBookModal(currentBook ? currentBook?.id! : null)}
                                   leftIcon={<HiOutlinePencil size={15} />}
                                 >
                                   Edit
