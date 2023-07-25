@@ -51,7 +51,7 @@ import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
 import { BsReplyFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { MdOutlineChat } from 'react-icons/md';
-import { FaShoppingCart } from 'react-icons/fa';
+import { FaShoppingCart, FaPlay } from 'react-icons/fa';
 import Comments from "./shared/CurrentlyReadingComments";
 import { useAuth } from './hooks/useAuth';
 import Cookies from "js-cookie";
@@ -95,6 +95,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   const [items,setItems] = useState(5);
   const [followingSorted,setFollowingSorted] = useState([] as any)
   const [randomSorted,setRandomSorted] = useState([] as any)
+  const [firstBookshelf,setFirstBookshelf] = useState({} as any)
   async function getDashboard() {
     const tokenCookie = Cookies.get().token
     if (tokenCookie) {
@@ -111,6 +112,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           setItems(items + 5)
           setFollowingSorted(response.data.message.followingCurrentlyReadingSorted)
           setRandomSorted(response.data.message.randomCurrentlyReadingSorted)
+          setFirstBookshelf(response.data.message.firstBookshelf)
           return response.data.message
         })
         .catch(({response})=>{
@@ -483,6 +485,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       left={-1}
                       bottom={-1.5}
                       bg="lightblue"
+                      color="black"
                       p="2px"
                       fontSize="10px"
                       lineHeight={1}
@@ -778,6 +781,29 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           m={0}
           // p={1}
         >
+          {firstBookshelf ? (
+            <>
+              <Flex
+                pb={2}
+                mx="auto"
+                justify="center"
+              >
+                <Button
+                  as="a"
+                  href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
+                  variant="outline"
+                  colorScheme="black"
+                  p={1}
+                >
+                  <FaPlay size={15}/>
+                  <Text ms={1} fontSize=".8rem">
+                    Start suggesting books
+                  </Text>
+                </Button>
+              </Flex>
+              <Divider/>
+            </>
+          ): null}
           <Flex gap={2} className="non-well">
             <Input 
               placeholder="Share what you're reading" 
