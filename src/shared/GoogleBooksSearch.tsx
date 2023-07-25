@@ -38,7 +38,6 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
       // .get("https://openlibrary.org/sear" + searchInputRef.current.value)
       .then((response)=>{
         if (response.data.items) {
-          console.log(response.data.items)
           setBookResultsGoogle(response.data.items)
         }
         else {
