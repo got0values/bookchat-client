@@ -239,6 +239,7 @@ export function BookSuggestionsArchive({server}: {server: string;}) {
                           variant="ghost"
                           rounded="full"
                           height="25px"
+                          title="menu"
                         >
                           <BiDotsHorizontalRounded/>
                         </MenuButton>
@@ -291,6 +292,7 @@ export function BookSuggestionsArchive({server}: {server: string;}) {
                   height="100%"
                   maxH="125px"
                   boxShadow="1px 1px 1px 1px darkgrey"
+                  alt={suggestion.title}
                 />
                 <Flex justify="space-between" direction="column">
                   <Box>

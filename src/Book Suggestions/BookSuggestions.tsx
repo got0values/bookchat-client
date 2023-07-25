@@ -1,7 +1,8 @@
 import { 
   Box,
   Tabs, 
-  TabList, 
+  TabList,
+  Heading, 
   TabPanels, 
   Tab, 
   TabPanel
@@ -20,6 +21,7 @@ export default function BookSuggestions({server, gbooksapi}: {server: string; gb
 
   return (
     <Box className="main-content-smaller">
+      <Heading as="h1" className="visually-hidden">Book Suggestions</Heading>
       <Tabs 
         variant="enclosed"
         p={2}

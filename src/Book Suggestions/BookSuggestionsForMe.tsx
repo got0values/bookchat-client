@@ -239,6 +239,7 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                           variant="ghost"
                           rounded="full"
                           height="25px"
+                          title="menu"
                         >
                           <BiDotsHorizontalRounded/>
                         </MenuButton>
@@ -292,6 +293,7 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                   height="100%"
                   maxH="125px"
                   boxShadow="1px 1px 1px 1px darkgrey"
+                  alt={suggestion.title}
                 />
                 <Flex direction="column" justify="space-between">
                   <Box>
@@ -361,20 +363,18 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                         defaultRating={suggestion.rating ? suggestion.rating : 0}
                       />
                     </Flex>
-                    <a 
+                    <Button
+                      as="a"
                       href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(suggestion.title + " " + suggestion.author + " " + suggestion.isbn)}`}
                       target="blank"
+                      size="xs"
+                      variant="outline"
+                      backgroundColor="white"
+                      color="black"
+                      leftIcon={<FaShoppingCart size={15} />}
                     >
-                      <Button
-                        size="xs"
-                        variant="outline"
-                        backgroundColor="white"
-                        color="black"
-                        leftIcon={<FaShoppingCart size={15} />}
-                      >
-                        Shop
-                      </Button>
-                    </a>
+                      Shop
+                    </Button>
                   </Flex>
                 </Flex>
               </Flex>

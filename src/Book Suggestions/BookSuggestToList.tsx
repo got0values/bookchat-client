@@ -74,7 +74,6 @@ export function BookSuggestionToList({server}: {server: string;}) {
     <Skeleton
       isLoaded={!isLoading}
     >
-      <Heading className="visually-hidden">Book Suggestions</Heading>
       {bookSuggestToList?.length ? (
         bookSuggestToList.map((bookshelf: BookshelfType, i: number)=>{
           return (
