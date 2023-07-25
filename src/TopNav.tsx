@@ -18,15 +18,15 @@ import {
   MenuList,
   MenuItem,
   MenuDivider,
-  Table,
-  Tbody,
-  Tr,
-  Td,
-  TableContainer,
+  Popover,
+  PopoverTrigger,
+  PopoverCloseButton,
+  PopoverArrow,
+  PopoverContent,
+  PopoverBody,
   Heading,
   useDisclosure,
   useColorModeValue,
-  Stack,
   Badge,
   Text,
   Icon,
@@ -51,7 +51,7 @@ import { BsFillMoonFill, BsFillSunFill, BsFillChatFill, BsPostcardHeartFill } fr
 import { FiSettings } from 'react-icons/fi';
 import { RxDotFilled } from 'react-icons/rx';
 import { AiOutlineBell, AiFillHome } from 'react-icons/ai';
-import { FaSearch, FaBookReader } from 'react-icons/fa';
+import { FaSearch, FaBookReader, FaExclamationCircle } from 'react-icons/fa';
 import { ImBooks } from 'react-icons/im';
 import logoIcon from './assets/BookChatNoirNewBlack.png';
 import logoIconWhite from './assets/BookChatNoirNewWhite.png';
@@ -60,6 +60,7 @@ import axios from "axios";
 import { ReactJSXElement } from '@emotion/react/types/jsx-namespace';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { SuggestionCountBadge } from './shared/SuggestionCount';
 
 interface LinkItemProps {
   name: string;
@@ -683,7 +684,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
               </Box>
             ))}
           </HStack>
-          <Flex alignItems={'center'} justify="space-between" gap={3} lineHeight={1.1}>
+          <Flex alignItems={'center'} justify="space-between" gap={3} lineHeight={1.4}>
             <Box
               display={["none","block","block"]}
             >
@@ -694,118 +695,160 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
               {`${user?.first_name} ${user?.last_name}`}
               </Text>
               <Text
-                fontSize="xs"
-                mb={.5}
+                fontSize="sm"
               >
                 {`@${user?.Profile.username}`}
               </Text>
               <Text
                 fontSize="xs"
               >
-                {user.Profile.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0) > 0 ? user.Profile.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0) : 0} pages this week
+                {user.Profile.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0) > 0 ? user.Profile.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0) : 0} pages read this week
               </Text>
             </Box>
-            <Menu>
-              <MenuButton
-                as={Button}
-                rounded={'full'}
-                variant={'link'}
-                cursor={'pointer'}
-                minW={0}
-                p="4px"
-                _hover={{
-                  p: "2px",
-                  border: "2px solid lightblue"
-                }}
-                _active={{
-                  p: "2px",
-                  border: "2px solid lightblue"
-                }}
-              >
-                <Avatar
-                  // size={'sm'}
-                  height={10}
-                  width={10}
-                  src={profilePhoto ? profilePhoto : ""}
-                  name={user?.Profile.username}
-                  position="relative"
+            <Flex
+              direction="column"
+              justify="center"
+              align="center"
+            >
+              <Menu>
+                <MenuButton
+                  as={Button}
+                  rounded={'full'}
+                  variant={'link'}
+                  cursor={'pointer'}
+                  minW={0}
+                  p="4px"
+                  _hover={{
+                    p: "2px",
+                    border: "2px solid lightblue"
+                  }}
+                  _active={{
+                    p: "2px",
+                    border: "2px solid lightblue"
+                  }}
+                  mb={-1}
                 >
-                  <>
-                    {totalNotifications ? (
-                    <AvatarBadge 
-                      borderColor="papayawhip" 
-                      borderBottomLeftRadius="1px"
-                      borderBottomRightRadius="1px"
-                      borderWidth="1.5px"
-                      bg="tomato" 
-                      boxSize="1.25em"
-                      _before={{
-                        content: `"${totalNotifications > 0 ? totalNotifications : ''}"`,
-                        fontWeight: "800",
-                        fontSize: "13",
-                        fontFamily: "Inter",
-                        padding: "1px"
-                      }}
-                    />
-                    ) : null}
-                  </>
-                </Avatar>
-              </MenuButton>
-              <Portal>
-                <MenuList>
-                  <MenuItem
-                    as={Link}
-                    to={`/profile/${user.Profile.username}`}
-                    fontSize="lg"
-                    fontWeight="600"
+                  <Avatar
+                    // size={'sm'}
+                    height={9}
+                    width={9}
+                    src={profilePhoto ? profilePhoto : ""}
+                    name={user?.Profile.username}
+                    position="relative"
                   >
-                    Profile
-                  </MenuItem>
-                  <MenuDivider/>
-                  <MenuItem
-                    aria-label="notifications"
-                    onClick={onOpenNotificationsModal}
-                    icon={<AiOutlineBell size={20}/>}
-                    fontSize="lg"
-                    fontWeight="600"
-                  >
-                      Notifications
-                      {totalNotifications > 0 ? (
-                        <Icon as={RxDotFilled} boxSize="1.5em" color="red" verticalAlign="middle" />
+                    <>
+                      {totalNotifications ? (
+                      <AvatarBadge 
+                        borderColor="papayawhip" 
+                        borderBottomLeftRadius="1px"
+                        borderBottomRightRadius="1px"
+                        borderWidth="1.5px"
+                        bg="tomato" 
+                        boxSize="1.25em"
+                        _before={{
+                          content: `"${totalNotifications > 0 ? totalNotifications : ''}"`,
+                          fontWeight: "800",
+                          fontSize: "13",
+                          fontFamily: "Inter",
+                          padding: "1px"
+                        }}
+                      />
                       ) : null}
-                  </MenuItem>
-                  <MenuDivider/>
-                  <MenuItem
-                    aria-label="toggle color mode"
-                    onClick={toggleColorMode}
-                    icon={colorMode === "light" ? <BsFillMoonFill size={20}/> : <BsFillSunFill size={20}/>}
-                    fontSize="lg"
-                    fontWeight="600"
-                  >
-                    {colorMode === "light" ? "Dark" : "Light"} Mode
-                  </MenuItem>
-                  <MenuItem
-                    aria-label="settings"
-                    as={Link}
-                    to="/settings"
-                    icon={<FiSettings size={20}/>}
-                    fontSize="lg"
-                    fontWeight="600"
-                  >
-                    Settings
-                  </MenuItem>
-                  <MenuItem
-                    aria-label="logout"
-                    onClick={e=>onLogout()}
-                    icon={<MdLogout size={25}/>} 
-                    fontSize="lg"
-                    fontWeight="600"
-                  >
-                    Log out
-                  </MenuItem>
-                </MenuList>
-              </Portal>
-            </Menu>
+                    </>
+                  </Avatar>
+                </MenuButton>
+                <Portal>
+                  <MenuList>
+                    <MenuItem
+                      as={Link}
+                      to={`/profile/${user.Profile.username}`}
+                      fontSize="lg"
+                      fontWeight="600"
+                    >
+                      Profile
+                    </MenuItem>
+                    <MenuDivider/>
+                    <MenuItem
+                      aria-label="notifications"
+                      onClick={onOpenNotificationsModal}
+                      icon={<AiOutlineBell size={20}/>}
+                      fontSize="lg"
+                      fontWeight="600"
+                    >
+                        Notifications
+                        {totalNotifications > 0 ? (
+                          <Icon as={RxDotFilled} boxSize="1.5em" color="red" verticalAlign="middle" />
+                        ) : null}
+                    </MenuItem>
+                    <MenuDivider/>
+                    <MenuItem
+                      aria-label="toggle color mode"
+                      onClick={toggleColorMode}
+                      icon={colorMode === "light" ? <BsFillMoonFill size={20}/> : <BsFillSunFill size={20}/>}
+                      fontSize="lg"
+                      fontWeight="600"
+                    >
+                      {colorMode === "light" ? "Dark" : "Light"} Mode
+                    </MenuItem>
+                    <MenuItem
+                      aria-label="settings"
+                      as={Link}
+                      to="/settings"
+                      icon={<FiSettings size={20}/>}
+                      fontSize="lg"
+                      fontWeight="600"
+                    >
+                      Settings
+                    </MenuItem>
+                    <MenuItem
+                      aria-label="logout"
+                      onClick={e=>onLogout()}
+                      icon={<MdLogout size={25}/>} 
+                      fontSize="lg"
+                      fontWeight="600"
+                    >
+                      Log out
+                    </MenuItem>
+                  </MenuList>
+                </Portal>
+              </Menu>
+              <Flex gap={1} align="center" justify="center" width="max-content">
+                <Text
+                  fontSize=".55rem"
+                >
+                  {user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile} books suggested
+                </Text>
+                {user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile === 0 ? (
+                  <Popover placement='left'>
+                    <PopoverTrigger>
+                      <Badge
+                        fontSize=".65rem"
+                        textTransform="none"
+                        py={.5}
+                        px={0}
+                        backgroundColor="transparent"
+                        display="flex"
+                        alignItems="top"
+                        gap={1}
+                        position="relative"
+                        zIndex="100"
+                      >
+                        <FaExclamationCircle fill="red" size={13}/>
+                      </Badge>
+                    </PopoverTrigger>
+                    <PopoverContent maxW="260px" fontSize="sm">
+                      <PopoverArrow/>
+                      <PopoverCloseButton/>
+                      <PopoverBody>
+                        Start suggestion books
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Popover>
+                ): (
+                  <SuggestionCountBadge suggestionCount={user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile}/>
+                )}
+              </Flex>
+            </Flex>
           </Flex>
         </Flex>
 

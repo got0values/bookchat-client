@@ -92,7 +92,7 @@ export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number
             alignItems="bottom"
             gap={1}
           >
-            <Box as={GiChessPawn} size={15} mt={-.5}/>
+            <Box as={GiChessPawn} size={10} mt={-.5}/>
           </Badge>
           </PopoverTrigger>
           <PopoverContent maxW="260px" fontSize="sm">
@@ -122,7 +122,7 @@ export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number
               alignItems="top"
               gap={1}
             >
-              <FaChessKnight size={13}/>
+              <FaChessKnight size={10}/>
             </Badge>
             </PopoverTrigger>
             <PopoverContent maxW="260px" fontSize="sm">
@@ -152,7 +152,7 @@ export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number
                 alignItems="top"
                 gap={1}
               >
-                <FaChessBishop size={13}/>
+                <FaChessBishop size={10}/>
               </Badge>
               </PopoverTrigger>
               <PopoverContent maxW="260px" fontSize="sm">
@@ -182,7 +182,7 @@ export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number
                   alignItems="top"
                   gap={1}
                 >
-                  <FaChessRook size={13}/>
+                  <FaChessRook size={10}/>
                 </Badge>
                 </PopoverTrigger>
                 <PopoverContent maxW="260px" fontSize="sm">
@@ -212,7 +212,7 @@ export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number
                     alignItems="top"
                     gap={1}
                   >
-                    <GiChessQueen size={13}/>
+                    <GiChessQueen size={10}/>
                   </Badge>
                   </PopoverTrigger>
                   <PopoverContent maxW="260px" fontSize="sm">

@@ -57,7 +57,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
   dayjs.extend(utc);
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
-  const {user} = useAuth();
+  const {user,getUser} = useAuth();
 
   const [bookshelfProfileName,setBookshelfProfileName] = useState(searchParams.get("profile"))
   const [nextBookshelf,setNextBookshelf] = useState<BookshelfType | null>(null);
@@ -150,6 +150,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
         }}
         )
         .then((response)=> {
+          getUser();
           toast({
             description: "Book suggested!",
             status: "success",
