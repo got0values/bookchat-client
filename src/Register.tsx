@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { HTMLInputEvent, RegisterFormProps } from './types/types';
 import { 
@@ -47,6 +47,20 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
   const [error, setError] = useState("");
 
   const subdomain = window.location.hostname.split(".")[0];
+
+  useLayoutEffect(()=>{
+    setTimeout(()=>{
+      const toastManagers = document.querySelectorAll("ul[id^='chakra-toast-manager']");
+      toastManagers.forEach((tm)=>{
+        tm.removeAttribute("role");
+        const divElement = document.createElement("div");
+        divElement.setAttribute("role","alert")
+        tm.parentNode?.insertBefore(divElement,tm);
+        divElement.appendChild(tm);
+        return;
+      })
+    },1000)
+  },[])
 
   function confirmPasswordCheck(text: string) {
     setConfirmPassword(text)
@@ -107,9 +121,9 @@ const Register: React.FC<RegisterFormProps> = ({ onLogin, server }) => {
       align={'center'}
       justify={'center'}
     >
-      <Stack spacing={5} mx={'auto'} maxW={'lg'} py={12} px={6}>
+      <Stack spacing={5} mx={'auto'} maxW={'lg'} py={12} px={6} role="main">
         <Stack align="center">
-          <Image src={colorMode === "light" ? logo : logoWhite} maxH="75px"/>
+          <Image src={colorMode === "light" ? logo : logoWhite} maxH="75px" alt="book chat noir logo"/>
         </Stack>
         <Stack align={'center'}>
           <Heading fontSize={'4xl'}>Register for an account</Heading>

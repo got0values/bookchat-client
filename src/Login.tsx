@@ -132,11 +132,12 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
       minH={'100vh'}
       align={'center'}
       justify={'center'}
+      role="main"
     >
       <Stack spacing={5} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align={'center'}>
           <Stack align="center">
-            <Image src={colorMode === "light" ? logo : logoWhite} maxH="150px"/>
+            <Image src={colorMode === "light" ? logo : logoWhite} maxH="150px" alt="book chat noir logo"/>
           </Stack>
           <Heading fontSize={'4xl'}>Sign in to your account</Heading>
         </Stack>

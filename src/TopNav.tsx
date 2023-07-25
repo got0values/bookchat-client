@@ -92,6 +92,19 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
   //   const pagesReadArray = user.Profile.PagesRead.map((pr)=>pr.pages_read);
   //   setPagesRead(pagesReadArray.reduce((partialSum,a)=>partialSum + a,0))
   // },[])
+  useLayoutEffect(()=>{
+    setTimeout(()=>{
+      const toastManagers = document.querySelectorAll("ul[id^='chakra-toast-manager']");
+      toastManagers.forEach((tm)=>{
+        tm.removeAttribute("role");
+        const divElement = document.createElement("div");
+        divElement.setAttribute("role","alert")
+        tm.parentNode?.insertBefore(divElement,tm);
+        divElement.appendChild(tm);
+        return;
+      })
+    },1000)
+  },[])
 
   async function getNotifications() {
     // resetNotifications();
@@ -202,17 +215,6 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
 
   const [profilePhoto,setProfilePhoto] = useState<string | null>(null);
   useLayoutEffect(()=>{
-    setTimeout(()=>{
-      const toastManagers = document.querySelectorAll("ul[id^='chakra-toast-manager']");
-      toastManagers.forEach((tm)=>{
-        tm.removeAttribute("role");
-        const divElement = document.createElement("div");
-        divElement.setAttribute("role","alert")
-        tm.parentNode?.insertBefore(divElement,tm);
-        divElement.appendChild(tm);
-        return;
-      })
-    },1000)
     setProfilePhoto(`${user?.Profile.profile_photo}?x=${new Date().getTime()}`);
   },[user?.Profile])
 
