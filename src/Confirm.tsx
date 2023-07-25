@@ -44,11 +44,12 @@ export default function Confirm({server}: {server: string}) {
       </Heading>
       <Text>
         {confirmed ? (
-          <Link to="/login">
-            <Button>
-              Login
-            </Button>
-          </Link>
+          <Button
+            as={Link}
+            to="/login"
+          >
+            Login
+          </Button>
         ) : (
           null
         )}

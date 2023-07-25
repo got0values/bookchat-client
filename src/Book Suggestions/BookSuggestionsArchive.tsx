@@ -362,20 +362,18 @@ export function BookSuggestionsArchive({server}: {server: string;}) {
                         defaultRating={suggestion.rating ? suggestion.rating : 0}
                       />
                     </Flex>
-                    <a 
+                    <Button
+                      as="a"
                       href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(suggestion.title + " " + suggestion.author + " " + suggestion.isbn)}`}
                       target="blank"
+                      size="xs"
+                      variant="outline"
+                      backgroundColor="white"
+                      color="black"
+                      leftIcon={<FaShoppingCart size={15} />}
                     >
-                      <Button
-                        size="xs"
-                        variant="outline"
-                        backgroundColor="white"
-                        color="black"
-                        leftIcon={<FaShoppingCart size={15} />}
-                      >
-                        Shop
-                      </Button>
-                    </a>
+                      Shop
+                    </Button>
                   </Flex>
                 </Flex>
               </Flex>

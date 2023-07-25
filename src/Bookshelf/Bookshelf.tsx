@@ -1680,18 +1680,16 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     <Text>
                       Export your Goodreads library
                     </Text>
-                    <a
+                    <Button
+                      as="a"
                       href="http://www.goodreads.com/review/import"
                       target="blank"
+                      size="xs"
+                      borderColor="black"
+                      variant="outline"
                     >
-                      <Button
-                        size="xs"
-                        borderColor="black"
-                        variant="outline"
-                      >
-                        Goodreads Export
-                      </Button>
-                    </a>
+                      Goodreads Export
+                    </Button>
                   </Box>
                   <Box>
                     <Heading as="h3" size="xs">

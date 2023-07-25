@@ -237,21 +237,21 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
               </BreadcrumbItem>
             </Breadcrumb>
             {nextBookshelf ? (
-              <a href={`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`}>
-                <Button
-                  variant="ghost"
-                  fontSize="md"
-                  display="flex"
-                  gap={2}
-                  p={0}
-                  _hover={{
-                    bg: "transparent"
-                  }}
-                  // onClick={e=>redirect(`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`)}
-                >
-                  Next <BsArrowRight size={20} />
-                </Button>
-              </a>
+              <Button
+                as="a"
+                href={`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`}
+                variant="ghost"
+                fontSize="md"
+                display="flex"
+                gap={2}
+                p={0}
+                _hover={{
+                  bg: "transparent"
+                }}
+                // onClick={e=>redirect(`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`)}
+              >
+                Next <BsArrowRight size={20} />
+              </Button>
             ): null}
           </Flex>
           <Box

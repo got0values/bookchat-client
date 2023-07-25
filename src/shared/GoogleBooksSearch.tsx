@@ -242,19 +242,17 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
                     </Text>
                     <Flex align="center" gap={1}>
                       {/* <GooglePreviewLink book={book}/> */}
-                      <a
+                      <Button 
+                        as="a"
                         href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.title + " " + (book.author_name ? book.author_name[0] : null) + " " + (book.isbn?.length >= 2 ? book.isbn[1] : null))}`}
                         target="blank"
+                        size="xs"
+                        variant="outline"
+                        backgroundColor="white"
+                        color="black"
                       >
-                        <Button 
-                          size="xs"
-                          variant="outline"
-                          backgroundColor="white"
-                          color="black"
-                        >
-                          Shop
-                        </Button>
-                      </a>
+                        Shop
+                      </Button>
                       <Button 
                         size="xs"
                         data-book={JSON.stringify(book)}
