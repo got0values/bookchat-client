@@ -784,7 +784,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           {firstBookshelf ? (
             <>
               <Flex
-                pb={2}
+                pb={1}
                 mx="auto"
                 justify="center"
               >
@@ -793,6 +793,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
                   variant="outline"
                   colorScheme="black"
+                  size="sm"
                   p={1}
                 >
                   <FaPlay size={15}/>
@@ -801,7 +802,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   </Text>
                 </Button>
               </Flex>
-              <Divider/>
             </>
           ): null}
           <Flex gap={2} className="non-well">
