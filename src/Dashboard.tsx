@@ -606,7 +606,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             />
             <Box mx={2} w="100%">
               <Box>
-                <Heading as="h5" size="md" me={3} noOfLines={1}>
+                <Heading as="h2" size="md" me={3} noOfLines={1}>
                   {reading.title}
                 </Heading>
                 <Text fontSize="lg" noOfLines={1}>
@@ -773,6 +773,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   return (
     <>
       <Box className="main-content-smaller" pb={5}>
+        <Heading as="h1" className="visually-hidden">Bookshelf</Heading>
         <Box 
           m={0}
           // p={1}
@@ -827,7 +828,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   w="100%"
                 >
                   <Box>
-                    <Heading as="h5" size="md" me={3}>
+                    <Heading as="h2" size="md" me={3}>
                       {selectedBook.title}
                     </Heading>
                     <Text fontSize="lg">

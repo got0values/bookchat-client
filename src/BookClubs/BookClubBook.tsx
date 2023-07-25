@@ -158,6 +158,7 @@ export default function BookClub({server}: {server: string}) {
         <Skeleton 
           isLoaded={!bookClubBookQuery.isLoading}
         >
+          <Heading as="h1" className="visually-hidden">Book Club Discussion</Heading>
           <Stack flex="1 1 65%" maxW="100%" gap={1}>
             <Box className="well">
 
@@ -177,7 +178,7 @@ export default function BookClub({server}: {server: string}) {
 
               <Flex direction="column" gap={2}>
                 <Flex align="center" justify="space-between">
-                  <Heading as="h4" size="sm">Topic/Question</Heading>
+                  <Heading as="h2" size="sm">Topic/Question</Heading>
                   {isCreator ? (
                     <Button 
                       variant="ghost"
@@ -212,7 +213,7 @@ export default function BookClub({server}: {server: string}) {
             </Box>
 
             <Box className="well">
-              <Heading as="h4" size="sm" mb={2}>Discussion</Heading>
+              <Heading as="h2" size="sm" mb={2}>Discussion</Heading>
               <BookClubGeneralComments
                 server={server}
                 bookClubId={null}

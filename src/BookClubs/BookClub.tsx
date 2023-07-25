@@ -999,6 +999,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
         <Skeleton 
           isLoaded={!bookClubQuery.isLoading}
         >
+          <Heading as="h1" className="visually-hidden">Book Club</Heading>
           {bookClub ? (
             <Flex flexWrap="wrap" w="100%" align="start" justify="space-between" gap={1}>
               <Stack flex="1 1 30%" top="0" gap={1}>
@@ -1008,7 +1009,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                     justify="space-between"
                     w="100%"
                   >
-                    <Heading as="h4" size="md">{bookClub.name}</Heading>
+                    <Heading as="h2" size="md">{bookClub.name}</Heading>
                     {isBookClubCreator ? (
                       <Button
                         onClick={openEditModal}
@@ -1057,7 +1058,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                 ) : (
                   <Flex className="well" direction="column" gap={2}>
                     <Flex align="center" justify="space-between">
-                      <Heading as="h4" size="md">
+                      <Heading as="h2" size="md">
                         Members ({
                           bookClub.BookClubMembers
                           .filter((bcm)=>bcm.status === 2)
@@ -1171,7 +1172,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                   <>
                     <Flex className="well" direction="column" gap={2}>
                       <Flex align="center" justify="space-between">
-                        <Heading as="h4" size="md">Currently Reading</Heading>
+                        <Heading as="h2" size="md">Currently Reading</Heading>
                         <Flex>
                           {isBookClubCreator ? (
                             <>
@@ -1219,10 +1220,11 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                                 src={currentBook?.image}
                                 boxShadow="1px 1px 1px 1px darkgrey"
+                                alt={currentBook?.title}
                               />
                             </Box>
                             <Flex direction="column" align="center" justify="center" flex="1 1" minW="250px">
-                              <Heading as="h3" size="md">
+                              <Heading as="h2" size="md">
                                 {currentBook?.title}
                               </Heading>
                               <Text>
@@ -1315,7 +1317,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                     <Flex className="well" direction="column" gap={2}>
                       <Flex align="center" justify="space-between">
                         <Flex align="center" gap={2}>
-                          <Heading as="h4" size="md">Next Chat Meeting</Heading>
+                          <Heading as="h2" size="md">Next Chat Meeting</Heading>
                           <Tooltip
                             label="The meeting link will appear at start time"
                             aria-label="meeting tooltip"
@@ -1489,7 +1491,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
 
                     <Flex className="well" direction="column" gap={2}>
                       <Flex align="center" justify="space-between">
-                        <Heading as="h4" size="md">Next Book Poll</Heading>
+                        <Heading as="h2" size="md">Next Book Poll</Heading>
                         {isBookClubCreator ? (
                           <Button
                             variant="ghost"
@@ -1517,7 +1519,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 p={1}
                               >
                                 <Box>
-                                  <Heading as="h5" size="sm" textAlign="center">1</Heading>
+                                  <Heading as="h3" size="sm" textAlign="center">1</Heading>
                                   <Image
                                     maxW="100%" 
                                     w="100%"
@@ -1528,6 +1530,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                     onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                                     src={pollBookOneReceived.image}
                                     boxShadow="1px 1px 1px 1px darkgrey"
+                                    alt={pollBookOneReceived.title}
                                   />
                                 </Box>
                                 <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
@@ -1592,7 +1595,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 p={1}
                               >
                                 <Box>
-                                  <Heading as="h5" size="sm" textAlign="center">2</Heading>
+                                  <Heading as="h3" size="sm" textAlign="center">2</Heading>
                                   <Image
                                     maxW="100%" 
                                     w="100%"
@@ -1603,6 +1606,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                     onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                                     src={pollBookTwoReceived.image}
                                     boxShadow="1px 1px 1px 1px darkgrey"
+                                    alt={pollBookTwoReceived.title}
                                   />
                                 </Box>
                                 <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
@@ -1666,7 +1670,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 p={1}
                               >
                                 <Box>
-                                  <Heading as="h5" size="sm" textAlign="center">3</Heading>
+                                  <Heading as="h3" size="sm" textAlign="center">3</Heading>
                                   <Image
                                     maxW="100%" 
                                     w="100%"
@@ -1677,6 +1681,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                     onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                                     src={pollBookThreeReceived.image}
                                     boxShadow="1px 1px 1px 1px darkgrey"
+                                    alt={pollBookThreeReceived.title}
                                   />
                                 </Box>
                                 <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
@@ -1740,7 +1745,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                     </Flex>
 
                     <Box className="well">
-                      <Heading as="h4" size="md" mb={2}>General Discussion</Heading>
+                      <Heading as="h2" size="md" mb={2}>General Discussion</Heading>
                       <BookClubGeneralComments 
                         server={server}
                         bookClubId={paramsBookClubId!}
@@ -2022,6 +2027,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                   _hover={{
                                     cursor: "pointer"
                                   }}
+                                  alt={book.volumeInfo.title}
                                 />
                                 </PopoverTrigger>
                                 <PopoverContent>
@@ -2037,7 +2043,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                               </Box>
                               <Box flex="1 1 auto">
                               <Heading
-                                as="h4"
+                                as="h3"
                                 size="sm"
                               >
                                 {book.volumeInfo.title}
@@ -2112,6 +2118,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                         onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                         src={pollBookOne.image}
                         boxShadow="1px 1px 1px 1px darkgrey"
+                        alt={pollBookOne.title}
                       />
                     </Box>
                     <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
@@ -2144,6 +2151,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                           onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                           src={pollBookTwo.image}
                           boxShadow="1px 1px 1px 1px darkgrey"
+                          alt={pollBookTwo.title}
                         />
                       </Box>
                       <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
@@ -2176,6 +2184,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                           onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                           src={pollBookThree.image}
                           boxShadow="1px 1px 1px 1px darkgrey"
+                          alt={pollBookThree.title}
                         />
                       </Box>
                       <Text fontSize="sm" fontWeight="bold" noOfLines={1}>

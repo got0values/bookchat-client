@@ -823,7 +823,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   
   if (isError) {
     return <Flex align="center" justify="center" minH="90vh">
-      <Heading as="h1" size="xl">Error: {(error as Error).message}</Heading>
+      <Heading as="h2" size="xl">Error: {(error as Error).message}</Heading>
     </Flex>
   }
   
@@ -832,6 +832,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
       <Skeleton 
         isLoaded={!isLoading}
       >
+        <Heading as="h1" className="visually-hidden">Bookshelf</Heading>
         <Flex flexWrap="wrap" align="flex-start">
           <Box flex="1 1 30%">
             <Box
@@ -897,7 +898,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             <Stack className="well">
               <Box>
                 <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
-                  <Heading as="h3" size="md">
+                  <Heading as="h2" size="md">
                     Filter by Tags
                   </Heading>
 
@@ -1028,7 +1029,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
           <Stack flex="1 1 65%" maxW="100%" className="well">
             <Box>
               <Flex align="center" justify="space-between">
-                <Heading as="h1" size="md">
+                <Heading as="h2" size="md">
                   Bookshelf
                 </Heading>
                 <Menu>

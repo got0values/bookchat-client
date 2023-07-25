@@ -276,11 +276,12 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                   type="text"
                   borderColor="black"
                   ref={commentRef}
+                  aria-label="comment"
                 />
                 <InputRightElement display={["none","none","inline-flex"]}>
                   <Popover>
                     <PopoverTrigger>
-                      <Button variant="ghost" p={0}>
+                      <Button variant="ghost" p={0} aria-label="emoji">
                         <BsEmojiSmile size={15}/>
                       </Button>
                     </PopoverTrigger>
@@ -351,6 +352,7 @@ export const BookClubGeneralComments = (props: BookClubGeneralCommentsProps) => 
                                     variant="ghost"
                                     rounded="full"
                                     height="25px"
+                                    aria-label="comment label"
                                   >
                                     <BiDotsHorizontalRounded/>
                                   </MenuButton>

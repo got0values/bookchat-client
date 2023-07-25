@@ -190,6 +190,7 @@ export default function BookClubs({server}: {server: string}) {
       <Skeleton 
         isLoaded={!isLoading}
       >
+        <Heading as="h1" className="visually-hidden">Book Club</Heading>
         <Tabs 
           variant="enclosed"
           p={2}
@@ -230,7 +231,7 @@ export default function BookClubs({server}: {server: string}) {
                       border={0}
                     >
                       <Flex as={AccordionButton} justify="space-between" slign="center">
-                        <Heading as="h3" size="md">
+                        <Heading as="h2" size="md">
                           Filter
                         </Heading>
                         <AccordionIcon/>
@@ -267,7 +268,7 @@ export default function BookClubs({server}: {server: string}) {
                 <Stack flex="1 1 65%" maxW="100%">
                   <Box className="well">
                     <Flex align="center" justify="space-between" gap={2} mb={2}>
-                      <Heading as="h3" size="md">
+                      <Heading as="h2" size="md">
                         Following Users
                       </Heading>
                     </Flex>
@@ -297,7 +298,7 @@ export default function BookClubs({server}: {server: string}) {
                                   rowGap={2}
                                 >
                                   <Flex direction="column" gap={1}>
-                                    <Heading as="h4" size="sm" noOfLines={1}>
+                                    <Heading as="h3" size="sm" noOfLines={1}>
                                       {bookClub.name}
                                     </Heading>
                                     {bookClub.BookClubBook[0] ? (
@@ -385,7 +386,7 @@ export default function BookClubs({server}: {server: string}) {
 
                   <Box className="well">
                   <Flex align="center" justify="space-between" gap={2} mb={2}>
-                    <Heading as="h3" size="md">
+                    <Heading as="h2" size="md">
                       Public
                     </Heading>
                   </Flex>
@@ -418,7 +419,7 @@ export default function BookClubs({server}: {server: string}) {
                                 rowGap={2}
                               >
                                 <Flex direction="column" gap={1}>
-                                  <Heading as="h4" size="sm" noOfLines={1}>
+                                  <Heading as="h3" size="sm" noOfLines={1}>
                                     {bookClub.name}
                                   </Heading>
                                   {bookClub.BookClubBook[0] ? (
@@ -515,7 +516,7 @@ export default function BookClubs({server}: {server: string}) {
                 <Stack flex="1 1 30%" minW="200px">
                   <Box className="well">
                     <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
-                      <Heading as="h3" size="md">
+                      <Heading as="h2" size="md">
                         My Book Clubs
                       </Heading>
                       <Button
@@ -523,6 +524,7 @@ export default function BookClubs({server}: {server: string}) {
                         size="xs"
                         px={0}
                         onClick={createBookClubModalOpen}
+                        title="add"
                       >
                         <IoIosAdd size={25} />
                       </Button>
@@ -540,7 +542,7 @@ export default function BookClubs({server}: {server: string}) {
                               key={i}
                             >
                               <Link to={`/bookclubs/${bookClub.id}`}>
-                                <Heading as="h4" size="sm" noOfLines={1}>
+                                <Heading as="h3" size="sm" noOfLines={1}>
                                   {bookClub.name}
                                 </Heading>
                                 <Text
@@ -561,7 +563,7 @@ export default function BookClubs({server}: {server: string}) {
                 <Stack flex="1 1 65%" maxW="100%">
                   <Box className="well">
                     <Flex align="center" justify="space-between" gap={2} mb={2}>
-                      <Heading as="h3" size="md">
+                      <Heading as="h2" size="md">
                         Joined
                       </Heading>
                     </Flex>
@@ -593,7 +595,7 @@ export default function BookClubs({server}: {server: string}) {
                                 rowGap={2}
                               >
                                 <Flex direction="column" gap={1}>
-                                  <Heading as="h4" size="sm" noOfLines={1}>
+                                  <Heading as="h3" size="sm" noOfLines={1}>
                                     {bookClub.name}
                                   </Heading>
                                   {bookClub.BookClubBook[0] ? (
