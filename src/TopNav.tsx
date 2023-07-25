@@ -635,7 +635,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
             </Box>
           </HStack>
           <HStack
-            as={'nav'}
+            as={'div'}
             spacing={3}
             pr={["0","175px"]}
             display="flex"

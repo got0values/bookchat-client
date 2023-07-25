@@ -996,7 +996,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                 </Stack>
               </CheckboxGroup>
               <Divider/>
-              <Heading as="h3" size="md">
+              <Heading as="h2" size="md">
                 Search Bookshelf
               </Heading>
               <Flex
@@ -1008,6 +1008,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   type="search"
                   ref={searchInputRef}
                   onKeyDown={e=> e.key === "Enter" ? searchFilter() : null}
+                  aria-label="search"
                 />
                 <Button
                   onClick={e=>resetSearchFilter()}
@@ -1027,7 +1028,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
           <Stack flex="1 1 65%" maxW="100%" className="well">
             <Box>
               <Flex align="center" justify="space-between">
-                <Heading as="h3" size="md">
+                <Heading as="h1" size="md">
                   Bookshelf
                 </Heading>
                 <Menu>
@@ -1038,6 +1039,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     height="20px"
                     minWidth="auto"
                     px={0}
+                    title="add"
                   >
                     <IoIosAdd size={25} />
                   </MenuButton>
@@ -1081,7 +1083,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                               }}
                             >
                               <Heading 
-                                as="h5" 
+                                as="h2" 
                                 size="md"
                                 me={3}
                                 noOfLines={1}
@@ -1146,6 +1148,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           height="20px"
                           minWidth="auto"
                           px={0}
+                          title="add"
                         >
                           <BiPlus size={20} />
                         </MenuButton>
@@ -1209,7 +1212,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       }}
                     >
                       <AccordionButton>
-                        <Heading as="h4" size="sm">
+                        <Heading as="h3" size="sm">
                           Notes
                         </Heading>
                         <AccordionIcon ml="auto" />
@@ -1346,6 +1349,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             position="absolute"
                             top="0"
                             right="0"
+                            title="menu"
                           >
                             <BiDotsHorizontalRounded/>
                           </MenuButton>
@@ -1394,6 +1398,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           // minW="60px"
                           onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                           boxShadow="1px 1px 1px 1px darkgrey"
+                          alt={book.title}
                         />
                         <Box mx={2} w="100%">
                           <Popover isLazy>
@@ -1404,7 +1409,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 }}
                               >
                                 <Heading 
-                                  as="h5" 
+                                  as="h2" 
                                   size="md"
                                   me={3}
                                   noOfLines={2}
@@ -1509,6 +1514,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                               height="20px"
                               minWidth="auto"
                               px={0}
+                              title="menu"
                             >
                               <BiPlus size={20} />
                             </MenuButton>
@@ -1546,7 +1552,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           }}
                         >
                           <AccordionButton>
-                            <Heading as="h4" size="sm">
+                            <Heading as="h3" size="sm">
                               Private Notes
                             </Heading>
                             <AccordionIcon ml="auto" />
