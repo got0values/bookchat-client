@@ -794,7 +794,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                 </Avatar>
               </MenuButton>
               <Portal>
-                <MenuList>
+                <MenuList position="relative" zIndex={100}>
                   <MenuItem
                     as={Link}
                     to={`/profile/${user.Profile.username}`}
