@@ -70,7 +70,7 @@ interface LinkItemProps {
 }
 
 const LinkItems: Array<LinkItemProps> = [
-  { name: 'Home', linkTo: "/", icon: <AiFillHome size="25"/>, tooltip: "Home"},
+  { name: 'Home', linkTo: "/", icon: <AiFillHome size="20"/>, tooltip: "Home"},
   { name: 'Bookshelf', linkTo: "/bookshelf", icon: <ImBooks size="25"/>, tooltip: "Bookshelf" },
   { name: 'Book Suggestions', linkTo: "/booksuggestions", icon: <BsPostcardHeartFill size="25"/>, tooltip: "Book Suggestions" },
   { name: 'Book Clubs', linkTo: "/bookclubs", icon: <FaBookReader size="25"/>, tooltip: "Book Clubs" },
@@ -574,7 +574,8 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
       <Box 
         as="nav" 
         bg="white" 
-        overflow="hidden" px={4} 
+        overflow="hidden"
+        px={[1,4]} 
         // boxShadow="1px 1px 6px lightgrey"
         boxShadow={["-1px -1px 2px 1px black","1px 1px 2px 1px black"]}
         _dark={{
@@ -650,8 +651,8 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
           </HStack>
           <HStack
             as={'div'}
-            spacing={3}
-            pr={["0","175px"]}
+            spacing={[.25,3]}
+            pr={["0","150px"]}
             display="flex"
           >
             {LinkItems.map((linkItem, index) => (
@@ -675,7 +676,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                 title={linkItem.tooltip}
               >
                 <Tooltip hasArrow label={linkItem.tooltip}>
-                  <Flex align="center" gap={2}>
+                  <Flex align="center" justify="center">
                     {linkItem.icon ? (
                       linkItem.icon
                     ): linkItem.name}
@@ -686,135 +687,32 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
           </HStack>
           <Flex alignItems={'center'} justify="space-between" gap={3} lineHeight={1.4}>
             <Box
-              display={["none","block","block"]}
+              display="block"
             >
               <Text
                 fontWeight="bold"
                 fontSize="sm"
+                lineHeight={1.2}
               >
               {`${user?.first_name} ${user?.last_name}`}
               </Text>
-              <Text
+              {/* <Text
                 fontSize="sm"
+                lineHeight={1.2}
               >
                 {`@${user?.Profile.username}`}
-              </Text>
+              </Text> */}
               <Text
-                fontSize="xs"
+                fontSize=".6rem"
+                lineHeight={1.2}
               >
                 {user.Profile.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0) > 0 ? user.Profile.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0) : 0} pages read this week
               </Text>
-            </Box>
-            <Flex
-              direction="column"
-              justify="center"
-              align="center"
-            >
-              <Menu>
-                <MenuButton
-                  as={Button}
-                  rounded={'full'}
-                  variant={'link'}
-                  cursor={'pointer'}
-                  minW={0}
-                  p="4px"
-                  _hover={{
-                    p: "2px",
-                    border: "2px solid lightblue"
-                  }}
-                  _active={{
-                    p: "2px",
-                    border: "2px solid lightblue"
-                  }}
-                  mb={-1}
-                >
-                  <Avatar
-                    // size={'sm'}
-                    height={9}
-                    width={9}
-                    src={profilePhoto ? profilePhoto : ""}
-                    name={user?.Profile.username}
-                    position="relative"
-                  >
-                    <>
-                      {totalNotifications ? (
-                      <AvatarBadge 
-                        borderColor="papayawhip" 
-                        borderBottomLeftRadius="1px"
-                        borderBottomRightRadius="1px"
-                        borderWidth="1.5px"
-                        bg="tomato" 
-                        boxSize="1.25em"
-                        _before={{
-                          content: `"${totalNotifications > 0 ? totalNotifications : ''}"`,
-                          fontWeight: "800",
-                          fontSize: "13",
-                          fontFamily: "Inter",
-                          padding: "1px"
-                        }}
-                      />
-                      ) : null}
-                    </>
-                  </Avatar>
-                </MenuButton>
-                <Portal>
-                  <MenuList>
-                    <MenuItem
-                      as={Link}
-                      to={`/profile/${user.Profile.username}`}
-                      fontSize="lg"
-                      fontWeight="600"
-                    >
-                      Profile
-                    </MenuItem>
-                    <MenuDivider/>
-                    <MenuItem
-                      aria-label="notifications"
-                      onClick={onOpenNotificationsModal}
-                      icon={<AiOutlineBell size={20}/>}
-                      fontSize="lg"
-                      fontWeight="600"
-                    >
-                        Notifications
-                        {totalNotifications > 0 ? (
-                          <Icon as={RxDotFilled} boxSize="1.5em" color="red" verticalAlign="middle" />
-                        ) : null}
-                    </MenuItem>
-                    <MenuDivider/>
-                    <MenuItem
-                      aria-label="toggle color mode"
-                      onClick={toggleColorMode}
-                      icon={colorMode === "light" ? <BsFillMoonFill size={20}/> : <BsFillSunFill size={20}/>}
-                      fontSize="lg"
-                      fontWeight="600"
-                    >
-                      {colorMode === "light" ? "Dark" : "Light"} Mode
-                    </MenuItem>
-                    <MenuItem
-                      aria-label="settings"
-                      as={Link}
-                      to="/settings"
-                      icon={<FiSettings size={20}/>}
-                      fontSize="lg"
-                      fontWeight="600"
-                    >
-                      Settings
-                    </MenuItem>
-                    <MenuItem
-                      aria-label="logout"
-                      onClick={e=>onLogout()}
-                      icon={<MdLogout size={25}/>} 
-                      fontSize="lg"
-                      fontWeight="600"
-                    >
-                      Log out
-                    </MenuItem>
-                  </MenuList>
-                </Portal>
-              </Menu>
-              <Flex gap={1} align="center" justify="center" width="max-content">
+              <Flex gap={.5} align="center" justify="center" mt={.5} width="max-content">
                 <Text
-                  fontSize=".55rem"
+                  fontSize=".6rem"
+                  lineHeight={1.2}
+                  color={user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile === 0 ? "red" : "unset"}
                 >
                   {user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile ? user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile : 0} books suggested
                 </Text>
@@ -824,8 +722,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                       <Badge
                         fontSize=".65rem"
                         textTransform="none"
-                        py={.5}
-                        px={0}
+                        p={0}
                         backgroundColor="transparent"
                         display="flex"
                         alignItems="top"
@@ -833,7 +730,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                         position="relative"
                         zIndex="100"
                       >
-                        <FaExclamationCircle fill="red" size={13}/>
+                        <FaExclamationCircle fill="red" size={10}/>
                       </Badge>
                     </PopoverTrigger>
                     <PopoverContent maxW="260px" fontSize="sm">
@@ -848,7 +745,109 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                   <SuggestionCountBadge suggestionCount={user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile}/>
                 )}
               </Flex>
-            </Flex>
+            </Box>
+            <Menu>
+              <MenuButton
+                as={Button}
+                rounded={'full'}
+                variant={'link'}
+                cursor={'pointer'}
+                minW={0}
+                p="4px"
+                _hover={{
+                  p: "2px",
+                  border: "2px solid lightblue"
+                }}
+                _active={{
+                  p: "2px",
+                  border: "2px solid lightblue"
+                }}
+                mb={-1}
+              >
+                <Avatar
+                  // size={'sm'}
+                  height={10}
+                  width={10}
+                  src={profilePhoto ? profilePhoto : ""}
+                  name={user?.Profile.username}
+                  position="relative"
+                >
+                  <>
+                    {totalNotifications ? (
+                    <AvatarBadge 
+                      borderColor="papayawhip" 
+                      borderBottomLeftRadius="1px"
+                      borderBottomRightRadius="1px"
+                      borderWidth="1.5px"
+                      bg="tomato" 
+                      boxSize="1.25em"
+                      _before={{
+                        content: `"${totalNotifications > 0 ? totalNotifications : ''}"`,
+                        fontWeight: "800",
+                        fontSize: "13",
+                        fontFamily: "Inter",
+                        padding: "1px"
+                      }}
+                    />
+                    ) : null}
+                  </>
+                </Avatar>
+              </MenuButton>
+              <Portal>
+                <MenuList>
+                  <MenuItem
+                    as={Link}
+                    to={`/profile/${user.Profile.username}`}
+                    fontSize="lg"
+                    fontWeight="600"
+                  >
+                    {user?.Profile.username}'s profile
+                  </MenuItem>
+                  <MenuDivider/>
+                  <MenuItem
+                    aria-label="notifications"
+                    onClick={onOpenNotificationsModal}
+                    icon={<AiOutlineBell size={20}/>}
+                    fontSize="lg"
+                    fontWeight="600"
+                  >
+                      Notifications
+                      {totalNotifications > 0 ? (
+                        <Icon as={RxDotFilled} boxSize="1.5em" color="red" verticalAlign="middle" />
+                      ) : null}
+                  </MenuItem>
+                  <MenuDivider/>
+                  <MenuItem
+                    aria-label="toggle color mode"
+                    onClick={toggleColorMode}
+                    icon={colorMode === "light" ? <BsFillMoonFill size={20}/> : <BsFillSunFill size={20}/>}
+                    fontSize="lg"
+                    fontWeight="600"
+                  >
+                    {colorMode === "light" ? "Dark" : "Light"} Mode
+                  </MenuItem>
+                  <MenuItem
+                    aria-label="settings"
+                    as={Link}
+                    to="/settings"
+                    icon={<FiSettings size={20}/>}
+                    fontSize="lg"
+                    fontWeight="600"
+                  >
+                    Settings
+                  </MenuItem>
+                  <MenuItem
+                    aria-label="logout"
+                    onClick={e=>onLogout()}
+                    icon={<MdLogout size={25}/>} 
+                    fontSize="lg"
+                    fontWeight="600"
+                  >
+                    Log out
+                  </MenuItem>
+                </MenuList>
+              </Portal>
+            </Menu>
           </Flex>
         </Flex>
 

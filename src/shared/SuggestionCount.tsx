@@ -86,13 +86,13 @@ export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number
           <Badge
             fontSize=".65rem"
             textTransform="none"
-            py={.5}
+            p={.5}
             variant="solid"
             display="flex"
             alignItems="bottom"
             gap={1}
           >
-            <Box as={GiChessPawn} size={10} mt={-.5}/>
+            <Box as={GiChessPawn} size={9} mt={-.5}/>
           </Badge>
           </PopoverTrigger>
           <PopoverContent maxW="260px" fontSize="sm">
@@ -115,14 +115,14 @@ export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number
             <Badge
               fontSize=".65rem"
               textTransform="none"
-              py={.5}
+              p={.5}
               variant="solid"
               colorScheme="purple"
               display="flex"
               alignItems="top"
               gap={1}
             >
-              <FaChessKnight size={10}/>
+              <FaChessKnight size={8}/>
             </Badge>
             </PopoverTrigger>
             <PopoverContent maxW="260px" fontSize="sm">
@@ -145,14 +145,14 @@ export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number
               <Badge
                 fontSize=".65rem"
                 textTransform="none"
-                py={.5}
+                p={.5}
                 variant="solid"
                 colorScheme="blue"
                 display="flex"
                 alignItems="top"
                 gap={1}
               >
-                <FaChessBishop size={10}/>
+                <FaChessBishop size={8}/>
               </Badge>
               </PopoverTrigger>
               <PopoverContent maxW="260px" fontSize="sm">
@@ -175,14 +175,14 @@ export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number
                 <Badge
                   fontSize=".65rem"
                   textTransform="none"
-                  py={.5}
+                  p={.5}
                   variant="solid"
                   colorScheme="orange"
                   display="flex"
                   alignItems="top"
                   gap={1}
                 >
-                  <FaChessRook size={10}/>
+                  <FaChessRook size={8}/>
                 </Badge>
                 </PopoverTrigger>
                 <PopoverContent maxW="260px" fontSize="sm">
@@ -205,14 +205,14 @@ export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number
                   <Badge
                     fontSize=".65rem"
                     textTransform="none"
-                    py={.5}
+                    p={.5}
                     variant="solid"
                     colorScheme="yellow"
                     display="flex"
                     alignItems="top"
                     gap={1}
                   >
-                    <GiChessQueen size={10}/>
+                    <GiChessQueen size={8}/>
                   </Badge>
                   </PopoverTrigger>
                   <PopoverContent maxW="260px" fontSize="sm">
