@@ -877,7 +877,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     justify="space-between"
                     w="100%"
                   >
-                    <Tooltip label="To receive more suggestions, try suggesting books to other users. Also, in your suggestion notes, be descriptive about what you're looking for." hasArrow>
+                    <Tooltip label="To receive more suggestions, try suggesting books to other users. Also, in your suggestion notes, be descriptive about what you're looking for. Bookshelves without any books and no suggestion notes will not be listed." hasArrow>
                       <Flex align="center" justify="center">
                         <ImInfo size={20} color="gray" />
                       </Flex>
