@@ -37,7 +37,7 @@ import {
   useToast
 } from "@chakra-ui/react";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
-import GoogleBooksSearch from "../shared/GoogleBooksSearch";
+import BooksSearch from "../shared/BooksSearch";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import { BsArrowRight } from 'react-icons/bs';
 import { MdChevronRight } from 'react-icons/md';
@@ -407,6 +407,8 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                   className="well"
                   mx="0!important"
                   position="relative"
+                  w="100%"
+                  maxW="500px"
                 >
                   <CloseButton
                     onClick={e=>setSelectedBook(null)}
@@ -418,8 +420,9 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                     <Image
                       src={selectedBook.image}
                       height="100%"
-                      maxH="125px"
+                      maxH="90px"
                       boxShadow="1px 1px 1px 1px darkgrey"
+                      alt={selectedBook.title}
                     />
                     <Box mx={2} w="100%">
                       <Heading 
@@ -433,11 +436,6 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                       <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
                         {selectedBook.author}
                       </Text>
-                      {selectedBook.page_count ? (
-                        <Text fontSize="sm">
-                          {selectedBook.page_count} pages
-                        </Text>
-                      ): null}
                       <Text fontStyle="italic">
                         {selectedBook.published_date !== null ? 
                           (
@@ -445,7 +443,12 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                           ) : null
                         }
                       </Text>
-                      <Popover isLazy>
+                      {selectedBook.page_count ? (
+                        <Text fontSize="sm">
+                          {selectedBook.page_count} pages
+                        </Text>
+                      ): null}
+                      {/* <Popover isLazy>
                         <PopoverTrigger>
                           <Box
                             _hover={{
@@ -469,7 +472,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                             {selectedBook.description ? selectedBook.description: null}
                           </PopoverBody>
                         </PopoverContent>
-                      </Popover>
+                      </Popover> */}
                     </Box>
                   </Flex>
                   <Box
@@ -510,6 +513,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                         height="100%"
                         maxH="125px"
                         boxShadow="1px 1px 1px 1px darkgrey"
+                        alt={book.title}
                       />
                       <Box mx={2} w="100%">
                         <Heading 
@@ -523,15 +527,15 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                         <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
                           {book.author}
                         </Text>
+                        <Text fontStyle="italic">
+                          {book.published_date ? dayjs(book.published_date).format("YYYY"): null}
+                        </Text>
                         {book.page_count ? (
                           <Text fontSize="sm">
                             {book.page_count} pages
                           </Text>
                         ): null}
-                        <Text fontStyle="italic">
-                          {book.published_date ? dayjs(book.published_date).format("YYYY"): null}
-                        </Text>
-                        <Popover isLazy>
+                        {/* <Popover isLazy>
                           <PopoverTrigger>
                             <Box
                               _hover={{
@@ -555,7 +559,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                               {book.description}
                             </PopoverBody>
                           </PopoverContent>
-                        </Popover>
+                        </Popover> */}
                         <Flex
                           align="center"
                           wrap="wrap"
@@ -592,7 +596,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           </ModalHeader>
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-              <GoogleBooksSearch selectText="select" selectCallback={selectBook as any} gBooksApi={gbooksapi}/>
+              <BooksSearch selectText="select" selectCallback={selectBook as any}/>
             </ModalBody>
             <ModalFooter flexDirection="column">
             </ModalFooter>

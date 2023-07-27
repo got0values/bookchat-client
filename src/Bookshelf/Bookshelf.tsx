@@ -50,7 +50,7 @@ import {
   useColorMode
 } from "@chakra-ui/react";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
-import GoogleBooksSearch from "../shared/GoogleBooksSearch";
+import BooksSearch from "../shared/BooksSearch";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { MdOutlineChat } from 'react-icons/md';
 import { BiDotsHorizontalRounded, BiTrash, BiPlus, BiHide } from 'react-icons/bi';
@@ -1071,28 +1071,23 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     <Image
                       src={bookToAdd.image}
                       onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                      maxH="100px"
+                      maxH="90px"
                       // minW="60px"
                       boxShadow="1px 1px 1px 1px darkgrey"
                     />
                     <Box mx={2} w="100%">
-                      <Box>
-                        <Popover isLazy>
+                      <Box lineHeight={1.4}>
+                        <Heading 
+                          as="h2" 
+                          size="md"
+                          me={3}
+                          noOfLines={1}
+                        >
+                          {bookToAdd.title}
+                        </Heading>
+                        {/* <Popover isLazy>
                           <PopoverTrigger>
-                            <Box
-                              _hover={{
-                                cursor: "pointer"
-                              }}
-                            >
-                              <Heading 
-                                as="h2" 
-                                size="md"
-                                me={3}
-                                noOfLines={1}
-                              >
-                                {bookToAdd.title}
-                              </Heading>
-                            </Box>
+                            
                           </PopoverTrigger>
                           <PopoverContent>
                             <PopoverArrow />
@@ -1106,16 +1101,18 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                               {bookToAdd.description}
                             </PopoverBody>
                           </PopoverContent>
-                        </Popover>
-                        <Text fontSize="lg">
+                        </Popover> */}
+                        <Text fontWeight="bold" fontSize="lg">
                           {bookToAdd.author}
                         </Text>
-                        <Text fontSize="lg">
-                          {bookToAdd.page_count} pages
-                        </Text>
-                        <Text>
+                        <Text fontStyle="italic">
                           {bookToAdd.published_date ? dayjs(bookToAdd.published_date).format("YYYY") : null}
                         </Text>
+                        {bookToAdd.page_count ? (
+                          <Text noOfLines={1}>
+                            {bookToAdd.page_count} pages
+                          </Text>
+                        ): null}
                       </Box>
                     </Box>
                   </Flex>
@@ -1396,29 +1393,24 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       <Flex>
                         <Image
                           src={book.image}
-                          maxH="125px"
+                          maxH="100px"
                           // minW="60px"
                           onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                           boxShadow="1px 1px 1px 1px darkgrey"
                           alt={book.title}
                         />
-                        <Box mx={2} w="100%">
-                          <Popover isLazy>
+                        <Box mx={2} w="100%" lineHeight={1.4}>
+                          <Heading 
+                            as="h2" 
+                            size="md"
+                            me={3}
+                            noOfLines={2}
+                          >
+                            {book.title}
+                          </Heading>
+                          {/* <Popover isLazy>
                             <PopoverTrigger>
-                              <Box
-                                _hover={{
-                                  cursor: "pointer"
-                                }}
-                              >
-                                <Heading 
-                                  as="h2" 
-                                  size="md"
-                                  me={3}
-                                  noOfLines={2}
-                                >
-                                  {book.title}
-                                </Heading>
-                              </Box>
+
                             </PopoverTrigger>
                             <PopoverContent>
                               <PopoverArrow />
@@ -1432,18 +1424,18 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 {book.description}
                               </PopoverBody>
                             </PopoverContent>
-                          </Popover>
-                          <Text fontSize="lg" noOfLines={1}>
+                          </Popover> */}
+                          <Text fontWeight="bold" fontSize="lg" noOfLines={1}>
                             {book.author}
                           </Text>
+                          <Text fontStyle="italic">
+                            {book.published_date ? dayjs(book.published_date).format("YYYY") : null}
+                          </Text>
                           {book.page_count ? (
-                            <Text>
+                            <Text noOfLines={1}>
                               {book.page_count} pages
                             </Text>
                           ): null}
-                          <Text>
-                            {book.published_date ? dayjs(book.published_date).format("YYYY") : null}
-                          </Text>
                           <StarRating
                             ratingCallback={ratingCallback} 
                             starRatingId={book.id}
@@ -1648,7 +1640,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             </ModalHeader>
             <ModalCloseButton />
               <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-                <GoogleBooksSearch selectText="Add" selectCallback={selectBookToAdd as any} gBooksApi={gbooksapi}/>
+                <BooksSearch selectText="Add" selectCallback={selectBookToAdd as any}/>
               </ModalBody>
               <ModalFooter flexDirection="column">
               </ModalFooter>

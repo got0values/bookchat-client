@@ -44,10 +44,7 @@ import {
 } from "@chakra-ui/react";
 import { editPagesRead, cancelEditPagesRead } from "./shared/editCancelPagesRead";
 import { editCurrentlyReadingThoughts, cancelEditCurrentlyReadingThoughts } from "./shared/editCancelCurrentlyReadingThoughts";
-// import getSingleGoogleBookData from "./shared/getSingleGoogleBookData";
-import GooglePreviewLink from "./shared/GooglePreviewLink";
-import GoogleBooksSearch from "./shared/GoogleBooksSearch";
-// import SingleGoogleBook from "./shared/SingleGoogleBook";
+import BooksSearch from "./shared/BooksSearch";
 import {SuggestionCountBadge} from "./shared/SuggestionCount";
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
 import { BsReplyFill } from 'react-icons/bs';
@@ -60,7 +57,6 @@ import Cookies from "js-cookie";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import axios from "axios";
-import googleWatermark from "/src/assets/google_watermark.gif";
 import packageJson from '../package.json';
 
 
@@ -606,19 +602,19 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           <Flex>
             <Image 
               src={reading.image}
-              maxH="100px"
+              maxH="90px"
               boxShadow="1px 1px 1px 1px darkgrey"
               alt={`${reading.title} image`}
             />
             <Box mx={2} w="100%">
-              <Box>
+              <Box lineHeight={1.4}>
                 <Heading as="h2" size="md" me={3} noOfLines={1}>
                   {reading.title}
                 </Heading>
-                <Text fontSize="lg" noOfLines={1}>
+                <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
                   {reading.author}
                 </Text>
-                <Popover isLazy>
+                {/* <Popover isLazy>
                   <PopoverTrigger>
                     <Box 
                       _hover={{
@@ -642,14 +638,19 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       {reading.description}
                     </PopoverBody>
                   </PopoverContent>
-                </Popover>
-                <Text fontSize="lg">
+                </Popover> */}
+                <Text fontStyle="italic">
                   {reading.published_date !== null ? 
                     (
                       dayjs(reading.published_date).format("YYYY")
                     ) : null
                   }
                 </Text>
+                {reading.page_count ? (
+                  <Text noOfLines={1}>
+                    {reading.page_count} pages
+                  </Text>
+                ): null}
               </Box>
               <Flex justify="space-between" wrap="wrap">
                 <Box minHeight="5px" minWidth="100px">
@@ -849,21 +850,21 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               <Flex>
                 <Image 
                   src={selectedBook.image}
-                  maxH="100px"
+                  maxH="90px"
                   boxShadow="1px 1px 1px 1px darkgrey"
                 />
                 <Box 
                   mx={2}
                   w="100%"
                 >
-                  <Box>
+                  <Box lineHeight={1.4}>
                     <Heading as="h2" size="md" me={3}>
                       {selectedBook.title}
                     </Heading>
-                    <Text fontSize="lg">
+                    <Text fontWeight="bold" fontSize="lg">
                       {selectedBook.author}
                     </Text>
-                    <Popover isLazy>
+                    {/* <Popover isLazy>
                       <PopoverTrigger>
                         <Box
                           _hover={{
@@ -886,14 +887,19 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                           {selectedBook.description ? selectedBook.description: null}
                         </PopoverBody>
                       </PopoverContent>
-                    </Popover>
-                    <Text fontSize="lg">
-                      {selectedBook.published_date !== null && selectedBook.published_date !== "" ? 
+                    </Popover> */}
+                    <Text fontStyle="italic">
+                      {selectedBook.published_date !== null ? 
                         (
                           dayjs(selectedBook.published_date).format("YYYY")
                         ) : null
                       }
                     </Text>
+                    {selectedBook.page_count ? (
+                      <Text noOfLines={1}>
+                        {selectedBook.page_count} pages
+                      </Text>
+                    ): null}
                   </Box>
                   <Flex justify="space-between">
                     <Flex align="center" gap={1}>
@@ -1038,7 +1044,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           </ModalHeader>
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-              <GoogleBooksSearch selectText="Set" selectCallback={selectBook as any} gBooksApi={gbooksapi}/>
+              <BooksSearch selectText="Set" selectCallback={selectBook as any}/>
             </ModalBody>
             <ModalFooter flexDirection="column">
             </ModalFooter>
