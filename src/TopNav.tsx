@@ -706,7 +706,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                 fontSize=".6rem"
                 lineHeight={1.2}
               >
-                {user.Profile.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0) > 0 ? user.Profile.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0) : 0} pages read this week
+                {user.Profile.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0) > 0 ? user.Profile.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0) : 0} pgs read this week
               </Text>
               <Flex gap={.5} align="center" justify="center" mt={.5} width="max-content">
                 <Text
