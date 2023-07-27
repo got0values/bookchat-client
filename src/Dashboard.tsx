@@ -852,6 +852,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   src={selectedBook.image}
                   maxH="90px"
                   boxShadow="1px 1px 1px 1px darkgrey"
+                  alt={selectedBook.title}
                 />
                 <Box 
                   mx={2}

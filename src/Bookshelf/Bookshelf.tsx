@@ -1074,6 +1074,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       maxH="90px"
                       // minW="60px"
                       boxShadow="1px 1px 1px 1px darkgrey"
+                      alt={bookToAdd.title}
                     />
                     <Box mx={2} w="100%">
                       <Box lineHeight={1.4}>
