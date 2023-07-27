@@ -295,15 +295,18 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                   boxShadow="1px 1px 1px 1px darkgrey"
                   alt={suggestion.title}
                 />
-                <Flex direction="column" justify="space-between">
-                  <Box>
-                    <Text
+                <Flex direction="column" justify="space-between" w="100%">
+                  <Box lineHeight={1.4}>
+                    <Heading
+                      as="h2"
                       noOfLines={1}
-                      fontWeight="bold"
+                      size="md"
                     >
                       {suggestion.title}
-                    </Text>
+                    </Heading>
                     <Text
+                      fontWeight="bold"
+                      fontSize="lg"
                       noOfLines={1}
                     >
                       {suggestion.author}
@@ -315,7 +318,7 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                         {dayjs(suggestion.published_date).format("YYYY")}
                       </Text>
                     ): null}
-                    <Popover isLazy>
+                    {/* <Popover isLazy>
                       <PopoverTrigger>
                         <Text
                           noOfLines={1}
@@ -337,9 +340,9 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                           {suggestion.description}
                         </PopoverBody>
                       </PopoverContent>
-                    </Popover>
+                    </Popover> */}
                     {suggestion.page_count ? (
-                      <Text>
+                      <Text noOfLines={1}>
                         {suggestion.page_count} pages
                       </Text>
                     ): null}

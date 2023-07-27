@@ -294,15 +294,18 @@ export function BookSuggestionsArchive({server}: {server: string;}) {
                   boxShadow="1px 1px 1px 1px darkgrey"
                   alt={suggestion.title}
                 />
-                <Flex justify="space-between" direction="column">
-                  <Box>
-                    <Text
+                <Flex justify="space-between" direction="column" w="100%">
+                  <Box lineHeight={1.4}>
+                    <Heading
+                      as="h2"
+                      size="md"
                       noOfLines={1}
-                      fontWeight="bold"
                     >
                       {suggestion.title}
-                    </Text>
+                    </Heading>
                     <Text
+                      fontWeight="bold"
+                      fontSize="lg"
                       noOfLines={1}
                     >
                       {suggestion.author}
@@ -314,7 +317,7 @@ export function BookSuggestionsArchive({server}: {server: string;}) {
                         {dayjs(suggestion.published_date).format("YYYY")}
                       </Text>
                     ): null}
-                    <Popover isLazy>
+                    {/* <Popover isLazy>
                       <PopoverTrigger>
                         <Text
                           noOfLines={1}
@@ -336,14 +339,14 @@ export function BookSuggestionsArchive({server}: {server: string;}) {
                           {suggestion.description}
                         </PopoverBody>
                       </PopoverContent>
-                    </Popover>
+                    </Popover> */}
                     {suggestion.page_count ? (
-                      <Text>
+                      <Text noOfLines={1}>
                         {suggestion.page_count} pages
                       </Text>
                     ): null}
                   </Box>
-                  <Flex align="center" justify="space-between" wrap="wrap">
+                  <Flex align="center" justify="space-between" wrap="wrap" w="100%">
                     <Flex
                       align="center"
                       gap={1}
