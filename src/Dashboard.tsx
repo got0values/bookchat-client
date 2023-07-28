@@ -90,7 +90,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
     },1000)
   },[])
 
-  const [items,setItems] = useState(5);
+  const [items,setItems] = useState(10);
   const [followingSorted,setFollowingSorted] = useState([] as any)
   const [randomSorted,setRandomSorted] = useState([] as any)
   const [firstBookshelf,setFirstBookshelf] = useState<User | null>(null)
@@ -107,7 +107,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
         )
         .then((response)=>{
           getUser();
-          setItems(items + 5)
+          setItems(prev=>prev + 10)
           setFollowingSorted(response.data.message.followingCurrentlyReadingSorted)
           setRandomSorted(response.data.message.randomCurrentlyReadingSorted)
           setFirstBookshelf(response.data.message.firstBookshelf)
