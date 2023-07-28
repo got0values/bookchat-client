@@ -720,11 +720,14 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   {reading.CurrentlyReadingLike?.length ? (
                     <Popover isLazy size="sm">
                       <PopoverTrigger>
-                        <Text
-                          cursor="pointer"
+                        <Button
+                          size="sm"
+                          minW="20px"
+                          variant="ghost"
+                          p={0}
                         >
                           {reading.CurrentlyReadingLike?.length ? reading.CurrentlyReadingLike.length.toString() : "0"}
-                        </Text>
+                        </Button>
                       </PopoverTrigger>
                       <PopoverContent>
                         <PopoverArrow />
@@ -753,6 +756,9 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   ) : (
                     <Text
                       cursor="pointer"
+                      minW="20px"
+                      textAlign="center"
+                      fontWeight={600}
                     >
                       {reading.CurrentlyReadingLike?.length ? reading.CurrentlyReadingLike.length.toString() : "0"}
                     </Text>

@@ -712,7 +712,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                 <Text
                   fontSize=".6rem"
                   lineHeight={1.2}
-                  color={user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile === 0 ? "red" : "unset"}
+                  color={user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile === 0 ? "#b50000" : "unset"}
                 >
                   {user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile ? user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile : 0} books suggested
                 </Text>
@@ -720,6 +720,10 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                   <Popover placement='left'>
                     <PopoverTrigger>
                       <Badge
+                        as={Button}
+                        size="xs"
+                        minW="unset"
+                        height="unset"
                         fontSize=".65rem"
                         textTransform="none"
                         p={0}
@@ -729,6 +733,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                         gap={1}
                         position="relative"
                         zIndex="100"
+                        aria-label="suggest books badge"
                       >
                         <FaExclamationCircle fill="red" size={10}/>
                       </Badge>

@@ -3,11 +3,10 @@ import {
   Text,
   Box,
   Flex,
+  Button,
   Popover,
   PopoverTrigger,
-  PopoverHeader,
   PopoverContent,
-  PopoverFooter,
   PopoverBody,
   PopoverArrow,
   PopoverCloseButton,
@@ -80,51 +79,46 @@ const SuggestionColorLegend = () => {
 export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number}) {
   return (
     <>
-      {suggestionCount > 0 && suggestionCount <= 9 ? (
+      {suggestionCount > 0 ? (
         <Popover>
           <PopoverTrigger>
-          <Badge
-            fontSize=".65rem"
-            textTransform="none"
-            p={.5}
-            variant="solid"
-            display="flex"
-            alignItems="bottom"
-            gap={1}
-          >
-            <Box as={GiChessPawn} size={9} mt={-.5}/>
-          </Badge>
-          </PopoverTrigger>
-          <PopoverContent maxW="260px" fontSize="sm">
-            <PopoverArrow/>
-            <PopoverCloseButton/>
-            {/* <PopoverHeader
-              fontWeight="bold"
-            >
-              Novice Reader's Advisor
-            </PopoverHeader> */}
-            <PopoverBody>
-              <Text as="span" fontStyle="italic" >{suggestionCount}</Text> suggestion{suggestionCount > 1 ? "s" : null} given to other users
-            </PopoverBody>
-          </PopoverContent>
-        </Popover>
-      ) : (
-        suggestionCount > 9 && suggestionCount <= 24 ? (
-          <Popover>
-            <PopoverTrigger>
             <Badge
+              as={Button}
+              size="xs"
+              minW="unset"
+              height="unset"
               fontSize=".65rem"
               textTransform="none"
               p={.5}
               variant="solid"
-              colorScheme="purple"
               display="flex"
-              alignItems="top"
+              alignItems="bottom"
               gap={1}
+              aria-label="suggest books badge"
             >
-              <FaChessKnight size={8}/>
+              {suggestionCount > 0 && suggestionCount <= 9 ? (
+                <Box as={GiChessPawn} size={9} mt={-.5}/>
+              ) : (
+                suggestionCount > 9 && suggestionCount <= 24 ? (
+                  <FaChessKnight size={8}/>
+                ) : (
+                  suggestionCount > 24 && suggestionCount <= 49 ? (
+                    <FaChessBishop size={8}/>
+                  ) : (
+                    suggestionCount > 49 && suggestionCount <= 99 ? (
+                      <FaChessRook size={8}/>
+                    ) : (
+                      suggestionCount > 99 ? (
+                        <GiChessQueen size={8}/>
+                      ) : (
+                        null
+                      )
+                    )
+                  )
+                )
+              )}
             </Badge>
-            </PopoverTrigger>
+          </PopoverTrigger>
             <PopoverContent maxW="260px" fontSize="sm">
               <PopoverArrow/>
               <PopoverCloseButton/>
@@ -138,102 +132,8 @@ export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number
               </PopoverBody>
             </PopoverContent>
           </Popover>
-        ) : (
-          suggestionCount > 24 && suggestionCount <= 49 ? (
-            <Popover>
-              <PopoverTrigger>
-              <Badge
-                fontSize=".65rem"
-                textTransform="none"
-                p={.5}
-                variant="solid"
-                colorScheme="blue"
-                display="flex"
-                alignItems="top"
-                gap={1}
-              >
-                <FaChessBishop size={8}/>
-              </Badge>
-              </PopoverTrigger>
-              <PopoverContent maxW="260px" fontSize="sm">
-                <PopoverArrow/>
-                <PopoverCloseButton/>
-                {/* <PopoverHeader
-                  fontWeight="bold"
-                >
-                  Proficient Reader's Advisor
-                </PopoverHeader> */}
-                <PopoverBody>
-                  <Text as="span" fontStyle="italic" >{suggestionCount}</Text> suggestions given to other users
-                </PopoverBody>
-              </PopoverContent>
-            </Popover>
-          ) : (
-            suggestionCount > 49 && suggestionCount <= 99 ? (
-              <Popover>
-                <PopoverTrigger>
-                <Badge
-                  fontSize=".65rem"
-                  textTransform="none"
-                  p={.5}
-                  variant="solid"
-                  colorScheme="orange"
-                  display="flex"
-                  alignItems="top"
-                  gap={1}
-                >
-                  <FaChessRook size={8}/>
-                </Badge>
-                </PopoverTrigger>
-                <PopoverContent maxW="260px" fontSize="sm">
-                  <PopoverArrow/>
-                  <PopoverCloseButton/>
-                  {/* <PopoverHeader
-                    fontWeight="bold"
-                  >
-                    Master Reader's Advisor
-                  </PopoverHeader> */}
-                  <PopoverBody>
-                    <Text as="span" fontStyle="italic" >{suggestionCount}</Text> suggestions given to other users
-                  </PopoverBody>
-                </PopoverContent>
-              </Popover>
-            ) : ( 
-              suggestionCount > 99 ? (
-                <Popover>
-                  <PopoverTrigger>
-                  <Badge
-                    fontSize=".65rem"
-                    textTransform="none"
-                    p={.5}
-                    variant="solid"
-                    colorScheme="yellow"
-                    display="flex"
-                    alignItems="top"
-                    gap={1}
-                  >
-                    <GiChessQueen size={8}/>
-                  </Badge>
-                  </PopoverTrigger>
-                  <PopoverContent maxW="260px" fontSize="sm">
-                    <PopoverArrow/>
-                    <PopoverCloseButton/>
-                    {/* <PopoverHeader
-                      fontWeight="bold"
-                    >
-                      Supreme Master Reader's Advisor
-                    </PopoverHeader> */}
-                    <PopoverBody>
-                      <Text as="span" fontStyle="italic" >{suggestionCount}</Text> suggestions given to other users
-                    </PopoverBody>
-                  </PopoverContent>
-                </Popover>
-              ) : ( 
-                null
-              )
-            )
-          )
-        )
+      ) : (
+        null
       )}
     </>
   )
