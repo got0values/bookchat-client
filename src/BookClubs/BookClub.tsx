@@ -2097,7 +2097,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                       setPollBookOne({
                                         title: book.title,
                                         author: book.author_name ? book.author_name[0] : "",
-                                        image: document.getElementById(`book-cover-${i}`)!.getAttribute("src"),
+                                        image: document.getElementById(`book-cover-${i}`)!.getAttribute("src")!,
                                         description: "",
                                         link: ""
                                       })
@@ -2106,7 +2106,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                             setPollBookTwo({
                                               title: book.title,
                                               author: book.author_name ? book.author_name[0] : "",
-                                              image: document.getElementById(`book-cover-${i}`)!.getAttribute("src"),
+                                              image: document.getElementById(`book-cover-${i}`)!.getAttribute("src")!,
                                               description: "",
                                               link: ""
                                             })
@@ -2114,7 +2114,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                                 setPollBookThree({
                                                   title: book.title,
                                                   author: book.author_name ? book.author_name[0] : "",
-                                                  image: document.getElementById(`book-cover-${i}`)!.getAttribute("src"),
+                                                  image: document.getElementById(`book-cover-${i}`)!.getAttribute("src")!,
                                                   description: "",
                                                   link: ""
                                                 })
