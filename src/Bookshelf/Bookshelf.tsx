@@ -599,7 +599,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     onClose: onCloseImportBookshelfModal 
   } = useDisclosure()
 
-  const [importLimit,setImportLimit] = useState(500);
+  const [importLimit,setImportLimit] = useState(1000);
   async function getImportLimit() {
     const tokenCookie = Cookies.get().token;
     await axios
@@ -647,26 +647,34 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
               const rating = parseInt(cellData[7]);
               const dateAdded = dayjs(cellData[15]).utc().format('YYYY-MM-DD mm:HH:ss');
               await axios
-                .get(`https://www.googleapis.com/books/v1/volumes?q=${title}+${author}+${isbn}&key=${gbooksapi}`)
+                .get(`https://openlibrary.org/search.json?q=${title}+${author}+${isbn}`)
                 .then(async (result)=>{
-                  if (result?.data?.items?.length) {
-                    const bookResult = result.data.items[0]
+                  if (result?.data?.docs?.length) {
+                    const bookResult = result.data.docs[0];
                     const book = {
-                      google_books_id: bookResult.id,
-                      title: bookResult.volumeInfo.title,
-                      author: bookResult.volumeInfo.authors ? bookResult.volumeInfo.authors[0] : null,
-                      image: bookResult.volumeInfo.imageLinks?.smallThumbnail ? bookResult.volumeInfo.imageLinks.smallThumbnail : null,
-                      description: bookResult.volumeInfo.description ? bookResult.volumeInfo.description : "",
-                      isbn: bookResult.volumeInfo.industryIdentifiers ? bookResult.volumeInfo.industryIdentifiers[0].identifier : null,
-                      page_count: bookResult.volumeInfo.pageCount ? bookResult.volumeInfo.pageCount : null,
-                      published_date: bookResult.volumeInfo.publishedDate ? bookResult.volumeInfo.publishedDate : null
+                      google_books_id: null,
+                      title: bookResult.title,
+                      author: bookResult.author_name ? bookResult.author_name[0] : "",
+                      image: bookResult.cover_i ? (
+                        `https://covers.openlibrary.org/b/id/${bookResult.cover_i}-M.jpg?default=false`
+                      ) : (
+                        bookResult.lccn ? (
+                          `https://covers.openlibrary.org/b/lccn/${bookResult.lccn[0]}-M.jpg?default=false`
+                        ) : (
+                          "https://via.placeholder.com/165x215"
+                        )
+                      ),
+                      isbn: bookResult.isbn?.length ? bookResult.isbn[bookResult.isbn.length - 1] : null,
+                      description: "",
+                      page_count: bookResult.number_of_pages_median,
+                      published_date: bookResult.publish_date?.length ? dayjs(bookResult.publish_date[0]).format('YYYY') : ""
                     }
                     let tokenCookie: string | null = Cookies.get().token;
                     await axios
                       .post(server + "/api/addbookshelfbook", 
                         {
                           book: book,
-                          categories: bookToAddCategories,
+                          categories: [],
                           rating: rating,
                           dateAdded: dateAdded,
                           notes: null
