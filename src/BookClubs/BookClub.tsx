@@ -44,7 +44,7 @@ import {
   BreadcrumbLink
 } from "@chakra-ui/react";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
-import GoogleBooksSearch from "../shared/GoogleBooksSearch";
+import BooksSearch from "../shared/BooksSearch";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ICalendarLink from "react-icalendar-link";
@@ -58,6 +58,7 @@ import { BookClubGeneralComments } from "../shared/BookClubGeneralComments";
 import { ImInfo } from 'react-icons/im';
 import { FaShoppingCart } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
+import BookImage from "../shared/BookImage";
 import Cookies from "js-cookie";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -439,9 +440,20 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
   async function searchBook() {
     setBookResultsLoading(true)
     await axios
-      .get(`https://www.googleapis.com/books/v1/volumes?q=${searchBookRef.current.value}&key=${gbooksapi}`)
+      .get("https://openlibrary.org/search.json?q=" + searchBookRef.current.value)
       .then((response)=>{
-        setBookResults(response.data.items)
+        if (response.data.docs) {
+          if (response.data.docs.length > 5) {
+            const slicedResponse = response.data.docs.slice(0,5);
+            setBookResults(slicedResponse)
+          }
+          else {
+            setBookResults(response.data.docs)
+          }
+        }
+        else {
+          setBookResults(null)
+        }
         setBookResultsLoading(false)
       })
       .catch((error)=>{
@@ -464,7 +476,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                 bookImage: book.image,
                 bookTitle: book.title,
                 bookAuthor: book.author,
-                bookDescription: book.description ? book.description : ""
+                bookDescription: book.description ? book.description : "",
+                pageCount: book.page_count
               },
               {
                 headers: {
@@ -486,7 +499,8 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
               bookImage: book.image,
               bookTitle: book.title,
               bookAuthor: book.author,
-              bookDescription: book.description ? book.description : ""
+              bookDescription: book.description ? book.description : "",
+              pageCount: book.page_count
             },
             {
               headers: {
@@ -1206,12 +1220,11 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                           className="well-card"
                         >
                           <Flex  
-                            gap={5}
-                            flexWrap="wrap"
+                            gap={4}
+                            justify="center"
                           >
                             <Box
-                              flex="1 1 200px"
-                              maxW="175px"
+                              maxW="100px"
                             >
                               <Image
                                 maxW="100%" 
@@ -1225,16 +1238,44 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 alt={currentBook?.title}
                               />
                             </Box>
-                            <Flex direction="column" align="center" justify="center" flex="1 1" minW="250px">
-                              <Heading as="h2" size="md">
+                            <Flex direction="column">
+                              <Heading as="h2" size="md" noOfLines={1}>
                                 {currentBook?.title}
                               </Heading>
-                              <Text>
+                              <Text fontWeight="bold" fontSize="lg" noOfLines={1}>
                                 {currentBook?.author}
                               </Text>
-                              <Box maxH="225px" overflow="auto">
+                              {/* <Box maxH="225px" overflow="auto">
                                 {currentBook?.description ? currentBook.description : null}
-                              </Box>
+                              </Box> */}
+                              <Text fontStyle="italic">
+                                {currentBook.published_date !== null ? 
+                                  (
+                                    dayjs(currentBook.published_date).format("YYYY")
+                                  ) : null
+                                }
+                              </Text>
+                              {currentBook.page_count ? (
+                                <Text noOfLines={1}>
+                                  {currentBook.page_count} pages
+                                </Text>
+                              ): null}
+                              <Button 
+                                as={Link}
+                                to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(currentBook.title + " " + currentBook.author + " " + currentBook.isbn)}`}
+                                target="blank"
+                                fontWeight="bold"
+                                minW="unset"
+                                maxW="min-content"
+                                width="auto"
+                                // p={1}
+                                borderColor="black"
+                                size="xs"
+                                variant="outline"
+                                leftIcon={<FaShoppingCart size={18} />}
+                              >
+                                Shop
+                              </Button>
                             </Flex>
                           </Flex>
                           <Flex justify="center">
@@ -1242,23 +1283,12 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                           </Flex>
                           <Center flexDirection="column" gap={1}>
                             <Button 
-                              as={Link}
-                              to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(currentBook.title + " " + currentBook.author + " " + currentBook.isbn)}`}
-                              target="blank"
-                              fontWeight="bold"
-                              size="sm"
-                              variant="ghost"
-                              leftIcon={<FaShoppingCart size={20} />}
-                            >
-                              Shop
-                            </Button>
-                            <Button 
                               backgroundColor="black"
                               color="white"
                               leftIcon={<BsCardText size={20} />}
                               as={Link}
+                              size="sm"
                               to={`${currentBook?.id}`}
-                              mb={1}
                             >
                               Discussion
                             </Button>
@@ -1951,7 +1981,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
           </ModalHeader>
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-              <GoogleBooksSearch selectText="Select" selectCallback={selectBook as any} gBooksApi={gbooksapi}/>
+              <BooksSearch selectText="Select" selectCallback={selectBook as any}/>
             </ModalBody>
             <ModalFooter flexDirection="column">
             <> 
@@ -1986,10 +2016,6 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                     bg="white"
                     color="black"
                     onKeyDown={e=>e.key === "Enter" ? searchBook() : null}
-                    // style={{
-                    //   background: `no-repeat url(${googleWatermark})`,
-                    //   backgroundPosition: "top 0px right 5px"
-                    // }}
                   />
                   <Button
                     onClick={searchBook}
@@ -2016,42 +2042,49 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                             gap={2}
                           >
                             <Box flex="1 1 auto" maxW="50px">
-                              <Popover isLazy>
-                                <PopoverTrigger>
+                              {book.cover_i || book.lccn ? (
                                 <Image
                                   maxW="100%" 
                                   w="100%"
                                   h="auto"
                                   className="book-image"
                                   onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                  src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
+                                  src={book.cover_i ? (
+                                    `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg?default=false`
+                                  ) : (
+                                    book.lccn ? (
+                                      `https://covers.openlibrary.org/b/lccn/${book.lccn[0]}-M.jpg?default=false`
+                                    ) : (
+                                      "https://via.placeholder.com/165x215"
+                                    )
+                                  )}
+                                  alt="book image"
                                   boxShadow="1px 1px 1px 1px darkgrey"
                                   _hover={{
                                     cursor: "pointer"
                                   }}
-                                  alt={book.volumeInfo.title}
+                                  id={`book-cover-${i}`}
                                 />
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                  <PopoverArrow />
-                                  <PopoverCloseButton />
-                                  <PopoverBody
-                                    _dark={{
-                                      bg: "black"
-                                    }}
-                                  >{book.volumeInfo.description}</PopoverBody>
-                                </PopoverContent>
-                              </Popover>
-                              </Box>
+                              ): (
+                                <BookImage 
+                                  isbn={book.isbn?.length ? book.isbn[book.isbn.length - 1] : null}
+                                  id={`book-cover-${i}`}
+                                />
+                              )}
+                            </Box>
                               <Box flex="1 1 auto">
                               <Heading
-                                as="h3"
+                                as="h4"
                                 size="sm"
+                                noOfLines={1}
                               >
-                                {book.volumeInfo.title}
+                                {book.title}
                               </Heading>
-                              <Text>
-                                {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
+                              <Text fontSize="sm" noOfLines={1}>
+                                {book.author_name ? book.author_name[0] : null}
+                              </Text>
+                              <Text fontSize="sm" fontStyle="italic">
+                                {book.publish_date ? dayjs(book.publish_date[0]).format('YYYY') : null}
                               </Text>
                               <Flex align="center" gap={2}>
                                 {/* <GooglePreviewLink book={book}/> */}
@@ -2062,28 +2095,28 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                   onClick={e=>(
                                     pollBookOne === null ? (
                                       setPollBookOne({
-                                        image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
-                                        title: book.volumeInfo.title,
-                                        author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : "",
-                                        description: book.volumeInfo.description ? book.volumeInfo.description : "",
-                                        link: book.volumeInfo.previewLink ? book.volumeInfo.previewLink : ""
+                                        title: book.title,
+                                        author: book.author_name ? book.author_name[0] : "",
+                                        image: document.getElementById(`book-cover-${i}`)!.getAttribute("src"),
+                                        description: "",
+                                        link: ""
                                       })
                                         ) : (
                                           pollBookTwo === null ? (
                                             setPollBookTwo({
-                                              image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
-                                              title: book.volumeInfo.title,
-                                              author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : "",
-                                              description: book.volumeInfo.description ? book.volumeInfo.description : "",
-                                              link: book.volumeInfo.previewLink ? book.volumeInfo.previewLink : ""
+                                              title: book.title,
+                                              author: book.author_name ? book.author_name[0] : "",
+                                              image: document.getElementById(`book-cover-${i}`)!.getAttribute("src"),
+                                              description: "",
+                                              link: ""
                                             })
                                               ) : pollBookThree === null ? (
                                                 setPollBookThree({
-                                                  image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
-                                                  title: book.volumeInfo.title,
-                                                  author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : "",
-                                                  description: book.volumeInfo.description ? book.volumeInfo.description : "",
-                                                  link: book.volumeInfo.previewLink ? book.volumeInfo.previewLink : ""
+                                                  title: book.title,
+                                                  author: book.author_name ? book.author_name[0] : "",
+                                                  image: document.getElementById(`book-cover-${i}`)!.getAttribute("src"),
+                                                  description: "",
+                                                  link: ""
                                                 })
                                                 ) : null)
                                   )}

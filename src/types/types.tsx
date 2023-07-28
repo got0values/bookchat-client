@@ -189,6 +189,7 @@ export interface BookClubBookType {
   link: string;
   created_on?: Date | string;
   topic?: string;
+  page_count: number;
   BookClubs?: BookClubsType;
 }
 
