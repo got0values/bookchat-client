@@ -45,13 +45,21 @@ import {
 import { editPagesRead, cancelEditPagesRead } from "./shared/editCancelPagesRead";
 import { editCurrentlyReadingThoughts, cancelEditCurrentlyReadingThoughts } from "./shared/editCancelCurrentlyReadingThoughts";
 import BooksSearch from "./shared/BooksSearch";
-import {SuggestionCountBadge} from "./shared/SuggestionCount";
+import { SuggestionCountBadge } from "./shared/SuggestionCount";
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
 import { BsReplyFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { MdOutlineChat } from 'react-icons/md';
 import { FaShoppingCart, FaPlay } from 'react-icons/fa';
 import Comments from "./shared/CurrentlyReadingComments";
+import { 
+  FacebookShareButton, 
+  FacebookIcon,
+  TwitterShareButton,
+  TwitterIcon,
+  WhatsappShareButton,
+  WhatsappIcon
+} from "react-share";
 import { useAuth } from './hooks/useAuth';
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
@@ -791,32 +799,46 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           m={0}
           // p={1}
         >
-          {firstBookshelf && user.Profile._count?.BookSuggestion_BookSuggestion_suggestorToProfile < 1 ? (
-            <>
-              <Flex
-                pb={1}
-                mx="auto"
-                justify="center"
+          <Flex
+            justify="space-between"
+            align="center"
+          >
+            <Flex 
+              gap={1}
+              className="non-well"
+            >
+              <Text>
+                Share:
+              </Text>
+              <FacebookShareButton url="https://bookchatnoir.com">
+                <FacebookIcon size={25} round={true}/>
+              </FacebookShareButton>
+              <TwitterShareButton url="https://bookchatnoir.com">
+                <TwitterIcon size={25} round={true}/>
+              </TwitterShareButton>
+              <WhatsappShareButton url="https://bookchatnoir.com">
+                <WhatsappIcon size={25} round={true}/>
+              </WhatsappShareButton>
+            </Flex>
+            {firstBookshelf && user.Profile._count?.BookSuggestion_BookSuggestion_suggestorToProfile < 1 ? (
+              <Button
+                as="a"
+                href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
+                variant="outline"
+                colorScheme="black"
+                size="sm"
+                p={1}
               >
-                <Button
-                  as="a"
-                  href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
-                  variant="outline"
-                  colorScheme="black"
-                  size="sm"
-                  p={1}
-                >
-                  <FaPlay size={15}/>
-                  <Text ms={1} fontSize=".8rem">
-                    Start suggesting books
-                  </Text>
-                </Button>
-              </Flex>
-            </>
-          ): null}
+                <FaPlay size={15}/>
+                <Text ms={1} fontSize=".8rem">
+                  Start suggesting books
+                </Text>
+              </Button>
+            ): null}
+          </Flex>
           <Flex gap={2} className="non-well">
             <Input 
-              placeholder="Share what you're reading" 
+              placeholder="What are you currently reading?" 
               size="lg"
               onClick={e=>onOpenReadingModal()}
               sx={{
@@ -946,63 +968,68 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           ) : null}
         </Box>
 
-        {followingSorted?.length ? (
           <Box
             mb={5}
+            className="non-well"
           >
             <Heading 
               size="md"
-              className="non-well"
             >
               Following
             </Heading>
-          
-            <Box
-              maxH="60vh"
-              overflowY="auto"
-            >
-              {followingSorted?.length && (
-                followingSorted.map((reading: CurrentlyReading,i: number)=>{
-                  return (
-                    <React.Fragment key={reading.id}>
-                      <CurrentlyReadingFeed reading={reading} />
-                    </React.Fragment>
-                  )
-                })
-              )}
-            </Box>
-          </Box>
-        ): null}
-
-        {randomSorted?.length ? (
-          <Box>
-            {followingSorted?.length && (
-              <Heading 
-                size="md"
-                className="non-well"
+            {followingSorted?.length ? (
+              <Box
+                maxH="60vh"
+                overflowY="auto"
               >
-                Public
-              </Heading>
+                {followingSorted?.length && (
+                  followingSorted.map((reading: CurrentlyReading,i: number)=>{
+                    return (
+                      <React.Fragment key={reading.id}>
+                        <CurrentlyReadingFeed reading={reading} />
+                      </React.Fragment>
+                    )
+                  })
+                )}
+              </Box>
+            ): (
+              <Box fontSize="1rem">
+                <Box fontStyle="italic">
+                  You are not following any users at the moment.
+                </Box>
+              </Box>
             )}
-          
-            <Box>
-              {randomSorted.length && (
-                randomSorted.map((reading: CurrentlyReading,i:number)=>{
-                  return (
-                    <React.Fragment key={reading.id}>
-                      <CurrentlyReadingFeed reading={reading}/>
-                    </React.Fragment>
-                  )
-                })
-              )}
-              {isFetching && (
-                <Flex justify="center">
-                  <Spinner size="xl"/>
-                </Flex>
-              )}
-            </Box>
           </Box>
-        ): null}
+
+          <Box className="non-well">
+            <Heading 
+              size="md"
+            >
+              Public
+            </Heading>
+            {randomSorted?.length ? (
+              <Box>
+                {randomSorted.length && (
+                  randomSorted.map((reading: CurrentlyReading,i:number)=>{
+                    return (
+                      <React.Fragment key={reading.id}>
+                        <CurrentlyReadingFeed reading={reading}/>
+                      </React.Fragment>
+                    )
+                  })
+                )}
+                {isFetching && (
+                  <Flex justify="center">
+                    <Spinner size="xl"/>
+                  </Flex>
+                )}
+              </Box>
+            ): (
+              <>
+                
+              </>
+            )}
+          </Box>
       </Box>
 
       <Modal 
