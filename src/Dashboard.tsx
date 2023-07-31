@@ -802,10 +802,10 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           <Flex
             justify="space-between"
             align="center"
+            className="non-well"
           >
             <Flex 
               gap={1}
-              className="non-well"
             >
               <Text>
                 Share:
