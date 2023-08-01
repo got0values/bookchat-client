@@ -27,6 +27,11 @@ import {
   Heading,
   useDisclosure,
   useColorModeValue,
+  TableContainer,
+  Table,
+  Tbody,
+  Tr,
+  Td,
   Badge,
   Text,
   Icon,
@@ -547,16 +552,16 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
           console.log(response)
           throw new Error(response.data.message)
         })
-      // await axios
-      //   .get("https://www.googleapis.com/books/v1/volumes?q=" + navSearchRef.current.value + "&key=" + gbooksapi)
-      //   .then((response)=>{
-      //     setSearchData(prev=>{
-      //       return {...prev,books: response.data.items }
-      //     })
-      //   })
-      //   .catch((error)=>{
-      //     console.log(error)
-      //   })
+      await axios
+        .get("https://openlibrary.org/search.json?q=" + navSearchRef.current.value)
+        .then((response)=>{
+          setSearchData(prev=>{
+            return {...prev,books: response.data.docs.slice(0,10) }
+          })
+        })
+        .catch((error)=>{
+          console.log(error)
+        })
     }
   })
   function navSearch() {
@@ -850,6 +855,33 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                   >
                     Log out
                   </MenuItem>
+                  <MenuDivider/>
+                  <Box 
+                    marginInlineStart="2!important" 
+                    position="relative"
+                    display={["block","none"]}
+                  >
+                    <Input 
+                      type="search"
+                      rounded="2xl"
+                      width="100%"
+                      placeholder="Search"
+                      bg="gray.100"
+                      _dark={{
+                        bg: "whiteAlpha.50"
+                      }}
+                      ref={navSearchRef}
+                      // borderColor="black"
+                      onKeyDown={e=>e.key === 'Enter' ? navSearch() : null}
+                    />
+                    <Box
+                      pointerEvents="none"
+                      as={FaSearch}
+                      position="absolute"
+                      top={3}
+                      right={3}
+                    />
+                  </Box>
                 </MenuList>
               </Portal>
             </Menu>
@@ -1195,7 +1227,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                 <i>No book clubs based on the search term</i>
               )}
             </Box>
-            {/* <Box my={2}>
+            <Box my={2}>
               <Heading as="h3" size="md">Book Chat Rooms</Heading>
               {searchData && searchData.books?.length > 0 ? (
                 <TableContainer>
@@ -1205,24 +1237,37 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                         return (
                           <Tr key={i}>
                             <Td fontStyle="italic" px={0} maxW="100px" overflow="hidden" textOverflow="ellipsis">
-                              {book.volumeInfo?.title}
+                              {book.title}
+                            </Td>
+                            <Td px={0} fontStyle="italic">
+                              {book.publish_date?.length ? dayjs(book.publish_date[0]).format('YYYY') : ""}
+                            </Td>
+                            <Td px={1} maxW="100px" overflow="hidden" textOverflow="ellipsis">
+                              {book.author_name ? book.author_name[0] : ""}
                             </Td>
                             <Td px={0}>
-                              {book.volumeInfo.publishedDate ? dayjs(book.volumeInfo.publishedDate).format('YYYY') : null}
-                            </Td>
-                            <Td px={0}>
-                              {book.volumeInfo.authors ? book.volumeInfo.authors[0] : ""}
+                              <Button 
+                                as="a"
+                                href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.title + " " + (book.author_name ? book.author_name[0] : null) + " " + (book.isbn?.length >= 2 ? book.isbn[1] : null))}`}
+                                target="blank"
+                                size="xs"
+                                variant="outline"
+                                backgroundColor="white"
+                                color="black"
+                              >
+                                Buy
+                              </Button>
                             </Td>
                             <Td px={0}>
                               <Button
                                 size="xs"
                                 as={Link}
-                                to={`/chat/room?title=${book.volumeInfo.title}&author=${book.volumeInfo.authors ? book.volumeInfo.authors[0] : ""}`}
+                                to={`/chat/room?title=${book.title}&author=${book.author_name ? book.author_name[0] : ""}`}
                                 onClick={e=>closeSearchModal()}
                                 backgroundColor="black"
                                 color="white"
                               >
-                                <BsArrowRight/>
+                                Chat
                               </Button>
                             </Td>
                           </Tr>
@@ -1232,7 +1277,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                   </Table>
                 </TableContainer>
               ): null}
-            </Box> */}
+            </Box>
 
           </ModalBody>
           </ModalContent>
