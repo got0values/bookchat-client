@@ -15,10 +15,13 @@ import {
 } from "react-share";
 import { LiaCopySolid } from 'react-icons/lia';
 import { BsArrowRightShort } from 'react-icons/bs';
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 
 export default function SocialShareButtons({reading,username}: {reading: any,username:string}) {
   const toast = useToast();
+  dayjs.extend(utc);
 
   return (
     <Flex
@@ -32,9 +35,9 @@ export default function SocialShareButtons({reading,username}: {reading: any,use
         p={0}
         title="copy"
         onClick={e=>{
-          navigator.clipboard.writeText(`Currently reading ${reading.title}${reading.published_date ? " (" + reading.published_date + ")" : null}${reading.author ? " by " + reading.author + " - Shared though bookchatnoir.com 🐈‍⬛" : null}`)
+          navigator.clipboard.writeText(`Currently reading ${reading.title}${reading.published_date ? " (" + dayjs(reading.published_date).local().format('YYYY') + ")" : null}${reading.author ? " by " + reading.author + " - Shared though bookchatnoir.com 🐈‍⬛" : null}`)
           toast({
-            description: `Copied text: "Currently reading ${reading.title}${reading.published_date ? " (" + reading.published_date + ")" : null}${reading.author ? " by " + reading.author + " - Shared though bookchatnoir.com 🐈‍⬛" : null}"`,
+            description: `Copied text: "Currently reading ${reading.title}${reading.published_date ? " (" + dayjs(reading.published_date).local().format('YYYY') + ")" : null}${reading.author ? " by " + reading.author + " - Shared though bookchatnoir.com 🐈‍⬛" : null}"`,
             status: "success",
             duration: 9000,
             isClosable: true
@@ -46,26 +49,26 @@ export default function SocialShareButtons({reading,username}: {reading: any,use
       <BsArrowRightShort size={20} />
       <FacebookShareButton 
         url={`https://app.bookchatnoir.com/profile/${username}`}
-        quote={`Currently reading ${reading.title}${reading.published_date ? " (" + reading.published_date + ")" : null}${reading.author ? " by " + reading.author + " - Shared though bookchatnoir.com 🐈‍⬛" : null}`}
+        quote={`Currently reading ${reading.title}${reading.published_date ? " (" + dayjs(reading.published_date).local().format('YYYY') + ")" : null}${reading.author ? " by " + reading.author + " - Shared though bookchatnoir.com 🐈‍⬛" : null}`}
       >
         <FacebookIcon size={25} round={true}/>
       </FacebookShareButton>
       <TwitterShareButton 
         url={`https://app.bookchatnoir.com/profile/${username}`}
-        title={`Currently reading ${reading.title}${reading.published_date ? " (" + reading.published_date + ")" : null}${reading.author ? " by " + reading.author + " - Shared though bookchatnoir.com 🐈‍⬛" : null}`}
+        title={`Currently reading ${reading.title}${reading.published_date ? " (" + dayjs(reading.published_date).local().format('YYYY') + ")" : null}${reading.author ? " by " + reading.author + " - Shared though bookchatnoir.com 🐈‍⬛" : null}`}
       >
         <TwitterIcon size={25} round={true}/>
       </TwitterShareButton>
       <LinkedinShareButton 
         url={`https://app.bookchatnoir.com/profile/${username}`}
-        title={`Currently reading ${reading.title}${reading.published_date ? " (" + reading.published_date + ")" : null}${reading.author ? " by " + reading.author + " - Shared though bookchatnoir.com 🐈‍⬛" : null}`}
-        summary={`Currently reading ${reading.title}${reading.published_date ? " (" + reading.published_date + ")" : null}${reading.author ? " by " + reading.author + " - Shared though bookchatnoir.com 🐈‍⬛" : null}`}
+        title={`Currently reading ${reading.title}${reading.published_date ? " (" + dayjs(reading.published_date).local().format('YYYY') + ")" : null}${reading.author ? " by " + reading.author + " - Shared though bookchatnoir.com 🐈‍⬛" : null}`}
+        summary={`Currently reading ${reading.title}${reading.published_date ? " (" + dayjs(reading.published_date).local().format('YYYY') + ")" : null}${reading.author ? " by " + reading.author + " - Shared though bookchatnoir.com 🐈‍⬛" : null}`}
         source={`https://app.bookchatnoir.com/profile/${username}`}
       >
         <LinkedinIcon size={25} round={true}/>
       </LinkedinShareButton>
       <WhatsappShareButton 
-        title={`Currently reading ${reading.title}${reading.published_date ? " (" + reading.published_date + ")" : null}${reading.author ? " by " + reading.author + " - Shared though bookchatnoir.com 🐈‍⬛" : null}`}
+        title={`Currently reading ${reading.title}${reading.published_date ? " (" + dayjs(reading.published_date).local().format('YYYY') + ")" : null}${reading.author ? " by " + reading.author + " - Shared though bookchatnoir.com 🐈‍⬛" : null}`}
         url={`https://app.bookchatnoir.com/profile/${username}`}
       >
         <WhatsappIcon size={25} round={true}/>
