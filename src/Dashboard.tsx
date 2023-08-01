@@ -40,17 +40,20 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  useToast,
   useDisclosure
 } from "@chakra-ui/react";
 import { editPagesRead, cancelEditPagesRead } from "./shared/editCancelPagesRead";
 import { editCurrentlyReadingThoughts, cancelEditCurrentlyReadingThoughts } from "./shared/editCancelCurrentlyReadingThoughts";
 import BooksSearch from "./shared/BooksSearch";
+import SocialShareButtons from "./shared/SocialShareButtons";
 import { SuggestionCountBadge } from "./shared/SuggestionCount";
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
-import { BsReplyFill } from 'react-icons/bs';
+import { BsReplyFill, BsArrowRightShort } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { MdOutlineChat } from 'react-icons/md';
 import { FaShoppingCart, FaPlay } from 'react-icons/fa';
+import { LiaCopySolid } from 'react-icons/lia';
 import Comments from "./shared/CurrentlyReadingComments";
 import { 
   FacebookShareButton, 
@@ -58,7 +61,9 @@ import {
   TwitterShareButton,
   TwitterIcon,
   WhatsappShareButton,
-  WhatsappIcon
+  WhatsappIcon,
+  LinkedinShareButton,
+  LinkedinIcon
 } from "react-share";
 import { useAuth } from './hooks/useAuth';
 import Cookies from "js-cookie";
@@ -70,7 +75,7 @@ import packageJson from '../package.json';
 
 export default function Dashboard({server,gbooksapi}: DashboardProps) {
   dayjs.extend(utc);
-  const navigate = useNavigate();
+  const toast = useToast();
   const { user, getUser } = useAuth();
   const queryClient = useQueryClient();
 
@@ -529,14 +534,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 </MenuButton>
                 <MenuList>
                   <MenuItem 
-                    data-book={JSON.stringify(reading)}
-                    onClick={e=>openCommentModal(e)}
-                    fontWeight="bold"
-                    icon={<BsReplyFill size={20} />}
-                  >
-                    Comment
-                  </MenuItem>
-                  <MenuItem 
                     as={Link}
                     to={`/chat/room?title=${reading.title}&author=${reading.author}`}
                     fontWeight="bold"
@@ -713,71 +710,95 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     </Button>
                   </Flex>
                 </Box>
-                <Flex align="center" gap={0}>
-                  <Button 
-                    px={0}
-                    pb={0.5}
-                    size="xs"
-                    variant="ghost"
-                    data-currentlyreading={reading.id}
-                    onClick={e=>likeUnlikeCurrentlyReading(e)}
-                    title="like post"
-                  >
-                    {reading.CurrentlyReadingLike?.filter((like)=>like.profile===user?.Profile?.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
-                  </Button>
-                  {reading.CurrentlyReadingLike?.length ? (
-                    <Popover isLazy size="sm">
-                      <PopoverTrigger>
-                        <Button
-                          size="sm"
-                          minW="20px"
-                          variant="ghost"
-                          p={0}
-                        >
-                          {reading.CurrentlyReadingLike?.length ? reading.CurrentlyReadingLike.length.toString() : "0"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent>
-                        <PopoverArrow />
-                        <PopoverCloseButton />
-                        <PopoverBody
-                          _dark={{
-                            bg: "black"
-                          }}
-                        >
-                          {reading.CurrentlyReadingLike?.length ? (
-                            reading.CurrentlyReadingLike?.map((like,i)=>{
-                              return (
-                                <Box mb={1} key={i}>
-                                  <Link 
-                                    to={`/profile/${like.Profile.username}`}
-                                  >
-                                    {like.Profile.username}
-                                  </Link>
-                                </Box>
-                              )
-                            })
-                          ) : null}
-                        </PopoverBody>
-                      </PopoverContent>
-                    </Popover>
-                  ) : (
-                    <Text
-                      cursor="pointer"
-                      minW="20px"
-                      textAlign="center"
-                      fontWeight={600}
-                    >
-                      {reading.CurrentlyReadingLike?.length ? reading.CurrentlyReadingLike.length.toString() : "0"}
-                    </Text>
-                  )}
-                </Flex>
               </Flex>
             </Box>
           </Flex>
+          <Divider mt={2} mb={1} />
+          <Flex
+            align="center"
+            justify="space-between"
+            w="100%"
+          >
+            {reading.Profile.id === user?.Profile.id ? (
+              <SocialShareButtons reading={reading} username={reading.Profile.username} />
+            ) : null}
+            <Flex
+              align="center"
+              gap={1}
+              ms="auto"
+            >
+              <Button
+                size="sm"
+                variant="ghost"
+                data-book={JSON.stringify(reading)}
+                onClick={e=>openCommentModal(e)}
+              >
+                <Box as={BsReplyFill} size={20} pb={1} /> Comment
+              </Button>
+              <Flex align="center" gap={0}>
+                <Button 
+                  px={0}
+                  pb={0.5}
+                  size="xs"
+                  variant="ghost"
+                  data-currentlyreading={reading.id}
+                  onClick={e=>likeUnlikeCurrentlyReading(e)}
+                  title="like post"
+                >
+                  {reading.CurrentlyReadingLike?.filter((like)=>like.profile===user?.Profile?.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                </Button>
+                {reading.CurrentlyReadingLike?.length ? (
+                  <Popover isLazy size="sm">
+                    <PopoverTrigger>
+                      <Button
+                        size="sm"
+                        minW="20px"
+                        variant="ghost"
+                        p={0}
+                      >
+                        {reading.CurrentlyReadingLike?.length ? reading.CurrentlyReadingLike.length.toString() : "0"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <PopoverArrow />
+                      <PopoverCloseButton />
+                      <PopoverBody
+                        _dark={{
+                          bg: "black"
+                        }}
+                      >
+                        {reading.CurrentlyReadingLike?.length ? (
+                          reading.CurrentlyReadingLike?.map((like,i)=>{
+                            return (
+                              <Box mb={1} key={i}>
+                                <Link 
+                                  to={`/profile/${like.Profile.username}`}
+                                >
+                                  {like.Profile.username}
+                                </Link>
+                              </Box>
+                            )
+                          })
+                        ) : null}
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Popover>
+                ) : (
+                  <Text
+                    cursor="pointer"
+                    minW="20px"
+                    textAlign="center"
+                    fontWeight={600}
+                  >
+                    {reading.CurrentlyReadingLike?.length ? reading.CurrentlyReadingLike.length.toString() : "0"}
+                  </Text>
+                )}
+              </Flex>
+            </Flex>
+          </Flex>
           {reading.CurrentlyReadingComment && reading.CurrentlyReadingComment.length ? (
             <>
-            <Divider my={3} w="50%" mx="auto" borderColor="gray" />
+            <Divider mt={1} />
               <Comments 
                 comments={reading.CurrentlyReadingComment} 
                 getDashboard={getDashboard} 
@@ -800,26 +821,10 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           // p={1}
         >
           <Flex
-            justify="space-between"
+            justify="center"
             align="center"
             className="non-well"
           >
-            <Flex 
-              gap={1}
-            >
-              <Text>
-                Share:
-              </Text>
-              <FacebookShareButton url="https://bookchatnoir.com">
-                <FacebookIcon size={25} round={true}/>
-              </FacebookShareButton>
-              <TwitterShareButton url="https://bookchatnoir.com">
-                <TwitterIcon size={25} round={true}/>
-              </TwitterShareButton>
-              <WhatsappShareButton url="https://bookchatnoir.com">
-                <WhatsappIcon size={25} round={true}/>
-              </WhatsappShareButton>
-            </Flex>
             {firstBookshelf && user.Profile._count?.BookSuggestion_BookSuggestion_suggestorToProfile < 1 ? (
               <Button
                 as="a"

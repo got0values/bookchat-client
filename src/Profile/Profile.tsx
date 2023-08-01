@@ -57,6 +57,7 @@ import {
 import { editPagesRead, cancelEditPagesRead } from "../shared/editCancelPagesRead";
 import { editCurrentlyReadingThoughts, cancelEditCurrentlyReadingThoughts } from "../shared/editCancelCurrentlyReadingThoughts";
 import {SuggestionCountBadge} from "../shared/SuggestionCount";
+import SocialShareButtons from "../shared/SocialShareButtons";
 import collectionToArray from "../utils/collectionToArray";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
 import BooksSearch from "../shared/BooksSearch";
@@ -1227,14 +1228,6 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     </MenuButton>
                                     <MenuList>
                                       <MenuItem 
-                                        data-book={JSON.stringify(profileData.CurrentlyReading[0])}
-                                        onClick={e=>openCommentModal(e)}
-                                        fontWeight="bold"
-                                        icon={<BsReplyFill size={20} />}
-                                      >
-                                        Comment
-                                      </MenuItem>
-                                      <MenuItem 
                                         as={Link}
                                         to={`/chat/room?title=${profileData.CurrentlyReading[0].title}&author=${profileData.CurrentlyReading[0].author}`}
                                         fontWeight="bold"
@@ -1292,6 +1285,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 </Box>
                               </Flex>
                             </Flex>
+                            <Divider mt={1} />
                             <Text 
                               my={2}
                               rounded="md"
@@ -1409,117 +1403,137 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     </Text>
                                   ): null}
                                 </Box>
-                                <Flex justify="space-between" align="center" wrap="wrap">
-                                  <Box>
-                                    <Text 
-                                      padding={0}
-                                      rounded="md"
-                                      _hover={{
-                                        cursor: viewer === "self" ? "pointer" : "default",
-                                        backgroundColor: viewer === "self" ? "gray" : "unset",
-                                      }}
-                                      id={`pages-read-text-${profileData.CurrentlyReading[0].id}`}
-                                      onClick={e=>viewer === "self" ? editPagesRead(profileData.CurrentlyReading[0].id) : null}
+                                <Box>
+                                  <Text 
+                                    padding={0}
+                                    rounded="md"
+                                    _hover={{
+                                      cursor: viewer === "self" ? "pointer" : "default",
+                                      backgroundColor: viewer === "self" ? "gray" : "unset",
+                                    }}
+                                    id={`pages-read-text-${profileData.CurrentlyReading[0].id}`}
+                                    onClick={e=>viewer === "self" ? editPagesRead(profileData.CurrentlyReading[0].id) : null}
+                                  >
+                                    Pages read: {profileData.CurrentlyReading[0].pages_read ? profileData.CurrentlyReading[0].pages_read : 0}
+                                  </Text>
+                                  <Flex 
+                                    align="center" 
+                                    gap={1}
+                                    id={`pages-read-input-div-${profileData.CurrentlyReading[0].id}`}
+                                    display="none"
+                                    wrap="wrap"
+                                    padding={0}
+                                  >
+                                    Pages read:
+                                    <NumberInput
+                                      maxWidth="75px"
+                                      size="sm"
+                                      min={0}
+                                      defaultValue={profileData.CurrentlyReading[0].pages_read}
                                     >
-                                      Pages read: {profileData.CurrentlyReading[0].pages_read ? profileData.CurrentlyReading[0].pages_read : 0}
-                                    </Text>
-                                    <Flex 
-                                      align="center" 
-                                      gap={1}
-                                      id={`pages-read-input-div-${profileData.CurrentlyReading[0].id}`}
-                                      display="none"
-                                      wrap="wrap"
-                                      padding={0}
+                                      <NumberInputField id={`pages-read-input-${profileData.CurrentlyReading[0].id}`} />
+                                      <NumberInputStepper>
+                                        <NumberIncrementStepper />
+                                        <NumberDecrementStepper />
+                                      </NumberInputStepper>
+                                    </NumberInput>
+                                    <Button
+                                      size="sm"
+                                      backgroundColor="black"
+                                      color="white"
+                                      onClick={e=>updatePagesRead(profileData.CurrentlyReading[0].id)}
                                     >
-                                      Pages read:
-                                      <NumberInput
-                                        maxWidth="75px"
-                                        size="sm"
-                                        min={0}
-                                        defaultValue={profileData.CurrentlyReading[0].pages_read}
-                                      >
-                                        <NumberInputField id={`pages-read-input-${profileData.CurrentlyReading[0].id}`} />
-                                        <NumberInputStepper>
-                                          <NumberIncrementStepper />
-                                          <NumberDecrementStepper />
-                                        </NumberInputStepper>
-                                      </NumberInput>
-                                      <Button
-                                        size="sm"
-                                        backgroundColor="black"
-                                        color="white"
-                                        onClick={e=>updatePagesRead(profileData.CurrentlyReading[0].id)}
-                                      >
-                                        Update
-                                      </Button>
-                                      <Button
-                                        size="sm"
-                                        onClick={e=>cancelEditPagesRead(profileData.CurrentlyReading[0].id)}
-                                      >
-                                        Cancel
-                                      </Button>
-                                    </Flex>
-                                  </Box>
-                                  <Flex align="center" gap={0}>
-                                    <Button 
-                                      px={0}
-                                      pb={0.5}
-                                      size="xs"
-                                      variant="ghost"
-                                      data-currentlyreading={profileData.CurrentlyReading[0].id}
-                                      onClick={e=>likeUnlikeCurrentlyReading(e)}
-                                      aria-label="like/unlike"
-                                    >
-                                      {profileData.CurrentlyReading[0].CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                                      Update
                                     </Button>
-                                    {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? (
-                                      <Popover isLazy size="sm">
-                                        <PopoverTrigger>
-                                          <Text
-                                            cursor="pointer"
-                                          >
-                                            {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[0].CurrentlyReadingLike.length.toString() : "0"}
-                                          </Text>
-                                        </PopoverTrigger>
-                                        <PopoverContent>
-                                          <PopoverArrow />
-                                          <PopoverCloseButton />
-                                          <PopoverBody
-                                            _dark={{
-                                              bg: "black"
-                                            }}
-                                          >
-                                            {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? (
-                                              profileData.CurrentlyReading[0].CurrentlyReadingLike?.map((like,i)=>{
-                                                return (
-                                                  <Box mb={1} key={i}>
-                                                    <Link 
-                                                      key={i}
-                                                      to={`/profile/${like.Profile.username}`}
-                                                    >
-                                                      {like.Profile.username}
-                                                    </Link>
-                                                  </Box>
-                                                )
-                                              })
-                                            ) : null}
-                                          </PopoverBody>
-                                        </PopoverContent>
-                                      </Popover>
-                                    ) : (
-                                      <Text
-                                        cursor="pointer"
-                                      >
-                                        {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[0].CurrentlyReadingLike.length.toString() : "0"}
-                                      </Text>
-                                    )}
+                                    <Button
+                                      size="sm"
+                                      onClick={e=>cancelEditPagesRead(profileData.CurrentlyReading[0].id)}
+                                    >
+                                      Cancel
+                                    </Button>
                                   </Flex>
-                                </Flex>
+                                </Box>
                               </Box>
+                            </Flex>
+                            <Divider my={1} />
+                            <Flex
+                              align="center"
+                              justify="space-between"
+                              w="100%"
+                            >
+                              <SocialShareButtons reading={profileData.CurrentlyReading[0]} username={profileData.username} />
+                              <Flex
+                                align="center"
+                                gap={1}
+                                ms="auto"
+                              >
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  data-book={JSON.stringify(profileData.CurrentlyReading[0])}
+                                  onClick={e=>openCommentModal(e)}
+                                >
+                                  <Box as={BsReplyFill} size={20} pb={1} /> Comment
+                                </Button>
+                                <Flex align="center" gap={0}>
+                                  <Button 
+                                    px={0}
+                                    pb={0.5}
+                                    size="xs"
+                                    variant="ghost"
+                                    data-currentlyreading={profileData.CurrentlyReading[0].id}
+                                    onClick={e=>likeUnlikeCurrentlyReading(e)}
+                                    aria-label="like/unlike"
+                                  >
+                                    {profileData.CurrentlyReading[0].CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                                  </Button>
+                                  {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? (
+                                    <Popover isLazy size="sm">
+                                      <PopoverTrigger>
+                                        <Text
+                                          cursor="pointer"
+                                        >
+                                          {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[0].CurrentlyReadingLike.length.toString() : "0"}
+                                        </Text>
+                                      </PopoverTrigger>
+                                      <PopoverContent>
+                                        <PopoverArrow />
+                                        <PopoverCloseButton />
+                                        <PopoverBody
+                                          _dark={{
+                                            bg: "black"
+                                          }}
+                                        >
+                                          {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? (
+                                            profileData.CurrentlyReading[0].CurrentlyReadingLike?.map((like,i)=>{
+                                              return (
+                                                <Box mb={1} key={i}>
+                                                  <Link 
+                                                    key={i}
+                                                    to={`/profile/${like.Profile.username}`}
+                                                  >
+                                                    {like.Profile.username}
+                                                  </Link>
+                                                </Box>
+                                              )
+                                            })
+                                          ) : null}
+                                        </PopoverBody>
+                                      </PopoverContent>
+                                    </Popover>
+                                  ) : (
+                                    <Text
+                                      cursor="pointer"
+                                    >
+                                      {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[0].CurrentlyReadingLike.length.toString() : "0"}
+                                    </Text>
+                                  )}
+                                </Flex>
+                              </Flex>
                             </Flex>
                             {profileData.CurrentlyReading[0].CurrentlyReadingComment.length ? (
                                 <>
-                                  <Divider my={3} />
+                                  <Divider mb={1} />
                                   <Comments 
                                     comments={profileData.CurrentlyReading[0].CurrentlyReadingComment} 
                                     getProfile={getProfile} 
@@ -1574,14 +1588,6 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       </MenuButton>
                                       <MenuList>
                                         <MenuItem 
-                                          data-book={JSON.stringify(profileData.CurrentlyReading[0])}
-                                          onClick={e=>openCommentModal(e)}
-                                          fontWeight="bold"
-                                          icon={<BsReplyFill size={20} />}
-                                        >
-                                          Comment
-                                        </MenuItem>
-                                        <MenuItem 
                                           as={Link}
                                           to={`/chat/room?title=${profileData.CurrentlyReading[0].title}&author=${profileData.CurrentlyReading[0].author}`}
                                           fontWeight="bold"
@@ -1602,6 +1608,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     </Menu>
                                   </Box>
                                 </Flex>
+                                <Divider mt={1} />
                                 <Text 
                                   my={2}
                                   rounded="md"
@@ -1681,74 +1688,96 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                         </Text>
                                       ): null}
                                     </Box>
-                                    <Flex justify="space-between" align="center" wrap="wrap">
-                                      <Text>
-                                        Pages read: {profileData.CurrentlyReading[0].pages_read ? profileData.CurrentlyReading[0].pages_read : 0}
-                                      </Text>
-                                      <Flex align="center" gap={0}>
-                                        <Button 
-                                          px={0}
-                                          pb={0.5}
-                                          size="xs"
-                                          variant="ghost"
-                                          data-currentlyreading={profileData.CurrentlyReading[0].id}
-                                          onClick={e=>likeUnlikeCurrentlyReading(e)}
-                                          aria-label="like/unlike"
-                                        >
-                                          {profileData.CurrentlyReading[0].CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
-                                        </Button>
-                                        {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? (
-                                          <Popover isLazy size="sm">
-                                            <PopoverTrigger>
-                                              <Text
-                                                cursor="pointer"
-                                              >
-                                                {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[0].CurrentlyReadingLike.length.toString() : "0"}
-                                              </Text>
-                                            </PopoverTrigger>
-                                            <PopoverContent>
-                                              <PopoverArrow />
-                                              <PopoverCloseButton />
-                                              <PopoverBody
-                                                _dark={{
-                                                  bg: "black"
-                                                }}
-                                              >
-                                                {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? (
-                                                  profileData.CurrentlyReading[0].CurrentlyReadingLike?.map((like,i)=>{
-                                                    return (
-                                                      <Box mb={1} key={i}>
-                                                        <Link 
-                                                          key={i}
-                                                          to={`/profile/${like.Profile.username}`}
-                                                        >
-                                                          {like.Profile.username}
-                                                        </Link>
-                                                      </Box>
-                                                    )
-                                                  })
-                                                ) : null}
-                                              </PopoverBody>
-                                            </PopoverContent>
-                                          </Popover>
-                                        ) : (
-                                          <Text
-                                            cursor="pointer"
-                                          >
-                                            {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[0].CurrentlyReadingLike.length.toString() : "0"}
-                                          </Text>
-                                        )}
-                                      </Flex>
-                                    </Flex>
+                                    <Text>
+                                      Pages read: {profileData.CurrentlyReading[0].pages_read ? profileData.CurrentlyReading[0].pages_read : 0}
+                                    </Text>
                                   </Box>
                                 </Flex>
-                                {profileData.CurrentlyReading[0].CurrentlyReadingComment ? (
-                                  <Comments 
-                                    comments={profileData.CurrentlyReading[0].CurrentlyReadingComment} 
-                                    getProfile={getProfile} 
-                                    location="profile"
-                                    server={server}
-                                  />
+                                <Divider mt={1} />
+                                <Flex
+                                  align="center"
+                                  justify="space-between"
+                                  w="100%"
+                                >
+                                  <Flex
+                                    align="center"
+                                    gap={1}
+                                    ms="auto"
+                                  >
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      data-book={JSON.stringify(profileData.CurrentlyReading[0])}
+                                      onClick={e=>openCommentModal(e)}
+                                    >
+                                      <Box as={BsReplyFill} size={20} pb={1} /> Comment
+                                    </Button>
+                                    <Flex align="center" gap={0}>
+                                      <Button 
+                                        px={0}
+                                        pb={0.5}
+                                        size="xs"
+                                        variant="ghost"
+                                        data-currentlyreading={profileData.CurrentlyReading[0].id}
+                                        onClick={e=>likeUnlikeCurrentlyReading(e)}
+                                        aria-label="like/unlike"
+                                      >
+                                        {profileData.CurrentlyReading[0].CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                                      </Button>
+                                      {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? (
+                                        <Popover isLazy size="sm">
+                                          <PopoverTrigger>
+                                            <Text
+                                              cursor="pointer"
+                                            >
+                                              {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[0].CurrentlyReadingLike.length.toString() : "0"}
+                                            </Text>
+                                          </PopoverTrigger>
+                                          <PopoverContent>
+                                            <PopoverArrow />
+                                            <PopoverCloseButton />
+                                            <PopoverBody
+                                              _dark={{
+                                                bg: "black"
+                                              }}
+                                            >
+                                              {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? (
+                                                profileData.CurrentlyReading[0].CurrentlyReadingLike?.map((like,i)=>{
+                                                  return (
+                                                    <Box mb={1} key={i}>
+                                                      <Link 
+                                                        key={i}
+                                                        to={`/profile/${like.Profile.username}`}
+                                                      >
+                                                        {like.Profile.username}
+                                                      </Link>
+                                                    </Box>
+                                                  )
+                                                })
+                                              ) : null}
+                                            </PopoverBody>
+                                          </PopoverContent>
+                                        </Popover>
+                                      ) : (
+                                        <Text
+                                          cursor="pointer"
+                                        >
+                                          {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? profileData.CurrentlyReading[0].CurrentlyReadingLike.length.toString() : "0"}
+                                        </Text>
+                                      )}
+                                    </Flex>
+                                  </Flex>
+                                </Flex>
+                                {profileData.CurrentlyReading[0].CurrentlyReadingComment.length ? (
+                                  <>
+                                    <Divider mb={1} />
+                                    <Comments 
+                                      comments={profileData.CurrentlyReading[0].CurrentlyReadingComment} 
+                                      getProfile={getProfile} 
+                                      location="profile"
+                                      server={server}
+                                    />
+                                  </>
                               ): null}
                               </Box>
                             ) : null}
@@ -1808,14 +1837,6 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                             </MenuButton>
                                             <MenuList>
                                               <MenuItem 
-                                                data-book={JSON.stringify(readBook)}
-                                                onClick={e=>openCommentModal(e)}
-                                                fontWeight="bold"
-                                                icon={<BsReplyFill size={20} />}
-                                              >
-                                                Comment
-                                              </MenuItem>
-                                              <MenuItem 
                                                 as={Link}
                                                 to={`/chat/room?title=${readBook.title}&author=${readBook.author}`}
                                                 fontWeight="bold"
@@ -1873,6 +1894,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                         </Box>
                                       </Flex>
                                     </Flex>
+                                    <Divider mt={1} />
                                     <Text 
                                       my={2}
                                       rounded="md"
@@ -1965,117 +1987,136 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                             </Text>
                                           ): null}
                                         </Box>
-                                        <Flex justify="space-between" align="center" wrap="wrap">
-                                          <Box>
-                                            <Text 
-                                              padding={0}
-                                              rounded="md"
-                                              _hover={{
-                                                cursor: viewer === "self" ? "pointer" : "default",
-                                                backgroundColor: viewer === "self" ? "gray" : "unset",
-                                              }}
-                                              id={`pages-read-text-${readBook.id}`}
-                                              onClick={e=>viewer === "self" ? editPagesRead(readBook.id) : null}
+                                        <Box>
+                                          <Text 
+                                            padding={0}
+                                            rounded="md"
+                                            _hover={{
+                                              cursor: viewer === "self" ? "pointer" : "default",
+                                              backgroundColor: viewer === "self" ? "gray" : "unset",
+                                            }}
+                                            id={`pages-read-text-${readBook.id}`}
+                                            onClick={e=>viewer === "self" ? editPagesRead(readBook.id) : null}
+                                          >
+                                            Pages read: {readBook.pages_read ? readBook.pages_read : 0}
+                                          </Text>
+                                          <Flex 
+                                            align="center" 
+                                            gap={1}
+                                            id={`pages-read-input-div-${readBook.id}`}
+                                            display="none"
+                                            wrap="wrap"
+                                            padding={0}
+                                          >
+                                            Pages read:
+                                            <NumberInput
+                                              maxWidth="75px"
+                                              size="sm"
+                                              min={0}
+                                              defaultValue={readBook.pages_read}
                                             >
-                                              Pages read: {readBook.pages_read ? readBook.pages_read : 0}
-                                            </Text>
-                                            <Flex 
-                                              align="center" 
-                                              gap={1}
-                                              id={`pages-read-input-div-${readBook.id}`}
-                                              display="none"
-                                              wrap="wrap"
-                                              padding={0}
+                                              <NumberInputField id={`pages-read-input-${readBook.id}`} />
+                                              <NumberInputStepper>
+                                                <NumberIncrementStepper />
+                                                <NumberDecrementStepper />
+                                              </NumberInputStepper>
+                                            </NumberInput>
+                                            <Button
+                                              size="sm"
+                                              backgroundColor="black"
+                                              color="white"
+                                              onClick={e=>updatePagesRead(readBook.id)}
                                             >
-                                              Pages read:
-                                              <NumberInput
-                                                maxWidth="75px"
-                                                size="sm"
-                                                min={0}
-                                                defaultValue={readBook.pages_read}
-                                              >
-                                                <NumberInputField id={`pages-read-input-${readBook.id}`} />
-                                                <NumberInputStepper>
-                                                  <NumberIncrementStepper />
-                                                  <NumberDecrementStepper />
-                                                </NumberInputStepper>
-                                              </NumberInput>
-                                              <Button
-                                                size="sm"
-                                                backgroundColor="black"
-                                                color="white"
-                                                onClick={e=>updatePagesRead(readBook.id)}
-                                              >
-                                                Update
-                                              </Button>
-                                              <Button
-                                                size="sm"
-                                                onClick={e=>cancelEditPagesRead(readBook.id)}
-                                              >
-                                                Cancel
-                                              </Button>
-                                            </Flex>
-                                          </Box>
-                                          <Flex align="center" gap={0}>
-                                            <Button 
-                                              px={0}
-                                              pb={0.5}
-                                              size="xs"
-                                              variant="ghost"
-                                              data-currentlyreading={readBook.id}
-                                              onClick={e=>likeUnlikeCurrentlyReading(e)}
-                                              aria-label="like/unlike"
-                                            >
-                                              {readBook.CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                                              Update
                                             </Button>
-                                            {readBook.CurrentlyReadingLike?.length ? (
-                                              <Popover isLazy size="sm">
-                                                <PopoverTrigger>
-                                                  <Text
-                                                    cursor="pointer"
-                                                  >
-                                                    {readBook.CurrentlyReadingLike?.length ? readBook.CurrentlyReadingLike.length.toString() : "0"}
-                                                  </Text>
-                                                </PopoverTrigger>
-                                                <PopoverContent>
-                                                  <PopoverArrow />
-                                                  <PopoverCloseButton />
-                                                  <PopoverBody
-                                                    _dark={{
-                                                      bg: "black"
-                                                    }}
-                                                  >
-                                                    {readBook.CurrentlyReadingLike?.length ? (
-                                                      readBook.CurrentlyReadingLike?.map((like,i)=>{
-                                                        return (
-                                                          <Box mb={1} key={i}>
-                                                            <Link 
-                                                              key={i}
-                                                              to={`/profile/${like.Profile.username}`}
-                                                            >
-                                                              {like.Profile.username}
-                                                            </Link>
-                                                          </Box>
-                                                        )
-                                                      })
-                                                    ) : null}
-                                                  </PopoverBody>
-                                                </PopoverContent>
-                                              </Popover>
-                                            ) : (
-                                              <Text
-                                                cursor="pointer"
-                                              >
-                                                {readBook.CurrentlyReadingLike?.length ? readBook.CurrentlyReadingLike.length.toString() : "0"}
-                                              </Text>
-                                            )}
+                                            <Button
+                                              size="sm"
+                                              onClick={e=>cancelEditPagesRead(readBook.id)}
+                                            >
+                                              Cancel
+                                            </Button>
                                           </Flex>
-                                        </Flex>
+                                        </Box>
                                       </Box>
+                                    </Flex>
+                                    <Divider mt={1} />
+                                    <Flex
+                                      align="center"
+                                      justify="space-between"
+                                      w="100%"
+                                    >
+                                      <Flex
+                                        align="center"
+                                        gap={1}
+                                        ms="auto"
+                                      >
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          data-book={JSON.stringify(readBook)}
+                                          onClick={e=>openCommentModal(e)}
+                                        >
+                                          <Box as={BsReplyFill} size={20} pb={1} /> Comment
+                                        </Button>
+                                        <Flex align="center" gap={0}>
+                                          <Button 
+                                            px={0}
+                                            pb={0.5}
+                                            size="xs"
+                                            variant="ghost"
+                                            data-currentlyreading={readBook.id}
+                                            onClick={e=>likeUnlikeCurrentlyReading(e)}
+                                            aria-label="like/unlike"
+                                          >
+                                            {readBook.CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                                          </Button>
+                                          {readBook.CurrentlyReadingLike?.length ? (
+                                            <Popover isLazy size="sm">
+                                              <PopoverTrigger>
+                                                <Text
+                                                  cursor="pointer"
+                                                >
+                                                  {readBook.CurrentlyReadingLike?.length ? readBook.CurrentlyReadingLike.length.toString() : "0"}
+                                                </Text>
+                                              </PopoverTrigger>
+                                              <PopoverContent>
+                                                <PopoverArrow />
+                                                <PopoverCloseButton />
+                                                <PopoverBody
+                                                  _dark={{
+                                                    bg: "black"
+                                                  }}
+                                                >
+                                                  {readBook.CurrentlyReadingLike?.length ? (
+                                                    readBook.CurrentlyReadingLike?.map((like,i)=>{
+                                                      return (
+                                                        <Box mb={1} key={i}>
+                                                          <Link 
+                                                            key={i}
+                                                            to={`/profile/${like.Profile.username}`}
+                                                          >
+                                                            {like.Profile.username}
+                                                          </Link>
+                                                        </Box>
+                                                      )
+                                                    })
+                                                  ) : null}
+                                                </PopoverBody>
+                                              </PopoverContent>
+                                            </Popover>
+                                          ) : (
+                                            <Text
+                                              cursor="pointer"
+                                            >
+                                              {readBook.CurrentlyReadingLike?.length ? readBook.CurrentlyReadingLike.length.toString() : "0"}
+                                            </Text>
+                                          )}
+                                        </Flex>
+                                      </Flex>
                                     </Flex>
                                     {readBook.CurrentlyReadingComment.length ? (
                                         <>
-                                          <Divider my={3} />
+                                          <Divider mb={1} />
                                           <Comments 
                                             comments={readBook.CurrentlyReadingComment} 
                                             getProfile={getProfile} 
