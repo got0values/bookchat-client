@@ -936,7 +936,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   return (
     <>
       <Box className="main-content-smaller" pb={5}>
-        <Heading as="h1" className="visually-hidden">Bookshelf</Heading>
+        <Heading as="h1" className="visually-hidden">Dashboard</Heading>
         <Box 
           m={0}
           // p={1}
