@@ -68,6 +68,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   const { user, getUser } = useAuth();
   const queryClient = useQueryClient();
 
+  const [showStats,setShowStats] = useState(true);
+
   useEffect(()=>{
     setTimeout(()=>{
       const clientAppVersion = packageJson.version;
@@ -544,7 +546,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
         <Box
           my={3}
           // mx=".5rem"
-          className="well"
+          className="well-card"
           // key={reading.id}
         >
           <Suspense
@@ -641,49 +643,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 </Text>
               </Flex>
             </HStack>
-            <Box>
-              <Menu>
-                <MenuButton 
-                  as={Button}
-                  size="md"
-                  variant="ghost"
-                  rounded="full"
-                  height="25px"
-                  title="menu"
-                >
-                  <BiDotsHorizontalRounded/>
-                </MenuButton>
-                <MenuList>
-                  <MenuItem 
-                    as={Link}
-                    to={`/chat/room?title=${reading.title}&author=${reading.author}`}
-                    fontWeight="bold"
-                    icon={<MdOutlineChat size={20} />}
-                  >
-                    Chat Room
-                  </MenuItem>
-                  <MenuItem 
-                    as={Link}
-                    to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(reading.title + " " + reading.author + " " + reading.isbn)}`}
-                    target="blank"
-                    fontWeight="bold"
-                    icon={<FaShoppingCart size={20} />}
-                  >
-                    Shop
-                  </MenuItem>
-                  {reading.Profile.id === user?.Profile.id ? (
-                    <MenuItem
-                      color="tomato"
-                      onClick={e=>deleteReading(reading.id)}
-                      fontWeight="bold"
-                      icon={<BiTrash size={20} />}
-                    >
-                      Delete
-                    </MenuItem>
-                  ): null}
-                </MenuList>
-              </Menu>
-            </Box>
           </Flex>
           <Divider />
           <Text 
@@ -734,9 +693,54 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             />
             <Box mx={2} w="100%">
               <Box lineHeight={1.4}>
-                <Heading as="h2" size="md" me={3} noOfLines={1}>
-                  {reading.title}
-                </Heading>
+                <Flex justify="space-between">
+                  <Heading as="h2" size="md" me={3} noOfLines={1}>
+                    {reading.title}
+                  </Heading>
+                  <Box>
+                    <Menu>
+                      <MenuButton 
+                        as={Button}
+                        size="md"
+                        variant="ghost"
+                        rounded="full"
+                        height="25px"
+                        title="menu"
+                      >
+                        <BiDotsHorizontalRounded/>
+                      </MenuButton>
+                      <MenuList>
+                        <MenuItem 
+                          as={Link}
+                          to={`/chat/room?title=${reading.title}&author=${reading.author}`}
+                          fontWeight="bold"
+                          icon={<MdOutlineChat size={20} />}
+                        >
+                          Chat Room
+                        </MenuItem>
+                        <MenuItem 
+                          as={Link}
+                          to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(reading.title + " " + reading.author + " " + reading.isbn)}`}
+                          target="blank"
+                          fontWeight="bold"
+                          icon={<FaShoppingCart size={20} />}
+                        >
+                          Shop
+                        </MenuItem>
+                        {reading.Profile.id === user?.Profile.id ? (
+                          <MenuItem
+                            color="tomato"
+                            onClick={e=>deleteReading(reading.id)}
+                            fontWeight="bold"
+                            icon={<BiTrash size={20} />}
+                          >
+                            Delete
+                          </MenuItem>
+                        ): null}
+                      </MenuList>
+                    </Menu>
+                  </Box>
+                </Flex>
                 <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
                   {reading.author}
                 </Text>
@@ -937,31 +941,56 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
     <>
       <Box className="main-content-smaller" pb={5}>
         <Heading as="h1" className="visually-hidden">Dashboard</Heading>
-        <Box 
+        <Flex 
           m={0}
-          // p={1}
+          direction="column"
+          gap={1}
         >
-          <Flex
-            justify="center"
-            align="center"
-            className="non-well"
+          <Box 
+            className="well"
+            bg={user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile < 5 ? "#ffeeef" : "unset"}
+            display={showStats ? "block" : "none"}
           >
-            {firstBookshelf && user.Profile._count?.BookSuggestion_BookSuggestion_suggestorToProfile < 1 ? (
-              <Button
-                as="a"
-                href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
-                variant="outline"
-                colorScheme="black"
-                size="sm"
-                p={1}
+            <Flex
+              align="center"
+              justify="space-between"
+            >
+              <Flex
+                align="center"
+                gap={3}
               >
-                <FaPlay size={15}/>
-                <Text ms={1} fontSize=".8rem">
-                  Start suggesting books
+                <Text
+                  // fontSize=".6rem"
+                  // lineHeight={1.2}
+                  fontWeight="bold"
+                  color={user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile < 0 ? "#b50000" : "unset"}
+                >
+                  {user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile ? user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile : 0} books suggested to other users
                 </Text>
-              </Button>
-            ): null}
-          </Flex>
+                <SuggestionCountBadge suggestionCount={user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile}/>
+                {firstBookshelf ? (
+                  <Button
+                    as="a"
+                    href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
+                    variant="outline"
+                    colorScheme="black"
+                    size="xs"
+                    // p={1}
+                  >
+                    <FaPlay size={15}/>
+                    <Text ms={1} fontSize=".8rem">
+                      Start suggesting books
+                    </Text>
+                  </Button>
+                ): null}
+              </Flex>
+              {user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile >= 5 ? (
+                <CloseButton onClick={e=>setShowStats(false)} />
+              ) : (
+                null
+              )}
+            </Flex>
+          </Box>
           <Flex gap={2} className="non-well">
             <Input 
               placeholder="What are you currently reading?" 
@@ -1092,11 +1121,11 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               </Flex>
             </Box>
           ) : null}
-        </Box>
+        
 
           <Box
             mb={5}
-            className="non-well"
+            className="well"
           >
             <Heading 
               size="md"
@@ -1105,8 +1134,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             </Heading>
             {followingSorted?.length ? (
               <Box
-                maxH="60vh"
-                overflowY="auto"
+                // maxH="60vh"
+                // overflowY="auto"
               >
                 {followingSorted?.length && (
                   followingSorted.map((reading: CurrentlyReading,i: number)=>{
@@ -1127,7 +1156,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             )}
           </Box>
 
-          <Box className="non-well">
+          <Box className="well">
             <Heading 
               size="md"
             >
@@ -1156,6 +1185,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               </>
             )}
           </Box>
+        </Flex>
       </Box>
 
       <Modal 

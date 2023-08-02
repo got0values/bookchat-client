@@ -656,8 +656,8 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
           </HStack>
           <HStack
             as={'div'}
-            spacing={[.25,3]}
-            pr={["0","150px"]}
+            // spacing={[.25,3]}
+            // pr={["0","150px"]}
             display="flex"
           >
             {LinkItems.map((linkItem, index) => (
@@ -692,22 +692,22 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
           </HStack>
           <Flex alignItems={'center'} justify="space-between" gap={3} lineHeight={1.4}>
             <Box
-              display="block"
+              display={["none","block"]}
             >
               <Text
                 fontWeight="bold"
-                fontSize="sm"
-                lineHeight={1.2}
+                fontSize="md"
+                // lineHeight={1.2}
               >
               {`${user?.first_name} ${user?.last_name}`}
               </Text>
-              {/* <Text
+              <Text
                 fontSize="sm"
-                lineHeight={1.2}
+                // lineHeight={1.2}
               >
                 {`@${user?.Profile.username}`}
-              </Text> */}
-              <Text
+              </Text>
+              {/* <Text
                 fontSize=".6rem"
                 lineHeight={1.2}
               >
@@ -754,7 +754,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                 ): (
                   <SuggestionCountBadge suggestionCount={user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile}/>
                 )}
-              </Flex>
+              </Flex> */}
             </Box>
             <Menu>
               <MenuButton
@@ -811,7 +811,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                     fontSize="lg"
                     fontWeight="600"
                   >
-                    {user?.Profile.username}'s profile
+                    Profile
                   </MenuItem>
                   <MenuDivider/>
                   <MenuItem
@@ -855,7 +855,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                   >
                     Log out
                   </MenuItem>
-                  <MenuDivider/>
+                  <MenuDivider display={["block","none"]}/>
                   <Box 
                     marginInlineStart="2!important" 
                     position="relative"
