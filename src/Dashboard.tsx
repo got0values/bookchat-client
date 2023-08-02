@@ -49,22 +49,11 @@ import BooksSearch from "./shared/BooksSearch";
 import SocialShareButtons from "./shared/SocialShareButtons";
 import { SuggestionCountBadge } from "./shared/SuggestionCount";
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
-import { BsReplyFill, BsArrowRightShort } from 'react-icons/bs';
+import { BsReplyFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { MdOutlineChat } from 'react-icons/md';
 import { FaShoppingCart, FaPlay } from 'react-icons/fa';
-import { LiaCopySolid } from 'react-icons/lia';
 import Comments from "./shared/CurrentlyReadingComments";
-import { 
-  FacebookShareButton, 
-  FacebookIcon,
-  TwitterShareButton,
-  TwitterIcon,
-  WhatsappShareButton,
-  WhatsappIcon,
-  LinkedinShareButton,
-  LinkedinIcon
-} from "react-share";
 import { useAuth } from './hooks/useAuth';
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
@@ -462,7 +451,92 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   }
 
   const CurrentlyReadingFeed = ({reading}:{reading:CurrentlyReading}) => {
+    const followMutation = useMutation({
+      mutationFn: async (profileId:number)=>{
+        const tokenCookie = Cookies.get().token;
+        await axios
+          .post(server + "/api/profileaction",
+            {
+              action: "follow",
+              profileId: profileId
+            },
+            {headers: {
+              Authorization: tokenCookie
+            }}
+          )
+          .catch(({response})=>{
+            console.log(response)
+          })
+        return getDashboard()
+      },
+      onSuccess: (data)=>{
+        queryClient.invalidateQueries({ queryKey: ['dashboardKey'] })
+        queryClient.resetQueries({queryKey: ['dashboardKey']})
+        queryClient.setQueryData(["dashboardKey"],data)
+      },
+      onError: ()=>{
+        return;
+      }
+    })
+    function follow(profileId: number) {
+      followMutation.mutate(profileId);
+    }
+
+    const cancelFollowMutation = useMutation({
+      mutationFn: async (profileId:number)=>{
+        const tokenCookie = Cookies.get().token;
+        await axios
+          .post(server + "/api/profileaction",
+            {
+              action: "cancelrequest",
+              profileId: profileId
+            },
+            {headers: {
+              Authorization: tokenCookie
+            }}
+          )
+          .catch(({response})=>{
+            console.log(response)
+          })
+        return getDashboard()
+      },
+      onSuccess: (data)=>{
+        queryClient.invalidateQueries({ queryKey: ['dashboardKey'] })
+        queryClient.resetQueries({queryKey: ['dashboardKey']})
+        queryClient.setQueryData(["dashboardKey"],data)
+      },
+      onError: ()=>{
+        return;
+      }
+    })
+    function cancelFollow(profileId: number) {
+      cancelFollowMutation.mutate(profileId);
+    }
+    
     let suggestionCount = reading.Profile._count?.BookSuggestion_BookSuggestion_suggestorToProfile;
+    let followingProfiles = user.Profile.Following_Following_self_profile_idToProfile?.map((followingProfile)=>{
+      if (followingProfile.status === "following") {
+        return followingProfile.following_profile_id
+      }
+    });
+    let requestingProfiles = user.Profile.Following_Following_self_profile_idToProfile?.map((followingProfile)=>{
+      if (followingProfile.status === "requesting") {
+        return followingProfile.following_profile_id
+      }
+    });
+    let followingStatus = followingProfiles?.includes(reading.Profile.id) ? (
+      "following" 
+    ) : (
+      requestingProfiles?.includes(reading.Profile.id) ? (
+        "requesting"
+      ) : (
+        user.Profile.id === reading.Profile.id ? (
+          "self"
+        ) : (
+          null
+        )
+      )
+    )
     return (
       reading.hidden ? (
         null
@@ -510,10 +584,57 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               </Link>
               <Flex direction="column">
                 <Flex align="center" gap={1}>
-                  <Text fontWeight="bold">
+                  <Text 
+                    as={Link} 
+                    to={`/profile/${reading.Profile.username}`}
+                    fontWeight="bold"
+                  >
                     {reading.Profile.username}
                   </Text>
-                    <SuggestionCountBadge suggestionCount={suggestionCount}/>
+                  <SuggestionCountBadge suggestionCount={suggestionCount}/>
+                  {
+                  followingStatus === "following" ? (
+                    null 
+                  ) : (
+                    followingStatus === "requesting") ? (
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        fontSize="xs"
+                        lineHeight={1}
+                        h="auto"
+                        p={0}
+                        color="red.600"
+                        _dark={{
+                          color: "red.200"
+                        }}
+                        onClick={()=>cancelFollow(reading.Profile.id)}
+                        isLoading={cancelFollowMutation.isLoading}
+                      >
+                        cancel request
+                      </Button>
+                    ) : (
+                      followingStatus === "self") ? (
+                        null 
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          fontSize="xs"
+                          lineHeight={1}
+                          h="auto"
+                          p={0}
+                          color="blue.600"
+                          _dark={{
+                            color: "blue.200"
+                          }}
+                          onClick={()=>follow(reading.Profile.id)}
+                          isLoading={followMutation.isLoading}
+                        >
+                          follow
+                        </Button>
+                      )
+                  }
                 </Flex>
                 <Text fontStyle="italic">
                   {dayjs(reading.created_on).local().format('MMM DD, h:mm a')}
