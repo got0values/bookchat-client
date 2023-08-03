@@ -79,7 +79,7 @@ const StarRating = ({ratingCallback, starRatingId, defaultRating}: StarRatingTyp
         name="rating" 
         type="hidden" 
         data-id={starRatingId}
-        value={rating} 
+        value={rating ? rating : ""} 
       />
       {buttons}
     </Flex>
