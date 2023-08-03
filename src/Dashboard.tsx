@@ -18,9 +18,12 @@ import {
   MenuList,
   MenuItem,
   Divider,
-  Skeleton,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
   Badge,
-  Tag,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -67,8 +70,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   const toast = useToast();
   const { user, getUser } = useAuth();
   const queryClient = useQueryClient();
-
-  const [showStats,setShowStats] = useState(true);
 
   useEffect(()=>{
     setTimeout(()=>{
@@ -546,7 +547,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
         <Box
           my={3}
           // mx=".5rem"
-          className="well-card"
+          className="well"
           // key={reading.id}
         >
           <Suspense
@@ -962,61 +963,40 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           direction="column"
           gap={1}
         >
-          <Box 
-            className="well"
-            bg={user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile < 5 ? "#ffeeef" : "unset"}
-            display={showStats ? "block" : "none"}
+          <Flex
+            align="center"
+            justify="center"
           >
-            <Flex
-              align="center"
-              justify="space-between"
-            >
-              <Flex
-                align="center"
-                gap={3}
+            {firstBookshelf ? (
+              <Button
+                as="a"
+                href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
+                variant="outline"
+                colorScheme="black"
+                size="md"
+                p={2}
               >
-                <Text
-                  // fontSize=".6rem"
-                  // lineHeight={1.2}
-                  fontWeight="bold"
-                  color={user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile < 0 ? "#b50000" : "unset"}
-                >
-                  {user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile ? user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile : 0} books suggested to other users
+                <FaPlay size={15}/>
+                <Text ms={1}>
+                  Start suggesting books
                 </Text>
-                <SuggestionCountBadge suggestionCount={user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile}/>
-                {firstBookshelf ? (
-                  <Button
-                    as="a"
-                    href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
-                    variant="outline"
-                    colorScheme="black"
-                    size="xs"
-                    // p={1}
-                  >
-                    <FaPlay size={15}/>
-                    <Text ms={1} fontSize=".8rem">
-                      Start suggesting books
-                    </Text>
-                  </Button>
-                ): null}
-              </Flex>
-              {user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile >= 5 ? (
-                <CloseButton onClick={e=>setShowStats(false)} />
-              ) : (
-                null
-              )}
-            </Flex>
-          </Box>
+              </Button>
+            ): null}
+          </Flex>
           <Flex gap={2} className="non-well">
             <Input 
               placeholder="What are you currently reading?" 
               size="lg"
+              borderColor="black"
               onClick={e=>onOpenReadingModal()}
               sx={{
                 cursor: 'none',
                 '&:hover': {
                   cursor: 'pointer'
                 }
+              }}
+              _dark={{
+                borderColor: "darkgrey"
               }}
               readOnly={true}
             />
@@ -1064,30 +1044,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     <Text fontWeight="bold" fontSize="lg">
                       {selectedBook.author}
                     </Text>
-                    {/* <Popover isLazy>
-                      <PopoverTrigger>
-                        <Box
-                          _hover={{
-                            cursor: "pointer"
-                          }}
-                        >
-                          <Text fontSize="lg" noOfLines={1}>
-                            {selectedBook.description}
-                          </Text>
-                        </Box>
-                      </PopoverTrigger>
-                      <PopoverContent>
-                        <PopoverArrow />
-                        <PopoverCloseButton />
-                        <PopoverBody
-                          _dark={{
-                            bg: "black"
-                          }}
-                        >
-                          {selectedBook.description ? selectedBook.description: null}
-                        </PopoverBody>
-                      </PopoverContent>
-                    </Popover> */}
                     <Text fontStyle="italic">
                       {selectedBook.published_date !== null ? 
                         (
@@ -1138,69 +1094,88 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             </Box>
           ) : null}
         
-
-          <Box
-            mb={5}
-            className="well"
+          <Tabs
+            variant="enclosed"
+            px={2}
           >
-            <Heading 
-              size="md"
+            <TabList
+              borderBottom="none"
             >
-              Following
-            </Heading>
-            {followingSorted?.length ? (
-              <Box
-                // maxH="60vh"
-                // overflowY="auto"
+              <Tab
+                fontWeight="bold"
+                _selected={{
+                  borderBottom: "2px solid gray"
+                }}
               >
-                {followingSorted?.length && (
-                  followingSorted.map((reading: CurrentlyReading,i: number)=>{
-                    return (
-                      <React.Fragment key={reading.id}>
-                        <CurrentlyReadingFeed reading={reading} />
-                      </React.Fragment>
-                    )
-                  })
-                )}
-              </Box>
-            ): (
-              <Box fontSize="1rem">
-                <Box fontStyle="italic">
-                  You are not following any users at the moment.
-                </Box>
-              </Box>
-            )}
-          </Box>
-
-          <Box className="well">
-            <Heading 
-              size="md"
-            >
-              Public
-            </Heading>
-            {randomSorted?.length ? (
-              <Box>
-                {randomSorted.length && (
-                  randomSorted.map((reading: CurrentlyReading,i:number)=>{
-                    return (
-                      <React.Fragment key={reading.id}>
-                        <CurrentlyReadingFeed reading={reading}/>
-                      </React.Fragment>
-                    )
-                  })
-                )}
-                {isFetching && (
-                  <Flex justify="center">
-                    <Spinner size="xl"/>
-                  </Flex>
-                )}
-              </Box>
-            ): (
-              <>
-                
-              </>
-            )}
-          </Box>
+                Public
+              </Tab>
+              <Tab
+                fontWeight="bold"
+                _selected={{
+                  borderBottom: "2px solid gray"
+                }}
+              >
+                Following
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel px={0}>
+                <Flex
+                  direction="column"
+                  gap={1}
+                >
+                  {randomSorted?.length ? (
+                    <>
+                      {randomSorted.length && (
+                        randomSorted.map((reading: CurrentlyReading,i:number)=>{
+                          return (
+                            <React.Fragment key={reading.id}>
+                              <CurrentlyReadingFeed reading={reading}/>
+                            </React.Fragment>
+                          )
+                        })
+                      )}
+                      {isFetching && (
+                        <Flex justify="center">
+                          <Spinner size="xl"/>
+                        </Flex>
+                      )}
+                    </>
+                  ): (
+                    <>
+                      
+                    </>
+                  )}
+                </Flex>
+              </TabPanel>
+              <TabPanel px={0}>
+                <Flex
+                  direction="column"
+                  gap={1}
+                >
+                  {followingSorted?.length ? (
+                    <Box>
+                      {followingSorted?.length && (
+                        followingSorted.map((reading: CurrentlyReading,i: number)=>{
+                          return (
+                            <React.Fragment key={reading.id}>
+                              <CurrentlyReadingFeed reading={reading} />
+                            </React.Fragment>
+                          )
+                        })
+                      )}
+                    </Box>
+                  ): (
+                    <Box fontSize="1rem">
+                      <Box fontStyle="italic">
+                        You are not following any users at the moment.
+                      </Box>
+                    </Box>
+                  )}
+                </Flex>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
         </Flex>
       </Box>
 
