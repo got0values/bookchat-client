@@ -594,6 +594,22 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     {reading.Profile.username}
                   </Text>
                   <SuggestionCountBadge suggestionCount={suggestionCount}/>
+                  {reading.Profile.Bookshelf?.allow_suggestions ? (
+                    <Button
+                      as={Link}
+                      to={`/booksuggestions/bookshelf?profile=${reading.Profile.username}`}
+                      size="xs"
+                      fontSize="xs"
+                      lineHeight={1}
+                      h="auto"
+                      variant="outline"
+                      p={1}
+                    >
+                      bookshelf
+                    </Button>
+                  ): (
+                    null
+                  )}
                   {
                   followingStatus === "following" ? (
                     null 
@@ -625,7 +641,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                           fontSize="xs"
                           lineHeight={1}
                           h="auto"
-                          p={0}
+                          p={1}
                           color="blue.600"
                           _dark={{
                             color: "blue.200"
