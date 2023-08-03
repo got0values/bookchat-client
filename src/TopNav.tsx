@@ -531,13 +531,12 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
       })
   }
 
-  const navSearchRef = useRef({} as HTMLInputElement);
   const [searchData,setSearchData] = useState({} as SearchData);
   const navSearchMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (navSearchValue: string) => {
       const tokenCookie = Cookies.get().token;
       await axios
-        .get(`${server}/api/search?searchterm=${navSearchRef.current.value}`,
+        .get(`${server}/api/search?searchterm=${navSearchValue}`,
           {
             headers: {
               'authorization': tokenCookie
@@ -553,7 +552,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
           throw new Error(response.data.message)
         })
       await axios
-        .get("https://openlibrary.org/search.json?q=" + navSearchRef.current.value)
+        .get("https://openlibrary.org/search.json?q=" + navSearchValue)
         .then((response)=>{
           setSearchData(prev=>{
             return {...prev,books: response.data.docs.slice(0,10) }
@@ -564,8 +563,8 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
         })
     }
   })
-  function navSearch() {
-    navSearchMutation.mutate();
+  function navSearch(navSearchValue: string) {
+    navSearchMutation.mutate(navSearchValue);
   }
 
   const notificationQuery = useQuery({ queryKey: ['notificationKey'], queryFn: getNotifications });
@@ -641,9 +640,8 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                 _dark={{
                   bg: "whiteAlpha.50"
                 }}
-                ref={navSearchRef}
                 // borderColor="black"
-                onKeyDown={e=>e.key === 'Enter' ? navSearch() : null}
+                onKeyDown={e=>e.key === 'Enter' ? navSearch((e.target as any).value) : null}
               />
               <Box
                 pointerEvents="none"
@@ -870,9 +868,8 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                       _dark={{
                         bg: "whiteAlpha.50"
                       }}
-                      ref={navSearchRef}
                       // borderColor="black"
-                      onKeyDown={e=>e.key === 'Enter' ? navSearch() : null}
+                      onKeyDown={e=>e.key === 'Enter' ? navSearch((e.target as any).value) : null}
                     />
                     <Box
                       pointerEvents="none"
