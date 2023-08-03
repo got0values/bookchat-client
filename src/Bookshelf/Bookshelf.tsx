@@ -212,6 +212,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     onCloseBookSearchModal();
   }
   const [bookToAddCategories,setBookToAddCategories] = useState([] as any);
+  const reviewRef = useRef({} as HTMLTextAreaElement)
   const notesRef = useRef({} as HTMLTextAreaElement)
   const addBookshelfBookMutation = useMutation({
     mutationFn: async ()=>{
@@ -222,6 +223,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             book: bookToAdd,
             categories: bookToAddCategories,
             notes: notesRef.current.value,
+            review: reviewRef.current.value,
             rating: null
           },
           {headers: {
@@ -445,6 +447,56 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   })
   async function updateNotes(e: any) {
     updateNotesMutation.mutate(e);
+  }
+
+  const updateReviewMutation = useMutation({
+    mutationFn: async (e: any)=>{
+      let tokenCookie: string | null = Cookies.get().token;
+      const bookid = e.target.dataset.bookid;
+      const reviewInput = (document.getElementById(`review-input-${bookid}`) as HTMLInputElement);
+      const review = reviewInput.value
+      await axios
+        .put(server + "/api/updatereview", 
+          {
+            bookid: parseInt(bookid),
+            review: review
+          },
+          {
+            headers: {
+              'authorization': tokenCookie
+            }
+          }
+        )
+        .then((response)=>{
+          toast({
+            description: "Review updated!",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          })
+        })
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data) {
+            toast({
+              description: response.data.message,
+              status: "error",
+              duration: 9000,
+              isClosable: true
+            })
+            throw new Error(response.data.message)
+          }
+        })
+      return getBookshelf();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
+      queryClient.resetQueries({queryKey: ['bookshelfKey']})
+      queryClient.setQueryData(["bookshelfKey"],data)
+    }
+  })
+  async function updateReview(e: any) {
+    updateReviewMutation.mutate(e);
   }
 
   function filterByCategory(checkedValues: string[]) {
@@ -1206,7 +1258,39 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     ) : null}
                   </Flex>
 
-                  <Accordion allowToggle>
+                  <Accordion defaultIndex={[0,1]} allowMultiple>
+                    <AccordionItem 
+                      borderColor="black" 
+                      borderLeft="1px solid black"
+                      borderRight="1px solid black"
+                      rounded="sm"
+                      boxShadow="0"
+                      py={1}
+                      bg="white"
+                      _dark={{
+                        bg: "blackAlpha.300"
+                      }}
+                    >
+                      <AccordionButton>
+                        <Heading as="h3" size="sm">
+                          Review
+                        </Heading>
+                        <AccordionIcon ml="auto" />
+                      </AccordionButton>
+                      <AccordionPanel>
+                        <Flex
+                          direction="column"
+                          align="center"
+                          gap={2}
+                        >
+                          <Textarea
+                            rounded="md"
+                            ref={reviewRef}
+                            maxLength={9000}
+                          />
+                        </Flex>
+                      </AccordionPanel>
+                    </AccordionItem>
                     <AccordionItem 
                       border="1px solid black"
                       borderLeft="1px solid black"
@@ -1541,7 +1625,56 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           </Menu>
                         ) : null}
                       </Flex>
-                      <Accordion allowToggle>
+                      <Accordion defaultIndex={[2]} allowMultiple>
+                        <AccordionItem 
+                          borderColor="black" 
+                          borderLeft="1px solid black"
+                          borderRight="1px solid black"
+                          rounded="sm"
+                          boxShadow="0"
+                          py={1}
+                          bg="white"
+                          _dark={{
+                            bg: "blackAlpha.300"
+                          }}
+                        >
+                          <AccordionButton>
+                            <Heading as="h3" size="sm">
+                              Review
+                            </Heading>
+                            <AccordionIcon ml="auto" />
+                          </AccordionButton>
+                          <AccordionPanel>
+                            <Flex
+                              direction="column"
+                              align="center"
+                              gap={2}
+                            >
+                              <Textarea
+                                rounded="md"
+                                defaultValue={book.review}
+                                id={`review-input-${book.id}`}
+                                maxLength={9000}
+                              />
+                              <Flex
+                                justify="flex-end"
+                                w="100%"
+                              >
+                                <Button
+                                  w="auto"
+                                  alignSelf="flex-end"
+                                  data-bookid={book.id}
+                                  onClick={e=>updateReview(e)}
+                                  size="sm"
+                                  backgroundColor="black"
+                                  color="white"
+                                >
+                                  Save Review
+                                </Button>
+                              </Flex>
+                            </Flex>
+                          </AccordionPanel>
+                        </AccordionItem>
                         <AccordionItem 
                           borderColor="black" 
                           borderLeft="1px solid black"

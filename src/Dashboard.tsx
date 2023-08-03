@@ -703,7 +703,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           </Flex>
           <Flex>
             <Image 
-              src={reading.image}
+              src={reading.image ? reading.image : "https://via.placeholder.com/165x215"}
+              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
               maxH="90px"
               boxShadow="1px 1px 1px 1px darkgrey"
               alt={`${reading.title} image`}

@@ -390,6 +390,7 @@ export interface BookshelfBook {
   page_count: number;
   published_date: string;
   notes: string;
+  review: string;
   rating: number;
   created_on: string;
   hidden: number;

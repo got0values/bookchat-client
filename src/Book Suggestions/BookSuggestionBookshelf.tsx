@@ -385,7 +385,8 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                 <Input
                   type="search"
                   bg="white"
-                  borderColor="black"
+                  borderWidth={3}
+                  borderColor="purple.500"
                   size="lg"
                   placeholder="Suggest a book"
                   _dark={{
@@ -509,7 +510,8 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                       key={i}
                     >
                       <Image
-                        src={book.image}
+                        src={book.image ? book.image : "https://via.placeholder.com/165x215"}
+                        onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                         height="100%"
                         maxH="125px"
                         boxShadow="1px 1px 1px 1px darkgrey"
@@ -574,10 +576,15 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                             defaultRating={book.rating}
                           />
                         </Flex>
+                        {book.review ? (
+                          <Text fontStyle="italic">
+                            "{book.review}"
+                          </Text>
+                        ): null}
                       </Box>
                     </Flex>
                   )
-                })
+                }).reverse()
               ): null}
             </Stack>
           </>
