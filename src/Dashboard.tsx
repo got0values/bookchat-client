@@ -8,6 +8,7 @@ import {
   Flex,
   Spinner,
   CloseButton,
+  Fade,
   Text,
   Image,
   HStack,
@@ -1188,8 +1189,9 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   >
                     {/* <Text
                       flex="1 1 300px"
+                      fontSize="sm"
                     >
-                      These are heroes that help save others from reading books recommended algorithms. Recognize their greatness.
+                      These are the heroes that help rescue others from wasting time reading books recommended by algorithms. Recognize their bravery in the face of evil algorithms.
                     </Text> */}
                     <Button
                       as="a"
@@ -1201,7 +1203,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     >
                       <FaPlay size={15}/>
                       <Text ms={1}>
-                        Start suggesting books
+                        Suggest books
                       </Text>
                     </Button>
                   </Flex>
@@ -1216,6 +1218,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     latestSuggestions.map((suggestion,i)=>{
                       return (
                         <Flex
+                          as={Fade}
+                          in={Boolean(latestSuggestions)}
                           key={i}
                           direction="column"
                           justify="space-between"
