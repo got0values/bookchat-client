@@ -1187,12 +1187,12 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     gap={2}
                     mb={3}
                   >
-                    {/* <Text
-                      flex="1 1 300px"
+                    <Text
+                      flex="1 1 475px"
                       fontSize="sm"
                     >
-                      These are the heroes that help rescue others from wasting time reading books recommended by algorithms. Recognize their bravery in the face of evil algorithms.
-                    </Text> */}
+                      Recognize the importance of these heroes helping us break free from recommendation algorithms, sponsored book lists, and paid book reviews.
+                    </Text>
                     <Button
                       as="a"
                       href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
@@ -1203,7 +1203,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     >
                       <FaPlay size={15}/>
                       <Text ms={1}>
-                        Suggest books
+                        Become a hero
                       </Text>
                     </Button>
                   </Flex>
@@ -1236,12 +1236,15 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                               wrap="wrap" 
                               lineHeight={1}
                               mb={1}
+                              fontWeight="bold"
                             >
-                              <Link
+                              <Text
+                                as={Link}
                                 to={`/profile/${suggestion.Profile_BookSuggestion_suggestorToProfile.username}`}
+                                color="teal"
                               >
                                 {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
-                              </Link>
+                              </Text>
                               <BsArrowRightShort size={20} />
                               <Link
                                 to={`/profile/${suggestion.Profile_BookSuggestion_suggesteeToProfile?.username}`}
