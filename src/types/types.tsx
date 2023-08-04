@@ -414,6 +414,7 @@ export interface BookSuggestionType {
   suggestorRating: number;
   created_on: string;
   Profile_BookSuggestion_suggestorToProfile: ProfileType;
+  Profile_BookSuggestion_suggesteeToProfile: ProfileType;
 }
 
 export interface StarRatingType {

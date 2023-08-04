@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, Suspense } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { DashboardProps, CurrentlyReading, SelectedBook, User } from './types/types';
+import { DashboardProps, CurrentlyReading, SelectedBook, User, BookSuggestionType } from './types/types';
 import { 
   Box,
   Heading,
@@ -52,7 +52,7 @@ import BooksSearch from "./shared/BooksSearch";
 import SocialShareButtons from "./shared/SocialShareButtons";
 import { SuggestionCountBadge } from "./shared/SuggestionCount";
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
-import { BsReplyFill } from 'react-icons/bs';
+import { BsReplyFill, BsArrowRightShort } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { MdOutlineChat } from 'react-icons/md';
 import { FaShoppingCart, FaPlay } from 'react-icons/fa';
@@ -99,6 +99,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   const [followingSorted,setFollowingSorted] = useState([] as any)
   const [randomSorted,setRandomSorted] = useState([] as any)
   const [firstBookshelf,setFirstBookshelf] = useState<User | null>(null)
+  const [latestSuggestions,setLatestSuggestions] = useState<BookSuggestionType[] | null>(null)
   async function getDashboard() {
     const tokenCookie = Cookies.get().token
     if (tokenCookie) {
@@ -116,6 +117,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           setFollowingSorted(response.data.message.followingCurrentlyReadingSorted)
           setRandomSorted(response.data.message.randomCurrentlyReadingSorted)
           setFirstBookshelf(response.data.message.firstBookshelf)
+          setLatestSuggestions(response.data.message.latestSuggestions)
           return response.data.message
         })
         .catch(({response})=>{
@@ -131,6 +133,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
 
   //lazy loading
   const [isFetching,setIsFetching] = useState(false)
+  const [publicTabChosen,setPublicTabChosen] = useState(true)
   function handleScroll() {
     if (Math.ceil(window.innerHeight + document.documentElement.scrollTop) !== document.documentElement.offsetHeight || isFetching) {
       return;
@@ -141,7 +144,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
     window.addEventListener("scroll",handleScroll)
   },[])
   useEffect(()=>{
-    if (!isFetching) return;
+    if (!isFetching || !publicTabChosen) return;
     getMoreDashboard()
   },[isFetching])
   function getMoreDashboard() {
@@ -450,6 +453,124 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
       <div>
         Error!
       </div>
+    )
+  }
+
+  const CurrentlyReadingInput = () => {
+    
+    return (
+      <>
+        <Flex gap={2} className="non-well">
+          <Input 
+            placeholder="What are you currently reading?" 
+            size="lg"
+            borderColor="black"
+            onClick={e=>onOpenReadingModal()}
+            sx={{
+              cursor: 'none',
+              '&:hover': {
+                cursor: 'pointer'
+              }
+            }}
+            _dark={{
+              borderColor: "darkgrey"
+            }}
+            readOnly={true}
+          />
+        </Flex>
+        {selectedBook ? (
+          <Box
+            my={2}
+            p={4}
+            // bg="white"
+            // _dark={{
+            //   bg: 'blackAlpha.600'
+            // }}
+            className="well"
+            position="relative"
+          >
+            <CloseButton
+              position="absolute"
+              top="0"
+              right="0"
+              onClick={e=>setSelectedBook(null)}
+            />
+            <Input
+              type="text"
+              mt={3}
+              mb={3}
+              placeholder="Thoughts?"
+              maxLength={300}
+              ref={thoughtsRef}
+            />
+            <Flex>
+              <Image 
+                src={selectedBook.image}
+                maxH="90px"
+                boxShadow="1px 1px 1px 1px darkgrey"
+                alt={selectedBook.title}
+              />
+              <Box 
+                mx={2}
+                w="100%"
+              >
+                <Box lineHeight={1.4}>
+                  <Heading as="h2" size="md" me={3}>
+                    {selectedBook.title}
+                  </Heading>
+                  <Text fontWeight="bold" fontSize="lg">
+                    {selectedBook.author}
+                  </Text>
+                  <Text fontStyle="italic">
+                    {selectedBook.published_date !== null ? 
+                      (
+                        dayjs(selectedBook.published_date).format("YYYY")
+                      ) : null
+                    }
+                  </Text>
+                  {selectedBook.page_count ? (
+                    <Text noOfLines={1}>
+                      {selectedBook.page_count} pages
+                    </Text>
+                  ): null}
+                </Box>
+                <Flex justify="space-between">
+                  <Flex align="center" gap={1}>
+                    Pages read:
+                    <NumberInput
+                      maxWidth="75px"
+                      size="sm"
+                      min={0}
+                    >
+                      <NumberInputField ref={pagesReadRef} />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                  </Flex>
+                  <Button 
+                    // size="sm"
+                    backgroundColor="black"
+                    color="white"
+                    data-googlebooksid={selectedBook.google_books_id}
+                    data-image={selectedBook.image}
+                    data-title={selectedBook.title}
+                    data-author={selectedBook.author}
+                    data-description={selectedBook.description}
+                    data-isbn={selectedBook.isbn}
+                    data-pagecount={selectedBook.page_count}
+                    data-publisheddate={selectedBook.published_date}
+                    onClick={e=>postCurrentlyReading(e)}
+                  >
+                    Post
+                  </Button>
+                </Flex>
+              </Box>
+            </Flex>
+          </Box>
+        ) : null}
+      </>
     )
   }
 
@@ -964,140 +1085,11 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           direction="column"
           gap={1}
         >
-          <Flex
-            align="center"
-            justify="center"
-          >
-            {firstBookshelf ? (
-              <Button
-                as="a"
-                href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
-                variant="outline"
-                colorScheme="black"
-                size="md"
-                p={2}
-              >
-                <FaPlay size={15}/>
-                <Text ms={1}>
-                  Start suggesting books
-                </Text>
-              </Button>
-            ): null}
-          </Flex>
-          <Flex gap={2} className="non-well">
-            <Input 
-              placeholder="What are you currently reading?" 
-              size="lg"
-              borderColor="black"
-              onClick={e=>onOpenReadingModal()}
-              sx={{
-                cursor: 'none',
-                '&:hover': {
-                  cursor: 'pointer'
-                }
-              }}
-              _dark={{
-                borderColor: "darkgrey"
-              }}
-              readOnly={true}
-            />
-          </Flex>
-          {selectedBook ? (
-            <Box
-              my={2}
-              p={4}
-              // bg="white"
-              // _dark={{
-              //   bg: 'blackAlpha.600'
-              // }}
-              className="well"
-              position="relative"
-            >
-              <CloseButton
-                position="absolute"
-                top="0"
-                right="0"
-                onClick={e=>setSelectedBook(null)}
-              />
-              <Input
-                type="text"
-                mt={3}
-                mb={3}
-                placeholder="Thoughts?"
-                maxLength={300}
-                ref={thoughtsRef}
-              />
-              <Flex>
-                <Image 
-                  src={selectedBook.image}
-                  maxH="90px"
-                  boxShadow="1px 1px 1px 1px darkgrey"
-                  alt={selectedBook.title}
-                />
-                <Box 
-                  mx={2}
-                  w="100%"
-                >
-                  <Box lineHeight={1.4}>
-                    <Heading as="h2" size="md" me={3}>
-                      {selectedBook.title}
-                    </Heading>
-                    <Text fontWeight="bold" fontSize="lg">
-                      {selectedBook.author}
-                    </Text>
-                    <Text fontStyle="italic">
-                      {selectedBook.published_date !== null ? 
-                        (
-                          dayjs(selectedBook.published_date).format("YYYY")
-                        ) : null
-                      }
-                    </Text>
-                    {selectedBook.page_count ? (
-                      <Text noOfLines={1}>
-                        {selectedBook.page_count} pages
-                      </Text>
-                    ): null}
-                  </Box>
-                  <Flex justify="space-between">
-                    <Flex align="center" gap={1}>
-                      Pages read:
-                      <NumberInput
-                        maxWidth="75px"
-                        size="sm"
-                        min={0}
-                      >
-                        <NumberInputField ref={pagesReadRef} />
-                        <NumberInputStepper>
-                          <NumberIncrementStepper />
-                          <NumberDecrementStepper />
-                        </NumberInputStepper>
-                      </NumberInput>
-                    </Flex>
-                    <Button 
-                      // size="sm"
-                      backgroundColor="black"
-                      color="white"
-                      data-googlebooksid={selectedBook.google_books_id}
-                      data-image={selectedBook.image}
-                      data-title={selectedBook.title}
-                      data-author={selectedBook.author}
-                      data-description={selectedBook.description}
-                      data-isbn={selectedBook.isbn}
-                      data-pagecount={selectedBook.page_count}
-                      data-publisheddate={selectedBook.published_date}
-                      onClick={e=>postCurrentlyReading(e)}
-                    >
-                      Post
-                    </Button>
-                  </Flex>
-                </Box>
-              </Flex>
-            </Box>
-          ) : null}
-        
+          <CurrentlyReadingInput/>
           <Tabs
             variant="enclosed"
             px={2}
+            isLazy
           >
             <TabList
               borderBottom="none"
@@ -1107,6 +1099,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 _selected={{
                   borderBottom: "2px solid gray"
                 }}
+                onClick={e=>setPublicTabChosen(true)}
               >
                 Public
               </Tab>
@@ -1115,8 +1108,18 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 _selected={{
                   borderBottom: "2px solid gray"
                 }}
+                onClick={e=>setPublicTabChosen(false)}
               >
                 Following
+              </Tab>
+              <Tab
+                fontWeight="bold"
+                _selected={{
+                  borderBottom: "2px solid gray"
+                }}
+                onClick={e=>setPublicTabChosen(false)}
+              >
+                Latest Suggestions
               </Tab>
             </TabList>
             <TabPanels>
@@ -1144,7 +1147,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     </>
                   ): (
                     <>
-                      
                     </>
                   )}
                 </Flex>
@@ -1173,6 +1175,122 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       </Box>
                     </Box>
                   )}
+                </Flex>
+              </TabPanel>
+              <TabPanel px={0}>
+                {firstBookshelf ? (
+                  <Flex
+                    align="center"
+                    // justify="center"
+                    wrap="wrap"
+                    gap={2}
+                    mb={3}
+                  >
+                    {/* <Text
+                      flex="1 1 300px"
+                    >
+                      These are heroes that help save others from reading books recommended algorithms. Recognize their greatness.
+                    </Text> */}
+                    <Button
+                      as="a"
+                      href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
+                      variant="outline"
+                      colorScheme="black"
+                      size="md"
+                      p={2}
+                    >
+                      <FaPlay size={15}/>
+                      <Text ms={1}>
+                        Start suggesting books
+                      </Text>
+                    </Button>
+                  </Flex>
+                ): null}
+                <Flex
+                  gap={4}
+                  wrap="wrap"
+                  justify="space-between"
+                  alignItems="stretch"
+                >
+                  {latestSuggestions ? (
+                    latestSuggestions.map((suggestion,i)=>{
+                      return (
+                        <Flex
+                          key={i}
+                          direction="column"
+                          justify="space-between"
+                          border="1px solid"
+                          p={2}
+                          flex="1 1 0"
+                          minW="200px"
+                          minH="150px"
+                        >
+                          <Box>
+                            <Flex 
+                              align="center" 
+                              gap={0} 
+                              wrap="wrap" 
+                              lineHeight={1}
+                              mb={1}
+                            >
+                              <Link
+                                to={`/profile/${suggestion.Profile_BookSuggestion_suggestorToProfile.username}`}
+                              >
+                                {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
+                              </Link>
+                              <BsArrowRightShort size={20} />
+                              <Link
+                                to={`/profile/${suggestion.Profile_BookSuggestion_suggesteeToProfile?.username}`}
+                              >
+                                {suggestion.Profile_BookSuggestion_suggesteeToProfile?.username}
+                              </Link>
+                            </Flex>
+                            <Flex gap={2} mb={2}>
+                              <Image
+                                src={suggestion.image ? suggestion.image : "https://via.placeholder.com/165x215"}
+                                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                maxH="85px"
+                                boxShadow="1px 1px 1px 1px darkgrey"
+                                alt={`${suggestion.title} image`}
+                              />
+                              <Box lineHeight={1.2}>
+                                <Text size="sm" fontWeight="bold" me={3} noOfLines={1}>
+                                  {suggestion.title}
+                                </Text>
+                                <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                                  {suggestion.author}
+                                </Text>
+                                <Text fontSize="sm" fontStyle="italic">
+                                  {suggestion.published_date !== null ? 
+                                    (
+                                      dayjs(suggestion.published_date).format("YYYY")
+                                    ) : null
+                                  }
+                                </Text>
+                                {suggestion.page_count ? (
+                                  <Text fontSize="sm" noOfLines={1}>
+                                    {suggestion.page_count} pages
+                                  </Text>
+                                ): null}
+                              </Box>
+                            </Flex>
+                          </Box>
+                          <Flex justify="center">
+                            <Button
+                              as={Link}
+                              to={`/booksuggestions/bookshelf?profile=${suggestion.Profile_BookSuggestion_suggesteeToProfile?.username}`}
+                              size="xs"
+                              variant="outline"
+                              borderColor="black"
+                              isDisabled={!suggestion.Profile_BookSuggestion_suggesteeToProfile?.Bookshelf || !suggestion.Profile_BookSuggestion_suggesteeToProfile?.Bookshelf.allow_suggestions}
+                            >
+                              Bookshelf
+                            </Button>
+                          </Flex>
+                        </Flex>
+                      )
+                    })
+                  ): null}
                 </Flex>
               </TabPanel>
             </TabPanels>
