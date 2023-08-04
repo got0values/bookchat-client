@@ -694,7 +694,9 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             if (rowData[i] !== '') {
               const cellData = rowData[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/g);
               const title = cellData[1]?.replace(/\s/g,'+').replace(/[="]/g,"");
+              const title1 = cellData[1]?.replace(/[="]/g,"")
               const author = cellData[2]?.replace(/\s/g,'+').replace(/[="]/g,"");
+              const author1 = cellData[2]?.replace(/[="]/g,"");
               const isbn = cellData[5].replace(/[="]/g,"");
               const rating = parseInt(cellData[7]);
               const dateAdded = dayjs(cellData[15]).utc().format('YYYY-MM-DD mm:HH:ss');
@@ -705,8 +707,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     const bookResult = result.data.docs[0];
                     const book = {
                       google_books_id: null,
-                      title: bookResult.title,
-                      author: bookResult.author_name ? bookResult.author_name[0] : "",
+                      title: title1,
+                      author: author1,
                       image: bookResult.cover_i ? (
                         `https://covers.openlibrary.org/b/id/${bookResult.cover_i}-M.jpg?default=false`
                       ) : (
@@ -716,8 +718,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           "https://via.placeholder.com/165x215"
                         )
                       ),
-                      isbn: bookResult.isbn?.length ? bookResult.isbn[bookResult.isbn.length - 1] : null,
-                      description: "",
+                      isbn: isbn,
                       page_count: bookResult.number_of_pages_median,
                       published_date: bookResult.publish_date?.length ? dayjs(bookResult.publish_date[0]).format('YYYY') : ""
                     }
