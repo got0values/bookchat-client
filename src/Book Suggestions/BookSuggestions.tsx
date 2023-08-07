@@ -10,6 +10,7 @@ import {
 import { BookSuggestionToList } from "./BookSuggestToList";
 import { BookSuggestionsForMe } from "./BookSuggestionsForMe";
 import { BookSuggestionsArchive } from "./BookSuggestionsArchive";
+import LatestSuggestions from "./LatestSuggestions";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 
@@ -44,6 +45,14 @@ export default function BookSuggestions({server, gbooksapi}: {server: string; gb
               borderBottom: "2px solid gray"
             }}
           >
+            Latest
+          </Tab>
+          <Tab 
+            fontWeight="bold"
+            _selected={{
+              borderBottom: "2px solid gray"
+            }}
+          >
             For Me
           </Tab>
           <Tab 
@@ -59,6 +68,11 @@ export default function BookSuggestions({server, gbooksapi}: {server: string; gb
           <TabPanel px={0}>
             
             <BookSuggestionToList server={server} />
+
+          </TabPanel>
+          <TabPanel px={0}>
+            
+            <LatestSuggestions server={server} />
 
           </TabPanel>
           <TabPanel px={0}>

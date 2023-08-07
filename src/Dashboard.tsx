@@ -50,6 +50,7 @@ import {
 import { editPagesRead, cancelEditPagesRead } from "./shared/editCancelPagesRead";
 import { editCurrentlyReadingThoughts, cancelEditCurrentlyReadingThoughts } from "./shared/editCancelCurrentlyReadingThoughts";
 import BooksSearch from "./shared/BooksSearch";
+import StarRating from "./shared/StarRating";
 import SocialShareButtons from "./shared/SocialShareButtons";
 import { SuggestionCountBadge } from "./shared/SuggestionCount";
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
@@ -100,7 +101,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   const [followingSorted,setFollowingSorted] = useState([] as any)
   const [randomSorted,setRandomSorted] = useState([] as any)
   const [firstBookshelf,setFirstBookshelf] = useState<User | null>(null)
-  const [latestSuggestions,setLatestSuggestions] = useState<BookSuggestionType[] | null>(null)
+  const [suggestionRating,setSuggestionRating] = useState(0);
   async function getDashboard() {
     const tokenCookie = Cookies.get().token
     if (tokenCookie) {
@@ -118,7 +119,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           setFollowingSorted(response.data.message.followingCurrentlyReadingSorted)
           setRandomSorted(response.data.message.randomCurrentlyReadingSorted)
           setFirstBookshelf(response.data.message.firstBookshelf)
-          setLatestSuggestions(response.data.message.latestSuggestions)
+          setSuggestionRating(response.data.message.rating === null ? 0 : response.data.message.rating)
           return response.data.message
         })
         .catch(({response})=>{
@@ -1086,6 +1087,59 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           direction="column"
           gap={1}
         >
+          <Flex
+            align="center"
+            gap={1}
+            mb={-1}
+            className="non-well"
+            wrap="wrap"
+          >
+            <Text 
+              fontWeight={600} 
+              fontSize="sm"
+              opacity="80%"
+              me={1}
+            >
+              Current book suggestion rating: 
+            </Text>
+            <StarRating
+              ratingCallback={null} 
+              starRatingId={0}
+              defaultRating={suggestionRating}
+            />
+            <Text 
+              fontWeight={600} 
+              fontSize="sm"
+              opacity="80%"
+              me={1}
+            >
+              {suggestionRating.toFixed(1)}
+            </Text>
+            {firstBookshelf ? (
+              <Flex
+                align="center"
+                justify="center"
+                wrap="wrap"
+                gap={2}
+                // mb={3}
+              >
+                <Button
+                  as="a"
+                  href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
+                  variant="outline"
+                  colorScheme="black"
+                  size="xs"
+                  p={2}
+                >
+                  <FaPlay size={15}/>
+                  <Text ms={1}>
+                    Start Suggesting
+                  </Text>
+                </Button>
+              </Flex>
+            ): null}
+          </Flex>
+          <Divider mt={1} />
           <CurrentlyReadingInput/>
           <Tabs
             variant="enclosed"
@@ -1112,15 +1166,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 onClick={e=>setPublicTabChosen(false)}
               >
                 Following
-              </Tab>
-              <Tab
-                fontWeight="bold"
-                _selected={{
-                  borderBottom: "2px solid gray"
-                }}
-                onClick={e=>setPublicTabChosen(false)}
-              >
-                Latest Suggestions
               </Tab>
             </TabList>
             <TabPanels>
@@ -1176,128 +1221,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       </Box>
                     </Box>
                   )}
-                </Flex>
-              </TabPanel>
-              <TabPanel px={0}>
-                {firstBookshelf ? (
-                  <Flex
-                    align="center"
-                    // justify="center"
-                    wrap="wrap"
-                    gap={2}
-                    mb={3}
-                  >
-                    <Text
-                      flex="1 1 475px"
-                      fontSize="sm"
-                    >
-                      Recognize the importance of these heroes helping us break free from recommendation algorithms, sponsored book lists, and paid book reviews.
-                    </Text>
-                    <Button
-                      as="a"
-                      href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
-                      variant="outline"
-                      colorScheme="black"
-                      size="md"
-                      p={2}
-                    >
-                      <FaPlay size={15}/>
-                      <Text ms={1}>
-                        Become a hero
-                      </Text>
-                    </Button>
-                  </Flex>
-                ): null}
-                <Flex
-                  gap={4}
-                  wrap="wrap"
-                  justify="space-between"
-                  alignItems="stretch"
-                >
-                  {latestSuggestions ? (
-                    latestSuggestions.map((suggestion,i)=>{
-                      return (
-                        <Flex
-                          as={Fade}
-                          in={Boolean(latestSuggestions)}
-                          key={i}
-                          direction="column"
-                          justify="space-between"
-                          border="1px solid"
-                          p={2}
-                          flex="1 1 0"
-                          minW="200px"
-                          minH="150px"
-                        >
-                          <Box>
-                            <Flex 
-                              align="center" 
-                              gap={0} 
-                              wrap="wrap" 
-                              lineHeight={1}
-                              mb={1}
-                              fontWeight="bold"
-                            >
-                              <Text
-                                as={Link}
-                                to={`/profile/${suggestion.Profile_BookSuggestion_suggestorToProfile.username}`}
-                                color="teal"
-                              >
-                                {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
-                              </Text>
-                              <BsArrowRightShort size={20} />
-                              <Link
-                                to={`/profile/${suggestion.Profile_BookSuggestion_suggesteeToProfile?.username}`}
-                              >
-                                {suggestion.Profile_BookSuggestion_suggesteeToProfile?.username}
-                              </Link>
-                            </Flex>
-                            <Flex gap={2} mb={2}>
-                              <Image
-                                src={suggestion.image ? suggestion.image : "https://via.placeholder.com/165x215"}
-                                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                maxH="85px"
-                                boxShadow="1px 1px 1px 1px darkgrey"
-                                alt={`${suggestion.title} image`}
-                              />
-                              <Box lineHeight={1.2}>
-                                <Text size="sm" fontWeight="bold" me={3} noOfLines={1}>
-                                  {suggestion.title}
-                                </Text>
-                                <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
-                                  {suggestion.author}
-                                </Text>
-                                <Text fontSize="sm" fontStyle="italic">
-                                  {suggestion.published_date !== null ? 
-                                    (
-                                      dayjs(suggestion.published_date).format("YYYY")
-                                    ) : null
-                                  }
-                                </Text>
-                                {suggestion.page_count ? (
-                                  <Text fontSize="sm" noOfLines={1}>
-                                    {suggestion.page_count} pages
-                                  </Text>
-                                ): null}
-                              </Box>
-                            </Flex>
-                          </Box>
-                          <Flex justify="center">
-                            <Button
-                              as={Link}
-                              to={`/booksuggestions/bookshelf?profile=${suggestion.Profile_BookSuggestion_suggesteeToProfile?.username}`}
-                              size="xs"
-                              variant="outline"
-                              borderColor="black"
-                              isDisabled={!suggestion.Profile_BookSuggestion_suggesteeToProfile?.Bookshelf || !suggestion.Profile_BookSuggestion_suggesteeToProfile?.Bookshelf.allow_suggestions}
-                            >
-                              Bookshelf
-                            </Button>
-                          </Flex>
-                        </Flex>
-                      )
-                    })
-                  ): null}
                 </Flex>
               </TabPanel>
             </TabPanels>
