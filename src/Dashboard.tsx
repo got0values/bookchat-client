@@ -1100,7 +1100,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               opacity="80%"
               me={1}
             >
-              Current book suggestion rating: 
+              Your book suggestions rating: 
             </Text>
             <StarRating
               ratingCallback={null} 
