@@ -821,18 +821,15 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                       border="2px solid gray"
                       name={profileData.username}
                     />
-                    <Heading fontSize={'3xl'}>
-                      {`${profileData.User?.first_name} ${profileData.User?.last_name}`}
-                    </Heading>
                     <Flex align="center" wrap="nowrap" gap={2} mb={1}>
+                      <Heading fontSize={'3xl'}>
+                        {`@${profileData.username}`}
+                      </Heading>
                       {profileData?.country ? (
                         <Box w="1.4rem">
                           <Flag alt={profileData.country} title={profileData.country}/>
                         </Box>
                       ):null}
-                      <Text fontWeight={600} color={'gray.600'}>
-                        {`@${profileData.username}`}
-                      </Text>
                       <SuggestionCountBadge suggestionCount={advisorCount}/>
                     </Flex>
                     {profileData.rating ? (
