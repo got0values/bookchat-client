@@ -935,8 +935,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   target="blank"
                   size="xs"
                   variant="ghost"
-                  aria-label="view in store"
-                  title="view in store"
+                  aria-label="View in Bookshop"
+                  title="View in Bookshop"
                 >
                   <FaStore size={15} />
                 </Button>
@@ -945,8 +945,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   to={`/chat/room?title=${reading.title}&author=${reading.author}`}
                   size="xs"
                   variant="ghost"
-                  aria-label="book chat room"
-                  title="book chat room"
+                  aria-label="Book chat room"
+                  title="Book chat room"
                 >
                   <MdOutlineChat size={15} />
                 </Button>
