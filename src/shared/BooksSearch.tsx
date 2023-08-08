@@ -30,7 +30,6 @@ export default function BooksSearch({selectText,selectCallback}: BooksSearchType
     .get("https://openlibrary.org/search.json?q=" + searchInputRef.current.value)
       .then((response)=>{
         if (response.data.docs) {
-          console.log(response.data.docs)
           if (response.data.docs.length > 5) {
             const slicedResponse = response.data.docs.slice(0,5);
             setBookResults(slicedResponse)

@@ -1103,7 +1103,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                             <Flex>
                               <Image 
                                 src={selectedBook.image}
-                                maxH="90px"
+                                maxH="125px"
                                 minW="60px"
                                 boxShadow="1px 1px 1px 1px darkgrey"
                                 alt={selectedBook.title}
@@ -1158,6 +1158,52 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       {selectedBook.page_count} pages
                                     </Text>
                                   ): null}
+                                  {selectedBook.subjects ? (
+                                    <Popover isLazy>
+                                      <PopoverTrigger>
+                                        <HStack 
+                                          spacing={1} 
+                                          noOfLines={1}
+                                          maxW="275px"
+                                          _hover={{
+                                            cursor: "pointer"
+                                          }}
+                                        >
+                                          {selectedBook.subjects.map((subject:string,i:number)=>{
+                                            return (
+                                              <Tag
+                                                key={i}
+                                                // variant="solid"
+                                                colorScheme="purple"
+                                                size="sm"
+                                                // borderRadius="full"
+                                              >
+                                                <TagLabel>{subject}</TagLabel>
+                                              </Tag>
+                                            )
+                                          })}
+                                        </HStack>
+                                      </PopoverTrigger>
+                                      <PopoverContent>
+                                        <PopoverArrow />
+                                        <PopoverCloseButton />
+                                        <PopoverBody 
+                                          fontSize="sm"
+                                          _dark={{
+                                            bg: "black"
+                                          }}
+                                        >
+                                          {selectedBook.subjects.map((subject:string,i:number)=>{
+                                            return (
+                                              <Text key={i}>
+                                                {subject}
+                                              </Text>
+                                            )}
+                                          )}
+                                        </PopoverBody>
+                                      </PopoverContent>
+                                    </Popover>
+                                  ):null}
                                 </Box>
                                 <Flex justify="space-between" align="center" wrap="wrap">
                                   <Flex align="center" gap={1}>
@@ -1336,7 +1382,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   .CurrentlyReading[0]
                                   .image
                                 }
-                                maxH="90px"
+                                maxH="125px"
                                 minW="60px"
                                 boxShadow="1px 1px 1px 1px darkgrey"
                                 alt={profileData.CurrentlyReading[0].title}
@@ -1404,6 +1450,52 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       {profileData.CurrentlyReading[0].page_count} pages
                                     </Text>
                                   ): null}
+                                  {profileData.CurrentlyReading[0].subjects && JSON.parse(profileData.CurrentlyReading[0].subjects).length ? (
+                                    <Popover isLazy>
+                                      <PopoverTrigger>
+                                        <HStack 
+                                          spacing={1} 
+                                          noOfLines={1}
+                                          maxW="275px"
+                                          _hover={{
+                                            cursor: "pointer"
+                                          }}
+                                        >
+                                          {JSON.parse(profileData.CurrentlyReading[0].subjects).map((subject:string,i:number)=>{
+                                            return (
+                                              <Tag
+                                                key={i}
+                                                // variant="solid"
+                                                colorScheme="purple"
+                                                size="sm"
+                                                // borderRadius="full"
+                                              >
+                                                <TagLabel>{subject}</TagLabel>
+                                              </Tag>
+                                            )
+                                          })}
+                                        </HStack>
+                                      </PopoverTrigger>
+                                      <PopoverContent>
+                                        <PopoverArrow />
+                                        <PopoverCloseButton />
+                                        <PopoverBody 
+                                          fontSize="sm"
+                                          _dark={{
+                                            bg: "black"
+                                          }}
+                                        >
+                                          {JSON.parse(profileData.CurrentlyReading[0].subjects).map((subject:string,i:number)=>{
+                                            return (
+                                              <Text key={i}>
+                                                {subject}
+                                              </Text>
+                                            )}
+                                          )}
+                                        </PopoverBody>
+                                      </PopoverContent>
+                                    </Popover>
+                                  ):null}
                                 </Box>
                                 <Box>
                                   <Text 
@@ -1623,7 +1715,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     src={
                                       profileData.CurrentlyReading[0].image
                                     }
-                                    maxH="90px"
+                                    maxH="125px"
                                     minW="60px"
                                     boxShadow="1px 1px 1px 1px darkgrey"
                                     alt={profileData.CurrentlyReading[0].title}
@@ -1689,6 +1781,52 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                           {profileData.CurrentlyReading[0].page_count} pages
                                         </Text>
                                       ): null}
+                                      {profileData.CurrentlyReading[0].subjects && JSON.parse(profileData.CurrentlyReading[0].subjects).length ? (
+                                        <Popover isLazy>
+                                          <PopoverTrigger>
+                                            <HStack 
+                                              spacing={1} 
+                                              noOfLines={1}
+                                              maxW="275px"
+                                              _hover={{
+                                                cursor: "pointer"
+                                              }}
+                                            >
+                                              {JSON.parse(profileData.CurrentlyReading[0].subjects).map((subject:string,i:number)=>{
+                                                return (
+                                                  <Tag
+                                                    key={i}
+                                                    // variant="solid"
+                                                    colorScheme="purple"
+                                                    size="sm"
+                                                    // borderRadius="full"
+                                                  >
+                                                    <TagLabel>{subject}</TagLabel>
+                                                  </Tag>
+                                                )
+                                              })}
+                                            </HStack>
+                                          </PopoverTrigger>
+                                          <PopoverContent>
+                                            <PopoverArrow />
+                                            <PopoverCloseButton />
+                                            <PopoverBody 
+                                              fontSize="sm"
+                                              _dark={{
+                                                bg: "black"
+                                              }}
+                                            >
+                                              {JSON.parse(profileData.CurrentlyReading[0].subjects).map((subject:string,i:number)=>{
+                                                return (
+                                                  <Text key={i}>
+                                                    {subject}
+                                                  </Text>
+                                                )}
+                                              )}
+                                            </PopoverBody>
+                                          </PopoverContent>
+                                        </Popover>
+                                      ):null}
                                     </Box>
                                     <Text>
                                       Pages read: {profileData.CurrentlyReading[0].pages_read ? profileData.CurrentlyReading[0].pages_read : 0}
@@ -1940,7 +2078,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     <Flex>
                                       <Image 
                                         src={readBook.image}
-                                        maxH="90px"
+                                        maxH="125px"
                                         minW="60px"
                                         boxShadow="1px 1px 1px 1px darkgrey"
                                         title={readBook.title}
@@ -1988,6 +2126,52 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                               {readBook.page_count} pages
                                             </Text>
                                           ): null}
+                                          {readBook.subjects && JSON.parse(readBook.subjects).length ? (
+                                            <Popover isLazy>
+                                              <PopoverTrigger>
+                                                <HStack 
+                                                  spacing={1} 
+                                                  noOfLines={1}
+                                                  maxW="275px"
+                                                  _hover={{
+                                                    cursor: "pointer"
+                                                  }}
+                                                >
+                                                  {JSON.parse(readBook.subjects).map((subject:string,i:number)=>{
+                                                    return (
+                                                      <Tag
+                                                        key={i}
+                                                        // variant="solid"
+                                                        colorScheme="purple"
+                                                        size="sm"
+                                                        // borderRadius="full"
+                                                      >
+                                                        <TagLabel>{subject}</TagLabel>
+                                                      </Tag>
+                                                    )
+                                                  })}
+                                                </HStack>
+                                              </PopoverTrigger>
+                                              <PopoverContent>
+                                                <PopoverArrow />
+                                                <PopoverCloseButton />
+                                                <PopoverBody 
+                                                  fontSize="sm"
+                                                  _dark={{
+                                                    bg: "black"
+                                                  }}
+                                                >
+                                                  {JSON.parse(readBook.subjects).map((subject:string,i:number)=>{
+                                                    return (
+                                                      <Text key={i}>
+                                                        {subject}
+                                                      </Text>
+                                                    )}
+                                                  )}
+                                                </PopoverBody>
+                                              </PopoverContent>
+                                            </Popover>
+                                          ):null}
                                         </Box>
                                         <Box>
                                           <Text 
