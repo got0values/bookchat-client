@@ -1781,7 +1781,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             </ModalHeader>
             <ModalCloseButton />
               <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-                <BooksSearch selectText="Add" selectCallback={selectBookToAdd as any}/>
+                <BooksSearch selectText="Add" selectCallback={selectBookToAdd as any} gBooksApi={gbooksapi}/>
               </ModalBody>
               <ModalFooter flexDirection="column">
               </ModalFooter>

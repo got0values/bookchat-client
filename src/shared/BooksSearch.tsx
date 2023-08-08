@@ -18,7 +18,7 @@ import BookImage from './BookImage';
 import dayjs from "dayjs";
 import axios from "axios";
 
-export default function BooksSearch({selectText,selectCallback}: BooksSearchType) {
+export default function BooksSearch({selectText,selectCallback,gBooksApi}: BooksSearchType) {
   const searchInputRef = useRef({} as HTMLInputElement);
   const [bookResults,setBookResults] = useState<any[] | null>(null);
   const [bookResultsOther,setBookResultsOther] = useState<any[] | null>(null);
@@ -30,8 +30,8 @@ export default function BooksSearch({selectText,selectCallback}: BooksSearchType
     .get("https://openlibrary.org/search.json?q=" + searchInputRef.current.value)
       .then((response)=>{
         if (response.data.docs) {
-          if (response.data.docs.length > 5) {
-            const slicedResponse = response.data.docs.slice(0,5);
+          if (response.data.docs.length > 10) {
+            const slicedResponse = response.data.docs.slice(0,10);
             setBookResults(slicedResponse)
           }
           else {
@@ -45,18 +45,18 @@ export default function BooksSearch({selectText,selectCallback}: BooksSearchType
       })
       .catch((error)=>{
         setBookResults(null)
-        setBookResultsError(error.message)
-        // axios
-        //   .get("https://openlibrary.org/search.json?q=" + searchInputRef.current.value)
-        //   .then((response)=>{
-        //     if(response.data.docs) {
-        //       setBookResultsOther(response.data.docs)
-        //     }
-        //   })
-        //   .catch((error)=>{
-        //     setBookResultsError(error.message);
-        //     console.log(error)
-        //   })
+        axios
+          .get("https://www.googleapis.com/books/v1/volumes?q=" + searchInputRef.current.value + "&key=" + gBooksApi)
+          .then((response)=>{
+            console.log("check")
+            if(response.data.items) {
+              setBookResultsOther(response.data.items)
+            }
+          })
+          .catch((error)=>{
+            setBookResultsError(error.message);
+            console.log(error)
+          })
       })
     setBookResultsLoading(false)
   }
@@ -202,35 +202,20 @@ export default function BooksSearch({selectText,selectCallback}: BooksSearchType
                   gap={2}
                 >
                   <Box flex="1 1 auto" maxW="65px">
-                    {book.cover_i || book.lccn ? (
-                      <Image
-                        maxW="100%" 
-                        w="100%"
-                        h="auto"
-                        className="book-image"
-                        onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                        src={book.cover_i ? (
-                          `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg?default=false`
-                        ) : (
-                          book.lccn ? (
-                            `https://covers.openlibrary.org/b/lccn/${book.lccn[0]}-M.jpg?default=false`
-                          ) : (
-                            "https://via.placeholder.com/165x215"
-                          )
-                        )}
-                        alt="book image"
-                        boxShadow="1px 1px 1px 1px darkgrey"
-                        _hover={{
-                          cursor: "pointer"
-                        }}
-                        id={`book-cover-${i}`}
-                      />
-                    ): (
-                      <BookImage 
-                        isbn={book.isbn?.length ? book.isbn[book.isbn.length - 1] : null}
-                        id={`book-cover-${i}`}
-                      />
-                    )}
+                    <Image
+                      maxW="100%" 
+                      w="100%"
+                      h="auto"
+                      className="book-image"
+                      onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                      src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
+                      alt="book image"
+                      boxShadow="1px 1px 1px 1px darkgrey"
+                      _hover={{
+                        cursor: "pointer"
+                      }}
+                      id={`book-cover-${i}`}
+                    />
                   </Box>
                   <Box flex="1 1 auto">
                     <Heading
@@ -238,19 +223,19 @@ export default function BooksSearch({selectText,selectCallback}: BooksSearchType
                       size="sm"
                       noOfLines={1}
                     >
-                      {book.title}
+                      {book.volumeInfo.title}
                     </Heading>
                     <Text fontSize="sm" noOfLines={1}>
-                      {book.author_name ? book.author_name[0] : null}
+                      {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
                     </Text>
                     <Text fontSize="sm" fontStyle="italic">
-                      {book.publish_date ? dayjs(book.publish_date[0]).format('YYYY') : null}
+                      {book.volumeInfo.publishedDate ? dayjs(book.volumeInfo.publishedDate).format('YYYY') : null}
                     </Text>
                     <Flex align="center" gap={1}>
                       {/* <GooglePreviewLink book={book}/> */}
                       <Button 
                         as="a"
-                        href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.title + " " + (book.author_name ? book.author_name[0] : null) + " " + (book.isbn?.length >= 2 ? book.isbn[1] : null))}`}
+                        href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.volumeInfo.title + " " + (book.volumeInfo.authors ? book.volumeInfo.authors[0] : null) + " " + (book.volumeInfo.industryIdentifiers ? book.volumeInfo.industryIdentifiers[0]?.identifier : null))}`}
                         target="blank"
                         size="xs"
                         variant="outline"
@@ -263,14 +248,15 @@ export default function BooksSearch({selectText,selectCallback}: BooksSearchType
                         size="xs"
                         data-book={JSON.stringify(book)}
                         onClick={e=>selectCallback({
-                          title: book.title,
-                          google_books_id: null,
-                          author: book.author_name ? book.author_name[0] : "",
-                          image: document.getElementById(`book-cover-${i}`)!.getAttribute("src"),
-                          isbn: book.isbn?.length ? book.isbn[book.isbn.length - 1] : null,
-                          description: "",
-                          page_count: book.number_of_pages_median,
-                          published_date: book.publish_date?.length ? dayjs(book.publish_date[0]).format('YYYY') : ""
+                          google_books_id: book.id,
+                          title: book.volumeInfo.title,
+                          author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : "",
+                          image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
+                          isbn: book.volumeInfo.industryIdentifiers?.length ? book.volumeInfo.industryIdentifiers[0].identifier : null,
+                          description: book.volumeInfo.description,
+                          page_count: book.volumeInfo.pageCount ? book.volumeInfo.pageCount : null,
+                          subjects: null,
+                          published_date: book.volumeInfo.publishedDate ? dayjs(book.volumeInfo.publishedDate).format('YYYY') : null
                         } as any)}
                         backgroundColor="black"
                         color="white"

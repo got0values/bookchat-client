@@ -997,7 +997,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     {reading.page_count} pages
                   </Text>
                 ): null}
-                {reading.subjects && JSON.parse(reading.subjects).length ? (
+                {reading.subjects && JSON.parse(reading.subjects)?.length ? (
                   <Popover isLazy>
                     <PopoverTrigger>
                       <HStack 
@@ -1210,6 +1210,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
         >
           <Flex
             align="center"
+            justify="center"
             gap={1}
             mb={-1}
             className="non-well"
@@ -1254,9 +1255,10 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 <Button
                   as="a"
                   href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
-                  variant="outline"
-                  colorScheme="black"
+                  // variant="outline"
+                  colorScheme="purple"
                   size="xs"
+                  // borderColor="purple"
                   p={2}
                 >
                   <FaPlay size={15}/>
@@ -1402,7 +1404,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           </ModalHeader>
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-              <BooksSearch selectText="Set" selectCallback={selectBook as any}/>
+              <BooksSearch selectText="Set" selectCallback={selectBook as any} gBooksApi={gbooksapi}/>
             </ModalBody>
             <ModalFooter flexDirection="column">
             </ModalFooter>

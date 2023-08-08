@@ -1981,7 +1981,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
           </ModalHeader>
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-              <BooksSearch selectText="Select" selectCallback={selectBook as any}/>
+              <BooksSearch selectText="Select" selectCallback={selectBook as any} gBooksApi={gbooksapi}/>
             </ModalBody>
             <ModalFooter flexDirection="column">
             <> 

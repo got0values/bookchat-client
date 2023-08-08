@@ -433,6 +433,7 @@ export interface GoogleBooksSearchType {
 export interface BooksSearchType {
   selectText: string;
   selectCallback: (e: React.FormEvent<Element>)=>(Promise<void> | void);
+  gBooksApi: string;
 }
 
 

@@ -2559,7 +2559,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                     </ModalHeader>
                     <ModalCloseButton />
                       <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-                        <BooksSearch selectText="set" selectCallback={selectBook as any}/>
+                        <BooksSearch selectText="set" selectCallback={selectBook as any} gBooksApi={gbooksapi}/>
                       </ModalBody>
                       <ModalFooter flexDirection="column">
                       <> 

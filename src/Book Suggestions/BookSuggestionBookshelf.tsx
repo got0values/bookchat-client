@@ -603,7 +603,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           </ModalHeader>
           <ModalCloseButton />
             <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
-              <BooksSearch selectText="select" selectCallback={selectBook as any}/>
+              <BooksSearch selectText="select" selectCallback={selectBook as any} gBooksApi={gbooksapi}/>
             </ModalBody>
             <ModalFooter flexDirection="column">
             </ModalFooter>
