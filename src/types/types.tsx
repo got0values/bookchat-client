@@ -44,10 +44,11 @@ export interface FollowRequest {
 //Profile
 export interface ProfileProps {
   server: string;
-  gbooksapi?: string;
+  gbooksapi: string;
 }
 
-export interface ProfileButtonProps extends ProfileProps {
+export interface ProfileButtonProps {
+  server: string;
   profileId: number;
   setProfileActionError: Dispatch<SetStateAction<string>>;
 }
