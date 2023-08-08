@@ -62,6 +62,7 @@ import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { MdOutlineChat } from 'react-icons/md';
 import { FaShoppingCart, FaPlay } from 'react-icons/fa';
 import { ImInfo } from 'react-icons/im';
+import { FaStore } from 'react-icons/fa';
 import Comments from "./shared/CurrentlyReadingComments";
 import { useAuth } from './hooks/useAuth';
 import Cookies from "js-cookie";
@@ -758,7 +759,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             justify="space-between"
             mb={3}
           >
-            <HStack>
+            <HStack w="100%">
               <Link to={`/profile/${reading.Profile.username}`}>
                 <Avatar
                   size="md"
@@ -785,75 +786,92 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   ) : null}
                 </Avatar>
               </Link>
-              <Flex direction="column">
-                <Flex align="center" gap={1}>
-                  <Text 
-                    as={Link} 
-                    to={`/profile/${reading.Profile.username}`}
-                    fontWeight="bold"
-                  >
-                    {reading.Profile.username}
-                  </Text>
-                  <SuggestionCountBadge suggestionCount={suggestionCount}/>
-                  {reading.Profile.Bookshelf?.allow_suggestions ? (
-                    <Button
-                      as={Link}
-                      to={`/booksuggestions/bookshelf?profile=${reading.Profile.username}`}
-                      size="xs"
-                      fontSize="xs"
-                      lineHeight={1}
-                      h="auto"
-                      variant="outline"
-                      p={1}
+              <Flex direction="column" w="100%">
+                <Flex
+                  align="center"
+                  justify="space-between"
+                >
+                  <Flex align="center" gap={1}>
+                    <Text 
+                      as={Link} 
+                      to={`/profile/${reading.Profile.username}`}
+                      fontWeight="bold"
                     >
-                      bookshelf
-                    </Button>
-                  ): (
-                    null
-                  )}
-                  {
-                  followingStatus === "following" ? (
-                    null 
-                  ) : (
-                    followingStatus === "requesting") ? (
+                      {reading.Profile.username}
+                    </Text>
+                    <SuggestionCountBadge suggestionCount={suggestionCount}/>
+                    {reading.Profile.Bookshelf?.allow_suggestions ? (
                       <Button
-                        variant="ghost"
+                        as={Link}
+                        to={`/booksuggestions/bookshelf?profile=${reading.Profile.username}`}
                         size="xs"
                         fontSize="xs"
                         lineHeight={1}
                         h="auto"
-                        p={0}
-                        color="red.600"
-                        _dark={{
-                          color: "red.200"
-                        }}
-                        onClick={()=>cancelFollow(reading.Profile.id)}
-                        isLoading={cancelFollowMutation.isLoading}
+                        variant="outline"
+                        p={1}
                       >
-                        cancel request
+                        bookshelf
                       </Button>
+                    ): (
+                      null
+                    )}
+                    {
+                    followingStatus === "following" ? (
+                      null 
                     ) : (
-                      followingStatus === "self") ? (
-                        null 
-                      ) : (
+                      followingStatus === "requesting") ? (
                         <Button
                           variant="ghost"
                           size="xs"
                           fontSize="xs"
                           lineHeight={1}
                           h="auto"
-                          p={1}
-                          color="blue.600"
+                          p={0}
+                          color="red.600"
                           _dark={{
-                            color: "blue.200"
+                            color: "red.200"
                           }}
-                          onClick={()=>follow(reading.Profile.id)}
-                          isLoading={followMutation.isLoading}
+                          onClick={()=>cancelFollow(reading.Profile.id)}
+                          isLoading={cancelFollowMutation.isLoading}
                         >
-                          follow
+                          cancel request
                         </Button>
-                      )
-                  }
+                      ) : (
+                        followingStatus === "self") ? (
+                          null 
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="xs"
+                            fontSize="xs"
+                            lineHeight={1}
+                            h="auto"
+                            p={1}
+                            color="blue.600"
+                            _dark={{
+                              color: "blue.200"
+                            }}
+                            onClick={()=>follow(reading.Profile.id)}
+                            isLoading={followMutation.isLoading}
+                          >
+                            follow
+                          </Button>
+                        )
+                    }
+                  </Flex>
+                  {reading.Profile.id === user?.Profile.id ? (
+                    <Button
+                      color="tomato"
+                      size="xs"
+                      variant="ghost"
+                      onClick={e=>deleteReading(reading.id)}
+                      fontWeight="bold"
+                      title="delete"
+                    >
+                      <BiTrash size={18} />
+                    </Button>
+                  ): null}
                 </Flex>
                 <Text fontStyle="italic">
                   {dayjs(reading.created_on).local().format('MMM DD, h:mm a')}
@@ -902,63 +920,43 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             </Button>
           </Flex>
           <Flex>
-            <Image 
-              src={reading.image ? reading.image : "https://via.placeholder.com/165x215"}
-              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-              maxH="125px"
-              boxShadow="1px 1px 1px 1px darkgrey"
-              alt={`${reading.title} image`}
-            />
+            <Box>
+              <Image 
+                src={reading.image ? reading.image : "https://via.placeholder.com/165x215"}
+                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                maxH="125px"
+                boxShadow="1px 1px 1px 1px darkgrey"
+                alt={`${reading.title} image`}
+              />
+              <Flex mt={1} align="center" justify="center">
+                <Button
+                  as={Link}
+                  to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(reading.title + " " + reading.author + " " + reading.isbn)}`}
+                  target="blank"
+                  size="xs"
+                  variant="ghost"
+                  aria-label="view in store"
+                  title="view in store"
+                >
+                  <FaStore size={15} />
+                </Button>
+                <Button
+                  as={Link}
+                  to={`/chat/room?title=${reading.title}&author=${reading.author}`}
+                  size="xs"
+                  variant="ghost"
+                  aria-label="book chat room"
+                  title="book chat room"
+                >
+                  <MdOutlineChat size={15} />
+                </Button>
+              </Flex>
+            </Box>
             <Box mx={2} w="100%">
               <Box lineHeight={1.4}>
-                <Flex justify="space-between">
-                  <Heading as="h2" size="md" me={3} noOfLines={1}>
-                    {reading.title}
-                  </Heading>
-                  <Box>
-                    <Menu>
-                      <MenuButton 
-                        as={Button}
-                        size="md"
-                        variant="ghost"
-                        rounded="full"
-                        height="25px"
-                        title="menu"
-                      >
-                        <BiDotsHorizontalRounded/>
-                      </MenuButton>
-                      <MenuList>
-                        <MenuItem 
-                          as={Link}
-                          to={`/chat/room?title=${reading.title}&author=${reading.author}`}
-                          fontWeight="bold"
-                          icon={<MdOutlineChat size={20} />}
-                        >
-                          Chat Room
-                        </MenuItem>
-                        <MenuItem 
-                          as={Link}
-                          to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(reading.title + " " + reading.author + " " + reading.isbn)}`}
-                          target="blank"
-                          fontWeight="bold"
-                          icon={<FaShoppingCart size={20} />}
-                        >
-                          Shop
-                        </MenuItem>
-                        {reading.Profile.id === user?.Profile.id ? (
-                          <MenuItem
-                            color="tomato"
-                            onClick={e=>deleteReading(reading.id)}
-                            fontWeight="bold"
-                            icon={<BiTrash size={20} />}
-                          >
-                            Delete
-                          </MenuItem>
-                        ): null}
-                      </MenuList>
-                    </Menu>
-                  </Box>
-                </Flex>
+                <Heading as="h2" size="md" me={3} noOfLines={1}>
+                  {reading.title}
+                </Heading>
                 <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
                   {reading.author}
                 </Text>
