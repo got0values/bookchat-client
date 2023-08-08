@@ -398,6 +398,7 @@ export const useProfile = ({server,gbooksapi}: ProfileProps) => {
           description: (e.target as HTMLDivElement).dataset.description,
           isbn: (e.target as HTMLDivElement).dataset.isbn,
           page_count: parseInt((e.target as HTMLDivElement).dataset.pagecount as string),
+          subjects: (e.target as HTMLDivElement).dataset.subjects as string,
           published_date: (e.target as HTMLDivElement).dataset.publisheddate,
           thoughts: thoughtsRef.current.value,
           pages_read: parseInt(pagesReadRef.current.value)
@@ -1185,6 +1186,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     data-description={selectedBook.description}
                                     data-isbn={selectedBook.isbn}
                                     data-pagecount={selectedBook.page_count}
+                                    data-subjects={JSON.stringify(selectedBook.subjects)}
                                     data-publisheddate={selectedBook.published_date}
                                     onClick={e=>postCurrentlyReading(e)}
                                   >

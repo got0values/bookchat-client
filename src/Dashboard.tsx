@@ -11,7 +11,6 @@ import {
   Fade,
   Text,
   Image,
-  HStack,
   Avatar,
   Button,
   Menu,
@@ -33,6 +32,9 @@ import {
   ModalBody,
   ModalCloseButton,
   Input,
+  Tag,
+  TagLabel,
+  HStack,
   Popover,
   PopoverTrigger,
   PopoverCloseButton,
@@ -44,6 +46,7 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  Tooltip,
   useToast,
   useDisclosure
 } from "@chakra-ui/react";
@@ -58,6 +61,7 @@ import { BsReplyFill, BsArrowRightShort } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { MdOutlineChat } from 'react-icons/md';
 import { FaShoppingCart, FaPlay } from 'react-icons/fa';
+import { ImInfo } from 'react-icons/im';
 import Comments from "./shared/CurrentlyReadingComments";
 import { useAuth } from './hooks/useAuth';
 import Cookies from "js-cookie";
@@ -283,6 +287,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           description: (e.target as HTMLDivElement).dataset.description,
           isbn: (e.target as HTMLDivElement).dataset.isbn,
           page_count: parseInt((e.target as HTMLDivElement).dataset.pagecount as string),
+          subjects: (e.target as HTMLDivElement).dataset.subjects as string,
           published_date: (e.target as HTMLDivElement).dataset.publisheddate,
           thoughts: thoughtsRef.current.value,
           pages_read: parseInt(pagesReadRef.current.value)
@@ -508,7 +513,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             <Flex>
               <Image 
                 src={selectedBook.image}
-                maxH="90px"
+                maxH="120px"
                 boxShadow="1px 1px 1px 1px darkgrey"
                 alt={selectedBook.title}
               />
@@ -535,6 +540,77 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       {selectedBook.page_count} pages
                     </Text>
                   ): null}
+                  {selectedBook.subjects ? (
+                    <Popover isLazy>
+                      <PopoverTrigger>
+                        <HStack 
+                          spacing={1} 
+                          noOfLines={1}
+                          maxW="275px"
+                          _hover={{
+                            cursor: "pointer"
+                          }}
+                        >
+                          {selectedBook.subjects.map((subject:string,i:number)=>{
+                            return (
+                              <Tag
+                                key={i}
+                                // variant="solid"
+                                colorScheme="purple"
+                                size="sm"
+                                // borderRadius="full"
+                              >
+                                <TagLabel>{subject}</TagLabel>
+                              </Tag>
+                            )
+                          })}
+                        </HStack>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <PopoverArrow />
+                        <PopoverCloseButton />
+                        <PopoverBody 
+                          fontSize="sm"
+                          _dark={{
+                            bg: "black"
+                          }}
+                        >
+                          {selectedBook.subjects.map((subject:string,i:number)=>{
+                            return (
+                              <Text key={i}>
+                                {subject}
+                              </Text>
+                            )}
+                          )}
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Popover>
+                  ):null}
+                  {/* <Popover isLazy>
+                  <PopoverTrigger>
+                    <Box 
+                      _hover={{
+                        cursor: "pointer"
+                      }}
+                    >
+                      <Text fontSize="lg" noOfLines={1}>
+                        {reading.description ? reading.description: null}
+                      </Text>
+                    </Box>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <PopoverArrow />
+                    <PopoverCloseButton />
+                    <PopoverBody 
+                      fontSize="sm"
+                      _dark={{
+                        bg: "black"
+                      }}
+                    >
+                      {reading.description}
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover> */}
                 </Box>
                 <Flex justify="space-between">
                   <Flex align="center" gap={1}>
@@ -562,6 +638,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     data-description={selectedBook.description}
                     data-isbn={selectedBook.isbn}
                     data-pagecount={selectedBook.page_count}
+                    data-subjects={JSON.stringify(selectedBook.subjects)}
                     data-publisheddate={selectedBook.published_date}
                     onClick={e=>postCurrentlyReading(e)}
                   >
@@ -828,7 +905,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             <Image 
               src={reading.image ? reading.image : "https://via.placeholder.com/165x215"}
               onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-              maxH="90px"
+              maxH="125px"
               boxShadow="1px 1px 1px 1px darkgrey"
               alt={`${reading.title} image`}
             />
@@ -922,6 +999,52 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     {reading.page_count} pages
                   </Text>
                 ): null}
+                {reading.subjects && JSON.parse(reading.subjects).length ? (
+                  <Popover isLazy>
+                    <PopoverTrigger>
+                      <HStack 
+                        spacing={1} 
+                        noOfLines={1}
+                        maxW="275px"
+                        _hover={{
+                          cursor: "pointer"
+                        }}
+                      >
+                        {JSON.parse(reading.subjects).map((subject:string,i:number)=>{
+                          return (
+                            <Tag
+                              key={i}
+                              // variant="solid"
+                              colorScheme="purple"
+                              size="sm"
+                              // borderRadius="full"
+                            >
+                              <TagLabel>{subject}</TagLabel>
+                            </Tag>
+                          )
+                        })}
+                      </HStack>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <PopoverArrow />
+                      <PopoverCloseButton />
+                      <PopoverBody 
+                        fontSize="sm"
+                        _dark={{
+                          bg: "black"
+                        }}
+                      >
+                        {JSON.parse(reading.subjects).map((subject:string,i:number)=>{
+                          return (
+                            <Text key={i}>
+                              {subject}
+                            </Text>
+                          )}
+                        )}
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Popover>
+                ):null}
               </Box>
               <Flex justify="space-between" wrap="wrap">
                 <Box minHeight="5px" minWidth="100px">
@@ -1115,6 +1238,13 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             >
               {suggestionRating.toFixed(1)}
             </Text>
+            <Tooltip
+              label="Your rating is based on other user's ratings on your book suggestions to them."
+            >
+              <Flex align="center" justify="center" me={2}>
+                <ImInfo size={20} color="gray" />
+              </Flex>
+            </Tooltip>
             {firstBookshelf ? (
               <Flex
                 align="center"

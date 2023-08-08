@@ -30,6 +30,7 @@ export default function BooksSearch({selectText,selectCallback}: BooksSearchType
     .get("https://openlibrary.org/search.json?q=" + searchInputRef.current.value)
       .then((response)=>{
         if (response.data.docs) {
+          console.log(response.data.docs)
           if (response.data.docs.length > 5) {
             const slicedResponse = response.data.docs.slice(0,5);
             setBookResults(slicedResponse)
@@ -172,6 +173,7 @@ export default function BooksSearch({selectText,selectCallback}: BooksSearchType
                           image: document.getElementById(`book-cover-${i}`)!.getAttribute("src"),
                           isbn: book.isbn?.length ? book.isbn[book.isbn.length - 1] : null,
                           description: "",
+                          subjects: book.subject?.length ? book.subject : null,
                           page_count: book.number_of_pages_median,
                           published_date: book.publish_date?.length ? dayjs(book.publish_date[0]).format('YYYY') : ""
                         } as any)}

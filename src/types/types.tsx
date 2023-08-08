@@ -279,6 +279,7 @@ export interface CurrentlyReading {
   published_date: string;
   created_on: Date;
   pages_read: number;
+  subjects: string,
   Profile: ProfileType;
   CurrentlyReadingComment: CurrentlyReadingComment[];
   CurrentlyReadingLike: CurrentlyReadingLike[];

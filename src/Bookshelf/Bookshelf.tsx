@@ -5,6 +5,7 @@ import { BookshelfCategory, BookshelfBook, SelectedBook } from "../types/types";
 import { 
   Box,
   Tag,
+  TagCloseButton,
   Heading,
   Text,
   Image,
@@ -1578,10 +1579,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                     cursor: "pointer"
                                   }}
                                 >
-                                  <CloseButton 
-                                    size="xs" 
-                                    fontSize="xs"
-                                    p="0" 
+                                  <TagCloseButton 
                                     color="red"
                                     pointerEvents="none"
                                   />
