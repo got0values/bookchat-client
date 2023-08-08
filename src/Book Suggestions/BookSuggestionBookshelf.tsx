@@ -253,7 +253,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                 }}
                 // onClick={e=>redirect(`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`)}
               >
-                Next <BsArrowRight size={20} />
+                Skip <BsArrowRight size={20} />
               </Button>
             ): null}
           </Flex>
