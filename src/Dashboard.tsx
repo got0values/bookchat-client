@@ -55,6 +55,7 @@ import { editCurrentlyReadingThoughts, cancelEditCurrentlyReadingThoughts } from
 import BooksSearch from "./shared/BooksSearch";
 import StarRating from "./shared/StarRating";
 import SocialShareButtons from "./shared/SocialShareButtons";
+import FeaturedBooks from "./shared/FeaturedBooks";
 import { SuggestionCountBadge } from "./shared/SuggestionCount";
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
 import { BsReplyFill, BsArrowRightShort } from 'react-icons/bs';
@@ -1201,7 +1202,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
 
   return (
     <>
-      <Box className="main-content-smaller" pb={5}>
+      <Box className="main-content-smaller" pb={20}>
         <Heading as="h1" className="visually-hidden">Dashboard</Heading>
         <Flex 
           m={0}
@@ -1234,6 +1235,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               fontSize="sm"
               opacity="80%"
               me={1}
+              color={suggestionRating === 0 ? "red" : "inherit"}
             >
               {suggestionRating.toFixed(1)}
             </Text>
@@ -1256,7 +1258,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   as="a"
                   href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
                   // variant="outline"
-                  colorScheme="purple"
+                  colorScheme="green"
                   size="xs"
                   // borderColor="purple"
                   p={2}
@@ -1296,6 +1298,15 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 onClick={e=>setPublicTabChosen(false)}
               >
                 Following
+              </Tab>
+              <Tab
+                fontWeight="bold"
+                _selected={{
+                  borderBottom: "2px solid gray"
+                }}
+                onClick={e=>setPublicTabChosen(false)}
+              >
+                Featured Books
               </Tab>
             </TabList>
             <TabPanels>
@@ -1352,6 +1363,9 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     </Box>
                   )}
                 </Flex>
+              </TabPanel>
+              <TabPanel px={0}>
+                <FeaturedBooks/>
               </TabPanel>
             </TabPanels>
           </Tabs>
