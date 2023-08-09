@@ -920,38 +920,13 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             </Button>
           </Flex>
           <Flex>
-            <Box>
-              <Image 
-                src={reading.image ? reading.image : "https://via.placeholder.com/165x215"}
-                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                maxH="125px"
-                boxShadow="1px 1px 1px 1px darkgrey"
-                alt={`${reading.title} image`}
-              />
-              <Flex mt={1} align="center" justify="center">
-                <Button
-                  as={Link}
-                  to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(reading.title + " " + reading.author)}`}
-                  target="blank"
-                  size="xs"
-                  variant="ghost"
-                  aria-label="View in Bookshop"
-                  title="View in Bookshop"
-                >
-                  <FaStore size={15} />
-                </Button>
-                <Button
-                  as={Link}
-                  to={`/chat/room?title=${reading.title}&author=${reading.author}`}
-                  size="xs"
-                  variant="ghost"
-                  aria-label="Book chat room"
-                  title="Book chat room"
-                >
-                  <MdOutlineChat size={15} />
-                </Button>
-              </Flex>
-            </Box>
+            <Image 
+              src={reading.image ? reading.image : "https://via.placeholder.com/165x215"}
+              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+              maxH="150px"
+              boxShadow="1px 1px 1px 1px darkgrey"
+              alt={`${reading.title} image`}
+            />
             <Box mx={2} w="100%">
               <Box lineHeight={1.4}>
                 <Heading as="h2" size="md" me={3} noOfLines={1}>
@@ -1045,7 +1020,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 ):null}
               </Box>
               <Flex justify="space-between" wrap="wrap">
-                <Box minHeight="5px" minWidth="100px">
+                <Box minHeight="5px" minWidth="150px">
                   <Text 
                     padding={0}
                     rounded="md"
@@ -1097,6 +1072,31 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     </Button>
                   </Flex>
                 </Box>
+              </Flex>
+              <Flex align="center" gap={2}>
+                <Button
+                  as={Link}
+                  to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(reading.title + " " + reading.author)}`}
+                  target="blank"
+                  size="xs"
+                  variant="ghost"
+                  aria-label="View in Bookshop"
+                  title="View in Bookshop"
+                  p={0}
+                >
+                  <FaStore size={20} />
+                </Button>
+                <Button
+                  as={Link}
+                  to={`/chat/room?title=${reading.title}&author=${reading.author}`}
+                  size="xs"
+                  variant="ghost"
+                  aria-label="Book chat room"
+                  title="Book chat room"
+                  p={0}
+                >
+                  <MdOutlineChat size={20} />
+                </Button>
               </Flex>
             </Box>
           </Flex>

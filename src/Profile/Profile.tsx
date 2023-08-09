@@ -1447,7 +1447,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       {profileData.CurrentlyReading[0].page_count} pages
                                     </Text>
                                   ): null}
-                                  {profileData.CurrentlyReading[0].subjects && JSON.parse(profileData.CurrentlyReading[0].subjects).length ? (
+                                  {profileData.CurrentlyReading[0].subjects && JSON.parse(profileData.CurrentlyReading[0].subjects)?.length ? (
                                     <Popover isLazy>
                                       <PopoverTrigger>
                                         <HStack 
