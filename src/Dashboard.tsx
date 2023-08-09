@@ -554,6 +554,9 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                           }}
                         >
                           {selectedBook.subjects.map((subject:string,i:number)=>{
+                            if (subject.includes("nyt:")) {
+                              return;
+                            }
                             return (
                               <Tag
                                 key={i}
@@ -973,107 +976,112 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     {reading.page_count} pages
                   </Text>
                 ): null}
-                {reading.subjects && JSON.parse(reading.subjects)?.length ? (
-                  <Popover isLazy>
-                    <PopoverTrigger>
-                      <HStack 
-                        spacing={1} 
-                        noOfLines={1}
-                        maxW="275px"
-                        _hover={{
-                          cursor: "pointer"
-                        }}
-                      >
-                        {JSON.parse(reading.subjects).map((subject:string,i:number)=>{
-                          return (
-                            <Tag
-                              key={i}
-                              // variant="solid"
-                              colorScheme="purple"
-                              size="sm"
-                              // borderRadius="full"
-                            >
-                              <TagLabel>{subject}</TagLabel>
-                            </Tag>
-                          )
-                        })}
-                      </HStack>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <PopoverArrow />
-                      <PopoverCloseButton />
-                      <PopoverBody 
-                        fontSize="sm"
-                        _dark={{
-                          bg: "black"
-                        }}
-                      >
-                        {JSON.parse(reading.subjects).map((subject:string,i:number)=>{
-                          return (
-                            <Text key={i}>
-                              {subject}
-                            </Text>
-                          )}
-                        )}
-                      </PopoverBody>
-                    </PopoverContent>
-                  </Popover>
-                ):null}
               </Box>
-              <Flex justify="space-between" wrap="wrap">
-                <Box minHeight="5px" minWidth="150px">
-                  <Text 
-                    padding={0}
-                    rounded="md"
-                    _hover={{
-                      cursor: reading.Profile.id === user?.Profile.id ? "pointer" : "default",
-                      backgroundColor: reading.Profile.id === user?.Profile.id ? "gray" : "unset",
-                    }}
-                    h="100%"
-                    w="100%"
-                    id={`pages-read-text-${reading.id}`}
-                    onClick={e=>reading.Profile.id === user?.Profile.id ? editPagesRead(reading.id) : null}
+              <Box minWidth="150px">
+                <Text 
+                  padding={0}
+                  rounded="md"
+                  _hover={{
+                    cursor: reading.Profile.id === user?.Profile.id ? "pointer" : "default",
+                    backgroundColor: reading.Profile.id === user?.Profile.id ? "gray" : "unset",
+                  }}
+                  h="100%"
+                  w="100%"
+                  id={`pages-read-text-${reading.id}`}
+                  onClick={e=>reading.Profile.id === user?.Profile.id ? editPagesRead(reading.id) : null}
+                >
+                  {reading.pages_read ? `Pages read: ${reading.pages_read}` : null}
+                </Text>
+                <Flex 
+                  align="center" 
+                  gap={1}
+                  id={`pages-read-input-div-${reading.id}`}
+                  display="none"
+                  wrap="wrap"
+                  padding={0}
+                >
+                  Pages read:
+                  <NumberInput
+                    maxWidth="75px"
+                    size="sm"
+                    min={0}
+                    defaultValue={reading.pages_read}
                   >
-                    {reading.pages_read ? `Pages read: ${reading.pages_read}` : null}
-                  </Text>
-                  <Flex 
-                    align="center" 
-                    gap={1}
-                    id={`pages-read-input-div-${reading.id}`}
-                    display="none"
-                    wrap="wrap"
-                    padding={0}
+                    <NumberInputField id={`pages-read-input-${reading.id}`} />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                  <Button
+                    size="sm"
+                    backgroundColor="black"
+                    color="white"
+                    onClick={e=>updatePagesRead(reading.id)}
                   >
-                    Pages read:
-                    <NumberInput
-                      maxWidth="75px"
-                      size="sm"
-                      min={0}
-                      defaultValue={reading.pages_read}
+                    Update
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={e=>cancelEditPagesRead(reading.id)}
+                  >
+                    Cancel
+                  </Button>
+                </Flex>
+              </Box>
+              {reading.subjects && JSON.parse(reading.subjects)?.length ? (
+                <Popover isLazy>
+                  <PopoverTrigger>
+                    <HStack 
+                      spacing={1} 
+                      noOfLines={1}
+                      maxW="275px"
+                      display="flex"
+                      align="center"
+                      height="1rem"
+                      _hover={{
+                        cursor: "pointer"
+                      }}
                     >
-                      <NumberInputField id={`pages-read-input-${reading.id}`} />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
-                    <Button
-                      size="sm"
-                      backgroundColor="black"
-                      color="white"
-                      onClick={e=>updatePagesRead(reading.id)}
+                      {JSON.parse(reading.subjects).map((subject:string,i:number)=>{
+                        if (subject.includes("nyt:")) {
+                          return;
+                        }
+                        return (
+                          <Tag
+                            key={i}
+                            // variant="solid"
+                            colorScheme="purple"
+                            size="sm"
+                            minH={15}
+                            // borderRadius="full"
+                          >
+                            <TagLabel>{subject}</TagLabel>
+                          </Tag>
+                        )
+                      })}
+                    </HStack>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <PopoverArrow />
+                    <PopoverCloseButton />
+                    <PopoverBody 
+                      fontSize="sm"
+                      _dark={{
+                        bg: "black"
+                      }}
                     >
-                      Update
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={e=>cancelEditPagesRead(reading.id)}
-                    >
-                      Cancel
-                    </Button>
-                  </Flex>
-                </Box>
-              </Flex>
+                      {JSON.parse(reading.subjects).map((subject:string,i:number)=>{
+                        return (
+                          <Text key={i}>
+                            {subject}
+                          </Text>
+                        )}
+                      )}
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
+              ):null}
               <Flex align="center" gap={2}>
                 <Button
                   as={Link}
