@@ -1282,7 +1282,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       </MenuItem>
                                       <MenuItem 
                                         as={Link}
-                                        to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(profileData.CurrentlyReading[0].title + " " + profileData.CurrentlyReading[0].author + " " + profileData.CurrentlyReading[0].isbn)}`}
+                                        to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(profileData.CurrentlyReading[0].title + " " + profileData.CurrentlyReading[0].author)}`}
                                         target="blank"
                                         fontWeight="bold"
                                         icon={<FaShoppingCart size={20} />}
@@ -1688,7 +1688,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                         </MenuItem>
                                         <MenuItem 
                                           as={Link}
-                                          to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(profileData.CurrentlyReading[0].title + " " + profileData.CurrentlyReading[0].author + " " + profileData.CurrentlyReading[0].isbn)}`}
+                                          to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(profileData.CurrentlyReading[0].title + " " + profileData.CurrentlyReading[0].author)}`}
                                           target="blank"
                                           fontWeight="bold"
                                           icon={<FaShoppingCart size={20} />}
@@ -1983,7 +1983,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                               </MenuItem>
                                               <MenuItem 
                                                 as={Link}
-                                                to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(readBook.title + " " + readBook.author + " " + readBook.isbn)}`}
+                                                to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(readBook.title + " " + readBook.author)}`}
                                                 target="blank"
                                                 fontWeight="bold"
                                                 icon={<FaShoppingCart size={20} />}

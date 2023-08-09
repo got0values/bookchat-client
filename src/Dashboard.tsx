@@ -931,7 +931,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               <Flex mt={1} align="center" justify="center">
                 <Button
                   as={Link}
-                  to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(reading.title + " " + reading.author + " " + reading.isbn)}`}
+                  to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(reading.title + " " + reading.author)}`}
                   target="blank"
                   size="xs"
                   variant="ghost"

@@ -235,7 +235,7 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
                       {/* <GooglePreviewLink book={book}/> */}
                       <Button 
                         as="a"
-                        href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.volumeInfo.title + " " + (book.volumeInfo.authors ? book.volumeInfo.authors[0] : null) + " " + (book.volumeInfo.industryIdentifiers ? book.volumeInfo.industryIdentifiers[0]?.identifier : null))}`}
+                        href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.volumeInfo.title + " " + (book.volumeInfo.authors ? book.volumeInfo.authors[0] : null))}`}
                         target="blank"
                         size="xs"
                         variant="outline"

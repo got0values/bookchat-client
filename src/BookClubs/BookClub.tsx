@@ -1262,7 +1262,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                               ): null}
                               <Button 
                                 as={Link}
-                                to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(currentBook.title + " " + currentBook.author + " " + currentBook.isbn)}`}
+                                to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(currentBook.title + " " + currentBook.author)}`}
                                 target="blank"
                                 fontWeight="bold"
                                 minW="unset"

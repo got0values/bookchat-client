@@ -368,7 +368,7 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                     </Flex>
                     <Button
                       as="a"
-                      href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(suggestion.title + " " + suggestion.author + " " + suggestion.isbn)}`}
+                      href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(suggestion.title + " " + suggestion.author)}`}
                       target="blank"
                       size="xs"
                       variant="outline"

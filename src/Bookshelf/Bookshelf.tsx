@@ -1457,7 +1457,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             </MenuItem>
                             <MenuItem 
                               as={Link}
-                              to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.title + " " + book.author + " " + book.isbn)}`}
+                              to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.title + " " + book.author)}`}
                               target="blank"
                               fontWeight="bold"
                               icon={<FaShoppingCart size={20} />}
