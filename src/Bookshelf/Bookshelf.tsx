@@ -9,7 +9,6 @@ import {
   Heading,
   Text,
   Image,
-  Tooltip,
   Spinner,
   Stack,
   Button,
@@ -939,11 +938,32 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     justify="space-between"
                     w="100%"
                   >
-                    <Tooltip label="To receive more suggestions, try suggesting books to other users. Also, in your suggestion notes, be descriptive about what you're looking for. Bookshelves without any books and no suggestion notes will not be listed." hasArrow>
-                      <Flex align="center" justify="center">
-                        <ImInfo size={20} color="gray" />
-                      </Flex>
-                    </Tooltip>
+                    <Popover isLazy>
+                      <PopoverTrigger>
+                        <Flex 
+                          align="center" 
+                          justify="center" 
+                          me={2}
+                          _hover={{
+                            cursor: "pointer"
+                          }}
+                        >
+                          <ImInfo size={20} color="gray" />
+                        </Flex>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <PopoverArrow />
+                        <PopoverCloseButton />
+                        <PopoverBody 
+                          fontSize="sm"
+                          _dark={{
+                            bg: "black"
+                          }}
+                        >
+                          To receive more suggestions, try suggesting books to other users. Also, in your suggestion notes, be descriptive about what you're looking for. Bookshelves without any books and no suggestion notes will not be listed.
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Popover>
                     <Button
                       onClick={e=>saveSuggestionNotes()}
                       colorScheme="black"
@@ -1738,11 +1758,32 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 justify="space-between"
                                 w="100%"
                               >
-                                <Tooltip label="Private notes are only visible to you" hasArrow>
-                                  <Flex align="center" justify="center">
-                                    <ImInfo size={20} color="gray" />
-                                  </Flex>
-                                </Tooltip>
+                                <Popover isLazy>
+                                  <PopoverTrigger>
+                                    <Flex 
+                                      align="center" 
+                                      justify="center" 
+                                      me={2}
+                                      _hover={{
+                                        cursor: "pointer"
+                                      }}
+                                    >
+                                      <ImInfo size={20} color="gray" />
+                                    </Flex>
+                                  </PopoverTrigger>
+                                  <PopoverContent>
+                                    <PopoverArrow />
+                                    <PopoverCloseButton />
+                                    <PopoverBody 
+                                      fontSize="sm"
+                                      _dark={{
+                                        bg: "black"
+                                      }}
+                                    >
+                                      Private notes are only visible to you.
+                                    </PopoverBody>
+                                  </PopoverContent>
+                                </Popover>
                                 <Button
                                   w="auto"
                                   alignSelf="flex-end"

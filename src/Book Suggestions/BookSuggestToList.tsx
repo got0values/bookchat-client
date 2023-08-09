@@ -74,6 +74,13 @@ export function BookSuggestionToList({server}: {server: string;}) {
     <Skeleton
       isLoaded={!isLoading}
     >
+      <Text
+        fontWeight="bold"
+        textAlign="center"
+        p={2}
+      >
+        These people need your help finding their next read
+      </Text>
       {bookSuggestToList?.length ? (
         bookSuggestToList.map((bookshelf: BookshelfType, i: number)=>{
           return (

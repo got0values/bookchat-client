@@ -46,7 +46,6 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
-  Tooltip,
   useToast,
   useDisclosure
 } from "@chakra-ui/react";
@@ -1247,13 +1246,32 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             >
               {suggestionRating.toFixed(1)}
             </Text>
-            <Tooltip
-              label="Your rating is based on other user's ratings on your book suggestions to them."
-            >
-              <Flex align="center" justify="center" me={2}>
-                <ImInfo size={20} color="gray" />
-              </Flex>
-            </Tooltip>
+            <Popover isLazy>
+              <PopoverTrigger>
+                <Flex 
+                  align="center" 
+                  justify="center" 
+                  me={2}
+                  _hover={{
+                    cursor: "pointer"
+                  }}
+                >
+                  <ImInfo size={20} color="gray" />
+                </Flex>
+              </PopoverTrigger>
+              <PopoverContent>
+                <PopoverArrow />
+                <PopoverCloseButton />
+                <PopoverBody 
+                  fontSize="sm"
+                  _dark={{
+                    bg: "black"
+                  }}
+                >
+                  Your rating is based on other user's ratings on your book suggestions to them.
+                </PopoverBody>
+              </PopoverContent>
+            </Popover>
             {firstBookshelf ? (
               <Flex
                 align="center"
