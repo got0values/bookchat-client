@@ -52,7 +52,6 @@ import {
 import { editPagesRead, cancelEditPagesRead } from "./shared/editCancelPagesRead";
 import { showEditCurrentlyReading, hideEditCurrentlyReading } from "./shared/editCancelCurrentlyReading";
 import BooksSearch from "./shared/BooksSearch";
-import StarRating from "./shared/StarRating";
 import SocialShareButtons from "./shared/SocialShareButtons";
 import FeaturedBooks from "./shared/FeaturedBooks";
 import EditCurrentlyReading from "./shared/EditCurrentlyReading";
@@ -61,8 +60,6 @@ import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
 import { BsReplyFill, BsArrowRightShort } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { MdOutlineChat, MdEdit, MdOutlineCancel } from 'react-icons/md';
-import { FaShoppingCart, FaPlay } from 'react-icons/fa';
-import { ImInfo } from 'react-icons/im';
 import { FaStore } from 'react-icons/fa';
 import Comments from "./shared/CurrentlyReadingComments";
 import { useAuth } from './hooks/useAuth';
@@ -105,8 +102,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   const [items,setItems] = useState(10);
   const [followingSorted,setFollowingSorted] = useState([] as any)
   const [randomSorted,setRandomSorted] = useState([] as any)
-  const [firstBookshelf,setFirstBookshelf] = useState<User | null>(null)
-  const [suggestionRating,setSuggestionRating] = useState(0);
   async function getDashboard() {
     const tokenCookie = Cookies.get().token
     if (tokenCookie) {
@@ -123,8 +118,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           setItems(prev=>prev + 10)
           setFollowingSorted(response.data.message.followingCurrentlyReadingSorted)
           setRandomSorted(response.data.message.randomCurrentlyReadingSorted)
-          setFirstBookshelf(response.data.message.firstBookshelf)
-          setSuggestionRating(response.data.message.rating === null ? 0 : response.data.message.rating)
           return response.data.message
         })
         .catch(({response})=>{
@@ -1050,88 +1043,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           direction="column"
           gap={1}
         >
-          <Flex
-            align="center"
-            justify="center"
-            gap={1}
-            mb={-1}
-            className="non-well"
-            wrap="wrap"
-          >
-            <Text 
-              fontWeight={600} 
-              fontSize="sm"
-              opacity="80%"
-              me={1}
-            >
-              Your book suggestions rating: 
-            </Text>
-            <StarRating
-              ratingCallback={null} 
-              starRatingId={0}
-              defaultRating={suggestionRating}
-            />
-            <Text 
-              fontWeight={600} 
-              fontSize="sm"
-              opacity="80%"
-              me={1}
-              color={suggestionRating === 0 ? "red" : "inherit"}
-            >
-              {suggestionRating.toFixed(1)}
-            </Text>
-            <Popover isLazy>
-              <PopoverTrigger>
-                <Flex 
-                  align="center" 
-                  justify="center" 
-                  me={2}
-                  _hover={{
-                    cursor: "pointer"
-                  }}
-                >
-                  <ImInfo size={20} color="gray" />
-                </Flex>
-              </PopoverTrigger>
-              <PopoverContent>
-                <PopoverArrow />
-                <PopoverCloseButton />
-                <PopoverBody 
-                  fontSize="sm"
-                  _dark={{
-                    bg: "black"
-                  }}
-                >
-                  Your rating is based on other user's ratings on your book suggestions to them.
-                </PopoverBody>
-              </PopoverContent>
-            </Popover>
-            {firstBookshelf ? (
-              <Flex
-                align="center"
-                justify="center"
-                wrap="wrap"
-                gap={2}
-                // mb={3}
-              >
-                <Button
-                  as="a"
-                  href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
-                  // variant="outline"
-                  colorScheme="green"
-                  size="xs"
-                  // borderColor="purple"
-                  p={2}
-                >
-                  <FaPlay size={15}/>
-                  <Text ms={1}>
-                    Start Suggesting
-                  </Text>
-                </Button>
-              </Flex>
-            ): null}
-          </Flex>
-          <Divider mt={1} />
           <CurrentlyReadingInput/>
           <Tabs
             variant="enclosed"

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent, HTMLInputTypeAttribute } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BookshelfType } from "../types/types";
+import { BookshelfType, User } from "../types/types";
 import { 
   Box,
   Heading,
@@ -9,6 +9,7 @@ import {
   Avatar,
   Button,
   Flex,
+  Divider,
   Popover,
   PopoverTrigger,
   PopoverCloseButton,
@@ -19,6 +20,9 @@ import {
 } from "@chakra-ui/react";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import { BsArrowRight } from 'react-icons/bs';
+import { ImInfo } from 'react-icons/im';
+import { FaPlay } from 'react-icons/fa'
+import StarRating from "../shared/StarRating";
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -30,6 +34,8 @@ export function BookSuggestionToList({server}: {server: string;}) {
   const navigate = useNavigate();
   dayjs.extend(utc);
 
+  const [suggestionRating,setSuggestionRating] = useState(0);
+  const [firstBookshelf,setFirstBookshelf] = useState<User | null>(null)
   async function getBookSuggestToList() {
     let tokenCookie: string | null = Cookies.get().token;
     const bookSuggestToList = axios
@@ -42,7 +48,9 @@ export function BookSuggestionToList({server}: {server: string;}) {
       )
       .then((response)=>{
         const {data} = response;
-        return data.message;
+        setFirstBookshelf(data.message.firstBookshelf)
+        setSuggestionRating(data.message.rating === null ? 0 : response.data.message.rating)
+        return data.message.bookshelfList;
       })
       .catch(({response})=>{
         console.log(response)
@@ -74,12 +82,83 @@ export function BookSuggestionToList({server}: {server: string;}) {
     <Skeleton
       isLoaded={!isLoading}
     >
+      <Flex
+        align="center"
+        justify="center"
+        gap={1}
+        mb={-1}
+        className="non-well"
+        wrap="wrap"
+      >
+        <StarRating
+          ratingCallback={null} 
+          starRatingId={0}
+          defaultRating={suggestionRating}
+        />
+        <Text 
+          fontWeight={600} 
+          fontSize="sm"
+          opacity="80%"
+          me={1}
+          color={suggestionRating === 0 ? "red" : "inherit"}
+        >
+          {suggestionRating.toFixed(1)}
+        </Text>
+        <Popover isLazy>
+          <PopoverTrigger>
+            <Flex 
+              align="center" 
+              justify="center" 
+              me={2}
+              _hover={{
+                cursor: "pointer"
+              }}
+            >
+              <ImInfo size={20} color="gray" />
+            </Flex>
+          </PopoverTrigger>
+          <PopoverContent>
+            <PopoverArrow />
+            <PopoverCloseButton />
+            <PopoverBody 
+              fontSize="sm"
+              _dark={{
+                bg: "black"
+              }}
+            >
+              Your rating is based on other user's ratings on your book suggestions to them.
+            </PopoverBody>
+          </PopoverContent>
+        </Popover>
+        {firstBookshelf ? (
+          <Flex
+            align="center"
+            justify="center"
+            wrap="wrap"
+            gap={2}
+            // mb={3}
+          >
+            <Button
+              as="a"
+              href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
+              // variant="outline"
+              colorScheme="green"
+              size="xs"
+              aria-label="random bookshelf"
+              // borderColor="purple"
+              // p={2}
+            >
+              <FaPlay size={15}/>
+            </Button>
+          </Flex>
+        ): null}
+      </Flex>
       <Text
         fontWeight="bold"
         textAlign="center"
         p={2}
       >
-        These people need your help finding their next read
+        These users need your help finding their next read
       </Text>
       {bookSuggestToList?.length ? (
         bookSuggestToList.map((bookshelf: BookshelfType, i: number)=>{
