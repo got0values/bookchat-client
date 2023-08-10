@@ -1,6 +1,7 @@
 import { 
   Flex,
   Button,
+  Text,
   useToast
 } from "@chakra-ui/react";
 import { 
@@ -28,6 +29,9 @@ export default function SocialShareButtons({reading,username}: {reading: any,use
       align="center"
       gap={1}
     >
+      <Text fontWeight="bold">
+        Share
+      </Text>
       <Button
         size="xs"
         variant="ghost"

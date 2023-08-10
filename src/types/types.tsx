@@ -439,6 +439,7 @@ export interface BooksSearchType {
 
 
 export interface SelectedBook {
+  id: number,
   google_books_id: string;
   title: string;
   author: string;

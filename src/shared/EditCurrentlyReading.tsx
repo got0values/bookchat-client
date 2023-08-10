@@ -4,7 +4,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   Box,
   Flex,
-  CloseButton,
   Image,
   Button,
   FormControl,
@@ -13,7 +12,6 @@ import {
   Tag,
   TagLabel,
   TagCloseButton,
-  HStack,
   Stack,
   NumberInput,
   NumberInputField,
@@ -21,7 +19,6 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
 } from "@chakra-ui/react";
-import { hideEditCurrentlyReading } from "./editCancelCurrentlyReading";
 import dayjs from "dayjs";
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -46,6 +43,7 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
         await axios
         .post(server + "/api/currentlyreading",
         {
+          id: selectedBook2.id ? selectedBook2.id : null,
           google_books_id: selectedBook2.google_books_id,
           image: imageRef.current.value,
           title: titleRef.current.value,
@@ -84,6 +82,9 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
       queryClient.invalidateQueries({ queryKey: ['dashboardKey'] })
       queryClient.resetQueries({queryKey: ['dashboardKey']})
       queryClient.setQueryData(["dashboardKey"],data)
+      queryClient.invalidateQueries({ queryKey: ['profileKey'] })
+      queryClient.resetQueries({queryKey: ['profileKey']})
+      queryClient.setQueryData(["profileKey"],data)
       setSelectedBook2(null);
       if (setSelectedBook) {
         setSelectedBook(null)

@@ -4,15 +4,14 @@ export function showEditCurrentlyReading(bookId: string) {
   const currentlyReadingEditButton = document.getElementById(`edit-currently-reading-button-${bookId}`);
   const currentlyReadingCancelEditButton = document.getElementById(`cancel-edit-currently-reading-button-${bookId}`);
   const currentlyReadingEdit = document.getElementById(`edit-currently-reading-${bookId}`);
-  currentlyReading!.style.display = "none";
-  currentlyReadingEditButton!.style.display = "none";
-  currentlyReadingCancelEditButton!.style.display = "block";
+  currentlyReading ? currentlyReading!.style.display = "none" : null;
+  currentlyReadingEditButton ? currentlyReadingEditButton!.style.display = "none" : null
+  currentlyReadingCancelEditButton ? currentlyReadingCancelEditButton!.style.display = "block" : null;
   currentlyReadingEdit!.style.display = "block";
 }
 
 export function hideEditCurrentlyReading(bookId: string) {
   const currentlyReading = document.getElementById(`currently-reading-${bookId}`);
-  console.log(bookId)
   const currentlyReadingEditButton = document.getElementById(`edit-currently-reading-button-${bookId}`);
   const currentlyReadingCancelEditButton = document.getElementById(`cancel-edit-currently-reading-button-${bookId}`);
   const currentlyReadingEdit = document.getElementById(`edit-currently-reading-${bookId}`);

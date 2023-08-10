@@ -926,6 +926,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               getPageCallback={getDashboard} 
               setSelectedBook={null}
               selectedBook={{
+                id: reading.id,
                 google_books_id: "",
                 title: reading.title,
                 author: reading.author,
@@ -945,6 +946,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             align="center"
             justify="space-between"
             w="100%"
+            wrap="wrap"
           >
             {reading.Profile.id === user?.Profile.id ? (
               <SocialShareButtons reading={reading} username={reading.Profile.username} />

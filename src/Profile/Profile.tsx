@@ -55,14 +55,15 @@ import {
   useToast
 } from "@chakra-ui/react";
 import { editPagesRead, cancelEditPagesRead } from "../shared/editCancelPagesRead";
-import { editCurrentlyReadingThoughts, cancelEditCurrentlyReadingThoughts } from "../shared/editCancelCurrentlyReading";
 import {SuggestionCountBadge} from "../shared/SuggestionCount";
 import SocialShareButtons from "../shared/SocialShareButtons";
+import { showEditCurrentlyReading, hideEditCurrentlyReading } from "../shared/editCancelCurrentlyReading";
 import collectionToArray from "../utils/collectionToArray";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
 import BooksSearch from "../shared/BooksSearch";
+import EditCurrentlyReading from "../shared/EditCurrentlyReading";
 import { FiFile } from 'react-icons/fi';
-import { MdEdit, MdOutlineChat } from 'react-icons/md';
+import { MdEdit, MdOutlineChat, MdOutlineCancel } from 'react-icons/md';
 import { BsPlusLg } from 'react-icons/bs';
 import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
 import { BsReplyFill } from 'react-icons/bs';
@@ -640,49 +641,6 @@ export const useProfile = ({server}: {server: string}) => {
     likeUnlikeCurrentlyReadingMutation.mutate(e);
   }
 
-  const updateCurrentlyReadingThoughtsMutation = useMutation({
-    mutationFn: async (bookId: number)=>{
-      const currentlyReadingText = document.getElementById(`currently-reading-text-${bookId}`);
-      const currentlyReadingInputDiv = document.getElementById(`currently-reading-input-div-${bookId}`);
-      const currentlyReadingInput = document.getElementById(`currently-reading-input-${bookId}`);
-      let tokenCookie: string | null = Cookies.get().token;
-      if (tokenCookie) {
-        await axios
-        .put(server + "/api/updatecurrentlyreadingthoughts",
-        {
-          currentlyReadingId: bookId,
-          thoughts: (currentlyReadingInput as HTMLInputElement)!.value
-        },
-        {
-          headers: {
-            'authorization': tokenCookie
-          }
-        }
-        )
-        .then((response)=>{
-          currentlyReadingText!.style.display = "block";
-          currentlyReadingInputDiv!.style.display = "none";
-        })
-        .catch(({response})=>{
-          console.log(response)
-          throw new Error(response.message)
-        })
-      }
-      else {
-        throw new Error("Please login again")
-      }
-      return getProfile();
-    },
-    onSuccess: (data,variables)=>{
-      queryClient.invalidateQueries({ queryKey: ['profileKey',paramsUsername] })
-      queryClient.resetQueries({queryKey: ['profileKey',paramsUsername]})
-      queryClient.setQueryData(['profileKey',paramsUsername],data)
-    }
-  })
-  function updateCurrentlyReadingThoughts(bookId: number) {
-    updateCurrentlyReadingThoughtsMutation.mutate(bookId)
-  }
-
   const updatePagesReadMutation = useMutation({
     mutationFn: async (bookId: number)=>{
       const pagesReadText = document.getElementById(`pages-read-text-${bookId}`);
@@ -758,12 +716,12 @@ export const useProfile = ({server}: {server: string}) => {
       })
   }
 
-  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount};
+  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount};
 }
 
 
 export default function Profile({server,gbooksapi}: ProfileProps) {
-  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,updateCurrentlyReadingThoughts,updateCurrentlyReadingThoughtsMutation,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount} = useProfile({server});
+  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount} = useProfile({server});
 
   
 
@@ -1080,164 +1038,19 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                         </Flex>
                         {selectedBook ? (
                           <Box
-                            className="well-card"
+                            my={2}
+                            p={4}
+                            className="well"
                             position="relative"
+                            id="edit-currently-reading-000"
                           >
                             <CloseButton
                               position="absolute"
                               top="0"
                               right="0"
-                              onClick={e=>setSelectedBook(null)}
+                              onClick={e=>hideEditCurrentlyReading("000")}
                             />
-                            <Input
-                              type="text"
-                              my={3}
-                              borderColor="black"
-                              placeholder="Thoughts?"
-                              maxLength={300}
-                              ref={thoughtsRef}
-                            />
-                            <Flex>
-                              <Image 
-                                src={selectedBook.image}
-                                maxH="125px"
-                                minW="60px"
-                                boxShadow="1px 1px 1px 1px darkgrey"
-                                alt={selectedBook.title}
-                              />
-                              <Box 
-                                mx={2}
-                                w="100%"
-                              >
-                                <Box lineHeight={1.4}>
-                                  <Heading as="h3" size="md" me={3} noOfLines={1}>
-                                    {selectedBook.title}
-                                  </Heading>
-                                  <Text fontWeight="bold" noOfLines={1}>
-                                    {selectedBook.author}
-                                  </Text>
-                                </Box>
-                                <Box>
-                                  {/* <Popover isLazy>
-                                    <PopoverTrigger>
-                                      <Box
-                                        _hover={{
-                                          cursor: "pointer"
-                                        }}
-                                      >
-                                        <Text fontSize="lg" noOfLines={1}>
-                                          {selectedBook.description ? selectedBook.description: null}
-                                        </Text>
-                                      </Box>
-                                    </PopoverTrigger>
-                                    <PopoverContent>
-                                      <PopoverArrow />
-                                      <PopoverCloseButton />
-                                      <PopoverBody 
-                                        fontSize="sm"
-                                        _dark={{
-                                          bg: "black"
-                                        }}
-                                      >
-                                        {selectedBook.description ? selectedBook.description: null}
-                                      </PopoverBody>
-                                    </PopoverContent>
-                                  </Popover> */}
-                                  <Text fontStyle="italic">
-                                    {selectedBook.published_date !== null ? 
-                                      (
-                                        dayjs(selectedBook.published_date).format("YYYY")
-                                      ) : null
-                                    }
-                                  </Text>
-                                  {selectedBook.page_count ? (
-                                    <Text noOfLines={1}>
-                                      {selectedBook.page_count} pages
-                                    </Text>
-                                  ): null}
-                                  {selectedBook.subjects ? (
-                                    <Popover isLazy>
-                                      <PopoverTrigger>
-                                        <HStack 
-                                          spacing={1} 
-                                          noOfLines={1}
-                                          maxW="275px"
-                                          _hover={{
-                                            cursor: "pointer"
-                                          }}
-                                        >
-                                          {selectedBook.subjects.map((subject:string,i:number)=>{
-                                            return (
-                                              <Tag
-                                                key={i}
-                                                // variant="solid"
-                                                colorScheme="purple"
-                                                size="sm"
-                                                // borderRadius="full"
-                                              >
-                                                <TagLabel>{subject}</TagLabel>
-                                              </Tag>
-                                            )
-                                          })}
-                                        </HStack>
-                                      </PopoverTrigger>
-                                      <PopoverContent>
-                                        <PopoverArrow />
-                                        <PopoverCloseButton />
-                                        <PopoverBody 
-                                          fontSize="sm"
-                                          _dark={{
-                                            bg: "black"
-                                          }}
-                                        >
-                                          {selectedBook.subjects.map((subject:string,i:number)=>{
-                                            return (
-                                              <Text key={i}>
-                                                {subject}
-                                              </Text>
-                                            )}
-                                          )}
-                                        </PopoverBody>
-                                      </PopoverContent>
-                                    </Popover>
-                                  ):null}
-                                </Box>
-                                <Flex justify="space-between" align="center" wrap="wrap">
-                                  <Flex align="center" gap={1}>
-                                    Pages read:
-                                    <NumberInput
-                                      maxWidth="75px"
-                                      size="sm"
-                                      min={0}
-                                    >
-                                      <NumberInputField ref={pagesReadRef} />
-                                      <NumberInputStepper>
-                                        <NumberIncrementStepper />
-                                        <NumberDecrementStepper />
-                                      </NumberInputStepper>
-                                    </NumberInput>
-                                  </Flex>
-                                  <Button 
-                                    // size="sm"
-                                    backgroundColor="black"
-                                    color="white"
-                                    // variant="outline"
-                                    data-googlebooksid={selectedBook.google_books_id}
-                                    data-image={selectedBook.image}
-                                    data-title={selectedBook.title}
-                                    data-author={selectedBook.author}
-                                    data-description={selectedBook.description}
-                                    data-isbn={selectedBook.isbn}
-                                    data-pagecount={selectedBook.page_count}
-                                    data-subjects={JSON.stringify(selectedBook.subjects)}
-                                    data-publisheddate={selectedBook.published_date}
-                                    onClick={e=>postCurrentlyReading(e)}
-                                  >
-                                    Post
-                                  </Button>
-                                </Flex>
-                              </Box>
-                            </Flex>
+                            <EditCurrentlyReading server={server} selectedBook={selectedBook} setSelectedBook={setSelectedBook} getPageCallback={getProfile} />
                           </Box>
                         ) : null}
     
@@ -1272,6 +1085,16 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       <BiDotsHorizontalRounded/>
                                     </MenuButton>
                                     <MenuList>
+                                      <MenuItem
+                                        // color="tomato"
+                                        onClick={e=>showEditCurrentlyReading(profileData.CurrentlyReading[0].id.toString())}
+                                        fontWeight="bold"
+                                        title="edit"
+                                        id={`edit-currently-reading-button-${profileData.CurrentlyReading[0].id}`}
+                                        icon={<MdEdit size={20} />}
+                                      >
+                                        Edit
+                                      </MenuItem>
                                       <MenuItem 
                                         as={Link}
                                         to={`/chat/room?title=${profileData.CurrentlyReading[0].title}&author=${profileData.CurrentlyReading[0].author}`}
@@ -1330,148 +1153,75 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 </Box>
                               </Flex>
                             </Flex>
-                            <Divider mt={1} />
-                            <Text 
-                              my={2}
-                              rounded="md"
-                              p={1}
-                              _hover={{
-                                cursor: viewer === "self" ? "pointer" : "default",
-                                backgroundColor: viewer === "self" ? "gray" : "unset"
-                              }}
-                              id={`currently-reading-text-${profileData.CurrentlyReading[0].id}`}
-                              onClick={e=>editCurrentlyReadingThoughts(profileData.CurrentlyReading[0].id)}
-                            >
-                              {profileData.CurrentlyReading[0].thoughts ? profileData.CurrentlyReading[0].thoughts : null}
-                            </Text>
-                            <Flex 
-                              align="center" 
-                              gap={1}
-                              display="none"
-                              id={`currently-reading-input-div-${profileData.CurrentlyReading[0].id}`}
-                            >
-                              <Input
-                                my={2}
-                                type="text"
-                                borderColor="black"
-                                defaultValue={profileData.CurrentlyReading[0].thoughts ? profileData.CurrentlyReading[0].thoughts : ""}
-                                id={`currently-reading-input-${profileData.CurrentlyReading[0].id}`}
-                              />
+                            <Divider my={2} />
+                            <Flex justify="flex-end" mt={1}>
                               <Button
-                                onClick={e=>updateCurrentlyReadingThoughts(profileData.CurrentlyReading[0].id)}
-                                disabled={updateCurrentlyReadingThoughtsMutation.isLoading}
-                                backgroundColor="black"
-                                color="white"
+                                color="tomato"
+                                display="none"
+                                size="xs"
+                                variant="ghost"
+                                onClick={e=>hideEditCurrentlyReading(profileData.CurrentlyReading[0].id.toString())}
+                                fontWeight="bold"
+                                title="cancel edit"
+                                id={`cancel-edit-currently-reading-button-${profileData.CurrentlyReading[0].id}`}
                               >
-                                Update
-                              </Button>
-                              <Button
-                                onClick={e=>cancelEditCurrentlyReadingThoughts(profileData.CurrentlyReading[0].id)}
-                                colorScheme="gray"
-                              >
-                                Cancel
+                                <MdOutlineCancel size={25} />
                               </Button>
                             </Flex>
-                            <Flex>
-                              <Image 
-                                src={
-                                  profileData
-                                  .CurrentlyReading[0]
-                                  .image
-                                }
-                                maxH="125px"
-                                minW="60px"
-                                boxShadow="1px 1px 1px 1px darkgrey"
-                                alt={profileData.CurrentlyReading[0].title}
-                              />
-                              <Box mx={2} w="100%">
-                                <Box lineHeight={1.4}>
-                                  <Heading as="h3" size="md" me={3} noOfLines={1}>
-                                    {
-                                      profileData
-                                      .CurrentlyReading[0]
-                                      .title
-                                    }
-                                  </Heading>
-                                  <Text fontWeight="bold" fontSize="lg" noOfLines={1}>
-                                    {
-                                      profileData
-                                      .CurrentlyReading[0]
-                                      .author
-                                    }
-                                  </Text>
-                                  {/* <Popover isLazy>
-                                    <PopoverTrigger>
-                                      <Box
-                                        _hover={{
-                                          cursor: "pointer"
-                                        }}
-                                      >
-                                        <Text fontSize="lg" noOfLines={1}>
-                                          {
-                                            profileData
-                                            .CurrentlyReading[0]
-                                            .description
-                                          }
-                                        </Text>
-                                      </Box>
-                                    </PopoverTrigger>
-                                    <PopoverContent>
-                                      <PopoverArrow />
-                                      <PopoverCloseButton />
-                                      <PopoverBody 
-                                        fontSize="sm"
-                                        _dark={{
-                                          bg: "black"
-                                        }}
-                                      >
-                                        {
-                                          profileData
-                                          .CurrentlyReading[0]
-                                          .description
-                                        }
-                                      </PopoverBody>
-                                    </PopoverContent>
-                                  </Popover> */}
-                                  <Text fontStyle="italic">
-                                    {
-                                      profileData.CurrentlyReading[0].published_date ? (
-                                        dayjs(profileData
+                            <Box
+                              id={`currently-reading-${profileData.CurrentlyReading[0].id}`}
+                            >
+                              {profileData.CurrentlyReading[0].thoughts ? (
+                                <Text 
+                                  rounded="md"
+                                  mb={2}
+                                >
+                                  {profileData.CurrentlyReading[0].thoughts}
+                                </Text>
+                              ): null}
+                              <Flex>
+                                <Image 
+                                  src={
+                                    profileData
+                                    .CurrentlyReading[0]
+                                    .image
+                                  }
+                                  maxH="125px"
+                                  minW="60px"
+                                  boxShadow="1px 1px 1px 1px darkgrey"
+                                  alt={profileData.CurrentlyReading[0].title}
+                                />
+                                <Box mx={2} w="100%">
+                                  <Box lineHeight={1.4}>
+                                    <Heading as="h3" size="md" me={3} noOfLines={1}>
+                                      {
+                                        profileData
                                         .CurrentlyReading[0]
-                                        .published_date).format("YYYY")
-                                      ) : null
-                                    }
-                                  </Text>
-                                  {profileData.CurrentlyReading[0].page_count ? (
-                                    <Text noOfLines={1}>
-                                      {profileData.CurrentlyReading[0].page_count} pages
+                                        .title
+                                      }
+                                    </Heading>
+                                    <Text fontWeight="bold" fontSize="lg" noOfLines={1}>
+                                      {
+                                        profileData
+                                        .CurrentlyReading[0]
+                                        .author
+                                      }
                                     </Text>
-                                  ): null}
-                                  {profileData.CurrentlyReading[0].subjects && JSON.parse(profileData.CurrentlyReading[0].subjects)?.length ? (
-                                    <Popover isLazy>
+                                    {/* <Popover isLazy>
                                       <PopoverTrigger>
-                                        <HStack 
-                                          spacing={1} 
-                                          noOfLines={1}
-                                          maxW="275px"
+                                        <Box
                                           _hover={{
                                             cursor: "pointer"
                                           }}
                                         >
-                                          {JSON.parse(profileData.CurrentlyReading[0].subjects).map((subject:string,i:number)=>{
-                                            return (
-                                              <Tag
-                                                key={i}
-                                                // variant="solid"
-                                                colorScheme="purple"
-                                                size="sm"
-                                                // borderRadius="full"
-                                              >
-                                                <TagLabel>{subject}</TagLabel>
-                                              </Tag>
-                                            )
-                                          })}
-                                        </HStack>
+                                          <Text fontSize="lg" noOfLines={1}>
+                                            {
+                                              profileData
+                                              .CurrentlyReading[0]
+                                              .description
+                                            }
+                                          </Text>
+                                        </Box>
                                       </PopoverTrigger>
                                       <PopoverContent>
                                         <PopoverArrow />
@@ -1482,75 +1232,158 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                             bg: "black"
                                           }}
                                         >
-                                          {JSON.parse(profileData.CurrentlyReading[0].subjects).map((subject:string,i:number)=>{
-                                            return (
-                                              <Text key={i}>
-                                                {subject}
-                                              </Text>
-                                            )}
-                                          )}
+                                          {
+                                            profileData
+                                            .CurrentlyReading[0]
+                                            .description
+                                          }
                                         </PopoverBody>
                                       </PopoverContent>
-                                    </Popover>
-                                  ):null}
+                                    </Popover> */}
+                                    <Text fontStyle="italic">
+                                      {
+                                        profileData.CurrentlyReading[0].published_date ? (
+                                          dayjs(profileData
+                                          .CurrentlyReading[0]
+                                          .published_date).format("YYYY")
+                                        ) : null
+                                      }
+                                    </Text>
+                                    {profileData.CurrentlyReading[0].page_count ? (
+                                      <Text noOfLines={1}>
+                                        {profileData.CurrentlyReading[0].page_count} pages
+                                      </Text>
+                                    ): null}
+                                    {profileData.CurrentlyReading[0].subjects && JSON.parse(profileData.CurrentlyReading[0].subjects)?.length ? (
+                                      <Popover isLazy>
+                                        <PopoverTrigger>
+                                          <HStack 
+                                            spacing={1} 
+                                            noOfLines={1}
+                                            maxW="275px"
+                                            _hover={{
+                                              cursor: "pointer"
+                                            }}
+                                          >
+                                            {JSON.parse(profileData.CurrentlyReading[0].subjects).map((subject:string,i:number)=>{
+                                              return (
+                                                <Tag
+                                                  key={i}
+                                                  // variant="solid"
+                                                  colorScheme="purple"
+                                                  size="sm"
+                                                  // borderRadius="full"
+                                                >
+                                                  <TagLabel>{subject}</TagLabel>
+                                                </Tag>
+                                              )
+                                            })}
+                                          </HStack>
+                                        </PopoverTrigger>
+                                        <PopoverContent>
+                                          <PopoverArrow />
+                                          <PopoverCloseButton />
+                                          <PopoverBody 
+                                            fontSize="sm"
+                                            _dark={{
+                                              bg: "black"
+                                            }}
+                                          >
+                                            {JSON.parse(profileData.CurrentlyReading[0].subjects).map((subject:string,i:number)=>{
+                                              return (
+                                                <Text key={i}>
+                                                  {subject}
+                                                </Text>
+                                              )}
+                                            )}
+                                          </PopoverBody>
+                                        </PopoverContent>
+                                      </Popover>
+                                    ):null}
+                                  </Box>
+                                  <Box>
+                                    <Text 
+                                      padding={0}
+                                      rounded="md"
+                                      _hover={{
+                                        cursor: viewer === "self" ? "pointer" : "default",
+                                        backgroundColor: viewer === "self" ? "gray" : "unset",
+                                      }}
+                                      id={`pages-read-text-${profileData.CurrentlyReading[0].id}`}
+                                      onClick={e=>viewer === "self" ? editPagesRead(profileData.CurrentlyReading[0].id) : null}
+                                    >
+                                      Pages read: {profileData.CurrentlyReading[0].pages_read ? profileData.CurrentlyReading[0].pages_read : 0}
+                                    </Text>
+                                    <Flex 
+                                      align="center" 
+                                      gap={1}
+                                      id={`pages-read-input-div-${profileData.CurrentlyReading[0].id}`}
+                                      display="none"
+                                      wrap="wrap"
+                                      padding={0}
+                                    >
+                                      Pages read:
+                                      <NumberInput
+                                        maxWidth="75px"
+                                        size="sm"
+                                        min={0}
+                                        defaultValue={profileData.CurrentlyReading[0].pages_read}
+                                      >
+                                        <NumberInputField id={`pages-read-input-${profileData.CurrentlyReading[0].id}`} />
+                                        <NumberInputStepper>
+                                          <NumberIncrementStepper />
+                                          <NumberDecrementStepper />
+                                        </NumberInputStepper>
+                                      </NumberInput>
+                                      <Button
+                                        size="sm"
+                                        backgroundColor="black"
+                                        color="white"
+                                        onClick={e=>updatePagesRead(profileData.CurrentlyReading[0].id)}
+                                      >
+                                        Update
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        onClick={e=>cancelEditPagesRead(profileData.CurrentlyReading[0].id)}
+                                      >
+                                        Cancel
+                                      </Button>
+                                    </Flex>
+                                  </Box>
                                 </Box>
-                                <Box>
-                                  <Text 
-                                    padding={0}
-                                    rounded="md"
-                                    _hover={{
-                                      cursor: viewer === "self" ? "pointer" : "default",
-                                      backgroundColor: viewer === "self" ? "gray" : "unset",
-                                    }}
-                                    id={`pages-read-text-${profileData.CurrentlyReading[0].id}`}
-                                    onClick={e=>viewer === "self" ? editPagesRead(profileData.CurrentlyReading[0].id) : null}
-                                  >
-                                    Pages read: {profileData.CurrentlyReading[0].pages_read ? profileData.CurrentlyReading[0].pages_read : 0}
-                                  </Text>
-                                  <Flex 
-                                    align="center" 
-                                    gap={1}
-                                    id={`pages-read-input-div-${profileData.CurrentlyReading[0].id}`}
-                                    display="none"
-                                    wrap="wrap"
-                                    padding={0}
-                                  >
-                                    Pages read:
-                                    <NumberInput
-                                      maxWidth="75px"
-                                      size="sm"
-                                      min={0}
-                                      defaultValue={profileData.CurrentlyReading[0].pages_read}
-                                    >
-                                      <NumberInputField id={`pages-read-input-${profileData.CurrentlyReading[0].id}`} />
-                                      <NumberInputStepper>
-                                        <NumberIncrementStepper />
-                                        <NumberDecrementStepper />
-                                      </NumberInputStepper>
-                                    </NumberInput>
-                                    <Button
-                                      size="sm"
-                                      backgroundColor="black"
-                                      color="white"
-                                      onClick={e=>updatePagesRead(profileData.CurrentlyReading[0].id)}
-                                    >
-                                      Update
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      onClick={e=>cancelEditPagesRead(profileData.CurrentlyReading[0].id)}
-                                    >
-                                      Cancel
-                                    </Button>
-                                  </Flex>
-                                </Box>
-                              </Box>
-                            </Flex>
-                            <Divider my={1} />
+                              </Flex>
+                            </Box>
+                            <Box
+                              id={`edit-currently-reading-${profileData.CurrentlyReading[0].id}`}
+                              display="none"
+                            >
+                              <EditCurrentlyReading 
+                                server={server} 
+                                getPageCallback={getProfile} 
+                                setSelectedBook={null}
+                                selectedBook={{
+                                  id: profileData.CurrentlyReading[0].id,
+                                  google_books_id: "",
+                                  title: profileData.CurrentlyReading[0].title,
+                                  author: profileData.CurrentlyReading[0].author,
+                                  image: profileData.CurrentlyReading[0].image,
+                                  description: "",
+                                  isbn: profileData.CurrentlyReading[0].isbn,
+                                  page_count: profileData.CurrentlyReading[0].page_count,
+                                  subjects: JSON.parse(profileData.CurrentlyReading[0].subjects),
+                                  published_date: profileData.CurrentlyReading[0].published_date,
+                                  pages_read: profileData.CurrentlyReading[0].pages_read,
+                                  thoughts: profileData.CurrentlyReading[0].thoughts
+                                }}
+                              />
+                            </Box>
+                            <Divider mb={1} mt={3} />
                             <Flex
                               align="center"
                               justify="space-between"
                               w="100%"
+                              wrap="wrap"
                             >
                               <SocialShareButtons reading={profileData.CurrentlyReading[0]} username={profileData.username} />
                               <Flex
@@ -1973,6 +1806,16 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                               <BiDotsHorizontalRounded/>
                                             </MenuButton>
                                             <MenuList>
+                                              <MenuItem
+                                                // color="tomato"
+                                                onClick={e=>showEditCurrentlyReading(readBook.id.toString())}
+                                                fontWeight="bold"
+                                                title="edit"
+                                                id={`edit-currently-reading-button-${readBook.id}`}
+                                                icon={<MdEdit size={20} />}
+                                              >
+                                                Edit
+                                              </MenuItem>
                                               <MenuItem 
                                                 as={Link}
                                                 to={`/chat/room?title=${readBook.title}&author=${readBook.author}`}
@@ -2031,123 +1874,57 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                         </Box>
                                       </Flex>
                                     </Flex>
-                                    <Divider mt={1} />
-                                    <Text 
-                                      my={2}
-                                      rounded="md"
-                                      p={1}
-                                      _hover={{
-                                        cursor: viewer === "self" ? "pointer" : "default",
-                                        backgroundColor: viewer === "self" ? "gray" : "unset"
-                                      }}
-                                      id={`currently-reading-text-${readBook.id}`}
-                                      onClick={e=>editCurrentlyReadingThoughts(readBook.id)}
-                                    >
-                                      {readBook.thoughts ? readBook.thoughts : null}
-                                    </Text>
-                                    <Flex 
-                                      align="center" 
-                                      gap={1}
-                                      display="none"
-                                      id={`currently-reading-input-div-${readBook.id}`}
-                                    >
-                                      <Input
-                                        my={2}
-                                        type="text"
-                                        borderColor="black"
-                                        defaultValue={readBook.thoughts ? readBook.thoughts : ""}
-                                        id={`currently-reading-input-${readBook.id}`}
-                                      />
+                                    <Divider my={2} />
+                                    <Flex justify="flex-end" mb={1}>
                                       <Button
-                                        onClick={e=>updateCurrentlyReadingThoughts(readBook.id)}
-                                        disabled={updateCurrentlyReadingThoughtsMutation.isLoading}
-                                        backgroundColor="black"
-                                        color="white"
+                                        color="tomato"
+                                        display="none"
+                                        size="xs"
+                                        variant="ghost"
+                                        onClick={e=>hideEditCurrentlyReading(readBook.id.toString())}
+                                        fontWeight="bold"
+                                        title="cancel edit"
+                                        id={`cancel-edit-currently-reading-button-${readBook.id}`}
                                       >
-                                        Update
-                                      </Button>
-                                      <Button
-                                        onClick={e=>cancelEditCurrentlyReadingThoughts(readBook.id)}
-                                      >
-                                        Cancel
+                                        <MdOutlineCancel size={25} />
                                       </Button>
                                     </Flex>
-                                    <Flex>
-                                      <Image 
-                                        src={readBook.image}
-                                        maxH="125px"
-                                        minW="60px"
-                                        boxShadow="1px 1px 1px 1px darkgrey"
-                                        title={readBook.title}
-                                      />
-                                      <Box mx={2} w="100%">
-                                        <Box lineHeight={1.4}>
-                                          <Heading as="h3" size="md" me={3} noOfLines={1}>
-                                            {readBook.title}
-                                          </Heading>
-                                          <Text fontWeight="bold" fontSize="lg" noOfLines={1}>{readBook.author}</Text>
-                                          {/* <Popover isLazy>
-                                            <PopoverTrigger>
-                                              <Box
-                                                _hover={{
-                                                  cursor: "pointer"
-                                                }}
-                                              >
-                                                <Text fontSize="lg" noOfLines={1}>
-                                                  {readBook.description}
-                                                </Text>
-                                              </Box>
-                                            </PopoverTrigger>
-                                            <PopoverContent>
-                                              <PopoverArrow />
-                                              <PopoverCloseButton />
-                                              <PopoverBody 
-                                                fontSize="sm"
-                                                _dark={{
-                                                  bg: "black"
-                                                }}
-                                              >
-                                                {readBook.description}
-                                              </PopoverBody>
-                                            </PopoverContent>
-                                          </Popover> */}
-                                          <Text fontStyle="italic">
-                                            {
-                                              readBook.published_date ? (
-                                                dayjs(readBook.published_date).format("YYYY")
-                                              ) : null
-                                            }
-                                          </Text>
-                                          {readBook.page_count ? (
-                                            <Text noOfLines={1}>
-                                              {readBook.page_count} pages
-                                            </Text>
-                                          ): null}
-                                          {readBook.subjects && JSON.parse(readBook.subjects).length ? (
-                                            <Popover isLazy>
+                                    <Box
+                                      id={`currently-reading-${readBook.id}`}
+                                    >
+                                      {readBook.thoughts ? (
+                                        <Text 
+                                          rounded="md"
+                                          mb={2}
+                                        >
+                                          {readBook.thoughts}
+                                        </Text>
+                                      ): null}
+                                      <Flex>
+                                        <Image 
+                                          src={readBook.image}
+                                          maxH="125px"
+                                          minW="60px"
+                                          boxShadow="1px 1px 1px 1px darkgrey"
+                                          title={readBook.title}
+                                        />
+                                        <Box mx={2} w="100%">
+                                          <Box lineHeight={1.4}>
+                                            <Heading as="h3" size="md" me={3} noOfLines={1}>
+                                              {readBook.title}
+                                            </Heading>
+                                            <Text fontWeight="bold" fontSize="lg" noOfLines={1}>{readBook.author}</Text>
+                                            {/* <Popover isLazy>
                                               <PopoverTrigger>
-                                                <HStack 
-                                                  spacing={1} 
-                                                  noOfLines={1}
-                                                  maxW="275px"
+                                                <Box
                                                   _hover={{
                                                     cursor: "pointer"
                                                   }}
                                                 >
-                                                  {JSON.parse(readBook.subjects).map((subject:string,i:number)=>{
-                                                    return (
-                                                      <Tag
-                                                        key={i}
-                                                        // variant="solid"
-                                                        colorScheme="purple"
-                                                        size="sm"
-                                                        // borderRadius="full"
-                                                      >
-                                                        <TagLabel>{subject}</TagLabel>
-                                                      </Tag>
-                                                    )
-                                                  })}
-                                                </HStack>
+                                                  <Text fontSize="lg" noOfLines={1}>
+                                                    {readBook.description}
+                                                  </Text>
+                                                </Box>
                                               </PopoverTrigger>
                                               <PopoverContent>
                                                 <PopoverArrow />
@@ -2158,71 +1935,147 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                                     bg: "black"
                                                   }}
                                                 >
-                                                  {JSON.parse(readBook.subjects).map((subject:string,i:number)=>{
-                                                    return (
-                                                      <Text key={i}>
-                                                        {subject}
-                                                      </Text>
-                                                    )}
-                                                  )}
+                                                  {readBook.description}
                                                 </PopoverBody>
                                               </PopoverContent>
-                                            </Popover>
-                                          ):null}
+                                            </Popover> */}
+                                            <Text fontStyle="italic">
+                                              {
+                                                readBook.published_date ? (
+                                                  dayjs(readBook.published_date).format("YYYY")
+                                                ) : null
+                                              }
+                                            </Text>
+                                            {readBook.page_count ? (
+                                              <Text noOfLines={1}>
+                                                {readBook.page_count} pages
+                                              </Text>
+                                            ): null}
+                                            {readBook.subjects && JSON.parse(readBook.subjects)?.length ? (
+                                              <Popover isLazy>
+                                                <PopoverTrigger>
+                                                  <HStack 
+                                                    spacing={1} 
+                                                    noOfLines={1}
+                                                    maxW="275px"
+                                                    _hover={{
+                                                      cursor: "pointer"
+                                                    }}
+                                                  >
+                                                    {JSON.parse(readBook.subjects).map((subject:string,i:number)=>{
+                                                      return (
+                                                        <Tag
+                                                          key={i}
+                                                          // variant="solid"
+                                                          colorScheme="purple"
+                                                          size="sm"
+                                                          // borderRadius="full"
+                                                        >
+                                                          <TagLabel>{subject}</TagLabel>
+                                                        </Tag>
+                                                      )
+                                                    })}
+                                                  </HStack>
+                                                </PopoverTrigger>
+                                                <PopoverContent>
+                                                  <PopoverArrow />
+                                                  <PopoverCloseButton />
+                                                  <PopoverBody 
+                                                    fontSize="sm"
+                                                    _dark={{
+                                                      bg: "black"
+                                                    }}
+                                                  >
+                                                    {JSON.parse(readBook.subjects).map((subject:string,i:number)=>{
+                                                      return (
+                                                        <Text key={i}>
+                                                          {subject}
+                                                        </Text>
+                                                      )}
+                                                    )}
+                                                  </PopoverBody>
+                                                </PopoverContent>
+                                              </Popover>
+                                            ):null}
+                                          </Box>
+                                          <Box>
+                                            <Text 
+                                              padding={0}
+                                              rounded="md"
+                                              _hover={{
+                                                cursor: viewer === "self" ? "pointer" : "default",
+                                                backgroundColor: viewer === "self" ? "gray" : "unset",
+                                              }}
+                                              id={`pages-read-text-${readBook.id}`}
+                                              onClick={e=>viewer === "self" ? editPagesRead(readBook.id) : null}
+                                            >
+                                              Pages read: {readBook.pages_read ? readBook.pages_read : 0}
+                                            </Text>
+                                            <Flex 
+                                              align="center" 
+                                              gap={1}
+                                              id={`pages-read-input-div-${readBook.id}`}
+                                              display="none"
+                                              wrap="wrap"
+                                              padding={0}
+                                            >
+                                              Pages read:
+                                              <NumberInput
+                                                maxWidth="75px"
+                                                size="sm"
+                                                min={0}
+                                                defaultValue={readBook.pages_read}
+                                              >
+                                                <NumberInputField id={`pages-read-input-${readBook.id}`} />
+                                                <NumberInputStepper>
+                                                  <NumberIncrementStepper />
+                                                  <NumberDecrementStepper />
+                                                </NumberInputStepper>
+                                              </NumberInput>
+                                              <Button
+                                                size="sm"
+                                                backgroundColor="black"
+                                                color="white"
+                                                onClick={e=>updatePagesRead(readBook.id)}
+                                              >
+                                                Update
+                                              </Button>
+                                              <Button
+                                                size="sm"
+                                                onClick={e=>cancelEditPagesRead(readBook.id)}
+                                              >
+                                                Cancel
+                                              </Button>
+                                            </Flex>
+                                          </Box>
                                         </Box>
-                                        <Box>
-                                          <Text 
-                                            padding={0}
-                                            rounded="md"
-                                            _hover={{
-                                              cursor: viewer === "self" ? "pointer" : "default",
-                                              backgroundColor: viewer === "self" ? "gray" : "unset",
-                                            }}
-                                            id={`pages-read-text-${readBook.id}`}
-                                            onClick={e=>viewer === "self" ? editPagesRead(readBook.id) : null}
-                                          >
-                                            Pages read: {readBook.pages_read ? readBook.pages_read : 0}
-                                          </Text>
-                                          <Flex 
-                                            align="center" 
-                                            gap={1}
-                                            id={`pages-read-input-div-${readBook.id}`}
-                                            display="none"
-                                            wrap="wrap"
-                                            padding={0}
-                                          >
-                                            Pages read:
-                                            <NumberInput
-                                              maxWidth="75px"
-                                              size="sm"
-                                              min={0}
-                                              defaultValue={readBook.pages_read}
-                                            >
-                                              <NumberInputField id={`pages-read-input-${readBook.id}`} />
-                                              <NumberInputStepper>
-                                                <NumberIncrementStepper />
-                                                <NumberDecrementStepper />
-                                              </NumberInputStepper>
-                                            </NumberInput>
-                                            <Button
-                                              size="sm"
-                                              backgroundColor="black"
-                                              color="white"
-                                              onClick={e=>updatePagesRead(readBook.id)}
-                                            >
-                                              Update
-                                            </Button>
-                                            <Button
-                                              size="sm"
-                                              onClick={e=>cancelEditPagesRead(readBook.id)}
-                                            >
-                                              Cancel
-                                            </Button>
-                                          </Flex>
-                                        </Box>
-                                      </Box>
-                                    </Flex>
-                                    <Divider mt={1} />
+                                      </Flex>
+                                    </Box>
+                                    <Box
+                                      id={`edit-currently-reading-${readBook.id}`}
+                                      display="none"
+                                    >
+                                      <EditCurrentlyReading 
+                                        server={server} 
+                                        getPageCallback={getProfile} 
+                                        setSelectedBook={null}
+                                        selectedBook={{
+                                          id: readBook.id,
+                                          google_books_id: "",
+                                          title: readBook.title,
+                                          author: readBook.author,
+                                          image: readBook.image,
+                                          description: "",
+                                          isbn: readBook.isbn,
+                                          page_count: readBook.page_count,
+                                          subjects: JSON.parse(readBook.subjects),
+                                          published_date: readBook.published_date,
+                                          pages_read: readBook.pages_read,
+                                          thoughts: readBook.thoughts
+                                        }}
+                                      />
+                                    </Box>
+                                    <Divider mt={2} />
                                     <Flex
                                       align="center"
                                       justify="space-between"
