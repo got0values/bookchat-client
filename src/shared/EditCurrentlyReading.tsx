@@ -161,6 +161,7 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
                     type="text"
                     defaultValue={selectedBook2.title}
                     ref={titleRef}
+                    maxLength={200}
                   />
                 </FormControl>
                 <FormControl variant="floatingstatic">
@@ -171,6 +172,7 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
                     type="text"
                     defaultValue={selectedBook2.author}
                     ref={authorRef}
+                    maxLength={150}
                   />
                 </FormControl>
                 <FormControl variant="floatingstatic">
@@ -182,6 +184,7 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
                     defaultValue={selectedBook2.published_date !== null ? (dayjs(selectedBook2.published_date).format("YYYY")) : ""}
                     maxW="125px"
                     ref={yearRef}
+                    maxLength={4}
                   />
                 </FormControl>
                 <FormControl variant="floatingstatic">
