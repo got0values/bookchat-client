@@ -142,7 +142,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
               as="a"
               href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
               // variant="outline"
-              colorScheme="green"
+              colorScheme="teal"
               size="xs"
               aria-label="random bookshelf"
               // borderColor="purple"
