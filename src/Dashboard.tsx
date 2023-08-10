@@ -8,15 +8,13 @@ import {
   Flex,
   Spinner,
   CloseButton,
-  Fade,
   Text,
   Image,
   Avatar,
   Button,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
+  IconButton,
+  FormControl,
+  FormLabel,
   Divider,
   Tabs,
   TabList,
@@ -34,7 +32,9 @@ import {
   Input,
   Tag,
   TagLabel,
+  TagCloseButton,
   HStack,
+  Stack,
   Popover,
   PopoverTrigger,
   PopoverCloseButton,
@@ -50,16 +50,17 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import { editPagesRead, cancelEditPagesRead } from "./shared/editCancelPagesRead";
-import { editCurrentlyReadingThoughts, cancelEditCurrentlyReadingThoughts } from "./shared/editCancelCurrentlyReadingThoughts";
+import { showEditCurrentlyReading, hideEditCurrentlyReading } from "./shared/editCancelCurrentlyReading";
 import BooksSearch from "./shared/BooksSearch";
 import StarRating from "./shared/StarRating";
 import SocialShareButtons from "./shared/SocialShareButtons";
 import FeaturedBooks from "./shared/FeaturedBooks";
+import EditCurrentlyReading from "./shared/EditCurrentlyReading";
 import { SuggestionCountBadge } from "./shared/SuggestionCount";
 import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
 import { BsReplyFill, BsArrowRightShort } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
-import { MdOutlineChat } from 'react-icons/md';
+import { MdOutlineChat, MdEdit, MdOutlineCancel } from 'react-icons/md';
 import { FaShoppingCart, FaPlay } from 'react-icons/fa';
 import { ImInfo } from 'react-icons/im';
 import { FaStore } from 'react-icons/fa';
@@ -74,7 +75,6 @@ import packageJson from '../package.json';
 
 export default function Dashboard({server,gbooksapi}: DashboardProps) {
   dayjs.extend(utc);
-  const toast = useToast();
   const { user, getUser } = useAuth();
   const queryClient = useQueryClient();
 
@@ -162,27 +162,22 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   const deleteReadingMutation = useMutation({
     mutationFn: async (readingId: number)=>{
       const tokenCookie = Cookies.get().token;
-      if (tokenCookie) {
-        await axios
-          .delete(server + "/api/currentlyreading",
-            {
-              headers: {
-                Authorization: tokenCookie
-              },
-              data: {
-                readingId
-              }
+      await axios
+        .delete(server + "/api/currentlyreading",
+          {
+            headers: {
+              Authorization: tokenCookie
+            },
+            data: {
+              readingId
             }
-          )
-          .catch(({response})=>{
-            console.log(response)
-            throw new Error(response.message)
-          })
-          return getDashboard();
-      }
-      else {
-        throw new Error("An error occurred")
-      }
+          }
+        )
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.message)
+        })
+        return getDashboard();
     },
     onSuccess: (data,variables)=>{
       queryClient.invalidateQueries({ queryKey: ["dashboardKey"] })
@@ -274,22 +269,28 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
 
   const thoughtsRef = useRef({} as HTMLInputElement);
   const pagesReadRef = useRef({} as HTMLInputElement);
+  const imageRef = useRef({} as HTMLInputElement);
+  const titleRef = useRef({} as HTMLInputElement);
+  const authorRef = useRef({} as HTMLInputElement);
+  const descriptionRef = useRef({} as HTMLInputElement);
+  const yearRef = useRef({} as HTMLInputElement);
+  const pagesRef = useRef({} as HTMLInputElement);
   const postCurrentlyReadingMutation = useMutation({
-    mutationFn: async (e: React.FormEvent)=>{
+    mutationFn: async ()=>{
       let tokenCookie: string | null = Cookies.get().token;
       if (tokenCookie) {
         await axios
         .post(server + "/api/currentlyreading",
         {
-          google_books_id: (e.target as HTMLDivElement).dataset.googlebooksid,
-          image: (e.target as HTMLDivElement).dataset.image,
-          title: (e.target as HTMLDivElement).dataset.title,
-          author: (e.target as HTMLDivElement).dataset.author,
-          description: (e.target as HTMLDivElement).dataset.description,
-          isbn: (e.target as HTMLDivElement).dataset.isbn,
-          page_count: parseInt((e.target as HTMLDivElement).dataset.pagecount as string),
-          subjects: (e.target as HTMLDivElement).dataset.subjects as string,
-          published_date: (e.target as HTMLDivElement).dataset.publisheddate,
+          google_books_id: selectedBook.google_books_id,
+          image: imageRef.current.value,
+          title: titleRef.current.value,
+          author: authorRef.current.value,
+          description: descriptionRef.current.value,
+          isbn: selectedBook.isbn,
+          page_count: parseInt(pagesRef.current.value),
+          subjects: selectedBook.subjects,
+          published_date: yearRef.current.value,
           thoughts: thoughtsRef.current.value,
           pages_read: parseInt(pagesReadRef.current.value)
         },
@@ -318,8 +319,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
       queryClient.setQueryData(["dashboardKey"],data)
     }
   })
-  function postCurrentlyReading(e: React.FormEvent) {
-    postCurrentlyReadingMutation.mutate(e);
+  function postCurrentlyReading() {
+    postCurrentlyReadingMutation.mutate();
   }
 
   const likeUnlikeCurrentlyReadingMutation = useMutation({
@@ -356,49 +357,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   })
   function likeUnlikeCurrentlyReading(e: React.FormEvent) {
     likeUnlikeCurrentlyReadingMutation.mutate(e);
-  }
-
-  const updateCurrentlyReadingThoughtsMutation = useMutation({
-    mutationFn: async (bookId: number)=>{
-      const currentlyReadingText = document.getElementById(`currently-reading-text-${bookId}`);
-      const currentlyReadingInputDiv = document.getElementById(`currently-reading-input-div-${bookId}`);
-      const currentlyReadingInput = document.getElementById(`currently-reading-input-${bookId}`);
-      let tokenCookie: string | null = Cookies.get().token;
-      if (tokenCookie) {
-        await axios
-        .put(server + "/api/updatecurrentlyreadingthoughts",
-        {
-          currentlyReadingId: bookId,
-          thoughts: (currentlyReadingInput as HTMLInputElement)!.value
-        },
-        {
-          headers: {
-            'authorization': tokenCookie
-          }
-        }
-        )
-        .then((response)=>{
-          currentlyReadingText!.style.display = "block";
-          currentlyReadingInputDiv!.style.display = "none";
-        })
-        .catch(({response})=>{
-          console.log(response)
-          throw new Error(response.message)
-        })
-      }
-      else {
-        throw new Error("Please login again")
-      }
-      return getDashboard();
-    },
-    onSuccess: (data,variables)=>{
-      queryClient.invalidateQueries({ queryKey: ["dashboardKey"] })
-      queryClient.resetQueries({queryKey: ["dashboardKey"]})
-      queryClient.setQueryData(["dashboardKey"],data)
-    }
-  })
-  function updateCurrentlyReadingThoughts(bookId: number) {
-    updateCurrentlyReadingThoughtsMutation.mutate(bookId)
   }
 
   const updatePagesReadMutation = useMutation({
@@ -490,167 +448,17 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           <Box
             my={2}
             p={4}
-            // bg="white"
-            // _dark={{
-            //   bg: 'blackAlpha.600'
-            // }}
             className="well"
             position="relative"
+            id="edit-currently-reading-000"
           >
             <CloseButton
               position="absolute"
               top="0"
               right="0"
-              onClick={e=>setSelectedBook(null)}
+              onClick={e=>hideEditCurrentlyReading("000")}
             />
-            <Input
-              type="text"
-              mt={3}
-              mb={3}
-              placeholder="Thoughts?"
-              maxLength={300}
-              ref={thoughtsRef}
-            />
-            <Flex>
-              <Image 
-                src={selectedBook.image}
-                maxH="120px"
-                boxShadow="1px 1px 1px 1px darkgrey"
-                alt={selectedBook.title}
-              />
-              <Box 
-                mx={2}
-                w="100%"
-              >
-                <Box lineHeight={1.4}>
-                  <Heading as="h2" size="md" me={3}>
-                    {selectedBook.title}
-                  </Heading>
-                  <Text fontWeight="bold" fontSize="lg">
-                    {selectedBook.author}
-                  </Text>
-                  <Text fontStyle="italic">
-                    {selectedBook.published_date !== null ? 
-                      (
-                        dayjs(selectedBook.published_date).format("YYYY")
-                      ) : null
-                    }
-                  </Text>
-                  {selectedBook.page_count ? (
-                    <Text noOfLines={1}>
-                      {selectedBook.page_count} pages
-                    </Text>
-                  ): null}
-                  {selectedBook.subjects ? (
-                    <Popover isLazy>
-                      <PopoverTrigger>
-                        <HStack 
-                          spacing={1} 
-                          noOfLines={1}
-                          maxW="275px"
-                          _hover={{
-                            cursor: "pointer"
-                          }}
-                        >
-                          {selectedBook.subjects.map((subject:string,i:number)=>{
-                            if (subject.includes("nyt:")) {
-                              return;
-                            }
-                            return (
-                              <Tag
-                                key={i}
-                                // variant="solid"
-                                colorScheme="purple"
-                                size="sm"
-                                // borderRadius="full"
-                              >
-                                <TagLabel>{subject}</TagLabel>
-                              </Tag>
-                            )
-                          })}
-                        </HStack>
-                      </PopoverTrigger>
-                      <PopoverContent>
-                        <PopoverArrow />
-                        <PopoverCloseButton />
-                        <PopoverBody 
-                          fontSize="sm"
-                          _dark={{
-                            bg: "black"
-                          }}
-                        >
-                          {selectedBook.subjects.map((subject:string,i:number)=>{
-                            return (
-                              <Text key={i}>
-                                {subject}
-                              </Text>
-                            )}
-                          )}
-                        </PopoverBody>
-                      </PopoverContent>
-                    </Popover>
-                  ):null}
-                  {/* <Popover isLazy>
-                  <PopoverTrigger>
-                    <Box 
-                      _hover={{
-                        cursor: "pointer"
-                      }}
-                    >
-                      <Text fontSize="lg" noOfLines={1}>
-                        {reading.description ? reading.description: null}
-                      </Text>
-                    </Box>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <PopoverArrow />
-                    <PopoverCloseButton />
-                    <PopoverBody 
-                      fontSize="sm"
-                      _dark={{
-                        bg: "black"
-                      }}
-                    >
-                      {reading.description}
-                    </PopoverBody>
-                  </PopoverContent>
-                </Popover> */}
-                </Box>
-                <Flex justify="space-between">
-                  <Flex align="center" gap={1}>
-                    Pages read:
-                    <NumberInput
-                      maxWidth="75px"
-                      size="sm"
-                      min={0}
-                    >
-                      <NumberInputField ref={pagesReadRef} />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
-                  </Flex>
-                  <Button 
-                    // size="sm"
-                    backgroundColor="black"
-                    color="white"
-                    data-googlebooksid={selectedBook.google_books_id}
-                    data-image={selectedBook.image}
-                    data-title={selectedBook.title}
-                    data-author={selectedBook.author}
-                    data-description={selectedBook.description}
-                    data-isbn={selectedBook.isbn}
-                    data-pagecount={selectedBook.page_count}
-                    data-subjects={JSON.stringify(selectedBook.subjects)}
-                    data-publisheddate={selectedBook.published_date}
-                    onClick={e=>postCurrentlyReading(e)}
-                  >
-                    Post
-                  </Button>
-                </Flex>
-              </Box>
-            </Flex>
+            <EditCurrentlyReading server={server} selectedBook={selectedBook} setSelectedBook={setSelectedBook} getPageCallback={getDashboard} />
           </Box>
         ) : null}
       </>
@@ -864,16 +672,43 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     }
                   </Flex>
                   {reading.Profile.id === user?.Profile.id ? (
-                    <Button
-                      color="tomato"
-                      size="xs"
-                      variant="ghost"
-                      onClick={e=>deleteReading(reading.id)}
-                      fontWeight="bold"
-                      title="delete"
-                    >
-                      <BiTrash size={18} />
-                    </Button>
+                    <Flex align="center" gap={0}>
+                      <Button
+                        // color="tomato"
+                        size="xs"
+                        variant="ghost"
+                        onClick={e=>showEditCurrentlyReading(reading.id.toString())}
+                        fontWeight="bold"
+                        title="edit"
+                        id={`edit-currently-reading-button-${reading.id}`}
+                      >
+                        <MdEdit size={18} />
+                      </Button>
+                      <Button
+                        color="tomato"
+                        display="none"
+                        size="xs"
+                        variant="ghost"
+                        onClick={e=>hideEditCurrentlyReading(reading.id.toString())}
+                        fontWeight="bold"
+                        title="cancel edit"
+                        id={`cancel-edit-currently-reading-button-${reading.id}`}
+                      >
+                        <MdOutlineCancel size={18} />
+                      </Button>
+                      <Button
+                        color="tomato"
+                        size="xs"
+                        variant="ghost"
+                        onClick={e=>deleteReading(reading.id)}
+                        isDisabled={deleteReadingMutation.isLoading}
+                        isLoading={deleteReadingMutation.isLoading}
+                        fontWeight="bold"
+                        title="delete"
+                      >
+                        <BiTrash size={18} />
+                      </Button>
+                    </Flex>
                   ): null}
                 </Flex>
                 <Text fontStyle="italic">
@@ -882,232 +717,229 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               </Flex>
             </HStack>
           </Flex>
-          <Divider />
-          <Text 
-            my={2}
-            rounded="md"
-            p={1}
-            _hover={{
-              cursor: reading.Profile.id === user?.Profile.id ? "pointer" : "default",
-              backgroundColor: reading.Profile.id === user?.Profile.id ? "gray" : "unset"
-            }}
-            id={`currently-reading-text-${reading.id}`}
-            onClick={e=> reading.Profile.id === user?.Profile.id ? editCurrentlyReadingThoughts(reading.id) : null}
+          <Divider mb={2} />
+          <Box
+            id={`currently-reading-${reading.id}`}
           >
-            {reading.thoughts ? reading.thoughts : null}
-          </Text>
-          <Flex 
-            align="center" 
-            gap={1}
-            display="none"
-            id={`currently-reading-input-div-${reading.id}`}
-          >
-            <Input
-              my={2}
-              type="text"
-              defaultValue={reading.thoughts ? reading.thoughts : ""}
-              id={`currently-reading-input-${reading.id}`}
-            />
-            <Button
-              backgroundColor="black"
-              color="white"
-              onClick={e=>updateCurrentlyReadingThoughts(reading.id)}
-              disabled={updateCurrentlyReadingThoughtsMutation.isLoading}
-            >
-              Update
-            </Button>
-            <Button
-              onClick={e=>cancelEditCurrentlyReadingThoughts(reading.id)}
-            >
-              Cancel
-            </Button>
-          </Flex>
-          <Flex>
-            <Image 
-              src={reading.image ? reading.image : "https://via.placeholder.com/165x215"}
-              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-              maxH="150px"
-              boxShadow="1px 1px 1px 1px darkgrey"
-              alt={`${reading.title} image`}
-            />
-            <Box mx={2} w="100%">
-              <Box lineHeight={1.4}>
-                <Heading as="h2" size="md" me={3} noOfLines={1}>
-                  {reading.title}
-                </Heading>
-                <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
-                  {reading.author}
-                </Text>
-                {/* <Popover isLazy>
-                  <PopoverTrigger>
-                    <Box 
-                      _hover={{
-                        cursor: "pointer"
-                      }}
-                    >
-                      <Text fontSize="lg" noOfLines={1}>
-                        {reading.description ? reading.description: null}
-                      </Text>
-                    </Box>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <PopoverArrow />
-                    <PopoverCloseButton />
-                    <PopoverBody 
-                      fontSize="sm"
-                      _dark={{
-                        bg: "black"
-                      }}
-                    >
-                      {reading.description}
-                    </PopoverBody>
-                  </PopoverContent>
-                </Popover> */}
-                <Text fontStyle="italic">
-                  {reading.published_date !== null ? 
-                    (
-                      dayjs(reading.published_date).format("YYYY")
-                    ) : null
-                  }
-                </Text>
-                {reading.page_count ? (
-                  <Text noOfLines={1}>
-                    {reading.page_count} pages
+            {reading.thoughts ? (
+              <Text 
+                my={2}
+                rounded="md"
+                p={1}
+              >
+                {reading.thoughts}
+              </Text>
+            ): null}
+            <Flex>
+              <Image 
+                src={reading.image ? reading.image : "https://via.placeholder.com/165x215"}
+                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                maxH="150px"
+                boxShadow="1px 1px 1px 1px darkgrey"
+                alt={`${reading.title} image`}
+              />
+              <Box mx={2} w="100%">
+                <Box lineHeight={1.4}>
+                  <Heading as="h2" size="md" me={3} noOfLines={1}>
+                    {reading.title}
+                  </Heading>
+                  <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
+                    {reading.author}
                   </Text>
-                ): null}
-              </Box>
-              <Box minWidth="150px">
-                <Text 
-                  padding={0}
-                  rounded="md"
-                  _hover={{
-                    cursor: reading.Profile.id === user?.Profile.id ? "pointer" : "default",
-                    backgroundColor: reading.Profile.id === user?.Profile.id ? "gray" : "unset",
-                  }}
-                  h="100%"
-                  w="100%"
-                  id={`pages-read-text-${reading.id}`}
-                  onClick={e=>reading.Profile.id === user?.Profile.id ? editPagesRead(reading.id) : null}
-                >
-                  {reading.pages_read ? `Pages read: ${reading.pages_read}` : null}
-                </Text>
-                <Flex 
-                  align="center" 
-                  gap={1}
-                  id={`pages-read-input-div-${reading.id}`}
-                  display="none"
-                  wrap="wrap"
-                  padding={0}
-                >
-                  Pages read:
-                  <NumberInput
-                    maxWidth="75px"
-                    size="sm"
-                    min={0}
-                    defaultValue={reading.pages_read}
+                  {/* <Popover isLazy>
+                    <PopoverTrigger>
+                      <Box 
+                        _hover={{
+                          cursor: "pointer"
+                        }}
+                      >
+                        <Text fontSize="lg" noOfLines={1}>
+                          {reading.description ? reading.description: null}
+                        </Text>
+                      </Box>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <PopoverArrow />
+                      <PopoverCloseButton />
+                      <PopoverBody 
+                        fontSize="sm"
+                        _dark={{
+                          bg: "black"
+                        }}
+                      >
+                        {reading.description}
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Popover> */}
+                  <Text fontStyle="italic">
+                    {reading.published_date !== null ? 
+                      (
+                        dayjs(reading.published_date).format("YYYY")
+                      ) : null
+                    }
+                  </Text>
+                  {reading.page_count ? (
+                    <Text noOfLines={1}>
+                      {reading.page_count} pages
+                    </Text>
+                  ): null}
+                </Box>
+                <Box minWidth="150px">
+                  <Text 
+                    padding={0}
+                    rounded="md"
+                    _hover={{
+                      cursor: reading.Profile.id === user?.Profile.id ? "pointer" : "default",
+                      backgroundColor: reading.Profile.id === user?.Profile.id ? "gray" : "unset",
+                    }}
+                    h="100%"
+                    w="100%"
+                    id={`pages-read-text-${reading.id}`}
+                    onClick={e=>reading.Profile.id === user?.Profile.id ? editPagesRead(reading.id) : null}
                   >
-                    <NumberInputField id={`pages-read-input-${reading.id}`} />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
+                    {reading.pages_read ? `Pages read: ${reading.pages_read}` : null}
+                  </Text>
+                  <Flex 
+                    align="center" 
+                    gap={1}
+                    id={`pages-read-input-div-${reading.id}`}
+                    display="none"
+                    wrap="wrap"
+                    padding={0}
+                  >
+                    Pages read:
+                    <NumberInput
+                      maxWidth="75px"
+                      size="sm"
+                      min={0}
+                      defaultValue={reading.pages_read}
+                    >
+                      <NumberInputField id={`pages-read-input-${reading.id}`} />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                    <Button
+                      size="sm"
+                      backgroundColor="black"
+                      color="white"
+                      onClick={e=>updatePagesRead(reading.id)}
+                    >
+                      Update
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={e=>cancelEditPagesRead(reading.id)}
+                    >
+                      Cancel
+                    </Button>
+                  </Flex>
+                </Box>
+                {reading.subjects && JSON.parse(reading.subjects)?.length ? (
+                  <Popover isLazy>
+                    <PopoverTrigger>
+                      <HStack 
+                        spacing={1} 
+                        noOfLines={1}
+                        maxW="275px"
+                        display="flex"
+                        align="center"
+                        height="1rem"
+                        _hover={{
+                          cursor: "pointer"
+                        }}
+                      >
+                        {JSON.parse(reading.subjects).map((subject:string,i:number)=>{
+                          if (subject.includes("nyt:")) {
+                            return;
+                          }
+                          return (
+                            <Tag
+                              key={i}
+                              // variant="solid"
+                              colorScheme="purple"
+                              size="sm"
+                              minH={15}
+                              // borderRadius="full"
+                            >
+                              <TagLabel>{subject}</TagLabel>
+                            </Tag>
+                          )
+                        })}
+                      </HStack>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <PopoverArrow />
+                      <PopoverCloseButton />
+                      <PopoverBody 
+                        fontSize="sm"
+                        _dark={{
+                          bg: "black"
+                        }}
+                      >
+                        {JSON.parse(reading.subjects).map((subject:string,i:number)=>{
+                          return (
+                            <Text key={i}>
+                              {subject}
+                            </Text>
+                          )}
+                        )}
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Popover>
+                ):null}
+                <Flex align="center" gap={2}>
                   <Button
-                    size="sm"
-                    backgroundColor="black"
-                    color="white"
-                    onClick={e=>updatePagesRead(reading.id)}
+                    as={Link}
+                    to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(reading.title + " " + reading.author)}`}
+                    target="blank"
+                    size="xs"
+                    variant="ghost"
+                    aria-label="View in Bookshop"
+                    title="View in Bookshop"
+                    p={0}
                   >
-                    Update
+                    <FaStore size={20} />
                   </Button>
                   <Button
-                    size="sm"
-                    onClick={e=>cancelEditPagesRead(reading.id)}
+                    as={Link}
+                    to={`/chat/room?title=${reading.title}&author=${reading.author}`}
+                    size="xs"
+                    variant="ghost"
+                    aria-label="Book chat room"
+                    title="Book chat room"
+                    p={0}
                   >
-                    Cancel
+                    <MdOutlineChat size={20} />
                   </Button>
                 </Flex>
               </Box>
-              {reading.subjects && JSON.parse(reading.subjects)?.length ? (
-                <Popover isLazy>
-                  <PopoverTrigger>
-                    <HStack 
-                      spacing={1} 
-                      noOfLines={1}
-                      maxW="275px"
-                      display="flex"
-                      align="center"
-                      height="1rem"
-                      _hover={{
-                        cursor: "pointer"
-                      }}
-                    >
-                      {JSON.parse(reading.subjects).map((subject:string,i:number)=>{
-                        if (subject.includes("nyt:")) {
-                          return;
-                        }
-                        return (
-                          <Tag
-                            key={i}
-                            // variant="solid"
-                            colorScheme="purple"
-                            size="sm"
-                            minH={15}
-                            // borderRadius="full"
-                          >
-                            <TagLabel>{subject}</TagLabel>
-                          </Tag>
-                        )
-                      })}
-                    </HStack>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <PopoverArrow />
-                    <PopoverCloseButton />
-                    <PopoverBody 
-                      fontSize="sm"
-                      _dark={{
-                        bg: "black"
-                      }}
-                    >
-                      {JSON.parse(reading.subjects).map((subject:string,i:number)=>{
-                        return (
-                          <Text key={i}>
-                            {subject}
-                          </Text>
-                        )}
-                      )}
-                    </PopoverBody>
-                  </PopoverContent>
-                </Popover>
-              ):null}
-              <Flex align="center" gap={2}>
-                <Button
-                  as={Link}
-                  to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(reading.title + " " + reading.author)}`}
-                  target="blank"
-                  size="xs"
-                  variant="ghost"
-                  aria-label="View in Bookshop"
-                  title="View in Bookshop"
-                  p={0}
-                >
-                  <FaStore size={20} />
-                </Button>
-                <Button
-                  as={Link}
-                  to={`/chat/room?title=${reading.title}&author=${reading.author}`}
-                  size="xs"
-                  variant="ghost"
-                  aria-label="Book chat room"
-                  title="Book chat room"
-                  p={0}
-                >
-                  <MdOutlineChat size={20} />
-                </Button>
-              </Flex>
-            </Box>
-          </Flex>
+            </Flex>
+          </Box>
+          <Box
+            display="none"
+            id={`edit-currently-reading-${reading.id}`}
+          >
+            <EditCurrentlyReading 
+              server={server} 
+              getPageCallback={getDashboard} 
+              setSelectedBook={null}
+              selectedBook={{
+                google_books_id: "",
+                title: reading.title,
+                author: reading.author,
+                image: reading.image,
+                description: "",
+                isbn: reading.isbn,
+                page_count: reading.page_count,
+                subjects: JSON.parse(reading.subjects),
+                published_date: reading.published_date,
+                pages_read: reading.pages_read,
+                thoughts: reading.thoughts
+              }}
+            />
+          </Box>
           <Divider mt={2} mb={1} />
           <Flex
             align="center"

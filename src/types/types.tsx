@@ -446,5 +446,15 @@ export interface SelectedBook {
   description: string;
   isbn: string;
   page_count: number;
+  subjects: string[];
   published_date: string;
+  pages_read: number;
+  thoughts: string;
+}
+
+export interface EditCurrentlyReadingType {
+  server: string;
+  selectedBook: SelectedBook;
+  setSelectedBook: React.Dispatch<any> | null;
+  getPageCallback: ()=>Promise<any>;
 }

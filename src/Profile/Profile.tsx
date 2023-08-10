@@ -55,7 +55,7 @@ import {
   useToast
 } from "@chakra-ui/react";
 import { editPagesRead, cancelEditPagesRead } from "../shared/editCancelPagesRead";
-import { editCurrentlyReadingThoughts, cancelEditCurrentlyReadingThoughts } from "../shared/editCancelCurrentlyReadingThoughts";
+import { editCurrentlyReadingThoughts, cancelEditCurrentlyReadingThoughts } from "../shared/editCancelCurrentlyReading";
 import {SuggestionCountBadge} from "../shared/SuggestionCount";
 import SocialShareButtons from "../shared/SocialShareButtons";
 import collectionToArray from "../utils/collectionToArray";
