@@ -200,6 +200,7 @@ export default function BookClubs({server}: {server: string}) {
           >
             <Tab 
               fontWeight="bold"
+              className="tab-button"
               _selected={{
                 borderBottom: "2px solid gray"
               }}
@@ -208,6 +209,7 @@ export default function BookClubs({server}: {server: string}) {
             </Tab>
             <Tab 
               fontWeight="bold"
+              className="tab-button"
               _selected={{
                 borderBottom: "2px solid gray"
               }}

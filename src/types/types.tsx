@@ -312,7 +312,8 @@ export interface CurrentlyReadingComment {
 export enum Notifications {
   Comment = 1,
   GeneralReply = 2,
-  Like = 3
+  Like = 3,
+  RequestSuggestion = 4
 }
 
 export interface UserNotificationsType {

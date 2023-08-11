@@ -33,6 +33,7 @@ export default function BookSuggestions({server, gbooksapi}: {server: string; gb
         >
           <Tab 
             fontWeight="bold"
+            className="tab-button"
             _selected={{
               borderBottom: "2px solid gray"
             }}
@@ -41,6 +42,7 @@ export default function BookSuggestions({server, gbooksapi}: {server: string; gb
           </Tab>
           <Tab 
             fontWeight="bold"
+            className="tab-button"
             _selected={{
               borderBottom: "2px solid gray"
             }}
@@ -49,6 +51,7 @@ export default function BookSuggestions({server, gbooksapi}: {server: string; gb
           </Tab>
           <Tab 
             fontWeight="bold"
+            className="tab-button"
             _selected={{
               borderBottom: "2px solid gray"
             }}
@@ -57,6 +60,7 @@ export default function BookSuggestions({server, gbooksapi}: {server: string; gb
           </Tab>
           <Tab 
             fontWeight="bold"
+            className="tab-button"
             _selected={{
               borderBottom: "2px solid gray"
             }}

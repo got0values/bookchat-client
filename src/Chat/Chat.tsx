@@ -106,6 +106,7 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
             >
               <Tab 
                 fontWeight="bold"
+                className="tab-button"
                 _selected={{
                   borderBottom: "2px solid gray"
                 }}
@@ -114,6 +115,7 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
               </Tab>
               <Tab 
                 fontWeight="bold"
+                className="tab-button"
                 _selected={{
                   borderBottom: "2px solid gray"
                 }}

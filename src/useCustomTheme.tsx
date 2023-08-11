@@ -105,6 +105,11 @@ const customTheme = {
         width: '1px',
         height: '1px',
         overflow: 'hidden'
+      },
+      '.tab-button': {
+        fontSize: ['.9rem!important','1rem!important'],
+        px: ['.9rem!important','1rem!important'],
+        py: ['.4rem!important','.5rem!important']
       }
     }
   },

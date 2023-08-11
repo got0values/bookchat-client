@@ -15,6 +15,11 @@ import {
   IconButton,
   FormControl,
   FormLabel,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuDivider,
   Divider,
   Tabs,
   TabList,
@@ -61,6 +66,8 @@ import { BsReplyFill, BsArrowRightShort } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { MdOutlineChat, MdEdit, MdOutlineCancel } from 'react-icons/md';
 import { FaStore } from 'react-icons/fa';
+import { ImBooks } from 'react-icons/im';
+import { HiOutlineMail } from 'react-icons/hi';
 import Comments from "./shared/CurrentlyReadingComments";
 import { useAuth } from './hooks/useAuth';
 import Cookies from "js-cookie";
@@ -74,6 +81,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   dayjs.extend(utc);
   const { user, getUser } = useAuth();
   const queryClient = useQueryClient();
+  const toast = useToast();
 
   useEffect(()=>{
     setTimeout(()=>{
@@ -415,6 +423,30 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
     )
   }
 
+  async function requestSuggestion(id: number) {
+    const tokenCookie = Cookies.get().token;
+    await axios
+      .post(server + "/api/requestsuggestion",
+        {
+          id: id
+        },
+        {headers: {
+          Authorization: tokenCookie
+        }}
+      )
+      .then((response)=>{
+        toast({
+          description: "Suggestion request sent!",
+          status: "success",
+          duration: 9000,
+          isClosable: true
+        })
+      })
+      .catch(({response})=>{
+        console.log(response)
+      })
+  }
+
   const CurrentlyReadingInput = () => {
     
     return (
@@ -604,24 +636,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       {reading.Profile.username}
                     </Text>
                     <SuggestionCountBadge suggestionCount={suggestionCount}/>
-                    {reading.Profile.Bookshelf?.allow_suggestions ? (
-                      <Button
-                        as={Link}
-                        to={`/booksuggestions/bookshelf?profile=${reading.Profile.username}`}
-                        size="xs"
-                        fontSize="xs"
-                        lineHeight={1}
-                        h="auto"
-                        variant="outline"
-                        p={1}
-                      >
-                        bookshelf
-                      </Button>
-                    ): (
-                      null
-                    )}
-                    {
-                    followingStatus === "following" ? (
+                    {followingStatus === "following" ? (
                       null 
                     ) : (
                       followingStatus === "requesting") ? (
@@ -663,6 +678,46 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                           </Button>
                         )
                     }
+                    {reading.Profile.Bookshelf?.allow_suggestions || reading.Profile.id !== user.Profile.id ? (
+                      <Menu>
+                        <MenuButton 
+                          as={Button}
+                          size="sm"
+                          variant="ghost"
+                          rounded="full"
+                          height="20px"
+                          title="menu"
+                          px={2}
+                        >
+                          <BiDotsHorizontalRounded />
+                        </MenuButton>
+                        <MenuList>
+                          {reading.Profile.Bookshelf?.allow_suggestions ? (
+                            <MenuItem 
+                              as={Link}
+                              to={`/booksuggestions/bookshelf?profile=${reading.Profile.username}`}
+                              fontWeight="bold"
+                              fontSize="sm"
+                              aria-label="view bookshelf"
+                              icon={<ImBooks size={20} />}
+                            >
+                              View Bookshelf
+                            </MenuItem>
+                          ): null}
+                          {reading.Profile.id !== user.Profile.id ? (
+                            <MenuItem
+                              onClick={e=>requestSuggestion(reading.Profile.id)}
+                              fontWeight="bold"
+                              fontSize="sm"
+                              aria-label="request a suggestion"
+                              icon={<HiOutlineMail size={20} />}
+                            >
+                              Request Suggestion
+                            </MenuItem>
+                          ): null}
+                        </MenuList>
+                      </Menu>
+                    ): null}
                   </Flex>
                   {reading.Profile.id === user?.Profile.id ? (
                     <Flex align="center" gap={0}>
@@ -1057,12 +1112,14 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 _selected={{
                   borderBottom: "2px solid gray"
                 }}
+                className="tab-button"
                 onClick={e=>setPublicTabChosen(true)}
               >
                 Public
               </Tab>
               <Tab
                 fontWeight="bold"
+                className="tab-button"
                 _selected={{
                   borderBottom: "2px solid gray"
                 }}
@@ -1072,6 +1129,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               </Tab>
               <Tab
                 fontWeight="bold"
+                className="tab-button"
                 _selected={{
                   borderBottom: "2px solid gray"
                 }}
