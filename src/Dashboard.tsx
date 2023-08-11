@@ -57,7 +57,7 @@ import {
 import { editPagesRead, cancelEditPagesRead } from "./shared/editCancelPagesRead";
 import { showEditCurrentlyReading, hideEditCurrentlyReading } from "./shared/editCancelCurrentlyReading";
 import BooksSearch from "./shared/BooksSearch";
-import SocialShareButtons from "./shared/SocialShareButtons";
+import { SocialSharePostButtons, SocialShareNoPostButtons } from "./shared/SocialShareButtons";
 import FeaturedBooks from "./shared/FeaturedBooks";
 import EditCurrentlyReading from "./shared/EditCurrentlyReading";
 import { SuggestionCountBadge } from "./shared/SuggestionCount";
@@ -997,7 +997,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             wrap="wrap"
           >
             {reading.Profile.id === user?.Profile.id ? (
-              <SocialShareButtons reading={reading} username={reading.Profile.username} />
+              <SocialSharePostButtons reading={reading} username={user.Profile.username} />
             ) : null}
             <Flex
               align="center"
@@ -1188,6 +1188,9 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     <Box fontSize="1rem">
                       <Box fontStyle="italic">
                         You are not following any users at the moment.
+                      </Box>
+                      <Box>
+                        <SocialShareNoPostButtons username={user?.Profile?.username} />
                       </Box>
                     </Box>
                   )}
