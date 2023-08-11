@@ -117,6 +117,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
     let userNotifications: UserNotificationsType = {
       followRequests: [],
       bookClubRequests: [],
+      suggestionRequests: [],
       comments: [],
       replies: [],
       likes: []
@@ -169,11 +170,22 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
               }
             )
           })
+          let suggestionRequestData = otherNotifications?.filter((on: OtherNotificationsType)=>on.type === 4);
+          suggestionRequestData = suggestionRequestData.map((sR: any)=>{
+            return (
+              {
+                ...sR,
+                from_data: JSON.parse(sR.from_data),
+                subject: JSON.parse(sR.subject)
+              }
+            )
+          })
           userNotifications = {
             ...userNotifications, 
             comments: [...userNotifications.comments as any[], ...commentData],
             replies: [...userNotifications.replies as any[], ...replyData],
-            likes: [...userNotifications.likes as any[], ...likeData]
+            likes: [...userNotifications.likes as any[], ...likeData],
+            suggestionRequests: [...userNotifications.suggestionRequests as any[], ...suggestionRequestData]
           }
 
         //check if any follow requests
@@ -199,7 +211,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
             }
           }
         }
-        totalNotifications = userNotifications.followRequests.length + userNotifications.bookClubRequests.length + userNotifications.comments.length + userNotifications.replies.length + userNotifications.likes.length;
+        totalNotifications = userNotifications.followRequests.length + userNotifications.bookClubRequests.length + userNotifications.comments.length + userNotifications.replies.length + userNotifications.likes.length + userNotifications.suggestionRequests.length;
         return {
           userNotifications,
           totalNotifications
@@ -1143,6 +1155,59 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                         <Button 
                           size="sm"
                           onClick={e=>readNotification(like.id)}
+                          isLoading={readNotificationMutation.isLoading}
+                        >
+                          OK
+                        </Button>
+                      </Flex>
+                    </Flex>
+                  )
+                })}
+
+                {userNotifications?.suggestionRequests?.map((sR,i)=>{
+                  return (
+                    <Flex 
+                      align="center" 
+                      gap={1} 
+                      justify="space-between" 
+                      flexWrap="wrap"
+                      width="100%"
+                      key={i}
+                    >
+                      <Flex align="flex-start" gap={1}>
+                        <Avatar src={sR.from_data?.profile_photo} size="sm" name={sR.from_data?.username}/>
+                        <Box>
+                          <Box>
+                            <Text>
+                              <Text
+                                as={Link} 
+                                to={`/profile/${sR.from_data?.username}`}
+                                onClick={onCloseNotificationsModal}
+                              >
+                                <Text 
+                                  as="span"
+                                  fontWeight="bold"
+                                >
+                                @{sR.from_data?.username}
+                                </Text> 
+                              </Text>
+                                {" "} requested a book suggestion from you {" "}
+                            </Text>
+                          </Box>
+                          <Text 
+                            as={Link} 
+                            // fontWeight="bold"
+                            color="blue"
+                            to={`/booksuggestions/bookshelf?profile=${sR.from_data?.username}`}
+                          >
+                            Visit @{sR.from_data?.username}'s bookshelf
+                          </Text>
+                        </Box>
+                      </Flex>
+                      <Flex m={1} gap={1} justify="flex-end">
+                        <Button 
+                          size="sm"
+                          onClick={e=>readNotification(sR.id)}
                           isLoading={readNotificationMutation.isLoading}
                         >
                           OK

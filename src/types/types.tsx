@@ -322,6 +322,7 @@ export interface UserNotificationsType {
   comments: OtherNotificationsType[];
   replies: OtherNotificationsType[];
   likes: OtherNotificationsType[];
+  suggestionRequests: OtherNotificationsType[];
 }
 
 export interface OtherNotificationsType {

@@ -678,7 +678,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                           </Button>
                         )
                     }
-                    {reading.Profile.Bookshelf?.allow_suggestions || reading.Profile.id !== user.Profile.id ? (
+                    {reading.Profile.Bookshelf?.allow_suggestions || (reading.Profile.id !== user.Profile.id && user.Profile.Bookshelf.allow_suggestions) ? (
                       <Menu>
                         <MenuButton 
                           as={Button}
@@ -704,7 +704,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                               View Bookshelf
                             </MenuItem>
                           ): null}
-                          {reading.Profile.id !== user.Profile.id ? (
+                          {reading.Profile.id !== user.Profile.id && user.Profile.Bookshelf?.allow_suggestions ? (
                             <MenuItem
                               onClick={e=>requestSuggestion(reading.Profile.id)}
                               fontWeight="bold"
