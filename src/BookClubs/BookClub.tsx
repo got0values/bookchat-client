@@ -56,7 +56,7 @@ import { TbBooks } from 'react-icons/tb';
 import { MdChevronRight } from 'react-icons/md';
 import { BookClubGeneralComments } from "../shared/BookClubGeneralComments";
 import { ImInfo } from 'react-icons/im';
-import { FaShoppingCart } from 'react-icons/fa';
+import { FaShoppingCart, FaStore } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import BookImage from "../shared/BookImage";
 import Cookies from "js-cookie";
@@ -1268,13 +1268,13 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 minW="unset"
                                 maxW="min-content"
                                 width="auto"
-                                // p={1}
+                                // p={2}
                                 borderColor="black"
                                 size="xs"
                                 variant="outline"
-                                leftIcon={<FaShoppingCart size={18} />}
+                                leftIcon={<FaStore size={20} />}
                               >
-                                Shop
+                                View info in shop
                               </Button>
                             </Flex>
                           </Flex>
