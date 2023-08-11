@@ -683,13 +683,13 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                         <MenuButton 
                           as={Button}
                           size="sm"
-                          variant="ghost"
+                          // variant="ghost"
                           rounded="full"
                           height="20px"
                           title="menu"
                           px={2}
                         >
-                          <BiDotsHorizontalRounded />
+                          <BiDotsHorizontalRounded size={15} />
                         </MenuButton>
                         <MenuList>
                           {reading.Profile.Bookshelf?.allow_suggestions ? (

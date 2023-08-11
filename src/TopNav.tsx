@@ -77,7 +77,7 @@ interface LinkItemProps {
 const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', linkTo: "/", icon: <AiFillHome size="25"/>, tooltip: "Home"},
   { name: 'Bookshelf', linkTo: "/bookshelf", icon: <ImBooks size="25"/>, tooltip: "Bookshelf" },
-  { name: 'Book Suggestions', linkTo: "/booksuggestions", icon: <BsPostcardHeartFill size="25" color="teal"/>, tooltip: "Book Suggestions" },
+  { name: 'Book Suggestions', linkTo: "/booksuggestions", icon: <BsPostcardHeartFill size="25" />, tooltip: "Book Suggestions" },
   { name: 'Book Clubs', linkTo: "/bookclubs", icon: <FaBookReader size="25"/>, tooltip: "Book Clubs" },
   { name: 'Chat Rooms', linkTo: "/chat", icon: <BsFillChatFill size="25" />, tooltip: "Chat Rooms" }
 ];
