@@ -21,6 +21,7 @@ import {
   useToast
 } from "@chakra-ui/react";
 import * as htmlToImage from 'html-to-image';
+import { b64toBlob } from "./b64toBlob";
 import dayjs from "dayjs";
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -67,7 +68,13 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
       if (showQuoteDesigner && quoteBox) {
         htmlToImage.toPng(quoteBox!)
           .then(async function (quoteImageBase) {
-            
+            let blob = await b64toBlob(quoteImageBase,'image/png',512)
+            let newFile = new File([blob], "quoteImage.png", {type: "image/png"})
+            const formData = new FormData();
+            formData.append("photo", newFile as Blob)
+            console.log(formData)
+            return
+
             await axios
             .post(server + "/api/currentlyreading",
               {
