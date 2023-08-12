@@ -1564,68 +1564,67 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 Cancel
                               </Button>
                             </Flex>
-                            {book.hidden ? (
-                              <Text 
-                                as="span"
-                                fontWeight="bold"
-                                fontSize="sm"
-                              >
-                                {" "} (Hidden)
-                              </Text>
-                            ): null}
                           </Flex>
                         </Box>
-                        <Menu>
-                          <MenuButton 
-                            as={Button}
-                            size="md"
-                            variant="ghost"
-                            rounded="full"
-                            // height="25px"
-                            position="absolute"
-                            top="0"
-                            right="0"
-                            title="menu"
-                          >
-                            <BiDotsHorizontalRounded/>
-                          </MenuButton>
-                          <MenuList>
-                            <MenuItem 
-                              onClick={e=>navigate(`/chat/room?title=${book.title}&author=${book.author}`)}
-                              fontWeight="bold"
-                              icon={<MdOutlineChat size={20} />}
+                        <Flex align="center" gap={1}>
+                          {book.hidden ? (
+                            <Text 
+                              as="span"
+                              fontStyle="italic"
                             >
-                              Chat Room
-                            </MenuItem>
-                            <MenuItem 
-                              as={Link}
-                              to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.title + " " + book.author)}`}
-                              target="blank"
-                              fontWeight="bold"
-                              icon={<FaShoppingCart size={20} />}
+                              {" "} hidden
+                            </Text>
+                          ): null}
+                          <Menu>
+                            <MenuButton 
+                              as={Button}
+                              size="md"
+                              maxH="25px"
+                              variant="ghost"
+                              rounded="full"
+                              // p={1}
+                              title="menu"
                             >
-                              Shop
-                            </MenuItem>
-                            <MenuItem
-                              data-id={book.id}
-                              onClick={e=>hideOrShowBookshelfBook([book.id,book.hidden ? "show" : "hide"])}
-                              fontWeight="bold"
-                              icon={<BiHide size={20} />}
-                            >
-                              {book.hidden ? "Unhide" : "Hide"} From Suggestions
-                            </MenuItem>
+                              <BiDotsHorizontalRounded size={20} />
+                            </MenuButton>
+                            <MenuList>
+                              <MenuItem 
+                                onClick={e=>navigate(`/chat/room?title=${book.title}&author=${book.author}`)}
+                                fontWeight="bold"
+                                icon={<MdOutlineChat size={20} />}
+                              >
+                                Chat Room
+                              </MenuItem>
+                              <MenuItem 
+                                as={Link}
+                                to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.title + " " + book.author)}`}
+                                target="blank"
+                                fontWeight="bold"
+                                icon={<FaShoppingCart size={20} />}
+                              >
+                                Shop
+                              </MenuItem>
+                              <MenuItem
+                                data-id={book.id}
+                                onClick={e=>hideOrShowBookshelfBook([book.id,book.hidden ? "show" : "hide"])}
+                                fontWeight="bold"
+                                icon={<BiHide size={20} />}
+                              >
+                                {book.hidden ? "Unhide" : "Hide"} From Suggestions
+                              </MenuItem>
 
-                            <MenuItem
-                              color="tomato"
-                              data-id={book.id}
-                              onClick={e=>deleteBookshelfBook(e)}
-                              fontWeight="bold"
-                              icon={<BiTrash size={20} />}
-                            >
-                              Delete
-                            </MenuItem>
-                          </MenuList>
-                        </Menu>
+                              <MenuItem
+                                color="tomato"
+                                data-id={book.id}
+                                onClick={e=>deleteBookshelfBook(e)}
+                                fontWeight="bold"
+                                icon={<BiTrash size={20} />}
+                              >
+                                Delete
+                              </MenuItem>
+                            </MenuList>
+                          </Menu>
+                        </Flex>
                       </Flex>
                       <Flex>
                         <Image
