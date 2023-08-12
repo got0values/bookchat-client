@@ -222,13 +222,13 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
             Include Title
           </Checkbox>
         </Flex>
-        <Button
+        {/* <Button
           backgroundColor="black"
           color="white"
           onClick={e=>downloadImage()}
         >
           Download
-        </Button>
+        </Button> */}
       </Flex>
     </Flex>
   )

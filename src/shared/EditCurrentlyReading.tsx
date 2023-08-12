@@ -67,6 +67,7 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
       if (showQuoteDesigner && quoteBox) {
         htmlToImage.toPng(quoteBox!)
           .then(async function (quoteImageBase) {
+            
             await axios
             .post(server + "/api/currentlyreading",
               {
