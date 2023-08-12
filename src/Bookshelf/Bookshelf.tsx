@@ -37,7 +37,6 @@ import {
   MenuItem,
   Progress,
   useDisclosure,
-  FormLabel,
   Divider,
   Switch,
   Accordion,
@@ -45,6 +44,13 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  FormControl,
+  FormLabel,
   Checkbox,
   CheckboxGroup,
   useColorMode
@@ -52,7 +58,7 @@ import {
 import GooglePreviewLink from "../shared/GooglePreviewLink";
 import BooksSearch from "../shared/BooksSearch";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
-import { MdOutlineChat } from 'react-icons/md';
+import { MdOutlineChat, MdEdit } from 'react-icons/md';
 import { BiDotsHorizontalRounded, BiTrash, BiPlus, BiHide } from 'react-icons/bi';
 import { FaShoppingCart } from 'react-icons/fa';
 import { ImInfo } from 'react-icons/im';
@@ -214,17 +220,34 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   const [bookToAddCategories,setBookToAddCategories] = useState([] as any);
   const reviewRef = useRef({} as HTMLTextAreaElement)
   const notesRef = useRef({} as HTMLTextAreaElement)
+  const imageRef = useRef({} as HTMLInputElement);
+  const titleRef = useRef({} as HTMLInputElement);
+  const authorRef = useRef({} as HTMLInputElement);
+  const yearRef = useRef({} as HTMLInputElement);
+  const pagesRef = useRef({} as HTMLInputElement);
+  const dateRef = useRef({} as HTMLInputElement);
   const addBookshelfBookMutation = useMutation({
     mutationFn: async ()=>{
       let tokenCookie: string | null = Cookies.get().token;
+      const bookshelfBookToAdd = {
+        google_books_id: bookToAdd.google_books_id,
+        image: imageRef.current.value,
+        title: titleRef.current.value,
+        author: authorRef.current.value,
+        description: bookToAdd.description,
+        isbn: bookToAdd.isbn,
+        page_count: parseInt(pagesRef.current.value),
+        published_date: yearRef.current.value
+      }
       await axios
         .post(server + "/api/addbookshelfbook", 
           {
-            book: bookToAdd,
+            book: bookshelfBookToAdd,
             categories: bookToAddCategories,
             notes: notesRef.current.value,
             review: reviewRef.current.value,
-            rating: null
+            rating: null,
+            dateAdded: dayjs(dateRef.current.value).utc().format('YYYY-MM-DD mm:HH:ss')
           },
           {headers: {
             'authorization': tokenCookie
@@ -237,6 +260,14 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             toast({
               description: response.data?.message ? response.data.message : "An error has occurred",
               status: "error",
+              duration: 9000,
+              isClosable: true
+            })
+          }
+          else {
+            toast({
+              description: "Book added to bookshelf",
+              status: "success",
               duration: 9000,
               isClosable: true
             })
@@ -257,12 +288,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
       queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
       queryClient.resetQueries({queryKey: ['bookshelfKey']})
       queryClient.setQueryData(["bookshelfKey"],data)
-      toast({
-        description: "Book added to bookshelf",
-        status: "success",
-        duration: 9000,
-        isClosable: true
-      })
       setBookToAdd(null)
     }
   })
@@ -783,7 +808,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   function hideInputBlock(id: number) {
     const dateText = document.getElementById(`date-text-${id}`);
     const dateInputBlock = document.getElementById(`date-input-block-${id}`);
-    dateText!.style.display = "block";
+    dateText!.style.display = "flex";
     dateInputBlock!.style.display = "none";
   }
   const saveDateMutation = useMutation({
@@ -807,7 +832,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
           const dateText = document.getElementById(`date-text-${id}`);
           const dateInputBlock = document.getElementById(`date-input-block-${id}`);
           dateInputBlock!.style.display = "none";
-          dateText!.style.display = "block";
+          dateText!.style.display = "flex";
           toast({
             description: "Date saved",
             status: "success",
@@ -872,6 +897,65 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   })
   function hideOrShowBookshelfBook([id,hideOrShow]:[number,string]) {
     hideOrShowBookshelfBookMutation.mutate([id,hideOrShow])
+  }
+
+  function showEditBookshelfBook(id: number) {
+    document.getElementById(`edit-bookshelf-book-${id}`)!.style.display = "block";
+    document.getElementById(`bookshelf-book-${id}`)!.style.display = "none";
+  }
+  function cancelShowEditBookshelfBook(id: number) {
+    document.getElementById(`edit-bookshelf-book-${id}`)!.style.display = "none";
+    document.getElementById(`bookshelf-book-${id}`)!.style.display = "block";
+  }
+
+  const updateBookshelfBookMutation = useMutation({
+    mutationFn: async (id: number) => {
+      let tokenCookie: string | null = Cookies.get().token;
+      const title = document.getElementById(`title-${id}`) as HTMLInputElement;
+      const author = document.getElementById(`author-${id}`) as HTMLInputElement;
+      const publishedDate = document.getElementById(`year-${id}`) as HTMLInputElement;
+      const pageCount = document.getElementById(`pages-${id}`) as HTMLInputElement;
+      await axios
+        .put(server + "/api/updatebookshelfbook",
+          {
+            id: id,
+            title: title!.value,
+            author: author!.value,
+            published_date: publishedDate!.value,
+            page_count: parseInt(pageCount!.value)
+          },
+          {
+            headers: {
+              authorization: tokenCookie
+            }
+          }
+        )
+        .then((response)=>{
+          toast({
+            description: "Updated bookshelf book",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          })
+          document.getElementById(`edit-bookshelf-book-${id}`)!.style.display = "none";
+          document.getElementById(`bookshelf-book-${id}`)!.style.display = "block";
+        })
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data?.message) {
+            throw new Error(response.data?.message)
+          }
+        })
+      return getBookshelf()
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
+      queryClient.resetQueries({queryKey: ['bookshelfKey']})
+      queryClient.setQueryData(["bookshelfKey"],data)
+    }
+  })
+  function updateBookshelfBook(id: number) {
+    updateBookshelfBookMutation.mutate(id)
   }
 
   const { isLoading, isError, data, error } = useQuery({ 
@@ -1149,54 +1233,86 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     right={0}
                     onClick={e=>setBookToAdd(null)}
                   />
-                  <Flex mb={1}>
+                  <FormControl variant="floatingstatic">
+                    <FormLabel>
+                      Date
+                    </FormLabel>
+                    <Input
+                      type="date"
+                      defaultValue={dayjs(new Date()).local().format("YYYY-MM-DD")}
+                      ref={dateRef}
+                      maxW="150px"
+                      mb={1}
+                    />
+                  </FormControl>
+                  <Flex>
                     <Image
                       src={bookToAdd.image}
                       onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                      maxH="90px"
+                      maxH="125px"
                       // minW="60px"
                       boxShadow="1px 1px 1px 1px darkgrey"
                       alt={bookToAdd.title}
                     />
+                    <Input
+                      type="hidden"
+                      defaultValue={bookToAdd.image ? bookToAdd.image : "https://via.placeholder.com/165x215"}
+                      ref={imageRef}
+                    />
                     <Box mx={2} w="100%">
-                      <Box lineHeight={1.4}>
-                        <Heading 
-                          as="h2" 
-                          size="md"
-                          me={3}
-                          noOfLines={1}
-                        >
-                          {bookToAdd.title}
-                        </Heading>
-                        {/* <Popover isLazy>
-                          <PopoverTrigger>
-                            
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <PopoverArrow />
-                            <PopoverCloseButton />
-                            <PopoverBody 
-                              fontSize="sm"
-                              _dark={{
-                                bg: "black"
-                              }}
-                            >
-                              {bookToAdd.description}
-                            </PopoverBody>
-                          </PopoverContent>
-                        </Popover> */}
-                        <Text fontWeight="bold" fontSize="lg">
-                          {bookToAdd.author}
-                        </Text>
-                        <Text fontStyle="italic">
-                          {bookToAdd.published_date ? dayjs(bookToAdd.published_date).format("YYYY") : null}
-                        </Text>
-                        {bookToAdd.page_count ? (
-                          <Text noOfLines={1}>
-                            {bookToAdd.page_count} pages
-                          </Text>
-                        ): null}
-                      </Box>
+                      <Stack spacing={3} lineHeight={1.4}>
+                        <FormControl variant="floatingstatic">
+                          <FormLabel>
+                            Title
+                          </FormLabel>
+                          <Input
+                            type="text"
+                            defaultValue={bookToAdd.title}
+                            ref={titleRef}
+                            maxLength={200}
+                          />
+                        </FormControl>
+                        <FormControl variant="floatingstatic">
+                          <FormLabel>
+                            Author
+                          </FormLabel>
+                          <Input
+                            type="text"
+                            defaultValue={bookToAdd.author}
+                            ref={authorRef}
+                            maxLength={150}
+                          />
+                        </FormControl>
+                        <FormControl variant="floatingstatic">
+                          <FormLabel>
+                            Year
+                          </FormLabel>
+                          <Input
+                            type="text"
+                            defaultValue={bookToAdd.published_date ? dayjs(bookToAdd.published_date).format("YYYY") : ""}
+                            maxW="125px"
+                            ref={yearRef}
+                            maxLength={4}
+                          />
+                        </FormControl>
+                        <FormControl variant="floatingstatic">
+                          <FormLabel>
+                            Pages
+                          </FormLabel>
+                          <NumberInput
+                            defaultValue={bookToAdd.page_count ? bookToAdd.page_count : ""}
+                            maxW="125px"
+                          >
+                            <NumberInputField 
+                              ref={pagesRef} 
+                            />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        </FormControl>
+                      </Stack>
                     </Box>
                   </Flex>
                   <Flex
@@ -1398,21 +1514,27 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       >
                         <Box>
                           <Flex align="center" gap={1} wrap="wrap">
-                            <Text 
-                              fontStyle="italic"
+                            <Flex
+                              align="center"
+                              gap={1}
                               id={`date-text-${book.id}`}
-                              rounded="md"
-                              px={1}
-                              role="button"
-                              onClick={e=>editDate(book.id)}
-                              _hover={{
-                                bg: "lightgray",
-                                cursor: "pointer",
-                                color: "black"
-                              }}
                             >
-                              {dayjs(book.created_on).local().format('MMM DD, YYYY')}
-                            </Text>
+                              <Text 
+                                fontStyle="italic"
+                              >
+                                {dayjs(book.created_on).local().format('MMM DD, YYYY')}
+                              </Text>
+                              <Button
+                                size="xs"
+                                variant="ghost"
+                                aria-label="edit date"
+                                // px={0}
+                                minW="35px"
+                                onClick={e=>editDate(book.id)}
+                              >
+                                <MdEdit size={15} opacity={.9} />
+                              </Button>
+                            </Flex>
                             <Flex 
                               gap={1} 
                               align="center"
@@ -1514,48 +1636,159 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           boxShadow="1px 1px 1px 1px darkgrey"
                           alt={book.title}
                         />
-                        <Box mx={2} w="100%" lineHeight={1.4}>
-                          <Heading 
-                            as="h2" 
-                            size="md"
-                            me={3}
-                            noOfLines={2}
+                        <Box w="100%">
+                          <Box
+                            mx={2} 
+                            w="100%" 
+                            lineHeight={1.4}
+                            id={`bookshelf-book-${book.id}`}
                           >
-                            {book.title}
-                          </Heading>
-                          {/* <Popover isLazy>
-                            <PopoverTrigger>
-
-                            </PopoverTrigger>
-                            <PopoverContent>
-                              <PopoverArrow />
-                              <PopoverCloseButton />
-                              <PopoverBody 
-                              _dark={{
-                                bg: "black"
-                              }}
-                                fontSize="sm"
+                            <Flex
+                              align="center"
+                              justify="space-between"
+                              gap={1}
+                            >
+                              <Heading 
+                                as="h2" 
+                                size="md"
+                                // me={3}
+                                noOfLines={2}
                               >
-                                {book.description}
-                              </PopoverBody>
-                            </PopoverContent>
-                          </Popover> */}
-                          <Text fontWeight="bold" fontSize="lg" noOfLines={1}>
-                            {book.author}
-                          </Text>
-                          <Text fontStyle="italic">
-                            {book.published_date ? dayjs(book.published_date).format("YYYY") : null}
-                          </Text>
-                          {book.page_count ? (
-                            <Text noOfLines={1}>
-                              {book.page_count} pages
+                                {book.title}
+                              </Heading>
+                              <Button
+                                size="xs"
+                                variant="ghost"
+                                aria-label="edit"
+                                // px={0}
+                                minW="35px"
+                                onClick={e=>showEditBookshelfBook(book.id)}
+                              >
+                                <MdEdit size={18} opacity={.9} />
+                              </Button>
+                            </Flex>
+                            {/* <Popover isLazy>
+                              <PopoverTrigger>
+
+                              </PopoverTrigger>
+                              <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody 
+                                _dark={{
+                                  bg: "black"
+                                }}
+                                  fontSize="sm"
+                                >
+                                  {book.description}
+                                </PopoverBody>
+                              </PopoverContent>
+                            </Popover> */}
+                            <Text fontWeight="bold" fontSize="lg" noOfLines={1}>
+                              {book.author}
                             </Text>
-                          ): null}
-                          <StarRating
-                            ratingCallback={ratingCallback} 
-                            starRatingId={book.id}
-                            defaultRating={book.rating ? book.rating : 0}
-                          />
+                            <Text fontStyle="italic">
+                              {book.published_date ? dayjs(book.published_date).format("YYYY") : null}
+                            </Text>
+                            {book.page_count ? (
+                              <Text noOfLines={1}>
+                                {book.page_count} pages
+                              </Text>
+                            ): null}
+                          </Box>
+                          <Box
+                            id={`edit-bookshelf-book-${book.id}`}
+                            display="none"
+                            mt={2}
+                            ms={2}
+                          >
+                            <Stack spacing={3} lineHeight={1.4}>
+                              <FormControl variant="floatingstatic">
+                                <FormLabel>
+                                  Title
+                                </FormLabel>
+                                <Input
+                                  type="text"
+                                  defaultValue={book.title}
+                                  id={`title-${book.id}`}
+                                  maxLength={200}
+                                />
+                              </FormControl>
+                              <FormControl variant="floatingstatic">
+                                <FormLabel>
+                                  Author
+                                </FormLabel>
+                                <Input
+                                  type="text"
+                                  defaultValue={book.author}
+                                  id={`author-${book.id}`}
+                                  maxLength={150}
+                                />
+                              </FormControl>
+                              <FormControl variant="floatingstatic">
+                                <FormLabel>
+                                  Year
+                                </FormLabel>
+                                <Input
+                                  type="text"
+                                  defaultValue={book.published_date ? dayjs(book.published_date).format("YYYY") : ""}
+                                  maxW="125px"
+                                  id={`year-${book.id}`}
+                                  maxLength={4}
+                                />
+                              </FormControl>
+                              <Flex
+                                justify="space-between"
+                              >
+                                <FormControl variant="floatingstatic">
+                                  <FormLabel>
+                                    Pages
+                                  </FormLabel>
+                                  <NumberInput
+                                    defaultValue={book.page_count ? book.page_count : ""}
+                                    maxW="125px"
+                                  >
+                                    <NumberInputField 
+                                      id={`pages-${book.id}`} 
+                                    />
+                                    <NumberInputStepper>
+                                      <NumberIncrementStepper />
+                                      <NumberDecrementStepper />
+                                    </NumberInputStepper>
+                                  </NumberInput>
+                                </FormControl>
+                                <Flex
+                                  align="center"
+                                  gap={1}
+                                >
+                                  <Button
+                                    variant="outline"
+                                    borderColor="black"
+                                    color="black"
+                                    onClick={e=>cancelShowEditBookshelfBook(book.id)}
+                                    aria-label="cancel"
+                                  >
+                                    Cancel
+                                  </Button>
+                                  <Button
+                                    backgroundColor="black"
+                                    color="white"
+                                    onClick={e=>updateBookshelfBook(book.id)}
+                                    aria-label="save"
+                                  >
+                                    Save
+                                  </Button>
+                                </Flex>
+                              </Flex>
+                            </Stack>
+                          </Box>
+                          <Box ms={2}>
+                            <StarRating
+                              ratingCallback={ratingCallback} 
+                              starRatingId={book.id}
+                              defaultRating={book.rating ? book.rating : 0}
+                            />
+                          </Box>
                         </Box>
                       </Flex>
 
