@@ -15,6 +15,11 @@ import {
   IconButton,
   FormControl,
   FormLabel,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  Tooltip,
   Menu,
   MenuButton,
   MenuList,
@@ -37,9 +42,8 @@ import {
   Input,
   Tag,
   TagLabel,
-  TagCloseButton,
+  Checkbox,
   HStack,
-  Stack,
   Popover,
   PopoverTrigger,
   PopoverCloseButton,
@@ -60,6 +64,7 @@ import BooksSearch from "./shared/BooksSearch";
 import { SocialSharePostButtons, SocialShareNoPostButtons } from "./shared/SocialShareButtons";
 import FeaturedBooks from "./shared/FeaturedBooks";
 import EditCurrentlyReading from "./shared/EditCurrentlyReading";
+import { QuoteDesigner } from "./shared/QuoteDesigner";
 import { SuggestionCountBadge } from "./shared/SuggestionCount";
 import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
 import { BsReplyFill } from 'react-icons/bs';
@@ -268,62 +273,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
     closeReadingModal();
   }
 
-  const thoughtsRef = useRef({} as HTMLInputElement);
-  const pagesReadRef = useRef({} as HTMLInputElement);
-  const imageRef = useRef({} as HTMLInputElement);
-  const titleRef = useRef({} as HTMLInputElement);
-  const authorRef = useRef({} as HTMLInputElement);
-  const descriptionRef = useRef({} as HTMLInputElement);
-  const yearRef = useRef({} as HTMLInputElement);
-  const pagesRef = useRef({} as HTMLInputElement);
-  const postCurrentlyReadingMutation = useMutation({
-    mutationFn: async ()=>{
-      let tokenCookie: string | null = Cookies.get().token;
-      if (tokenCookie) {
-        await axios
-        .post(server + "/api/currentlyreading",
-        {
-          google_books_id: selectedBook.google_books_id,
-          image: imageRef.current.value,
-          title: titleRef.current.value,
-          author: authorRef.current.value,
-          description: descriptionRef.current.value,
-          isbn: selectedBook.isbn,
-          page_count: parseInt(pagesRef.current.value),
-          subjects: selectedBook.subjects,
-          published_date: yearRef.current.value,
-          thoughts: thoughtsRef.current.value,
-          pages_read: parseInt(pagesReadRef.current.value)
-        },
-        {
-          headers: {
-            'authorization': tokenCookie
-          }
-        }
-        )
-        .then((response)=>{
-          setSelectedBook(null)
-        })
-        .catch(({response})=>{
-          console.log(response)
-          throw new Error(response.message)
-        })
-      }
-      else {
-        throw new Error("Please login again")
-      }
-      return getDashboard();
-    },
-    onSuccess: (data,variables)=>{
-      queryClient.invalidateQueries({ queryKey: ['dashboardKey'] })
-      queryClient.resetQueries({queryKey: ['dashboardKey']})
-      queryClient.setQueryData(["dashboardKey"],data)
-    }
-  })
-  function postCurrentlyReading() {
-    postCurrentlyReadingMutation.mutate();
-  }
-
   const likeUnlikeCurrentlyReadingMutation = useMutation({
     mutationFn: async (e: React.FormEvent)=>{
       let tokenCookie: string | null = Cookies.get().token;
@@ -448,7 +397,11 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   }
 
   const CurrentlyReadingInput = () => {
-    
+    const [showQuoteDesigner,setShowQuoteDesigner] = useState(false);
+
+    const [sharedTitle,setSharedTitle] = useState(selectedBook?.title);
+    const [sharedAuthor,setSharedAuthor] = useState(selectedBook?.author);
+
     return (
       <>
         <Flex gap={2} className="non-well">
@@ -477,13 +430,39 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             position="relative"
             id="edit-currently-reading-000"
           >
+            {/* <Checkbox
+              isChecked={showQuoteDesigner}
+              onChange={e=>setShowQuoteDesigner(prev=>!prev)}
+            >
+              Add a quote (New)
+            </Checkbox> */}
             <CloseButton
               position="absolute"
               top="0"
               right="0"
               onClick={e=>hideEditCurrentlyReading("000")}
             />
-            <EditCurrentlyReading server={server} selectedBook={selectedBook} setSelectedBook={setSelectedBook} getPageCallback={getDashboard} />
+
+            {showQuoteDesigner ? (
+              <>
+                <QuoteDesigner 
+                  sharedTitle={sharedTitle} 
+                  sharedAuthor={sharedAuthor}
+                />
+                <Divider mt={3} />
+              </>
+            ): null}
+
+            <EditCurrentlyReading 
+              server={server} 
+              selectedBook={selectedBook} 
+              setSharedTitle={setSharedTitle}
+              setSharedAuthor={setSharedAuthor}
+              setSelectedBook={setSelectedBook} 
+              showQuoteDesigner={showQuoteDesigner}
+              getPageCallback={getDashboard} 
+            />
+
           </Box>
         ) : null}
       </>
@@ -714,7 +693,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                           </Button>
                         )
                     }
-                    {reading.Profile.Bookshelf?.allow_suggestions || (reading.Profile.id !== user.Profile.id && user.Profile.Bookshelf.allow_suggestions) ? (
+                    {reading.Profile.Bookshelf?.allow_suggestions || (reading.Profile.id !== user.Profile.id && user.Profile.Bookshelf?.allow_suggestions) ? (
                       <Menu>
                         <MenuButton 
                           as={Button}
@@ -821,6 +800,19 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             </HStack>
           </Flex>
           <Divider mb={2} />
+          {reading.quote_image ? (
+            <>
+              <Box 
+                id="preview-div"
+                mx="auto"
+              >
+                <Image
+                  src={reading.quote_image}
+                />
+              </Box>
+              <Divider />
+            </>
+          ): null}
           <Box
             id={`currently-reading-${reading.id}`}
           >
@@ -959,7 +951,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                           }
                           return (
                             <Tag
-                              key={i}
+                              key={`subject-show-${reading.id}-${i}`}
                               // variant="solid"
                               colorScheme="purple"
                               size="sm"
@@ -983,7 +975,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       >
                         {JSON.parse(reading.subjects).map((subject:string,i:number)=>{
                           return (
-                            <Text key={i}>
+                            <Text key={`subject-${reading.id}-${i}`}>
                               {subject}
                             </Text>
                           )}
@@ -1027,7 +1019,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             <EditCurrentlyReading 
               server={server} 
               getPageCallback={getDashboard} 
-              setSelectedBook={null}
               selectedBook={{
                 id: reading.id,
                 google_books_id: "",
@@ -1102,7 +1093,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                         {reading.CurrentlyReadingLike?.length ? (
                           reading.CurrentlyReadingLike?.map((like,i)=>{
                             return (
-                              <Box mb={1} key={i}>
+                              <Box mb={1} key={`currently-reading-like-${reading.id}-${i}`}>
                                 <Link 
                                   to={`/profile/${like.Profile.username}`}
                                 >
@@ -1204,7 +1195,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       {randomSorted.length && (
                         randomSorted.map((reading: CurrentlyReading,i:number)=>{
                           return (
-                            <React.Fragment key={reading.id}>
+                            <React.Fragment key={`random-feed-${reading.id}`}>
                               <CurrentlyReadingFeed reading={reading}/>
                             </React.Fragment>
                           )
@@ -1232,7 +1223,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       {followingSorted?.length && (
                         followingSorted.map((reading: CurrentlyReading,i: number)=>{
                           return (
-                            <React.Fragment key={reading.id}>
+                            <React.Fragment key={`following-feed-${reading.id}`}>
                               <CurrentlyReadingFeed reading={reading} />
                             </React.Fragment>
                           )

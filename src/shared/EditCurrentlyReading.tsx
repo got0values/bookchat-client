@@ -18,13 +18,16 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  useToast
 } from "@chakra-ui/react";
+import * as htmlToImage from 'html-to-image';
 import dayjs from "dayjs";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-export default function EditCurrentlyReading({server,selectedBook, setSelectedBook, getPageCallback}: EditCurrentlyReadingType) {
+export default function EditCurrentlyReading({server,selectedBook, setSelectedBook, getPageCallback, setSharedTitle, setSharedAuthor, showQuoteDesigner}: EditCurrentlyReadingType) {
   const queryClient = useQueryClient();
+  const toast = useToast();
 
   const [selectedBook2,setSelectedBook2] = useState<any | null>(selectedBook);
 
@@ -38,29 +41,52 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
   const pagesRef = useRef({} as HTMLInputElement);
   const postCurrentlyReadingMutation = useMutation({
     mutationFn: async ()=>{
+      if (!titleRef.current.value) {
+        toast({
+          description: "Please enter a title",
+          status: "error",
+          duration: 9000,
+          isClosable: true
+        })
+        throw new Error("Please enter a title");
+      }
+
       let tokenCookie: string | null = Cookies.get().token;
-      if (tokenCookie) {
+
+      const quoteBox = document.getElementById('quote-box');
+
+      let image = imageRef.current.value;
+      let title = titleRef.current.value;
+      let author = authorRef.current.value;
+      let description = descriptionRef.current.value;
+      let page_count = parseInt(pagesRef.current.value);
+      let published_date = yearRef.current.value;
+      let thoughts = thoughtsRef.current.value;
+      let pages_read = parseInt(pagesReadRef.current.value);
+
+      
         await axios
         .post(server + "/api/currentlyreading",
-        {
-          id: selectedBook2.id ? selectedBook2.id : null,
-          google_books_id: selectedBook2.google_books_id,
-          image: imageRef.current.value,
-          title: titleRef.current.value,
-          author: authorRef.current.value,
-          description: descriptionRef.current.value,
-          isbn: selectedBook2.isbn,
-          page_count: parseInt(pagesRef.current.value),
-          subjects: JSON.stringify(selectedBook2.subjects),
-          published_date: yearRef.current.value,
-          thoughts: thoughtsRef.current.value,
-          pages_read: parseInt(pagesReadRef.current.value)
-        },
-        {
-          headers: {
-            'authorization': tokenCookie
+          {
+            id: selectedBook2.id ? selectedBook2.id : null,
+            google_books_id: selectedBook2.google_books_id,
+            image: image,
+            title: title,
+            author: author,
+            description: description,
+            isbn: selectedBook2.isbn,
+            page_count: page_count,
+            subjects: JSON.stringify(selectedBook2.subjects),
+            published_date: published_date,
+            thoughts: thoughts,
+            pages_read: pages_read,
+            quote_image: null
+          },
+          {
+            headers: {
+              'authorization': tokenCookie
+            }
           }
-        }
         )
         .then((response)=>{
           setSelectedBook2(null);
@@ -72,11 +98,15 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
           console.log(response)
           throw new Error(response.message)
         })
-      }
-      else {
-        throw new Error("Please login again")
-      }
       return getPageCallback;
+    },
+    onError: (e)=>{
+      toast({
+        description: "An error has occurred",
+          status: "error",
+          duration: 9000,
+          isClosable: true
+      })
     },
     onSuccess: (data,variables)=>{
       queryClient.invalidateQueries({ queryKey: ['dashboardKey'] })
@@ -162,6 +192,11 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
                     defaultValue={selectedBook2.title}
                     ref={titleRef}
                     maxLength={200}
+                    onChange={e=>{
+                      if (setSharedTitle) {
+                        setSharedTitle(()=>e.target.value)
+                      }
+                    }}
                   />
                 </FormControl>
                 <FormControl variant="floatingstatic">
@@ -173,6 +208,11 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
                     defaultValue={selectedBook2.author}
                     ref={authorRef}
                     maxLength={150}
+                    onChange={e=>{
+                      if (setSharedAuthor) {
+                        setSharedAuthor(()=>e.target.value)
+                      }
+                    }}
                   />
                 </FormControl>
                 <FormControl variant="floatingstatic">

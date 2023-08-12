@@ -142,7 +142,10 @@ const customTheme = {
               mx: 3,
               px: 1,
               my: 2,
-              transformOrigin: "left top"
+              transformOrigin: "left top",
+              _dark: {
+                backgroundColor: "blackAlpha.300"
+              }
             }
           }
         },
@@ -151,7 +154,7 @@ const customTheme = {
             "input:not(:placeholder-shown) + label, .chakra-select__wrapper + label, textarea:not(:placeholder-shown) ~ label": {
               transform: "scale(0.85) translateY(-22px)"
             },
-            label: {
+            '& > label': {
               top: 0,
               left: 0,
               zIndex: 2,
@@ -162,7 +165,10 @@ const customTheme = {
               px: 1,
               my: 2,
               transformOrigin: "left top",
-              transform: "scale(0.85) translateY(-22px)"
+              transform: "scale(0.85) translateY(-22px)",
+              _dark: {
+                backgroundColor: "blackAlpha.300"
+              }
             }
           }
         }
