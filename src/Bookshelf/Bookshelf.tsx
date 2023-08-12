@@ -1645,7 +1645,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           >
                             <Flex
                               align="center"
-                              justify="space-between"
+                              // justify="space-between"
                               gap={1}
                             >
                               <Heading 
