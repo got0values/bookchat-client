@@ -61,8 +61,8 @@ import { SocialSharePostButtons, SocialShareNoPostButtons } from "./shared/Socia
 import FeaturedBooks from "./shared/FeaturedBooks";
 import EditCurrentlyReading from "./shared/EditCurrentlyReading";
 import { SuggestionCountBadge } from "./shared/SuggestionCount";
-import { BiDotsHorizontalRounded, BiTrash } from 'react-icons/bi';
-import { BsReplyFill, BsArrowRightShort } from 'react-icons/bs';
+import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
+import { BsReplyFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { MdOutlineChat, MdEdit, MdOutlineCancel } from 'react-icons/md';
 import { FaStore } from 'react-icons/fa';
@@ -491,6 +491,42 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   }
 
   const CurrentlyReadingFeed = ({reading}:{reading:CurrentlyReading}) => {
+    const hideReadingMutation = useMutation({
+      mutationFn: async (e: any)=>{
+        const tokenCookie = Cookies.get().token;
+        if (tokenCookie) {
+          await axios
+            .put(server + "/api/hidecurrentlyreading",
+              {
+                readingId: parseInt(e.target.dataset.readingid),
+                hide: e.target.dataset.hide
+              },
+              {
+                headers: {
+                  Authorization: tokenCookie
+                }
+              }
+            )
+            .catch(({response})=>{
+              console.log(response)
+              throw new Error(response.message)
+            })
+            return getDashboard();
+        }
+        else {
+          throw new Error("An error occurred")
+        }
+      },
+      onSuccess: (data,variables)=>{
+        queryClient.invalidateQueries({ queryKey: ["dashboardKey"] })
+        queryClient.resetQueries({queryKey: ["dashboardKey"]})
+        queryClient.setQueryData(["dashboardKey"],data)
+      }
+    })
+    function hideReading(e: HTMLElement) {
+      hideReadingMutation.mutate(e)
+    }
+
     const followMutation = useMutation({
       mutationFn: async (profileId:number)=>{
         const tokenCookie = Cookies.get().token;
@@ -755,6 +791,25 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                         title="delete"
                       >
                         <BiTrash size={18} />
+                      </Button>
+                      <Button
+                        // color="tomato"
+                        size="xs"
+                        variant="ghost"
+                        data-readingid={reading.id}
+                        data-hide={true}
+                        onClick={e=>hideReading(e as any)}
+                        isDisabled={hideReadingMutation.isLoading}
+                        isLoading={hideReadingMutation.isLoading}
+                        fontWeight="bold"
+                        title="hide"
+                      >
+                        <Box 
+                          as={BiHide}
+                          size={18}
+                          pointerEvents="none"
+                        >
+                        </Box>
                       </Button>
                     </Flex>
                   ): null}
