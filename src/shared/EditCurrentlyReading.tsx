@@ -64,7 +64,48 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
       let thoughts = thoughtsRef.current.value;
       let pages_read = parseInt(pagesReadRef.current.value);
 
-      
+      if (showQuoteDesigner && quoteBox) {
+        htmlToImage.toPng(quoteBox!)
+          .then(async function (quoteImageBase) {
+            await axios
+            .post(server + "/api/currentlyreading",
+              {
+                id: selectedBook2.id ? selectedBook2.id : null,
+                google_books_id: selectedBook2.google_books_id,
+                image: image,
+                title: title,
+                author: author,
+                description: description,
+                isbn: selectedBook2.isbn,
+                page_count: page_count,
+                subjects: JSON.stringify(selectedBook2.subjects),
+                published_date: published_date,
+                thoughts: thoughts,
+                pages_read: pages_read,
+                quote_image: quoteImageBase
+              },
+              {
+                headers: {
+                  'authorization': tokenCookie
+                }
+              }
+            )
+            .then((response)=>{
+              setSelectedBook2(null);
+              if (setSelectedBook) {
+                setSelectedBook(null)
+              }
+            })
+            .catch(({response})=>{
+              console.log(response)
+              throw new Error(response.message)
+            })
+          })
+          .catch(function (error) {
+            console.error('oops, something went wrong!', error);
+          });
+      }
+      else {
         await axios
         .post(server + "/api/currentlyreading",
           {
@@ -98,6 +139,7 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
           console.log(response)
           throw new Error(response.message)
         })
+      }
       return getPageCallback;
     },
     onError: (e)=>{
