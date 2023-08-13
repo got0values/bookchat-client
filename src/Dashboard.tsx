@@ -430,12 +430,12 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             position="relative"
             id="edit-currently-reading-000"
           >
-            {/* <Checkbox
+            <Checkbox
               isChecked={showQuoteDesigner}
               onChange={e=>setShowQuoteDesigner(prev=>!prev)}
             >
               Add a quote (New)
-            </Checkbox> */}
+            </Checkbox>
             <CloseButton
               position="absolute"
               top="0"
@@ -802,15 +802,17 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           <Divider mb={2} />
           {reading.quote_image ? (
             <>
-              <Box 
+              <Flex 
                 id="preview-div"
-                mx="auto"
+                align="center"
+                justify="center"
+                mb={2}
               >
                 <Image
                   src={reading.quote_image}
                 />
-              </Box>
-              <Divider />
+              </Flex>
+              <Divider mb={2} />
             </>
           ): null}
           <Box

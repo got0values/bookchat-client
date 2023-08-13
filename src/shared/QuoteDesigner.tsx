@@ -35,12 +35,24 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
 
   function downloadImage() {
     const quoteBox = document.getElementById('quote-box');
-    // htmlToImage.toPng(quoteBox!)
-    //   .then((dataUrl)=>{
-    //     // download(dataUrl, "quote.png")
-    //   })
+    htmlToImage.toJpeg(quoteBox!)
+    .then(function (dataUrl) {
+      var img = new Image();
+      img.src = dataUrl;
+      const previewDiv = document.getElementById("preview-div")
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.style.display = "none";
+      link.download = "quoteImage.jpg";
+      link.click()
+    })
+    .catch(function (error) {
+      console.error('oops, something went wrong!', error);
+    });
+  }
 
-    
+  function previewImage() {
+    const quoteBox = document.getElementById('quote-box');
     htmlToImage.toPng(quoteBox!)
     .then(function (dataUrl) {
       var img = new Image();
@@ -48,10 +60,18 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
       const previewDiv = document.getElementById("preview-div")
       previewDiv!.innerHTML = "";
       previewDiv!.appendChild(img);
+      const clearPreviewButton = document.getElementById("clear-preview-button");
+      clearPreviewButton!.style.display = "block";
     })
     .catch(function (error) {
       console.error('oops, something went wrong!', error);
     });
+  }
+
+  function clearPreviewImage(e: any) {
+    const previewDiv = document.getElementById("preview-div")
+    previewDiv!.innerHTML = "";
+    e.target.style.display = "none"
   }
   
   return (
@@ -222,13 +242,33 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
             Include Title
           </Checkbox>
         </Flex>
-        {/* <Button
-          backgroundColor="black"
-          color="white"
-          onClick={e=>downloadImage()}
-        >
-          Download
-        </Button> */}
+        <Flex gap={1}>
+          <Button
+            variant="outline"
+            backgroundColor="white"
+            color="black"
+            onClick={e=>clearPreviewImage(e)}
+            id="clear-preview-button"
+            display="none"
+          >
+            Clear
+          </Button>
+          <Button
+            variant="outline"
+            backgroundColor="white"
+            color="black"
+            onClick={e=>previewImage()}
+          >
+            Preview
+          </Button>
+          <Button
+            backgroundColor="black"
+            color="white"
+            onClick={e=>downloadImage()}
+          >
+            Download
+          </Button>
+        </Flex>
       </Flex>
     </Flex>
   )

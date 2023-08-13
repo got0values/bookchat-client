@@ -54,78 +54,79 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
 
       let tokenCookie: string | null = Cookies.get().token;
 
-      const quoteBox = document.getElementById('quote-box');
-
+      let id = selectedBook2.id ? selectedBook2.id.toString() : "";
+      let google_books_id = selectedBook2.google_books_id;
       let image = imageRef.current.value;
       let title = titleRef.current.value;
       let author = authorRef.current.value;
       let description = descriptionRef.current.value;
-      let page_count = parseInt(pagesRef.current.value);
+      let subjects = JSON.stringify(selectedBook2.subjects);
+      let isbn = selectedBook2.isbn;
+      let page_count = pagesRef.current.value;
       let published_date = yearRef.current.value;
       let thoughts = thoughtsRef.current.value;
-      let pages_read = parseInt(pagesReadRef.current.value);
+      let pages_read = pagesReadRef.current.value;
 
-      if (showQuoteDesigner && quoteBox) {
-        htmlToImage.toPng(quoteBox!)
-          .then(async function (quoteImageBase) {
-            let blob = await b64toBlob(quoteImageBase,'image/png',512)
-            let newFile = new File([blob], "quoteImage.png", {type: "image/png"})
-            const formData = new FormData();
-            formData.append("photo", newFile as Blob)
-            console.log(formData)
-            return
+      if (showQuoteDesigner) {
+        const quoteBox = document.getElementById('quote-box');
+        await htmlToImage.toPng(quoteBox!)
+        .then(async function (quoteImageBase) {
+          let blob = await b64toBlob(quoteImageBase,'image/png',1024)
+          let newFile = new File([blob], "quoteImage", {type: "image/png"})
+          const formData = new FormData();
+          formData.append("quoteimage", newFile as Blob)
+          formData.append("id", id)
+          formData.append("google_books_id",google_books_id)
+          formData.append("image",image)
+          formData.append("title",title)
+          formData.append("author",author)
+          formData.append("description",description)
+          formData.append("isbn",isbn)
+          formData.append("page_count",page_count)
+          formData.append("subjects",subjects)
+          formData.append("published_date",published_date)
+          formData.append("thoughts",thoughts)
+          formData.append("pages_read",pages_read)
 
-            await axios
-            .post(server + "/api/currentlyreading",
-              {
-                id: selectedBook2.id ? selectedBook2.id : null,
-                google_books_id: selectedBook2.google_books_id,
-                image: image,
-                title: title,
-                author: author,
-                description: description,
-                isbn: selectedBook2.isbn,
-                page_count: page_count,
-                subjects: JSON.stringify(selectedBook2.subjects),
-                published_date: published_date,
-                thoughts: thoughts,
-                pages_read: pages_read,
-                quote_image: quoteImageBase
-              },
-              {
-                headers: {
-                  'authorization': tokenCookie
-                }
+          await axios
+          .post(server + "/api/currentlyreading",
+            formData,
+            {
+              headers: {
+                'authorization': tokenCookie,
+                'content-type': 'multipart/form-data'
               }
-            )
-            .then((response)=>{
-              setSelectedBook2(null);
-              if (setSelectedBook) {
-                setSelectedBook(null)
-              }
-            })
-            .catch(({response})=>{
-              console.log(response)
-              throw new Error(response.message)
-            })
+            }
+          )
+          .then((response)=>{
+            setSelectedBook2(null);
+            if (setSelectedBook) {
+              setSelectedBook(null)
+            }
           })
-          .catch(function (error) {
-            console.error('oops, something went wrong!', error);
-          });
+          .catch(({response})=>{
+            console.log(response)
+            throw new Error(response.message)
+          })
+        })
+        .catch(function (error) {
+          console.error('oops, something went wrong!', error);
+        });
+        return getPageCallback;
       }
       else {
         await axios
         .post(server + "/api/currentlyreading",
           {
-            id: selectedBook2.id ? selectedBook2.id : null,
-            google_books_id: selectedBook2.google_books_id,
+            id: id,
+            google_books_id: google_books_id,
             image: image,
             title: title,
             author: author,
             description: description,
-            isbn: selectedBook2.isbn,
+            isbn: isbn,
             page_count: page_count,
-            subjects: JSON.stringify(selectedBook2.subjects),
+            subjects: subjects,
             published_date: published_date,
             thoughts: thoughts,
             pages_read: pages_read,
@@ -147,8 +148,8 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
           console.log(response)
           throw new Error(response.message)
         })
+        return getPageCallback;
       }
-      return getPageCallback;
     },
     onError: (e)=>{
       toast({
@@ -165,10 +166,6 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
       queryClient.invalidateQueries({ queryKey: ['profileKey'] })
       queryClient.resetQueries({queryKey: ['profileKey']})
       queryClient.setQueryData(["profileKey"],data)
-      setSelectedBook2(null);
-      if (setSelectedBook) {
-        setSelectedBook(null)
-      }
     }
   })
   function postCurrentlyReading() {

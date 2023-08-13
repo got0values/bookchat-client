@@ -48,7 +48,6 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
         axios
           .get("https://www.googleapis.com/books/v1/volumes?q=" + searchInputRef.current.value + "&key=" + gBooksApi)
           .then((response)=>{
-            console.log("check")
             if(response.data.items) {
               setBookResultsOther(response.data.items)
             }
