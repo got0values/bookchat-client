@@ -60,15 +60,16 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
       let title = titleRef.current.value;
       let author = authorRef.current.value;
       let description = descriptionRef.current.value;
-      let subjects = JSON.stringify(selectedBook2.subjects);
+      let subjects = selectedBook2.subjects ? JSON.stringify(selectedBook2.subjects) : "";
       let isbn = selectedBook2.isbn;
       let page_count = pagesRef.current.value;
       let published_date = yearRef.current.value;
       let thoughts = thoughtsRef.current.value;
       let pages_read = pagesReadRef.current.value;
 
-      if (showQuoteDesigner) {
-        const quoteBox = document.getElementById('quote-box');
+      const quoteBox = document.getElementById('quote-box');
+
+      if (showQuoteDesigner && quoteBox) {
         const bcnWatermark = document.getElementById("bcn-watermark")
         bcnWatermark!.style.display = "block";
         await htmlToImage.toPng(quoteBox!)
@@ -356,6 +357,7 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
                   backgroundColor="black"
                   color="white"
                   onClick={e=>postCurrentlyReading()}
+                  isLoading={postCurrentlyReadingMutation.isLoading}
                 >
                   Post
                 </Button>
