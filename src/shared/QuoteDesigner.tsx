@@ -35,11 +35,13 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
 
   function downloadImage() {
     const quoteBox = document.getElementById('quote-box');
+    const bcnWatermark = document.getElementById("bcn-watermark")
+    bcnWatermark!.style.display = "block";
     htmlToImage.toJpeg(quoteBox!)
     .then(function (dataUrl) {
       var img = new Image();
       img.src = dataUrl;
-      const previewDiv = document.getElementById("preview-div")
+      bcnWatermark!.style.display = "none";
       const link = document.createElement("a");
       link.href = dataUrl;
       link.style.display = "none";
@@ -108,7 +110,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
           textAlign={textAlign as any}
           my="auto"
         >
-          {quote}
+          "{quote}"
         </Heading>
         <Box
           position="absolute"
@@ -118,18 +120,40 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
           {includeTitle && sharedTitle ? (
             <Text
               fontStyle="italic"
-              fontSize="xs"
+              fontSize=".85rem"
+              fontWeight="bold"
+              color="white"
+              textShadow="-1px 1px 2px black"
             >
               {sharedTitle ? sharedTitle : null}
             </Text>
           ): null}
           {includeAuthor && sharedAuthor ? (
             <Text
-              fontSize="xs"
+              fontSize=".8rem"
+              fontWeight="bold"
+              color="white"
+              textShadow="-1px 1px 2px black"
             >
               {sharedAuthor}
             </Text>
           ): null}
+        </Box>
+        <Box
+          position="absolute"
+          right={3}
+          bottom={3}
+          id="bcn-watermark"
+          display="none"
+        >
+          <Text
+            fontSize="xs"
+            fontWeight="bold"
+            color="white"
+            textShadow="-1px 1px 2px black"
+          >
+            BookChatNoir.com
+          </Text>
         </Box>
       </Flex>
       <Box 
