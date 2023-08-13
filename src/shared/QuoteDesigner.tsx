@@ -20,6 +20,8 @@ import {
   Image as ChakraImage,
   Checkbox
 } from "@chakra-ui/react";
+import { BiDownload } from 'react-icons/bi';
+import { GrClear } from 'react-icons/gr';
 import * as htmlToImage from 'html-to-image';
 
 export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string, sharedAuthor: string}) => {
@@ -37,7 +39,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
     const quoteBox = document.getElementById('quote-box');
     const bcnWatermark = document.getElementById("bcn-watermark")
     bcnWatermark!.style.display = "block";
-    htmlToImage.toJpeg(quoteBox!)
+    htmlToImage.toPng(quoteBox!)
     .then(function (dataUrl) {
       var img = new Image();
       img.src = dataUrl;
@@ -45,7 +47,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
       const link = document.createElement("a");
       link.href = dataUrl;
       link.style.display = "none";
-      link.download = "quoteImage.jpg";
+      link.download = "quoteImage.png";
       link.click()
     })
     .catch(function (error) {
@@ -116,6 +118,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
           position="absolute"
           left={3}
           bottom={3}
+          lineHeight="1.2rem"
         >
           {includeTitle && sharedTitle ? (
             <Text
@@ -271,26 +274,32 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
             variant="outline"
             backgroundColor="white"
             color="black"
+            size="sm"
             onClick={e=>clearPreviewImage(e)}
             id="clear-preview-button"
+            title="clear preview"
             display="none"
           >
-            Clear
+            <GrClear/>
           </Button>
           <Button
             variant="outline"
             backgroundColor="white"
             color="black"
+            size="sm"
             onClick={e=>previewImage()}
+            title="preview"
           >
             Preview
           </Button>
           <Button
             backgroundColor="black"
             color="white"
+            size="sm"
             onClick={e=>downloadImage()}
+            title="download"
           >
-            Download
+            <BiDownload/>
           </Button>
         </Flex>
       </Flex>

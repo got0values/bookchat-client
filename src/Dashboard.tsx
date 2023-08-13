@@ -734,64 +734,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       </Menu>
                     ): null}
                   </Flex>
-                  {reading.Profile.id === user?.Profile.id ? (
-                    <Flex align="center" gap={0}>
-                      <Button
-                        // color="tomato"
-                        size="xs"
-                        variant="ghost"
-                        onClick={e=>showEditCurrentlyReading(reading.id.toString())}
-                        fontWeight="bold"
-                        title="edit"
-                        id={`edit-currently-reading-button-${reading.id}`}
-                      >
-                        <MdEdit size={18} />
-                      </Button>
-                      <Button
-                        color="tomato"
-                        display="none"
-                        size="xs"
-                        variant="ghost"
-                        onClick={e=>hideEditCurrentlyReading(reading.id.toString())}
-                        fontWeight="bold"
-                        title="cancel edit"
-                        id={`cancel-edit-currently-reading-button-${reading.id}`}
-                      >
-                        <MdOutlineCancel size={18} />
-                      </Button>
-                      <Button
-                        color="tomato"
-                        size="xs"
-                        variant="ghost"
-                        onClick={e=>deleteReading(reading.id)}
-                        isDisabled={deleteReadingMutation.isLoading}
-                        isLoading={deleteReadingMutation.isLoading}
-                        fontWeight="bold"
-                        title="delete"
-                      >
-                        <BiTrash size={18} />
-                      </Button>
-                      <Button
-                        // color="tomato"
-                        size="xs"
-                        variant="ghost"
-                        data-readingid={reading.id}
-                        data-hide={true}
-                        onClick={e=>hideReading(e as any)}
-                        isDisabled={hideReadingMutation.isLoading}
-                        isLoading={hideReadingMutation.isLoading}
-                        fontWeight="bold"
-                        title="hide"
-                      >
-                        <Box 
-                          as={BiHide}
-                          size={18}
-                          pointerEvents="none"
-                        >
-                        </Box>
-                      </Button>
-                    </Flex>
-                  ): null}
                 </Flex>
                 <Text fontStyle="italic">
                   {dayjs(reading.created_on).local().format('MMM DD, h:mm a')}
@@ -814,6 +756,66 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               </Flex>
               <Divider mb={2} />
             </>
+          ): null}
+          {reading.Profile.id === user?.Profile.id ? (
+            <Flex justify="flex-end">
+              <Flex align="center" gap={0}>
+                <Button
+                  // color="tomato"
+                  size="xs"
+                  variant="ghost"
+                  onClick={e=>showEditCurrentlyReading(reading.id.toString())}
+                  fontWeight="bold"
+                  title="edit"
+                  id={`edit-currently-reading-button-${reading.id}`}
+                >
+                  <MdEdit size={18} />
+                </Button>
+                <Button
+                  color="tomato"
+                  display="none"
+                  size="xs"
+                  variant="ghost"
+                  onClick={e=>hideEditCurrentlyReading(reading.id.toString())}
+                  fontWeight="bold"
+                  title="cancel edit"
+                  id={`cancel-edit-currently-reading-button-${reading.id}`}
+                >
+                  <MdOutlineCancel size={18} />
+                </Button>
+                <Button
+                  color="tomato"
+                  size="xs"
+                  variant="ghost"
+                  onClick={e=>deleteReading(reading.id)}
+                  isDisabled={deleteReadingMutation.isLoading}
+                  isLoading={deleteReadingMutation.isLoading}
+                  fontWeight="bold"
+                  title="delete"
+                >
+                  <BiTrash size={18} />
+                </Button>
+                <Button
+                  // color="tomato"
+                  size="xs"
+                  variant="ghost"
+                  data-readingid={reading.id}
+                  data-hide={true}
+                  onClick={e=>hideReading(e as any)}
+                  isDisabled={hideReadingMutation.isLoading}
+                  isLoading={hideReadingMutation.isLoading}
+                  fontWeight="bold"
+                  title="hide"
+                >
+                  <Box 
+                    as={BiHide}
+                    size={18}
+                    pointerEvents="none"
+                  >
+                  </Box>
+                </Button>
+              </Flex>
+            </Flex>
           ): null}
           <Box
             id={`currently-reading-${reading.id}`}
