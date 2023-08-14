@@ -118,7 +118,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
           textAlign={textAlign as any}
           my="auto"
         >
-          "{quote}"
+          {quote}
         </Text>
         <Box
           position="absolute"
