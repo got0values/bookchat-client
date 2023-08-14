@@ -310,46 +310,57 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
                   </NumberInput>
                 </FormControl>
                 {selectedBook2.subjects ? (
-                  <Flex 
-                    // noOfLines={1}
-                    align="center"
-                    // height="2.2rem"
-                    py={1}
-                    gap={1}
-                    // maxWidth="350px"
-                    wrap="wrap"
-                    _hover={{
-                      cursor: "pointer"
-                    }}
-                    sx={{
-                      display: "flex",
-                      mt: "0px!important"
-                    }}
-                  >
-                    {selectedBook2.subjects.map((subject:string,i:number)=>{
-                      return (
-                        <Tag
-                          key={i}
-                          colorScheme="purple"
-                          size="sm"
-                          minH={15}
-                          minW="unset"
-                        >
-                          <TagLabel>{subject}</TagLabel>
-                          <TagCloseButton
-                            onClick={e=>{
-                              return setSelectedBook2((prev:any)=>{
-                                let newSubjects =  prev.subjects.filter((s:string,fi:number)=>{
-                                  return fi !== i;
-                                })
-                                return {...prev, subjects: newSubjects}
-                              });
-                            }}
-                          />
-                        </Tag>
-                      )
-                    })}
-                  </Flex>
+                  <>
+                    {selectedBook2.subjects.length ? (
+                      <Button
+                        size="xs"
+                        w="auto"
+                        onClick={e=>setSelectedBook2((prev:any)=>({...prev,subjects: []}))}
+                      >
+                        Clear all subjects
+                      </Button>
+                    ): null}
+                    <Flex 
+                      // noOfLines={1}
+                      align="center"
+                      // height="2.2rem"
+                      py={1}
+                      gap={1}
+                      // maxWidth="350px"
+                      wrap="wrap"
+                      _hover={{
+                        cursor: "pointer"
+                      }}
+                      sx={{
+                        display: "flex",
+                        mt: "0px!important"
+                      }}
+                    >
+                      {selectedBook2.subjects.map((subject:string,i:number)=>{
+                        return (
+                          <Tag
+                            key={i}
+                            colorScheme="purple"
+                            size="sm"
+                            minH={15}
+                            minW="unset"
+                          >
+                            <TagLabel>{subject}</TagLabel>
+                            <TagCloseButton
+                              onClick={e=>{
+                                return setSelectedBook2((prev:any)=>{
+                                  let newSubjects =  prev.subjects.filter((s:string,fi:number)=>{
+                                    return fi !== i;
+                                  })
+                                  return {...prev, subjects: newSubjects}
+                                });
+                              }}
+                            />
+                          </Tag>
+                        )
+                      })}
+                    </Flex>
+                  </>
                 ):null}
               </Stack>
               <Flex justify="flex-end">
