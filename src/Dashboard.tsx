@@ -755,7 +755,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               >
                 <Image
                   src={reading.quote_image}
-                  w="100%"
+                  // w="100%"
                 />
               </Flex>
               <Divider mb={2} />

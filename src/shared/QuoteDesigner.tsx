@@ -124,7 +124,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
           position="absolute"
           left={3}
           bottom={2}
-          lineHeight="1.3rem"
+          lineHeight="1.2rem"
         >
           <Flex gap={1}>
             {bookImage && includeBookImage ? (
@@ -138,7 +138,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
               {includeTitle && sharedTitle ? (
                 <Text
                   fontStyle="italic"
-                  fontSize="1.1rem"
+                  fontSize=".9rem"
                   fontWeight="900"
                   color="white"
                   textShadow="-1px 1px 2px black"
@@ -148,7 +148,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
               ): null}
               {includeAuthor && sharedAuthor ? (
                 <Text
-                  fontSize="1.1rem"
+                  fontSize=".9rem"
                   fontWeight="900"
                   color="white"
                   textShadow="-1px 1px 2px black"
