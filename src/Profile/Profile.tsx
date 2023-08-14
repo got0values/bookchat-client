@@ -1168,6 +1168,22 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 <MdOutlineCancel size={25} />
                               </Button>
                             </Flex>
+                            {profileData.CurrentlyReading[0].quote_image ? (
+                              <>
+                                <Flex 
+                                  id="preview-div"
+                                  align="center"
+                                  justify="center"
+                                  mb={2}
+                                >
+                                  <Image
+                                    src={profileData.CurrentlyReading[0].quote_image}
+                                    // w="100%"
+                                  />
+                                </Flex>
+                                <Divider mb={2} />
+                              </>
+                            ): null}
                             <Box
                               id={`currently-reading-${profileData.CurrentlyReading[0].id}`}
                             >
@@ -1186,8 +1202,8 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     .CurrentlyReading[0]
                                     .image
                                   }
-                                  maxH="125px"
-                                  minW="60px"
+                                  maxH="115px"
+                                  // minW="60px"
                                   boxShadow="1px 1px 1px 1px darkgrey"
                                   alt={profileData.CurrentlyReading[0].title}
                                 />
@@ -1532,137 +1548,157 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     </Menu>
                                   </Box>
                                 </Flex>
-                                <Divider mt={1} />
-                                <Text 
-                                  my={2}
-                                  rounded="md"
-                                  p={1}
-                                >
-                                  {profileData.CurrentlyReading[0].thoughts ? profileData.CurrentlyReading[0].thoughts : null}
-                                </Text>
-                                <Flex>
-                                  <Image 
-                                    src={
-                                      profileData.CurrentlyReading[0].image
-                                    }
-                                    maxH="125px"
-                                    minW="60px"
-                                    boxShadow="1px 1px 1px 1px darkgrey"
-                                    alt={profileData.CurrentlyReading[0].title}
-                                  />
-                                  <Box mx={2} w="100%">
-                                    <Box lineHeight={1.4}>
-                                      <Heading as="h3" size="md" me={3} noOfLines={1}>
-                                        {
-                                          profileData.CurrentlyReading[0]
-                                          .title
-                                        }
-                                      </Heading>
-                                      <Text fontWeight="bold" noOfLines={1}>
-                                        {
-                                          profileData.CurrentlyReading[0]
-                                          .author
-                                        }
-                                      </Text>
-                                      {/* <Popover isLazy>
-                                        <PopoverTrigger>
-                                          <Box
-                                            _hover={{
-                                              cursor: "pointer"
-                                            }}
-                                          >
-                                            <Text fontSize="lg" noOfLines={1}>
-                                              {
-                                                profileData
-                                                .CurrentlyReading[0]
-                                                .description
-                                              }
-                                            </Text>
-                                          </Box>
-                                        </PopoverTrigger>
-                                        <PopoverContent>
-                                          <PopoverArrow />
-                                          <PopoverCloseButton />
-                                          <PopoverBody 
-                                          fontSize="sm"
-                                          _dark={{
-                                            bg: "black"
-                                          }}
-                                          >
-                                            {
-                                              profileData
-                                              .CurrentlyReading[0]
-                                              .description
-                                            }
-                                          </PopoverBody>
-                                        </PopoverContent>
-                                      </Popover> */}
-                                      <Text fontStyle="italic">
-                                        {
-                                          profileData.CurrentlyReading[0].published_date ? (
-                                            dayjs(profileData
-                                            .CurrentlyReading[0]
-                                            .published_date).format("YYYY")
-                                          ) : null
-                                        }
-                                      </Text>
-                                      {profileData.CurrentlyReading[0].page_count ? (
-                                        <Text noOfLines={1}>
-                                          {profileData.CurrentlyReading[0].page_count} pages
+                                <Divider mt={1} mb={2} />
+                                {profileData.CurrentlyReading[0].quote_image ? (
+                                  <>
+                                    <Flex 
+                                      id="preview-div"
+                                      align="center"
+                                      justify="center"
+                                      mb={2}
+                                    >
+                                      <Image
+                                        src={profileData.CurrentlyReading[0].quote_image}
+                                        // w="100%"
+                                      />
+                                    </Flex>
+                                    <Divider mb={2} />
+                                  </>
+                                ): null}
+                                <Box mb={3}>
+                                  {profileData.CurrentlyReading[0].thoughts ? (
+                                    <Text 
+                                      my={2}
+                                      rounded="md"
+                                      p={1}
+                                    >
+                                      {profileData.CurrentlyReading[0].thoughts ? profileData.CurrentlyReading[0].thoughts : null}
+                                    </Text>
+                                  ): null}
+                                  <Flex>
+                                    <Image 
+                                      src={
+                                        profileData.CurrentlyReading[0].image
+                                      }
+                                      maxH="115px"
+                                      // minW="60px"
+                                      boxShadow="1px 1px 1px 1px darkgrey"
+                                      alt={profileData.CurrentlyReading[0].title}
+                                    />
+                                    <Box mx={2} w="100%">
+                                      <Box lineHeight={1.4}>
+                                        <Heading as="h3" size="md" me={3} noOfLines={1}>
+                                          {
+                                            profileData.CurrentlyReading[0]
+                                            .title
+                                          }
+                                        </Heading>
+                                        <Text fontWeight="bold" noOfLines={1}>
+                                          {
+                                            profileData.CurrentlyReading[0]
+                                            .author
+                                          }
                                         </Text>
-                                      ): null}
-                                      {profileData.CurrentlyReading[0].subjects && JSON.parse(profileData.CurrentlyReading[0].subjects).length ? (
-                                        <Popover isLazy>
+                                        {/* <Popover isLazy>
                                           <PopoverTrigger>
-                                            <HStack 
-                                              spacing={1} 
-                                              noOfLines={1}
-                                              maxW="275px"
+                                            <Box
                                               _hover={{
                                                 cursor: "pointer"
                                               }}
                                             >
-                                              {JSON.parse(profileData.CurrentlyReading[0].subjects).map((subject:string,i:number)=>{
-                                                return (
-                                                  <Tag
-                                                    key={i}
-                                                    // variant="solid"
-                                                    colorScheme="purple"
-                                                    size="sm"
-                                                    // borderRadius="full"
-                                                  >
-                                                    <TagLabel>{subject}</TagLabel>
-                                                  </Tag>
-                                                )
-                                              })}
-                                            </HStack>
+                                              <Text fontSize="lg" noOfLines={1}>
+                                                {
+                                                  profileData
+                                                  .CurrentlyReading[0]
+                                                  .description
+                                                }
+                                              </Text>
+                                            </Box>
                                           </PopoverTrigger>
                                           <PopoverContent>
                                             <PopoverArrow />
                                             <PopoverCloseButton />
                                             <PopoverBody 
-                                              fontSize="sm"
-                                              _dark={{
-                                                bg: "black"
-                                              }}
+                                            fontSize="sm"
+                                            _dark={{
+                                              bg: "black"
+                                            }}
                                             >
-                                              {JSON.parse(profileData.CurrentlyReading[0].subjects).map((subject:string,i:number)=>{
-                                                return (
-                                                  <Text key={i}>
-                                                    {subject}
-                                                  </Text>
-                                                )}
-                                              )}
+                                              {
+                                                profileData
+                                                .CurrentlyReading[0]
+                                                .description
+                                              }
                                             </PopoverBody>
                                           </PopoverContent>
-                                        </Popover>
-                                      ):null}
+                                        </Popover> */}
+                                        <Text fontStyle="italic">
+                                          {
+                                            profileData.CurrentlyReading[0].published_date ? (
+                                              dayjs(profileData
+                                              .CurrentlyReading[0]
+                                              .published_date).format("YYYY")
+                                            ) : null
+                                          }
+                                        </Text>
+                                        {profileData.CurrentlyReading[0].page_count ? (
+                                          <Text noOfLines={1}>
+                                            {profileData.CurrentlyReading[0].page_count} pages
+                                          </Text>
+                                        ): null}
+                                        {profileData.CurrentlyReading[0].subjects && JSON.parse(profileData.CurrentlyReading[0].subjects).length ? (
+                                          <Popover isLazy>
+                                            <PopoverTrigger>
+                                              <HStack 
+                                                spacing={1} 
+                                                noOfLines={1}
+                                                maxW="275px"
+                                                _hover={{
+                                                  cursor: "pointer"
+                                                }}
+                                              >
+                                                {JSON.parse(profileData.CurrentlyReading[0].subjects).map((subject:string,i:number)=>{
+                                                  return (
+                                                    <Tag
+                                                      key={i}
+                                                      // variant="solid"
+                                                      colorScheme="purple"
+                                                      size="sm"
+                                                      // borderRadius="full"
+                                                    >
+                                                      <TagLabel>{subject}</TagLabel>
+                                                    </Tag>
+                                                  )
+                                                })}
+                                              </HStack>
+                                            </PopoverTrigger>
+                                            <PopoverContent>
+                                              <PopoverArrow />
+                                              <PopoverCloseButton />
+                                              <PopoverBody 
+                                                fontSize="sm"
+                                                _dark={{
+                                                  bg: "black"
+                                                }}
+                                              >
+                                                {JSON.parse(profileData.CurrentlyReading[0].subjects).map((subject:string,i:number)=>{
+                                                  return (
+                                                    <Text key={i}>
+                                                      {subject}
+                                                    </Text>
+                                                  )}
+                                                )}
+                                              </PopoverBody>
+                                            </PopoverContent>
+                                          </Popover>
+                                        ):null}
+                                      </Box>
+                                      <Text>
+                                        Pages read: {profileData.CurrentlyReading[0].pages_read ? profileData.CurrentlyReading[0].pages_read : 0}
+                                      </Text>
                                     </Box>
-                                    <Text>
-                                      Pages read: {profileData.CurrentlyReading[0].pages_read ? profileData.CurrentlyReading[0].pages_read : 0}
-                                    </Text>
-                                  </Box>
-                                </Flex>
+                                  </Flex>
+                                </Box>
                                 <Divider mt={1} />
                                 <Flex
                                   align="center"
@@ -1875,6 +1911,22 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       </Flex>
                                     </Flex>
                                     <Divider my={2} />
+                                    {readBook.quote_image ? (
+                                      <>
+                                        <Flex 
+                                          id="preview-div"
+                                          align="center"
+                                          justify="center"
+                                          mb={2}
+                                        >
+                                          <Image
+                                            src={readBook.quote_image}
+                                            // w="100%"
+                                          />
+                                        </Flex>
+                                        <Divider mb={2} />
+                                      </>
+                                    ): null}
                                     <Flex justify="flex-end" mb={1}>
                                       <Button
                                         color="tomato"
@@ -1903,8 +1955,8 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       <Flex>
                                         <Image 
                                           src={readBook.image}
-                                          maxH="125px"
-                                          minW="60px"
+                                          maxH="115px"
+                                          // minW="60px"
                                           boxShadow="1px 1px 1px 1px darkgrey"
                                           title={readBook.title}
                                         />
