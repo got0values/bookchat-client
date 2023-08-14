@@ -34,7 +34,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
   const [showTooltip, setShowTooltip] = useState(false)
   const [includeAuthor,setIncludeAuthor] = useState(true);
   const [includeTitle,setIncludeTitle] = useState(true);
-  const [includeBookImage,setIncludeBookImage] = useState(true);
+  const [includeBookImage,setIncludeBookImage] = useState(false);
 
   function downloadImage() {
     const quoteBox = document.getElementById('quote-box');
@@ -127,7 +127,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
           lineHeight="1.2rem"
         >
           <Flex gap={1}>
-            {bookImage && includeBookImage ? (
+            {bookImage && !bookImage.includes("google.com") && includeBookImage ? (
               <ChakraImage
                 src={bookImage}
                 maxHeight="45px"
@@ -274,7 +274,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
       </Flex>
       <Flex align="center" justify="space-between" width="100%">
         <Flex justify="space-between" wrap="wrap" gap={3}>
-          {bookImage ? (
+          {bookImage && !bookImage.includes("google.com") ? (
             <Checkbox
               isChecked={includeBookImage}
               onChange={e=>setIncludeBookImage(prev=>!prev)}
