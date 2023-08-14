@@ -164,11 +164,11 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
           right={0}
           bottom={0}
           id="bcn-watermark"
-          display="none"
+          // display="none"
           backgroundColor="white"
         >
           <Text
-            fontSize=".6rem"
+            fontSize=".7rem"
             fontWeight="bold"
             color="black"
             p={.5}
