@@ -401,6 +401,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
 
     const [sharedTitle,setSharedTitle] = useState(selectedBook?.title);
     const [sharedAuthor,setSharedAuthor] = useState(selectedBook?.author);
+    const bookImage = selectedBook?.image;
 
     return (
       <>
@@ -433,6 +434,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             <Checkbox
               isChecked={showQuoteDesigner}
               onChange={e=>setShowQuoteDesigner(prev=>!prev)}
+              fontWeight="bold"
             >
               Add a quote (New)
             </Checkbox>
@@ -448,6 +450,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 <QuoteDesigner 
                   sharedTitle={sharedTitle} 
                   sharedAuthor={sharedAuthor}
+                  bookImage={bookImage}
                 />
                 <Divider mt={3} />
               </>
@@ -752,6 +755,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               >
                 <Image
                   src={reading.quote_image}
+                  w="100%"
                 />
               </Flex>
               <Divider mb={2} />

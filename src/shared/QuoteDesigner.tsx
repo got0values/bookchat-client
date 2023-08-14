@@ -24,7 +24,7 @@ import { BiDownload } from 'react-icons/bi';
 import { GrClear } from 'react-icons/gr';
 import * as htmlToImage from 'html-to-image';
 
-export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string, sharedAuthor: string}) => {
+export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTitle: string, sharedAuthor: string, bookImage: string}) => {
   const [quote,setQuote] = useState("Quote");
   const [textColor,setTextColor] = useState("#ffffff");
   const [textSize,setTextSize] = useState(25);
@@ -34,10 +34,11 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
   const [showTooltip, setShowTooltip] = useState(false)
   const [includeAuthor,setIncludeAuthor] = useState(true);
   const [includeTitle,setIncludeTitle] = useState(true);
+  const [includeBookImage,setIncludeBookImage] = useState(true);
 
   function downloadImage() {
     const quoteBox = document.getElementById('quote-box');
-    const bcnWatermark = document.getElementById("bcn-watermark")
+    const bcnWatermark = document.getElementById("bcn-watermark");
     bcnWatermark!.style.display = "block";
     htmlToImage.toPng(quoteBox!)
     .then(function (dataUrl) {
@@ -57,8 +58,11 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
 
   function previewImage() {
     const quoteBox = document.getElementById('quote-box');
+    const bcnWatermark = document.getElementById("bcn-watermark");
+    bcnWatermark!.style.display = "block";
     htmlToImage.toPng(quoteBox!)
     .then(function (dataUrl) {
+      bcnWatermark!.style.display = "none";
       var img = new Image();
       img.src = dataUrl;
       const previewDiv = document.getElementById("preview-div")
@@ -72,10 +76,11 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
     });
   }
 
-  function clearPreviewImage(e: any) {
+  function clearPreviewImage() {
     const previewDiv = document.getElementById("preview-div")
     previewDiv!.innerHTML = "";
-    e.target.style.display = "none"
+    const clearPreviewButton = document.getElementById("clear-preview-button");
+    clearPreviewButton!.style.display = "none";
   }
   
   return (
@@ -105,57 +110,70 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
         bgGradient={`linear(to-r, ${bgLeft}, ${bgRight})`}
         position="relative"
       >
-        <Heading
+        <Text
           as="h3"
           width="100%"
           fontSize={`${textSize}px`}
+          fontWeight="bold"
           textAlign={textAlign as any}
           my="auto"
         >
           "{quote}"
-        </Heading>
+        </Text>
         <Box
           position="absolute"
           left={3}
-          bottom={3}
-          lineHeight="1.2rem"
+          bottom={2}
+          lineHeight="1.3rem"
         >
-          {includeTitle && sharedTitle ? (
-            <Text
-              fontStyle="italic"
-              fontSize=".85rem"
-              fontWeight="bold"
-              color="white"
-              textShadow="-1px 1px 2px black"
-            >
-              {sharedTitle ? sharedTitle : null}
-            </Text>
-          ): null}
-          {includeAuthor && sharedAuthor ? (
-            <Text
-              fontSize=".8rem"
-              fontWeight="bold"
-              color="white"
-              textShadow="-1px 1px 2px black"
-            >
-              {sharedAuthor}
-            </Text>
-          ): null}
+          <Flex gap={1}>
+            {bookImage && includeBookImage ? (
+              <ChakraImage
+                src={bookImage}
+                maxHeight="45px"
+                boxShadow="-1px 1px 5px #222222"
+              />
+            ): null}
+            <Box>
+              {includeTitle && sharedTitle ? (
+                <Text
+                  fontStyle="italic"
+                  fontSize="1.1rem"
+                  fontWeight="900"
+                  color="white"
+                  textShadow="-1px 1px 2px black"
+                >
+                  {sharedTitle ? sharedTitle : null}
+                </Text>
+              ): null}
+              {includeAuthor && sharedAuthor ? (
+                <Text
+                  fontSize="1.1rem"
+                  fontWeight="900"
+                  color="white"
+                  textShadow="-1px 1px 2px black"
+                >
+                  {sharedAuthor}
+                </Text>
+              ): null}
+            </Box>
+          </Flex>
         </Box>
         <Box
           position="absolute"
-          right={3}
-          bottom={3}
+          right={0}
+          bottom={0}
           id="bcn-watermark"
           display="none"
+          backgroundColor="white"
         >
           <Text
-            fontSize="xs"
+            fontSize=".6rem"
             fontWeight="bold"
-            color="white"
-            textShadow="-1px 1px 2px black"
+            color="black"
+            p={.5}
           >
-            BookChatNoir.com
+            🐈‍⬛ BookChatNoir.com
           </Text>
         </Box>
       </Flex>
@@ -163,6 +181,16 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
         id="preview-div"
         mx="auto"
       ></Box>
+      <FormControl variant="floating">
+        <FormLabel>
+          Quote
+        </FormLabel>
+        <Input
+          type="text"
+          onChange={e=>setQuote(prev=>e.target.value)}
+          maxLength={500}
+        />
+      </FormControl>
       <Flex
         mt={2}
         align="center"
@@ -200,16 +228,6 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
           />
         </FormControl>
       </Flex>
-      <FormControl variant="floating">
-        <FormLabel>
-          Quote
-        </FormLabel>
-        <Input
-          type="text"
-          onChange={e=>setQuote(prev=>e.target.value)}
-          maxLength={500}
-        />
-      </FormControl>
       <Flex align="center" justify="space-between" wrap="wrap" width="100%">
         <FormControl variant="floatingstatic" p={2} my={2} flex="1 1 50%" mb={0}>
           <FormLabel>Text size</FormLabel>
@@ -256,18 +274,30 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
       </Flex>
       <Flex align="center" justify="space-between" width="100%">
         <Flex justify="space-between" wrap="wrap" gap={3}>
-          <Checkbox
-            isChecked={includeAuthor}
-            onChange={e=>setIncludeAuthor(prev=>!prev)}
-          >
-            Include Author
-          </Checkbox>
-          <Checkbox
-            isChecked={includeTitle}
-            onChange={e=>setIncludeTitle(prev=>!prev)}
-          >
-            Include Title
-          </Checkbox>
+          {bookImage ? (
+            <Checkbox
+              isChecked={includeBookImage}
+              onChange={e=>setIncludeBookImage(prev=>!prev)}
+            >
+              Include Image
+            </Checkbox>
+          ): null}
+          {sharedTitle ? (
+            <Checkbox
+              isChecked={includeAuthor}
+              onChange={e=>setIncludeAuthor(prev=>!prev)}
+            >
+              Include Author
+            </Checkbox>
+          ): null}
+          {sharedAuthor ? (
+            <Checkbox
+              isChecked={includeTitle}
+              onChange={e=>setIncludeTitle(prev=>!prev)}
+            >
+              Include Title
+            </Checkbox>
+          ): null}
         </Flex>
         <Flex gap={1}>
           <Button
@@ -275,7 +305,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor}: {sharedTitle: string,
             backgroundColor="white"
             color="black"
             size="sm"
-            onClick={e=>clearPreviewImage(e)}
+            onClick={e=>clearPreviewImage()}
             id="clear-preview-button"
             title="clear preview"
             display="none"
