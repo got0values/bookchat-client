@@ -331,6 +331,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
               variant="outline"
               borderColor="black"
               bgColor="white"
+              color="black"
             >
               Search
             </Button>
