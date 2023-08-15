@@ -348,8 +348,8 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
           width="100%"
           wrap="wrap"
         >
-          {backgroundImage ? (
             <Flex flex="1 0 250px" gap={2}>
+            {backgroundImage ? (
               <FormControl variant="floatingstatic" flex="1 1 20%" p={2} my={2} mb={0}>
                 <FormLabel>Bg Blur</FormLabel>
                 <Slider 
@@ -366,6 +366,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
                   <SliderThumb bgColor="black" />
                 </Slider>
               </FormControl>
+              ): null}
               <FormControl variant="floatingstatic" flex="1 1 20%" p={2} my={2} mb={0}>
                 <FormLabel>Bg Darken</FormLabel>
                 <Slider 
@@ -383,7 +384,6 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
                 </Slider>
               </FormControl>
             </Flex>
-          ): null}
           {!backgroundImage ? (
             <Flex flex="1 0 45%" gap={2}>
               <FormControl variant="floatingstatic" flex="1 1 20%">
