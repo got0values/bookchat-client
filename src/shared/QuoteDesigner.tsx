@@ -348,40 +348,42 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
           width="100%"
           wrap="wrap"
         >
-          <Flex flex="1 0 250px" gap={2}>
-            <FormControl variant="floatingstatic" flex="1 1 20%" p={2} my={2} mb={0}>
-              <FormLabel>Bg Blur</FormLabel>
-              <Slider 
-                aria-label='bg blur' 
-                min={0}
-                max={20}
-                step={1}
-                defaultValue={0}
-                onChange={e=>setBgBlur(`${e}px`)}
-              >
-                <SliderTrack>
-                  <SliderFilledTrack bgColor="gray" />
-                </SliderTrack>
-                <SliderThumb bgColor="black" />
-              </Slider>
-            </FormControl>
-            <FormControl variant="floatingstatic" flex="1 1 20%" p={2} my={2} mb={0}>
-              <FormLabel>Bg Darken</FormLabel>
-              <Slider 
-                aria-label='bg darkness' 
-                min={0}
-                max={100}
-                step={1}
-                defaultValue={100}
-                onChange={e=>setBgDarkness(`${e}%`)}
-              >
-                <SliderTrack>
-                  <SliderFilledTrack bgColor="gray" />
-                </SliderTrack>
-                <SliderThumb bgColor="black" />
-              </Slider>
-            </FormControl>
-          </Flex>
+          {backgroundImage ? (
+            <Flex flex="1 0 250px" gap={2}>
+              <FormControl variant="floatingstatic" flex="1 1 20%" p={2} my={2} mb={0}>
+                <FormLabel>Bg Blur</FormLabel>
+                <Slider 
+                  aria-label='bg blur' 
+                  min={0}
+                  max={20}
+                  step={1}
+                  defaultValue={0}
+                  onChange={e=>setBgBlur(`${e}px`)}
+                >
+                  <SliderTrack>
+                    <SliderFilledTrack bgColor="gray" />
+                  </SliderTrack>
+                  <SliderThumb bgColor="black" />
+                </Slider>
+              </FormControl>
+              <FormControl variant="floatingstatic" flex="1 1 20%" p={2} my={2} mb={0}>
+                <FormLabel>Bg Darken</FormLabel>
+                <Slider 
+                  aria-label='bg darkness' 
+                  min={0}
+                  max={100}
+                  step={1}
+                  defaultValue={0}
+                  onChange={e=>setBgDarkness(`${e}%`)}
+                >
+                  <SliderTrack>
+                    <SliderFilledTrack bgColor="gray" />
+                  </SliderTrack>
+                  <SliderThumb bgColor="black" />
+                </Slider>
+              </FormControl>
+            </Flex>
+          ): null}
           {!backgroundImage ? (
             <Flex flex="1 0 45%" gap={2}>
               <FormControl variant="floatingstatic" flex="1 1 20%">
