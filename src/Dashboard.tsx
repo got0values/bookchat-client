@@ -1032,7 +1032,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 description: "",
                 isbn: reading.isbn,
                 page_count: reading.page_count,
-                subjects: JSON.parse(reading.subjects),
+                subjects: reading.subjects ? JSON.parse(reading.subjects) : [],
                 published_date: reading.published_date,
                 pages_read: reading.pages_read,
                 thoughts: reading.thoughts
