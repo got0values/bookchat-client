@@ -117,31 +117,26 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   const [randomSorted,setRandomSorted] = useState([] as any)
   async function getDashboard() {
     const tokenCookie = Cookies.get().token
-    if (tokenCookie) {
-      const dash = await axios
-        .get(server + "/api/dashboard?items=" + items,
-        {
-          headers: {
-            Authorization: tokenCookie
-          }
+    const dash = await axios
+      .get(server + "/api/dashboard?items=" + items,
+      {
+        headers: {
+          Authorization: tokenCookie
         }
-        )
-        .then((response)=>{
-          getUser();
-          setItems(prev=>prev + 10)
-          setFollowingSorted(response.data.message.followingCurrentlyReadingSorted)
-          setRandomSorted(response.data.message.randomCurrentlyReadingSorted)
-          return response.data.message
-        })
-        .catch(({response})=>{
-          console.log(response)
-          throw new Error(response.message)
-        })
+      }
+      )
+      .then((response)=>{
+        getUser();
+        setItems(prev=>prev + 10)
+        setFollowingSorted(response.data.message.followingCurrentlyReadingSorted)
+        setRandomSorted(response.data.message.randomCurrentlyReadingSorted)
+        return response.data.message
+      })
+      .catch(({response})=>{
+        console.log(response)
+        throw new Error(response.message)
+      })
       return dash;
-    }
-    else {
-      throw new Error("An error occurred")
-    }
   }
 
   //lazy loading
@@ -401,6 +396,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
 
     const [sharedTitle,setSharedTitle] = useState(selectedBook?.title);
     const [sharedAuthor,setSharedAuthor] = useState(selectedBook?.author);
+    const bookImage = selectedBook?.image;
 
     return (
       <>
@@ -433,6 +429,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             <Checkbox
               isChecked={showQuoteDesigner}
               onChange={e=>setShowQuoteDesigner(prev=>!prev)}
+              fontWeight="bold"
             >
               Add a quote (New)
             </Checkbox>
@@ -448,6 +445,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 <QuoteDesigner 
                   sharedTitle={sharedTitle} 
                   sharedAuthor={sharedAuthor}
+                  bookImage={bookImage}
                 />
                 <Divider mt={3} />
               </>
@@ -752,6 +750,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               >
                 <Image
                   src={reading.quote_image}
+                  // w="100%"
                 />
               </Flex>
               <Divider mb={2} />
@@ -845,31 +844,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
                     {reading.author}
                   </Text>
-                  {/* <Popover isLazy>
-                    <PopoverTrigger>
-                      <Box 
-                        _hover={{
-                          cursor: "pointer"
-                        }}
-                      >
-                        <Text fontSize="lg" noOfLines={1}>
-                          {reading.description ? reading.description: null}
-                        </Text>
-                      </Box>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <PopoverArrow />
-                      <PopoverCloseButton />
-                      <PopoverBody 
-                        fontSize="sm"
-                        _dark={{
-                          bg: "black"
-                        }}
-                      >
-                        {reading.description}
-                      </PopoverBody>
-                    </PopoverContent>
-                  </Popover> */}
                   <Text fontStyle="italic">
                     {reading.published_date !== null ? 
                       (
@@ -1032,7 +1006,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 description: "",
                 isbn: reading.isbn,
                 page_count: reading.page_count,
-                subjects: reading.subjects ? JSON.parse(reading.subjects) : [],
+                subjects: reading.subjects ? JSON.parse(reading.subjects) : null,
                 published_date: reading.published_date,
                 pages_read: reading.pages_read,
                 thoughts: reading.thoughts
