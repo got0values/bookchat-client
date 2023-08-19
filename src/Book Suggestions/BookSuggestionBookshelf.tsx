@@ -1,6 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link, useSearchParams, redirect } from "react-router-dom";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { BookshelfBook, BookshelfType, BookSuggestionType, SelectedBook } from "../types/types";
 import { 
   Box,
@@ -62,6 +62,10 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
   const [bookshelfProfileName,setBookshelfProfileName] = useState(searchParams.get("profile"))
   const [nextBookshelf,setNextBookshelf] = useState<BookshelfType | null>(null);
   const [previousSuggestions,setPreviousSuggestions] = useState<BookSuggestionType[] | null>(null);
+  const [take,setTake] = useState(10);
+  const [endLoadMore,setEndLoadMore] = useState(false);
+  const [loadMoreIsLoading,setLoadMoreIsLoading] = useState(false);
+  const [bookSuggestionBookshelf,setBookSuggestionBookshelf] = useState<BookshelfType>();
   async function getBookSuggestionBookshelf() {
     if (!searchParams.get("profile")) {
       throw new Error("No Profile")
@@ -70,6 +74,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
       setBookshelfProfileName(prev=>searchParams.get("profile"))
     }
     let tokenCookie: string | null = Cookies.get().token;
+    setLoadMoreIsLoading(true)
     const bookSuggestionBookshelfGet = axios
       .get(server + "/api/getbooksuggestionbookshelf",
         {
@@ -77,7 +82,8 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
             'authorization': tokenCookie
           },
           params: {
-            profilename: bookshelfProfileName
+            profilename: bookshelfProfileName,
+            take: take
           }
         }
       )
@@ -86,21 +92,32 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
         const currentbookshelf = data.message;
         const nextbookshelfdata = data.nextbookshelf;
         const previoussuggestionsdata = data.previoussuggestions;
-        // console.log(data)
         if (nextbookshelfdata) {
           setNextBookshelf(nextbookshelfdata)
         }
         if (previoussuggestionsdata) {
           setPreviousSuggestions(previoussuggestionsdata)
         }
+        if (currentbookshelf?.BookshelfBook.length < take) {
+          setEndLoadMore(true);
+        }
+        setBookSuggestionBookshelf({
+          ...currentbookshelf,
+          Flag: currentbookshelf?.Profile.country ? (countryFlagIconsReact as any)[currentbookshelf.Profile.country] : <Box></Box>
+        });
         return currentbookshelf;
       })
       .catch(({response})=>{
         console.log(response)
         throw new Error(response.data.error)
       })
+    setLoadMoreIsLoading(false)
     return bookSuggestionBookshelfGet
   }
+
+  useEffect(()=>{
+    getBookSuggestionBookshelf()
+  },[take])
 
   const { 
     isOpen: isOpenSearchModal, 
@@ -135,7 +152,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
       await axios
         .post(server + "/api/setbooksuggestion", 
         {
-          suggestee: bookSuggestionBookshelf.Profile.id,
+          suggestee: bookSuggestionBookshelf?.Profile.id,
           google_books_id: google_books_id,
           image: image,
           title: title,
@@ -194,12 +211,6 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
     queryKey: ['bookSuggestionBookshelfKey'], 
     queryFn: getBookSuggestionBookshelf
   });
-
-  let bookSuggestionBookshelf: any = data ? data : null;
-  bookSuggestionBookshelf = {
-    ...bookSuggestionBookshelf,
-    Flag: bookSuggestionBookshelf?.Profile.country ? (countryFlagIconsReact as any)[bookSuggestionBookshelf.Profile.country] : <Box></Box>
-  }
 
   if (isLoading) {
     return (
@@ -290,9 +301,9 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                 <SuggestionCountBadge suggestionCount={bookSuggestionBookshelf?.Profile?._count.BookSuggestion_BookSuggestion_suggestorToProfile}/>
               </Flex>
             </Flex>
-            {bookSuggestionBookshelf.suggestions_notes ? (
+            {bookSuggestionBookshelf?.suggestions_notes ? (
               <Text fontStyle="italic">
-                "{bookSuggestionBookshelf.suggestions_notes}"
+                "{bookSuggestionBookshelf?.suggestions_notes}"
               </Text>
             ): null}
           </Box>
@@ -584,8 +595,24 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                       </Box>
                     </Flex>
                   )
-                }).reverse()
+                })
               ): null}
+              <Box>
+                {!endLoadMore ? (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={e=>{
+                        setTake(prev=>prev+10)
+                      }}
+                      isLoading={loadMoreIsLoading}
+                    >
+                      Load more...
+                    </Button>
+                  </>
+                ): null}
+              </Box>
             </Stack>
           </>
         )}
