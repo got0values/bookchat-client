@@ -268,40 +268,27 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
     closeReadingModal();
   }
 
-  const likeUnlikeCurrentlyReadingMutation = useMutation({
-    mutationFn: async (e: React.FormEvent)=>{
-      let tokenCookie: string | null = Cookies.get().token;
-      let currentlyReading = parseInt((e.target as HTMLDivElement).dataset.currentlyreading!);
-      if (tokenCookie) {
-        await axios
-        .post(server + "/api/likeunlikecurrentlyreading",
-        {
-          currentlyReading
-        },
-        {
-          headers: {
-            'authorization': tokenCookie
-          }
+  async function likeUnlikeCurrentlyReading(e: React.FormEvent) {
+    let tokenCookie: string | null = Cookies.get().token;
+    let currentlyReading = parseInt((e.target as HTMLDivElement).dataset.currentlyreading!);
+    await axios
+      .post(server + "/api/likeunlikecurrentlyreading",
+      {
+        currentlyReading
+      },
+      {
+        headers: {
+          'authorization': tokenCookie
         }
-        )
-        .catch(({response})=>{
-          console.log(response)
-          throw new Error(response.message)
-        })
       }
-      else {
-        throw new Error("Please login again")
-      }
-      return getDashboard();
-    },
-    onSuccess: (data,variables)=>{
-      queryClient.invalidateQueries({ queryKey: ['dashboardKey'] })
-      queryClient.resetQueries({queryKey: ['dashboardKey']})
-      queryClient.setQueryData(["dashboardKey"],data)
-    }
-  })
-  function likeUnlikeCurrentlyReading(e: React.FormEvent) {
-    likeUnlikeCurrentlyReadingMutation.mutate(e);
+      )
+      .then(()=>{
+        getDashboard()
+      })
+      .catch(({response})=>{
+        console.log(response)
+        throw new Error(response.message)
+      })
   }
 
   const updatePagesReadMutation = useMutation({
