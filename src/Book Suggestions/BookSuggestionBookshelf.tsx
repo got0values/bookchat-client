@@ -603,6 +603,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                     <Button
                       variant="ghost"
                       size="sm"
+                      colorScheme="blue"
                       onClick={e=>{
                         setTake(prev=>prev+10)
                       }}

@@ -82,6 +82,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   const [bookshelfBooksOriginal,setBookshelfBooksOriginal] = useState([] as BookshelfBook[])
   const [showAddCategory,setShowAddCategory] = useState(false)
   const [allowSuggestions,setAllowSuggestions] = useState(false);
+  const [take,setTake] = useState(10);
+  const [endLoadMore,setEndLoadMore] = useState(false);
 
   async function getBookshelf() {
     const tokenCookie: string | null = Cookies.get().token;
@@ -90,19 +92,21 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
       {
         headers: {
           Authorization: tokenCookie
+        },
+        params: {
+          take: take
         }
       })
       .then((response)=>{
         const responseMessage = response.data.message;
+        if (responseMessage.BookshelfBook.length < take) {
+          setEndLoadMore(true);
+        }
         setBookshelfBooks(prev=>{
-          return responseMessage.BookshelfBook.sort((a: BookshelfBook,b: BookshelfBook)=>{
-            return (new Date(a.created_on) as any) - (new Date(b.created_on) as any)
-          }).reverse()
+          return responseMessage.BookshelfBook
         });
         setBookshelfBooksOriginal(prev=>{
-          return responseMessage.BookshelfBook.sort((a: BookshelfBook,b: BookshelfBook)=>{
-            return (new Date(a.created_on) as any) - (new Date(b.created_on) as any)
-          }).reverse()
+          return responseMessage.BookshelfBook
         });
         setAllowSuggestions(responseMessage.allow_suggestions === 1 ? true : false);
         return responseMessage
@@ -113,6 +117,10 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
       })
     return bookshelfData
   }
+
+  useEffect(()=>{
+    getBookshelf();
+  },[take])
 
   const createCategoryInputRef = useRef<HTMLInputElement>({} as HTMLInputElement);
   const createCategoryButtonRef = useRef<HTMLButtonElement>({} as HTMLButtonElement);
@@ -2035,6 +2043,20 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     </Flex>
                   )
                 })
+              ): null}
+              {!endLoadMore ? (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    colorScheme="blue"
+                    onClick={e=>{
+                      setTake(prev=>prev+10)
+                    }}
+                  >
+                    Load more...
+                  </Button>
+                </>
               ): null}
             </Box>
           </Stack>
