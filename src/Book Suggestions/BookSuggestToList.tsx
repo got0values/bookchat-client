@@ -126,7 +126,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
                 bg: "black"
               }}
             >
-              Your rating is based on other user's ratings on your book suggestions to them.
+              Your rating is based on other user's ratings on your book suggestions for them.
             </PopoverBody>
           </PopoverContent>
         </Popover>
