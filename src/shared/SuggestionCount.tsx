@@ -119,19 +119,19 @@ export function SuggestionCountBadge({suggestionCount}: {suggestionCount: number
               )}
             </Badge>
           </PopoverTrigger>
-            <PopoverContent maxW="260px" fontSize="sm">
-              <PopoverArrow/>
-              <PopoverCloseButton/>
-              {/* <PopoverHeader
-                fontWeight="bold"
-              >
-                Intermediate Reader's Advisor
-              </PopoverHeader> */}
-              <PopoverBody>
-                <Text as="span" fontStyle="italic" >{suggestionCount}</Text> suggestions given to other users
-              </PopoverBody>
-            </PopoverContent>
-          </Popover>
+          <PopoverContent maxW="260px" fontSize="sm">
+            <PopoverArrow/>
+            <PopoverCloseButton/>
+            {/* <PopoverHeader
+              fontWeight="bold"
+            >
+              Intermediate Reader's Advisor
+            </PopoverHeader> */}
+            <PopoverBody>
+              <Text as="span" fontStyle="italic" >{suggestionCount}</Text> suggestions given to other users
+            </PopoverBody>
+          </PopoverContent>
+        </Popover>
       ) : (
         null
       )}

@@ -31,7 +31,6 @@ import axios from "axios";
 
 
 export function BookSuggestionToList({server}: {server: string;}) {
-  const navigate = useNavigate();
   dayjs.extend(utc);
 
   const [suggestionRating,setSuggestionRating] = useState(0);

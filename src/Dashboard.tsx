@@ -12,19 +12,10 @@ import {
   Image,
   Avatar,
   Button,
-  IconButton,
-  FormControl,
-  FormLabel,
-  Slider,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
-  Tooltip,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
-  MenuDivider,
   Divider,
   Tabs,
   TabList,
@@ -67,7 +58,7 @@ import EditCurrentlyReading from "./shared/EditCurrentlyReading";
 import { QuoteDesigner } from "./shared/QuoteDesigner";
 import { SuggestionCountBadge } from "./shared/SuggestionCount";
 import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
-import { BsReplyFill } from 'react-icons/bs';
+import { BsReplyFill, BsStarFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { MdOutlineChat, MdEdit, MdOutlineCancel } from 'react-icons/md';
 import { FaStore } from 'react-icons/fa';
@@ -577,6 +568,9 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
         )
       )
     )
+    let ratings = reading.Profile.BookSuggestion_BookSuggestion_suggestorToProfile?.map(r=>r.rating);
+    let ratingAverage = ratings.length ? ratings.reduce((a,b)=>a+b) as any/ratings.length : null;
+
     return (
       reading.hidden ? (
         null
@@ -635,6 +629,28 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     >
                       {reading.Profile.username}
                     </Text>
+                    {ratingAverage ? (
+                      <Popover size="sm">
+                        <PopoverTrigger>
+                          <Flex align="center" gap={0}>
+                            <Box 
+                              as={BsStarFill} 
+                              fill="gold" 
+                              size={15}
+                              mb={1}
+                            />
+                            <Text fontSize="sm">
+                              {ratingAverage.toFixed(1)}
+                            </Text>
+                          </Flex>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <Text textAlign="center" p={1}>
+                            {ratingAverage.toFixed(1)} suggestion rating
+                          </Text>
+                        </PopoverContent>
+                      </Popover>
+                    ): null}
                     <SuggestionCountBadge suggestionCount={suggestionCount}/>
                     {followingStatus === "following" ? (
                       null 
