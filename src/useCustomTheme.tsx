@@ -78,7 +78,7 @@ const customTheme = {
         }
       },
       '.non-well': {
-        m: '0.4rem!important'
+        m: '0.25rem!important'
       },
       '.chakra-menu__menu-list': {
         // bg: "white",

@@ -41,6 +41,7 @@ import BooksSearch from "../shared/BooksSearch";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import { BsArrowRight } from 'react-icons/bs';
 import { MdChevronRight } from 'react-icons/md';
+import { BsStarFill } from "react-icons/bs";
 import StarRating from "../shared/StarRating";
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import dayjs from "dayjs";
@@ -238,6 +239,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           <Flex
             align="center"
             justify="space-between"
+            className="non-well"
           >
             <Breadcrumb 
               spacing='8px' 
@@ -270,7 +272,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           </Flex>
           <Box
             rounded="md"
-            border="1px solid black"
+            // border="1px solid black"
             p={2}
           >
             <Flex
@@ -308,73 +310,98 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
             ): null}
           </Box>
         </Flex>
-        {previousSuggestions && previousSuggestions.length ? (
-          <Box 
-            rounded="md"
-            border="1px solid black"
-            p={2}
-            className="non-well"
+        <Box 
+          rounded="md"
+          border="1px solid black"
+          p={2}
+          className="non-well"
+        >
+          <Heading as="h3" size="sm" mb={1}>Others have suggested:</Heading>
+          <Flex
+            // align="center"
+            wrap="wrap"
+            gap={2}
+            maxH="25vh"
+            overflow="auto"
           >
-            <Heading as="h3" size="sm" mb={1}>Your previous suggestions:</Heading>
-            <Flex
-              // align="center"
-              wrap="wrap"
-              gap={2}
-              maxH="25vh"
-              overflow="auto"
-            >
-              {previousSuggestions.length ? (
-                previousSuggestions.map((suggestion,i)=>{
-                  return (
-                    <Box
-                      maxW="200px"
-                      key={i}
+            {previousSuggestions !== null && previousSuggestions.length ? (
+              previousSuggestions.map((suggestion,i)=>{
+                return (
+                  <Box
+                    maxW="200px"
+                    key={i}
+                    border="1px solid"
+                    p={1}
+                    rounded="md"
+                  >
+                    <Flex
+                      // align="center"
+                      gap={1}
                     >
-                      <Flex
-                        // align="center"
-                        gap={1}
-                      >
-                        <Image
-                          src={suggestion.image}
-                          height="100%"
-                          maxH="50px"
-                          boxShadow="1px 1px 1px 1px darkgrey"
-                        />
-                        <Box>
-                          <Text 
-                            fontSize="sm"
-                            opacity="80%"
-                            mb={-1}
-                          >
-                            {dayjs(suggestion.created_on).local().format("MM/DD/YY")}
-                          </Text>
-                          <Text
-                            fontSize="sm"
-                            fontWeight="bold"
-                            noOfLines={1}
-                            mb={-1}
-                          >
-                            {suggestion.title}
-                          </Text>
-                          <Text
-                            fontSize="sm"
-                            noOfLines={1}
-                          >
-                            {suggestion.author}
-                          </Text>
-                        </Box>
-                      </Flex>
-                    </Box>
-                  )
-                })
-              ): (
-                null
-              )}
-            </Flex>
-          </Box>
-        ): (
-          null
-        )}
+                      <Image
+                        src={suggestion.image}
+                        height="100%"
+                        maxH="85px"
+                        boxShadow="1px 1px 1px 1px darkgrey"
+                      />
+                      <Box>
+                        <Text
+                          as={Link}
+                          to={`/profile/${suggestion.Profile_BookSuggestion_suggestorToProfile.username}`}
+                          fontSize="sm"
+                          fontWeight="bold"
+                          noOfLines={1}
+                          mb={-1}
+                        >
+                          {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
+                        </Text>
+                        <Text 
+                          fontSize="sm"
+                          opacity="80%"
+                          mb={-1}
+                        >
+                          {dayjs(suggestion.created_on).local().format("MM/DD/YY")}
+                        </Text>
+                        <Text
+                          fontSize="sm"
+                          fontStyle="italic"
+                          noOfLines={1}
+                          mb={-1}
+                        >
+                          {suggestion.title}
+                        </Text>
+                        <Text
+                          fontSize="sm"
+                          noOfLines={1}
+                          mb={-1}
+                        >
+                          {suggestion.author}
+                        </Text>
+                        {suggestion.rating !== null ? (
+                          <Flex align="baseline" gap={1}>
+                            <BsStarFill fill="gold" size={13} />
+                            <Text
+                              fontSize="sm"
+                              noOfLines={1}
+                            >
+                              {suggestion.rating}
+                            </Text>
+                          </Flex>
+                        ): null}
+                      </Box>
+                    </Flex>
+                  </Box>
+                )
+              })
+            ): (
+              <Text
+                fontStyle="italic"
+              >
+                None yet.
+              </Text>
+            )}
+          </Flex>
+        </Box>
         {bookSuggestionBookshelf?.allow_suggestions !== 1 ? (
           <Flex align="center" justify="center" minH="70vh">
             <Heading as="h1" size="xl">Currently not allowing suggestions</Heading>
@@ -512,109 +539,121 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
               ): null}
 
             </Flex>
-            <Stack>
-              {bookSuggestionBookshelf?.BookshelfBook?.length ? (
-                bookSuggestionBookshelf.BookshelfBook.map((book: BookshelfBook,i: number)=>{
-                  return (
-                    <Flex 
-                      className="well"
-                      key={i}
-                    >
-                      <Image
-                        src={book.image ? book.image : "https://via.placeholder.com/165x215"}
-                        onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                        height="100%"
-                        maxH="125px"
-                        boxShadow="1px 1px 1px 1px darkgrey"
-                        alt={book.title}
-                      />
-                      <Box mx={2} w="100%">
-                        <Heading 
-                          as="h5" 
-                          size="md"
-                          me={3}
-                          noOfLines={1}
-                        >
-                          {book.title}
-                        </Heading>
-                        <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
-                          {book.author}
-                        </Text>
-                        <Text fontStyle="italic">
-                          {book.published_date ? dayjs(book.published_date).format("YYYY"): null}
-                        </Text>
-                        {book.page_count ? (
-                          <Text fontSize="sm">
-                            {book.page_count} pages
-                          </Text>
-                        ): null}
-                        {/* <Popover isLazy>
-                          <PopoverTrigger>
-                            <Box
-                              _hover={{
-                                cursor: "pointer"
-                              }}
-                            >
-                              <Text noOfLines={1}>
-                                {book.description}
-                              </Text>
-                            </Box>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <PopoverArrow />
-                            <PopoverCloseButton />
-                            <PopoverBody 
-                            _dark={{
-                              bg: "black"
-                            }}
-                              fontSize="sm"
-                            >
-                              {book.description}
-                            </PopoverBody>
-                          </PopoverContent>
-                        </Popover> */}
-                        <Flex
-                          align="center"
-                          wrap="wrap"
-                          gap={1}
-                        >
-                          <Text fontWeight="bold">
-                            {bookSuggestionBookshelf.Profile?.username}'s rating:
-                          </Text>
-                          <StarRating
-                            ratingCallback={null} 
-                            starRatingId={book.id}
-                            defaultRating={book.rating}
-                          />
-                        </Flex>
-                        {book.review ? (
-                          <Text fontStyle="italic">
-                            "{book.review}"
-                          </Text>
-                        ): null}
-                      </Box>
-                    </Flex>
-                  )
-                })
-              ): null}
+            <Box className="well">
+              <Heading as="h3" size="md">
+                Bookshelf
+              </Heading>
               <Box>
-                {!endLoadMore ? (
-                  <>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      colorScheme="blue"
-                      onClick={e=>{
-                        setTake(prev=>prev+10)
-                      }}
-                      isLoading={loadMoreIsLoading}
-                    >
-                      Load more...
-                    </Button>
-                  </>
-                ): null}
+                {bookSuggestionBookshelf?.BookshelfBook?.length ? (
+                  bookSuggestionBookshelf.BookshelfBook.map((book: BookshelfBook,i: number)=>{
+                    return (
+                      <Box 
+                        className="well-card"
+                        key={i}
+                      >
+                        <Flex>
+                          <Image
+                            src={book.image ? book.image : "https://via.placeholder.com/165x215"}
+                            onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                            height="100%"
+                            maxH="125px"
+                            boxShadow="1px 1px 1px 1px darkgrey"
+                            alt={book.title}
+                          />
+                          <Box mx={2} w="100%">
+                            <Heading 
+                              as="h5" 
+                              size="md"
+                              me={3}
+                              noOfLines={1}
+                            >
+                              {book.title}
+                            </Heading>
+                            <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
+                              {book.author}
+                            </Text>
+                            <Text fontStyle="italic">
+                              {book.published_date ? dayjs(book.published_date).format("YYYY"): null}
+                            </Text>
+                            {book.page_count ? (
+                              <Text fontSize="sm">
+                                {book.page_count} pages
+                              </Text>
+                            ): null}
+                            {/* <Popover isLazy>
+                              <PopoverTrigger>
+                                <Box
+                                  _hover={{
+                                    cursor: "pointer"
+                                  }}
+                                >
+                                  <Text noOfLines={1}>
+                                    {book.description}
+                                  </Text>
+                                </Box>
+                              </PopoverTrigger>
+                              <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody 
+                                _dark={{
+                                  bg: "black"
+                                }}
+                                  fontSize="sm"
+                                >
+                                  {book.description}
+                                </PopoverBody>
+                              </PopoverContent>
+                            </Popover> */}
+                            <Flex
+                              align="center"
+                              wrap="wrap"
+                              gap={1}
+                              rowGap={0}
+                            >
+                              <Text fontWeight="bold">
+                                {bookSuggestionBookshelf.Profile?.username}'s rating:
+                              </Text>
+                              <StarRating
+                                ratingCallback={null} 
+                                starRatingId={book.id}
+                                defaultRating={book.rating}
+                              />
+                            </Flex>
+                            {book.review ? (
+                              <Text fontStyle="italic">
+                                "{book.review}"
+                              </Text>
+                            ): null}
+                          </Box>
+                        </Flex>
+                      </Box>
+                    )
+                  })
+                ): (
+                  <Text fontStyle="italic">
+                    Empty
+                  </Text>
+                )}
+                <Box>
+                  {!endLoadMore ? (
+                    <>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        colorScheme="blue"
+                        onClick={e=>{
+                          setTake(prev=>prev+10)
+                        }}
+                        isLoading={loadMoreIsLoading}
+                      >
+                        Load more...
+                      </Button>
+                    </>
+                  ): null}
+                </Box>
               </Box>
-            </Stack>
+            </Box>
           </>
         )}
       </Skeleton>
