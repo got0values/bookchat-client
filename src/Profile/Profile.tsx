@@ -1387,7 +1387,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   description: "",
                                   isbn: profileData.CurrentlyReading[0].isbn,
                                   page_count: profileData.CurrentlyReading[0].page_count,
-                                  subjects: JSON.parse(profileData.CurrentlyReading[0].subjects),
+                                  subjects: profileData.CurrentlyReading[0].subjects ? JSON.parse(profileData.CurrentlyReading[0].subjects) : null,
                                   published_date: profileData.CurrentlyReading[0].published_date,
                                   pages_read: profileData.CurrentlyReading[0].pages_read,
                                   thoughts: profileData.CurrentlyReading[0].thoughts
@@ -2120,7 +2120,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                           description: "",
                                           isbn: readBook.isbn,
                                           page_count: readBook.page_count,
-                                          subjects: JSON.parse(readBook.subjects),
+                                          subjects: readBook.subjects ? JSON.parse(readBook.subjects) : null,
                                           published_date: readBook.published_date,
                                           pages_read: readBook.pages_read,
                                           thoughts: readBook.thoughts
