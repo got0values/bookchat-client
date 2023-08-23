@@ -18,12 +18,6 @@ import {
   MenuList,
   MenuItem,
   MenuDivider,
-  Popover,
-  PopoverTrigger,
-  PopoverCloseButton,
-  PopoverArrow,
-  PopoverContent,
-  PopoverBody,
   Heading,
   useDisclosure,
   useColorModeValue,
@@ -49,15 +43,13 @@ import {
   Link as ChakraLink,
 } from '@chakra-ui/react';
 import { SkipNavLink, SkipNavContent } from '@chakra-ui/skip-nav';
-import { GiHamburgerMenu } from 'react-icons/gi';
-import { BsArrowRight } from 'react-icons/bs';
-import { MdClose, MdLogout } from 'react-icons/md';
+import { MdLogout } from 'react-icons/md';
 import { BsFillMoonFill, BsFillSunFill, BsFillChatFill, BsPostcardHeartFill } from 'react-icons/bs';
 import { FiSettings } from 'react-icons/fi';
 import { RxDotFilled } from 'react-icons/rx';
 import { AiOutlineBell, AiFillHome } from 'react-icons/ai';
-import { FaSearch, FaBookReader, FaExclamationCircle } from 'react-icons/fa';
-import { ImBooks } from 'react-icons/im';
+import { FaSearch, FaBookReader } from 'react-icons/fa';
+import { ImBooks, ImStatsDots } from 'react-icons/im';
 import logoIcon from './assets/BookChatNoirNewBlack.png';
 import logoIconWhite from './assets/BookChatNoirNewWhite.png';
 import Cookies from "js-cookie";
@@ -79,7 +71,8 @@ const LinkItems: Array<LinkItemProps> = [
   { name: 'Bookshelf', linkTo: "/bookshelf", icon: <ImBooks size="25"/>, tooltip: "Bookshelf" },
   { name: 'Book Suggestions', linkTo: "/booksuggestions", icon: <BsPostcardHeartFill size="25" />, tooltip: "Book Suggestions" },
   { name: 'Book Clubs', linkTo: "/bookclubs", icon: <FaBookReader size="25"/>, tooltip: "Book Clubs" },
-  { name: 'Chat Rooms', linkTo: "/chat", icon: <BsFillChatFill size="25" />, tooltip: "Chat Rooms" }
+  { name: 'Chat Rooms', linkTo: "/chat", icon: <BsFillChatFill size="25" />, tooltip: "Chat Rooms" },
+  // { name: 'Stats', linkTo: "/stats", icon: <ImStatsDots size="25" />, tooltip: "Stats" },
 ];
 
 export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {

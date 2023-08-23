@@ -15,6 +15,7 @@ import ChatRoom from './Chat/ChatRoom';
 import Bookshelf from './Bookshelf/Bookshelf';
 import BookSuggestions from "./Book Suggestions/BookSuggestions";
 import BookSuggestionBookshelf from "./Book Suggestions/BookSuggestionBookshelf";
+import Stats from "./Stats/Stats";
 import Settings from './Settings';
 import Confirm from './Confirm';
 import ResetPassword from "./ResetPassword";
@@ -120,6 +121,14 @@ function App() {
           <Route
             path="bookshelf"
             element={<BookSuggestionBookshelf server={server} gbooksapi={GBOOKSAPI} />}
+          />
+        </Route>
+        <Route
+          path="stats"
+        >
+          <Route
+            index
+            element={<Stats server={server} />}
           />
         </Route>
         <Route 
