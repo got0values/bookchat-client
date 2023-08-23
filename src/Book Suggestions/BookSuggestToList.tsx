@@ -33,7 +33,6 @@ import axios from "axios";
 export function BookSuggestionToList({server}: {server: string;}) {
   dayjs.extend(utc);
 
-  const [suggestionRating,setSuggestionRating] = useState(0);
   const [firstBookshelf,setFirstBookshelf] = useState<User | null>(null)
   async function getBookSuggestToList() {
     let tokenCookie: string | null = Cookies.get().token;
@@ -48,7 +47,6 @@ export function BookSuggestionToList({server}: {server: string;}) {
       .then((response)=>{
         const {data} = response;
         setFirstBookshelf(data.message.firstBookshelf)
-        setSuggestionRating(data.message.rating === null ? 0 : response.data.message.rating)
         return data.message.bookshelfList;
       })
       .catch(({response})=>{
@@ -81,84 +79,31 @@ export function BookSuggestionToList({server}: {server: string;}) {
     <Skeleton
       isLoaded={!isLoading}
     >
-      <Flex
-        align="center"
-        justify="center"
-        gap={1}
-        mb={-1}
-        className="non-well"
-        wrap="wrap"
-      >
-        <StarRating
-          ratingCallback={null} 
-          starRatingId={0}
-          defaultRating={suggestionRating}
-        />
-        <Text 
-          fontWeight={600} 
-          fontSize="sm"
-          opacity="80%"
-          me={1}
-          color={suggestionRating === 0 ? "red" : "inherit"}
+      {firstBookshelf ? (
+        <Flex
+          align="center"
+          justify="center"
+          wrap="wrap"
+          gap={2}
+          // mb={3}
         >
-          {suggestionRating.toFixed(1)}
-        </Text>
-        <Popover isLazy>
-          <PopoverTrigger>
-            <Flex 
-              align="center" 
-              justify="center" 
-              me={2}
-              _hover={{
-                cursor: "pointer"
-              }}
-            >
-              <ImInfo size={20} color="gray" />
-            </Flex>
-          </PopoverTrigger>
-          <PopoverContent>
-            <PopoverArrow />
-            <PopoverCloseButton />
-            <PopoverBody 
-              fontSize="sm"
-              _dark={{
-                bg: "black"
-              }}
-            >
-              Your rating is based on other user's ratings on your book suggestions for them.
-            </PopoverBody>
-          </PopoverContent>
-        </Popover>
-        {firstBookshelf ? (
-          <Flex
-            align="center"
-            justify="center"
-            wrap="wrap"
+          <Button
+            as="a"
+            href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
+            // variant="outline"
+            colorScheme="teal"
+            size="sm"
+            aria-label="random bookshelf"
+            display="flex"
             gap={2}
-            // mb={3}
+            // borderColor="purple"
+            // p={2}
+            mb={1}
           >
-            <Button
-              as="a"
-              href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
-              // variant="outline"
-              colorScheme="teal"
-              size="xs"
-              aria-label="random bookshelf"
-              // borderColor="purple"
-              // p={2}
-            >
-              <FaPlay size={15}/>
-            </Button>
-          </Flex>
-        ): null}
-      </Flex>
-      <Text
-        fontWeight="bold"
-        textAlign="center"
-        p={2}
-      >
-        These users need your help finding their next read
-      </Text>
+            Random <FaPlay size={15}/>
+          </Button>
+        </Flex>
+      ): null}
       {bookSuggestToList?.length ? (
         bookSuggestToList.map((bookshelf: BookshelfType, i: number)=>{
           return (
