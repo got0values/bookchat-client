@@ -103,13 +103,14 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
     },1000)
   },[])
 
-  const [items,setItems] = useState(10);
+  // const [items,setItems] = useState(10);
+  const items = useRef(10);
   const [followingSorted,setFollowingSorted] = useState([] as any)
   const [randomSorted,setRandomSorted] = useState([] as any)
   async function getDashboard() {
     const tokenCookie = Cookies.get().token
     const dash = await axios
-      .get(server + "/api/dashboard?items=" + items,
+      .get(server + "/api/dashboard?items=" + items.current,
       {
         headers: {
           Authorization: tokenCookie
@@ -118,7 +119,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
       )
       .then((response)=>{
         getUser();
-        setItems(prev=>prev + 10)
         setFollowingSorted(response.data.message.followingCurrentlyReadingSorted)
         setRandomSorted(response.data.message.randomCurrentlyReadingSorted)
         return response.data.message
@@ -144,7 +144,10 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   },[])
   useEffect(()=>{
     if (!isFetching || !publicTabChosen) return;
-    getMoreDashboard()
+    else {
+      items.current = items.current + 10;
+      getMoreDashboard()
+    }
   },[isFetching])
   function getMoreDashboard() {
     getDashboard();
@@ -259,7 +262,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
     closeReadingModal();
   }
 
-  async function likeUnlikeCurrentlyReading(e: React.FormEvent) {
+  const likeUnlikeCurrentlyReadingMutation = useMutation({
+    mutationFn: async (e: React.FormEvent)=>{
     let tokenCookie: string | null = Cookies.get().token;
     let currentlyReading = parseInt((e.target as HTMLDivElement).dataset.currentlyreading!);
     await axios
@@ -280,6 +284,16 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
         console.log(response)
         throw new Error(response.message)
       })
+      return getDashboard();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ["dashboardKey"] })
+      queryClient.resetQueries({queryKey: ["dashboardKey"]})
+      queryClient.setQueryData(["dashboardKey"],data)
+    }
+  })
+  function likeUnlikeCurrentlyReading(e: React.FormEvent) {
+    likeUnlikeCurrentlyReadingMutation.mutate(e)
   }
 
   const updatePagesReadMutation = useMutation({
@@ -1047,9 +1061,14 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   variant="ghost"
                   data-currentlyreading={reading.id}
                   onClick={e=>likeUnlikeCurrentlyReading(e)}
+                  isDisabled={likeUnlikeCurrentlyReadingMutation.isLoading}
                   title="like post"
                 >
-                  {reading.CurrentlyReadingLike?.filter((like)=>like.profile===user?.Profile?.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                  {reading.CurrentlyReadingLike?.filter((like)=>like.profile===user?.Profile?.id).length ? (
+                    <AiFillHeart fill="red" pointerEvents="none" size={20} />
+                  ) : (
+                    <AiOutlineHeart pointerEvents="none" size={20} />
+                  )}
                 </Button>
                 {reading.CurrentlyReadingLike?.length ? (
                   <Popover isLazy size="sm">
