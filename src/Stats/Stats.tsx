@@ -68,6 +68,8 @@ export default function Stats({server}: {server: string}) {
     return newDate;
   }
   const thisWeekStart = getWeekStart(new Date());
+  console.log(thisWeekStart)
+  console.log(getWeekStart(new Date(dayjs().utc().format())))
   
   const [suggestionRating,setSuggestionRating] = useState<number>(0);
   const [suggestionCount,setSuggestionCount] = useState<number>(0);
@@ -129,10 +131,6 @@ export default function Stats({server}: {server: string}) {
             for (let i = 0; i < numWeeksBetween; i++) {
               weekStarts.push(dayjs.utc(firstPagesRead).add(7 * i, 'day').format());
             }
-            console.log(firstPagesRead)
-            console.log(dayjs(firstPagesRead))
-            console.log(dayjs.utc(firstPagesRead).format())
-            console.log(dayjs.utc(firstPagesRead).add(7 * 0, 'day').format())
             return weekStarts
           }
           else {
