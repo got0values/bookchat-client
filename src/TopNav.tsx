@@ -72,7 +72,7 @@ const LinkItems: Array<LinkItemProps> = [
   { name: 'Book Suggestions', linkTo: "/booksuggestions", icon: <BsPostcardHeartFill size="25" />, tooltip: "Book Suggestions" },
   { name: 'Book Clubs', linkTo: "/bookclubs", icon: <FaBookReader size="25"/>, tooltip: "Book Clubs" },
   { name: 'Chat Rooms', linkTo: "/chat", icon: <BsFillChatFill size="25" />, tooltip: "Chat Rooms" },
-  // { name: 'Stats', linkTo: "/stats", icon: <ImStatsDots size="25" />, tooltip: "Stats" },
+  { name: 'Stats', linkTo: "/stats", icon: <ImStatsDots size="25" />, tooltip: "Stats" },
 ];
 
 export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {

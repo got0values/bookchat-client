@@ -54,6 +54,12 @@ const customTheme = {
         pb: ["80px","20px"],
         maxW: '700px'
       },
+      '.main-content-medium': {
+        w: "100%",
+        pt: ["5px","20px"],
+        pb: ["80px","20px"],
+        maxW: '900px'
+      },
       '.well': {
         // bg: 'gray.50',
         bg: 'white',
