@@ -106,9 +106,9 @@ export default function Stats({server}: {server: string}) {
         setPagesRead((p)=>{
           const pR = getDaysOfTheWeekArray(pagesReadStartWeekDate ? new Date(pagesReadStartWeekDate) : new Date()).map((d)=>{
             if (
-                response.data.message.pagesRead.find((pred:any)=>pred.date === dayjs(d).format('ddd MMM D YYYY'))
+                response.data.message.pagesRead.find((pred:any)=>pred.date === dayjs.utc(d).format('ddd MMM D YYYY'))
               ) {
-              return response.data.message.pagesRead.find((pred:any)=>pred.date === dayjs(d).format('ddd MMM D YYYY'))
+              return response.data.message.pagesRead.find((pred:any)=>pred.date === dayjs.utc(d).format('ddd MMM D YYYY'))
             }
             else {
               return (
