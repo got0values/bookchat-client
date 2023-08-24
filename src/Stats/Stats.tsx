@@ -55,6 +55,7 @@ export default function Stats({server}: {server: string}) {
   }
 
   function getWeekStart(d: Date) {
+    console.log(d)
     var day = d.getDay();
     var hours = d.getHours();
     var minutes = d.getMinutes();
@@ -66,6 +67,7 @@ export default function Stats({server}: {server: string}) {
     newDate.setDate(dateDiff);
     newDate.setHours(hoursDiff);
     newDate.setMinutes(minutesDiff);
+    console.log(newDate)
     return newDate;
   }
   const thisWeekStart = getWeekStart(new Date());
