@@ -8,10 +8,8 @@ import {
   Button,
   Popover,
   PopoverTrigger,
-  PopoverCloseButton,
   PopoverContent,
-  PopoverBody,
-  PopoverArrow
+  Select
 } from "@chakra-ui/react";
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
@@ -51,28 +49,63 @@ export default function Stats({server}: {server: string}) {
     Legend
   );
 
-  const daysOfTheWeekArray = Array.from(Array(7).keys()).map((idx) => {const d = new Date(); d.setDate(d.getDate() - d.getDay() + idx); return d; });
+  // const daysOfTheWeekArray = Array.from(Array(7).keys()).map((idx) => {const d = new Date(); d.setDate(d.getDate() - d.getDay() + idx); return d; });
+
+  function getDaysOfTheWeekArray(aDate: Date) {
+    return Array.from(Array(7).keys()).map((idx) => {const d = new Date(aDate); d.setDate(d.getDate() - d.getDay() + idx); return d; });
+  }
+
+  function getWeekStart(d: Date) {
+    var day = d.getDay();
+    var hours = d.getHours();
+    var minutes = d.getMinutes();
+    var dateDiff = d.getDate() - day;
+    var hoursDiff = d.getHours() - hours;
+    var minutesDiff = d.getMinutes() - minutes;
+    var newDate = new Date(d);
+    newDate.setDate(dateDiff);
+    newDate.setHours(hoursDiff);
+    newDate.setMinutes(minutesDiff);
+    return newDate;
+  }
+  const thisWeekStart = getWeekStart(new Date());
   
   const [suggestionRating,setSuggestionRating] = useState<number>(0);
   const [suggestionCount,setSuggestionCount] = useState<number>(0);
+
   const [pagesRead,setPagesRead] = useState<any[]>([]);
+  const [pagesReadDateRange,setPagesReadDateRange] = useState<any[]>([]);
+  const [pagesReadStartWeekDate,setPagesReadStartWeekDate] = useState<string>("");
+
   const [currentlyReadingPosts,setCurrentlyReadingPosts] = useState<any[]>([]);
+  const [currentlyReadingPostsDateRange,setCurrentlyReadingPostsDateRange] = useState<any[]>([]);
+  const [currentlyReadingStartWeekDate,setCurrentlyReadingPostsStartWeekDate] = useState<string>("");
+
   const [bookshelfBooksAdded,setBookshelfBooksAdded] = useState<any[]>([]);
+  const [bookshelfBooksAddedDateRange,setBookshelfBooksAddedDateRange] = useState<any[]>([]);
+  const [bookshelfBooksAddedStartWeekDate,setBookshelfBooksAddedStartWeekDate] = useState<string>("");
+
   async function getStats() {
     const tokenCookie = Cookies.get().token
     await axios
-      .get(server + "/api/stats",
+      .get(`${server}/api/stats`,
       {
         headers: {
           Authorization: tokenCookie
+        },
+        params: {
+          pagesReadStartWeekDate: pagesReadStartWeekDate,
+          currentlyReadingStartWeekDate: currentlyReadingStartWeekDate,
+          bookshelfBooksAddedStartWeekDate: bookshelfBooksAddedStartWeekDate
         }
       }
       )
       .then((response)=>{
         setSuggestionRating(response.data.message.suggestionRating)
         setSuggestionCount(response.data.message.suggestionCount)
+
         setPagesRead((p)=>{
-          const pR = daysOfTheWeekArray.map((d)=>{
+          const pR = getDaysOfTheWeekArray(pagesReadStartWeekDate ? new Date(pagesReadStartWeekDate) : new Date()).map((d)=>{
             if (
                 response.data.message.pagesRead.find((pred:any)=>pred.date === dayjs(d).format('ddd MMM D YYYY'))
               ) {
@@ -89,9 +122,24 @@ export default function Stats({server}: {server: string}) {
           })
           return pR;
         })
+        setPagesReadDateRange((prev: any)=>{
+          let firstPagesRead = response.data.message.firstPagesRead;
+          if (firstPagesRead) {
+            let weekStarts = [];
+            const numWeeksBetween = dayjs(thisWeekStart).diff(dayjs(firstPagesRead),'week');
+            for (let i = 0; i < numWeeksBetween; i++) {
+              weekStarts.push(dayjs(firstPagesRead).add(7 * i, 'day').format());
+            }
+            return weekStarts
+          }
+          else {
+            return [];
+          }
+        })
+
         setCurrentlyReadingPosts((cR)=>{
           let crp: any = []
-          daysOfTheWeekArray.forEach((d)=>{
+          getDaysOfTheWeekArray(currentlyReadingStartWeekDate ? new Date(currentlyReadingStartWeekDate) : new Date()).forEach((d)=>{
             let count = 0;
             response.data.message.currentlyReadingPosts.forEach((crpe: any)=>{
               if (new Date(crpe.created_on).toDateString() === d.toDateString()) {
@@ -105,9 +153,24 @@ export default function Stats({server}: {server: string}) {
           })
           return crp;
         })
+        setCurrentlyReadingPostsDateRange((prev)=>{
+          let firstCurrentlyReading = response.data.message.firstCurrentlyReading;
+          if (firstCurrentlyReading) {
+            let weekStarts = [];
+            const numWeeksBetween = dayjs(thisWeekStart).diff(dayjs(firstCurrentlyReading),'week');
+            for (let i = 0; i < numWeeksBetween; i++) {
+              weekStarts.push(dayjs(firstCurrentlyReading).add(7 * i, 'day').format());
+            }
+            return weekStarts
+          }
+          else {
+            return [];
+          }
+        })
+
         setBookshelfBooksAdded((prev)=>{
           let bsba: any = []
-          daysOfTheWeekArray.forEach((d)=>{
+          getDaysOfTheWeekArray(bookshelfBooksAddedStartWeekDate ? new Date(bookshelfBooksAddedStartWeekDate) : new Date()).forEach((d)=>{
             let count = 0;
             response.data.message.bookshelfBooksAdded.forEach((bsb: any)=>{
               if (new Date(bsb.created_on).toDateString() === d.toDateString()) {
@@ -121,6 +184,21 @@ export default function Stats({server}: {server: string}) {
           })
           return bsba;
         })
+        setBookshelfBooksAddedDateRange((prev)=>{
+          let firstBookshelfBook = response.data.message.firstBookshelfBook;
+          if (firstBookshelfBook) {
+            let weekStarts = [];
+            const numWeeksBetween = dayjs(thisWeekStart).diff(dayjs(firstBookshelfBook),'week');
+            for (let i = 0; i < numWeeksBetween; i++) {
+              weekStarts.push(dayjs(firstBookshelfBook).add(7 * i, 'day').format());
+            }
+            return weekStarts
+          }
+          else {
+            return [];
+          }
+        })
+
       })
       .catch(({response})=>{
         console.log(response)
@@ -130,7 +208,7 @@ export default function Stats({server}: {server: string}) {
 
   useEffect(()=>{
     getStats()
-  },[])
+  },[pagesReadStartWeekDate,currentlyReadingStartWeekDate,bookshelfBooksAddedStartWeekDate])
   
   return (
     <Box className="main-content-medium" pb={20}>
@@ -202,7 +280,30 @@ export default function Stats({server}: {server: string}) {
         className="well"
         wrap="wrap"
         gap={5}
+        position="relative"
       >
+        {pagesReadDateRange.length ? (
+          <Select
+            position="absolute"
+            top={1}
+            left={1}
+            width="auto"
+            size="xs"
+            onChange={e=>setPagesReadStartWeekDate(e.target.value)}
+          >
+            <option value="">{dayjs(thisWeekStart).format('MM/DD/YYYY')}</option>
+            {pagesReadDateRange.map((p,i)=>{
+              return (
+                <option
+                  key={i}
+                  value={p}
+                >
+                  {dayjs(p).format('MM/DD/YYYY')}
+                </option>
+              )
+            }).reverse()}
+          </Select>
+        ): null}
         {pagesRead && pagesRead.length ? (
           <Flex
             justify="center"
@@ -219,6 +320,7 @@ export default function Stats({server}: {server: string}) {
                 size="md"
                 mb={2}
                 textAlign="center"
+                ml={[3,0]}
               >
                 Pages Read
               </Heading>
@@ -299,6 +401,7 @@ export default function Stats({server}: {server: string}) {
         <Flex
           justify="center"
           className="well"
+          position="relative"
         >
           <Box 
             height="100%"
@@ -315,9 +418,32 @@ export default function Stats({server}: {server: string}) {
                 size="md"
                 mb={2}
                 textAlign="center"
+                ml={[5,0]}
               >
                 Books Read
               </Heading>
+              {currentlyReadingPostsDateRange.length ? (
+                <Select
+                  position="absolute"
+                  top={1}
+                  left={1}
+                  width="auto"
+                  size="xs"
+                  onChange={e=>setCurrentlyReadingPostsStartWeekDate(e.target.value)}
+                >
+                  <option value="">{dayjs(thisWeekStart).format('MM/DD/YYYY')}</option>
+                  {currentlyReadingPostsDateRange.map((p,i)=>{
+                    return (
+                      <option
+                        key={i}
+                        value={p}
+                      >
+                        {dayjs(p).format('MM/DD/YYYY')}
+                      </option>
+                    )
+                  }).reverse()}
+                </Select>
+              ): null}
               <Popover size="sm">
                 <PopoverTrigger>
                   <Button
@@ -362,6 +488,7 @@ export default function Stats({server}: {server: string}) {
         className="well"
         wrap="wrap"
         gap={5}
+        position="relative"
       >
         {bookshelfBooksAdded ? (
           <Flex
@@ -384,9 +511,32 @@ export default function Stats({server}: {server: string}) {
                   size="md"
                   mb={2}
                   textAlign="center"
+                  ml={[5,0]}
                 >
                   Bookshelf Books
                 </Heading>
+                {bookshelfBooksAddedDateRange.length ? (
+                  <Select
+                    position="absolute"
+                    top={1}
+                    left={1}
+                    width="auto"
+                    size="xs"
+                    onChange={e=>setBookshelfBooksAddedStartWeekDate(e.target.value)}
+                  >
+                    <option value="">{dayjs(thisWeekStart).format('MM/DD/YYYY')}</option>
+                    {bookshelfBooksAddedDateRange.map((p,i)=>{
+                      return (
+                        <option
+                          key={i}
+                          value={p}
+                        >
+                          {dayjs(p).format('MM/DD/YYYY')}
+                        </option>
+                      )
+                    }).reverse()}
+                  </Select>
+                ): null}
               </Flex>
               <Bar 
                 options={{
