@@ -113,7 +113,7 @@ export default function Stats({server}: {server: string}) {
             else {
               return (
                 {
-                  date: dayjs(d).format('ddd MMM D YYYY'),
+                  date: dayjs.utc(d).format('ddd MMM D YYYY'),
                   read: 0
                 }
               )
@@ -294,14 +294,14 @@ export default function Stats({server}: {server: string}) {
             size="xs"
             onChange={e=>setPagesReadStartWeekDate(e.target.value)}
           >
-            <option value="">{dayjs(thisWeekStart).format('MM/DD/YYYY')}</option>
+            <option value="">{dayjs.utc(thisWeekStart).format('MM/DD/YYYY')}</option>
             {pagesReadDateRange.map((p,i)=>{
               return (
                 <option
                   key={i}
                   value={p}
                 >
-                  {dayjs(p).format('MM/DD/YYYY')}
+                  {dayjs.utc(p).format('MM/DD/YYYY')}
                 </option>
               )
             }).reverse()}
