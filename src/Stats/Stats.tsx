@@ -51,23 +51,28 @@ export default function Stats({server}: {server: string}) {
   // const daysOfTheWeekArray = Array.from(Array(7).keys()).map((idx) => {const d = new Date(); d.setDate(d.getDate() - d.getDay() + idx); return d; });
 
   function getDaysOfTheWeekArray(aDate: Date) {
-    return Array.from(Array(7).keys()).map((idx) => {const d = new Date(aDate); d.setDate(d.getDate() - d.getDay() + idx); return d; });
+    console.log("aDate",aDate)
+    return Array
+    .from(Array(7).keys())
+    .map((idx) => {
+        const d = dayjs.utc(aDate).toDate(); 
+        d.setDate(d.getDate() - d.getDay() + idx); 
+        console.log(d)
+        return d; 
+      });
   }
 
   function getWeekStart(d: Date) {
-    console.log(d)
     var day = d.getDay();
     var hours = d.getHours();
     var minutes = d.getMinutes();
     var dateDiff = d.getDate() - day;
     var hoursDiff = d.getHours() - hours;
     var minutesDiff = d.getMinutes() - minutes;
-    var newDate = dayjs.utc(d).toDate();
-    console.log(newDate)
+    var newDate = new Date(d);
     newDate.setDate(dateDiff);
     newDate.setHours(hoursDiff);
     newDate.setMinutes(minutesDiff);
-    console.log(newDate)
     return newDate;
   }
   const thisWeekStart = getWeekStart(new Date());
