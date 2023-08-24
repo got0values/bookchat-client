@@ -127,14 +127,11 @@ export default function Stats({server}: {server: string}) {
             let weekStarts = [];
             const numWeeksBetween = dayjs(thisWeekStart).diff(dayjs(firstPagesRead),'week');
             for (let i = 0; i < numWeeksBetween; i++) {
-              weekStarts.push(dayjs(firstPagesRead).add(7 * i, 'day').format());
+              weekStarts.push(dayjs.utc(firstPagesRead).add(7 * i, 'day').format());
             }
             console.log(firstPagesRead)
-            console.log(dayjs(firstPagesRead).isUTC())
-            console.log(dayjs(firstPagesRead).local())
-            console.log(dayjs(firstPagesRead).local().isUTC())
-            console.log(dayjs(firstPagesRead).utc())
-            console.log(dayjs(firstPagesRead).utc().isUTC())
+            console.log(dayjs(firstPagesRead))
+            console.log(dayjs.utc(firstPagesRead).format())
             return weekStarts
           }
           else {
