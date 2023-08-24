@@ -130,9 +130,10 @@ export default function Stats({server}: {server: string}) {
               weekStarts.push(dayjs(firstPagesRead).local().add(7 * i, 'day'));
             }
             console.log(firstPagesRead)
-            console.log(dayjs(firstPagesRead).local())
-            console.log(dayjs(firstPagesRead).local().format())
-            console.log(dayjs(firstPagesRead).local().add(7 * 0, 'day'))
+            console.log(dayjs(firstPagesRead))
+            console.log(dayjs(firstPagesRead).utc())
+            console.log(dayjs(firstPagesRead).utc().format())
+            console.log(dayjs(firstPagesRead).utc().add(7 * 0, 'day'))
             return weekStarts
           }
           else {
