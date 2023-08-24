@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
 import { 
   Box,
   Flex,
@@ -130,6 +129,10 @@ export default function Stats({server}: {server: string}) {
             for (let i = 0; i < numWeeksBetween; i++) {
               weekStarts.push(dayjs(firstPagesRead).add(7 * i, 'day').format());
             }
+            console.log(new Date(firstPagesRead))
+            console.log(firstPagesRead)
+            console.log(dayjs(firstPagesRead))
+            console.log(dayjs(firstPagesRead).add(7 * 0, 'day').format())
             return weekStarts
           }
           else {
