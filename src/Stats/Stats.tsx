@@ -61,15 +61,13 @@ export default function Stats({server}: {server: string}) {
     var dateDiff = d.getDate() - day;
     var hoursDiff = d.getHours() - hours;
     var minutesDiff = d.getMinutes() - minutes;
-    var newDate = new Date(dayjs.utc(d).format());
+    var newDate = dayjs.utc(d).toDate();
     newDate.setDate(dateDiff);
     newDate.setHours(hoursDiff);
     newDate.setMinutes(minutesDiff);
     return newDate;
   }
   const thisWeekStart = getWeekStart(new Date());
-  console.log(thisWeekStart)
-  console.log(getWeekStart(new Date(dayjs().utc().format())))
   
   const [suggestionRating,setSuggestionRating] = useState<number>(0);
   const [suggestionCount,setSuggestionCount] = useState<number>(0);
