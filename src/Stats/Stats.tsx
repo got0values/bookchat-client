@@ -62,6 +62,7 @@ export default function Stats({server}: {server: string}) {
     var hoursDiff = d.getHours() - hours;
     var minutesDiff = d.getMinutes() - minutes;
     var newDate = dayjs.utc(d).toDate();
+    console.log(newDate)
     newDate.setDate(dateDiff);
     newDate.setHours(hoursDiff);
     newDate.setMinutes(minutesDiff);
