@@ -132,6 +132,7 @@ export default function Stats({server}: {server: string}) {
             console.log(firstPagesRead)
             console.log(dayjs(firstPagesRead))
             console.log(dayjs.utc(firstPagesRead).format())
+            console.log(dayjs.utc(firstPagesRead).add(7 * 0, 'day').format())
             return weekStarts
           }
           else {
