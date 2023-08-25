@@ -255,7 +255,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             notes: notesRef.current.value,
             review: reviewRef.current.value,
             rating: null,
-            dateAdded: dayjs(dateRef.current.value).utc().format('YYYY-MM-DD mm:HH:ss')
+            dateAdded: dayjs.utc(dateRef.current.value).format('YYYY-MM-DD HH:mm:ss')
           },
           {headers: {
             'authorization': tokenCookie
@@ -732,7 +732,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
               const author1 = cellData[2]?.replace(/[="]/g,"");
               const isbn = cellData[5].replace(/[="]/g,"");
               const rating = parseInt(cellData[7]);
-              const dateAdded = dayjs(cellData[15]).utc().format('YYYY-MM-DD mm:HH:ss');
+              const dateAdded = dayjs.utc(cellData[15]).format('YYYY-MM-DD HH:mm:ss');
               await axios
                 .get(`https://openlibrary.org/search.json?q=${title}+${author}+${isbn}`)
                 .then(async (result)=>{
