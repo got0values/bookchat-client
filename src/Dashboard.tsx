@@ -1151,7 +1151,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             isLazy
           >
             <TabList
-              borderBottom="none"
+              // borderBottom="none"
             >
               <Tab
                 fontWeight="bold"

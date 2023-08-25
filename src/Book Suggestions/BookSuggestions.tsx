@@ -29,7 +29,7 @@ export default function BookSuggestions({server, gbooksapi}: {server: string; gb
         isLazy
       >
         <TabList
-          borderBottom="none"
+          // borderBottom="none"
         >
           <Tab 
             fontWeight="bold"
@@ -56,7 +56,7 @@ export default function BookSuggestions({server, gbooksapi}: {server: string; gb
               borderBottom: "2px solid gray"
             }}
           >
-            For Me
+            For me
           </Tab>
           <Tab 
             fontWeight="bold"

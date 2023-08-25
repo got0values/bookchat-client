@@ -102,7 +102,7 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
             p={2}
           >
             <TabList
-              borderBottom="none"
+              // borderBottom="none"
             >
               <Tab 
                 fontWeight="bold"
