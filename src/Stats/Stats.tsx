@@ -51,14 +51,11 @@ export default function Stats({server}: {server: string}) {
   // const daysOfTheWeekArray = Array.from(Array(7).keys()).map((idx) => {const d = new Date(); d.setDate(d.getDate() - d.getDay() + idx); return d; });
 
   function getDaysOfTheWeekArray(aDate: Date) {
-    console.log("aDate",aDate)
     return Array
     .from(Array(7).keys())
     .map((idx) => {
         const d = dayjs.utc(aDate).local().toDate(); 
-        console.log("start",d)
         d.setDate(d.getDate() - d.getDay() + idx); 
-        console.log(d)
         return d; 
       });
   }
@@ -109,6 +106,7 @@ export default function Stats({server}: {server: string}) {
       }
       )
       .then((response)=>{
+        console.log(response.data.message)
         setSuggestionRating(response.data.message.suggestionRating)
         setSuggestionCount(response.data.message.suggestionCount)
 
