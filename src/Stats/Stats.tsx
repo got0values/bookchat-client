@@ -51,15 +51,10 @@ export default function Stats({server}: {server: string}) {
   // const daysOfTheWeekArray = Array.from(Array(7).keys()).map((idx) => {const d = new Date(); d.setDate(d.getDate() - d.getDay() + idx); return d; });
 
   function getDaysOfTheWeekArray(aDate: Date) {
-    console.log("aDate",aDate)
     return Array
     .from(Array(7).keys())
     .map((idx) => {
         const d = dayjs(aDate).local().toDate(); 
-        console.log("d",d)
-        console.log("d.getDate()",d.getDate())
-        console.log("d.getDay()",d.getDay())
-        console.log("idx",idx)
         d.setDate(d.getDate() - d.getDay() + idx); 
         return d; 
       });
@@ -117,18 +112,13 @@ export default function Stats({server}: {server: string}) {
 
         setPagesRead((p)=>{
           const weekArray = getDaysOfTheWeekArray(pagesReadStartWeekDate ? dayjs(pagesReadStartWeekDate).local().toDate() : dayjs().local().toDate());
-          console.log("either or",pagesReadStartWeekDate ? dayjs(pagesReadStartWeekDate).local().toDate() : dayjs().local().toDate())
-          console.log("weekArray",weekArray)
           const pR = weekArray.map((d,i)=>{
-            console.log(i,"pre-spr",response.data.message.pagesRead)
-            console.log(i,"spr",d)
             if (
                 response.data.message.pagesRead.find((pred:any)=>dayjs(pred.date).local().format('ddd MMM D YYYY') === dayjs(d).local().format('ddd MMM D YYYY'))
               ) {
               return response.data.message.pagesRead.find((pred:any)=>dayjs(pred.date).local().format('ddd MMM D YYYY') === dayjs(d).local().format('ddd MMM D YYYY'))
             }
             else {
-              console.log(i,"made-it",dayjs(d).local().format('ddd MMM D YYYY'))
               return (
                 {
                   date: dayjs(d).local().format('ddd MMM D YYYY'),
@@ -143,13 +133,10 @@ export default function Stats({server}: {server: string}) {
           let firstPagesRead = response.data.message.firstPagesRead;
           if (firstPagesRead) {
             let weekStarts = [];
-            console.log("dayjs(thisWeekStart)",dayjs(thisWeekStart))
-            console.log("dayjs(firstPagesRead.split('T')[0])",dayjs(firstPagesRead.split("T")[0]))
             const numWeeksBetween = dayjs(thisWeekStart).diff(dayjs(firstPagesRead.split("T")[0]),'week');
             for (let i = 0; i < numWeeksBetween; i++) {
               weekStarts.push(dayjs(firstPagesRead.split("T")[0]).add(7 * i, 'day'));
             }
-            console.log("weekStarts",weekStarts)
             return weekStarts
           }
           else {
@@ -208,7 +195,7 @@ export default function Stats({server}: {server: string}) {
           let firstBookshelfBook = response.data.message.firstBookshelfBook;
           if (firstBookshelfBook) {
             let weekStarts = [];
-            const numWeeksBetween = dayjs(thisWeekStart).diff(dayjs(firstBookshelfBook),'week');
+            const numWeeksBetween = dayjs(thisWeekStart).diff(dayjs(firstBookshelfBook.split("T")[0]),'week');
             for (let i = 0; i < numWeeksBetween; i++) {
               weekStarts.push(dayjs(firstBookshelfBook).add(7 * i, 'day').format());
             }
