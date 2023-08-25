@@ -104,10 +104,9 @@ export function BookSuggestionToList({server}: {server: string;}) {
       {bookSuggestToList?.length ? (
         bookSuggestToList.map((bookshelf: BookshelfType, i: number)=>{
           return (
-            <>
+            <React.Fragment key={i}>
               <Box
                 // className="well"
-                key={i}
               >
                 <Flex 
                   align="center"
@@ -190,7 +189,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
               {i !== bookSuggestToList.length - 1 ? (
                 <Divider borderColor="blackAlpha.600" my={2} />
               ): null}
-            </>
+            </React.Fragment>
           )
         })
       ): (

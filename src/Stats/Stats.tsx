@@ -8,7 +8,8 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-  Select
+  Select,
+  PopoverArrow
 } from "@chakra-ui/react";
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
@@ -77,7 +78,8 @@ export default function Stats({server}: {server: string}) {
   
   const [suggestionRating,setSuggestionRating] = useState<number>(0);
   const [suggestionCount,setSuggestionCount] = useState<number>(0);
-
+  const [suggestionRatingGiven,setSuggestionRatingGiven] = useState<number>(0)
+;
   const [pagesRead,setPagesRead] = useState<any[]>([]);
   const [pagesReadDateRange,setPagesReadDateRange] = useState<any[]>([]);
   const [pagesReadStartWeekDate,setPagesReadStartWeekDate] = useState<string>("");
@@ -107,6 +109,7 @@ export default function Stats({server}: {server: string}) {
       )
       .then((response)=>{
         setSuggestionRating(response.data.message.suggestionRating)
+        setSuggestionRatingGiven(response.data.message.suggestionRatingGiven)
         setSuggestionCount(response.data.message.suggestionCount)
 
         setPagesRead((p)=>{
@@ -229,11 +232,12 @@ export default function Stats({server}: {server: string}) {
             className="well"
             minW="350px"
             flex="1 1 auto"
+            pb={5}
           >
             <Heading
               as="h2"
               size="md"
-              mb={2}
+              mb={4}
               textAlign="center"
             >
               Suggestion Rating
@@ -246,9 +250,9 @@ export default function Stats({server}: {server: string}) {
               <BsStarFill fill="gold" size={30} />
               <Text 
                 fontWeight="bold"
-                fontSize="xl"
+                fontSize="lg"
               >
-                {suggestionRating.toFixed(1)} stars
+                {suggestionRating.toFixed(1)} stars / {suggestionRatingGiven} ratings
               </Text>
             </Flex>
           </Box>
@@ -258,11 +262,12 @@ export default function Stats({server}: {server: string}) {
             className="well"
             minW="350px"
             flex="1 1 auto"
+            pb={5}
           >
             <Heading
               as="h2"
               size="md"
-              mb={2}
+              mb={4}
               textAlign="center"
             >
               Suggestion Count
@@ -274,7 +279,7 @@ export default function Stats({server}: {server: string}) {
             >
               <Text 
                 fontWeight="bold"
-                fontSize="xl"
+                fontSize="lg"
               >
                 {suggestionCount}
               </Text>
@@ -321,15 +326,38 @@ export default function Stats({server}: {server: string}) {
               width="100%"
               maxW="100%"
             >
-              <Heading
-                as="h2"
-                size="md"
-                mb={2}
-                textAlign="center"
-                ml={[3,0]}
-              >
-                Pages Read
-              </Heading>
+              <Flex gap={1} justify="center">
+                <Heading
+                  as="h2"
+                  size="md"
+                  mb={2}
+                  textAlign="center"
+                  ml={[3,0]}
+                >
+                  Pages Read
+                </Heading>
+                <Popover size="sm">
+                  <PopoverTrigger>
+                    <Button
+                      size="xs"
+                      variant="ghost"
+                    >
+                      <ImInfo size={17} />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent p={2}>
+                    <Box fontSize="sm">
+                      <Text textAlign="center" p={1}>
+                        Pages read within your Currently Reading posts
+                      </Text>
+                      <Text textAlign="center" fontStyle="italic">
+                        Tip: You can update them at any time
+                      </Text>
+                    </Box>
+                    <PopoverArrow/>
+                  </PopoverContent>
+                </Popover>
+              </Flex>
               <Bar 
                 options={{
                   responsive: true,
@@ -460,9 +488,12 @@ export default function Stats({server}: {server: string}) {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent>
-                  <Text textAlign="center" p={1}>
-                    Currently Reading books posted
-                  </Text>
+                  <Box fontSize="sm" p={2} >
+                    <Text textAlign="center" p={1}>
+                      Currently Reading books posted
+                    </Text>
+                  </Box>
+                  <PopoverArrow/>
                 </PopoverContent>
               </Popover>
             </Flex>
