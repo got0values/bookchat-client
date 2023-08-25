@@ -143,6 +143,8 @@ export default function Stats({server}: {server: string}) {
           let firstPagesRead = response.data.message.firstPagesRead;
           if (firstPagesRead) {
             let weekStarts = [];
+            console.log("dayjs(thisWeekStart)",dayjs(thisWeekStart))
+            console.log("dayjs(firstPagesRead)",dayjs(firstPagesRead))
             const numWeeksBetween = dayjs(thisWeekStart).diff(dayjs(firstPagesRead),'week');
             for (let i = 0; i < numWeeksBetween; i++) {
               console.log("dayjs(firstPagesRead)",dayjs(firstPagesRead))
