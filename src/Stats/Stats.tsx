@@ -144,11 +144,10 @@ export default function Stats({server}: {server: string}) {
           if (firstPagesRead) {
             let weekStarts = [];
             console.log("dayjs(thisWeekStart)",dayjs(thisWeekStart))
-            console.log("dayjs(firstPagesRead)",dayjs(firstPagesRead))
-            const numWeeksBetween = dayjs(thisWeekStart).diff(dayjs(firstPagesRead),'week');
+            console.log("dayjs.utc(firstPagesRead)",dayjs.utc(firstPagesRead))
+            const numWeeksBetween = dayjs(thisWeekStart).diff(dayjs.utc(firstPagesRead),'week');
             for (let i = 0; i < numWeeksBetween; i++) {
-              console.log("dayjs(firstPagesRead)",dayjs(firstPagesRead))
-              weekStarts.push(dayjs(firstPagesRead).add(7 * i, 'day'));
+              weekStarts.push(dayjs.utc(firstPagesRead).add(7 * i, 'day'));
             }
             return weekStarts
           }
