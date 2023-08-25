@@ -55,7 +55,7 @@ export default function Stats({server}: {server: string}) {
     return Array
     .from(Array(7).keys())
     .map((idx) => {
-        const d = dayjs.utc(aDate).toDate(); 
+        const d = dayjs.utc(aDate).local().toDate(); 
         console.log("start",d)
         d.setDate(d.getDate() - d.getDay() + idx); 
         console.log(d)
@@ -117,15 +117,15 @@ export default function Stats({server}: {server: string}) {
             console.log(i,"pre-spr",response.data.message.pagesRead)
             console.log(i,"spr",d)
             if (
-                response.data.message.pagesRead.find((pred:any)=>dayjs.utc(pred.date).format('ddd MMM D YYYY') === dayjs.utc(d).format('ddd MMM D YYYY'))
+                response.data.message.pagesRead.find((pred:any)=>dayjs(pred.date).local().format('ddd MMM D YYYY') === dayjs(d).local().format('ddd MMM D YYYY'))
               ) {
-              return response.data.message.pagesRead.find((pred:any)=>dayjs.utc(pred.date).format('ddd MMM D YYYY') === dayjs.utc(d).format('ddd MMM D YYYY'))
+              return response.data.message.pagesRead.find((pred:any)=>dayjs(pred.date).local().format('ddd MMM D YYYY') === dayjs(d).local().format('ddd MMM D YYYY'))
             }
             else {
-              console.log(i,"made-it",dayjs.utc(d).format('ddd MMM D YYYY'))
+              console.log(i,"made-it",dayjs(d).local().format('ddd MMM D YYYY'))
               return (
                 {
-                  date: dayjs(d).format('ddd MMM D YYYY'),
+                  date: dayjs(d).local().format('ddd MMM D YYYY'),
                   read: 0
                 }
               )
@@ -137,9 +137,9 @@ export default function Stats({server}: {server: string}) {
           let firstPagesRead = response.data.message.firstPagesRead;
           if (firstPagesRead) {
             let weekStarts = [];
-            const numWeeksBetween = dayjs(thisWeekStart).diff(dayjs(firstPagesRead),'week');
+            const numWeeksBetween = dayjs(thisWeekStart).local().diff(dayjs(firstPagesRead).local(),'week');
             for (let i = 0; i < numWeeksBetween; i++) {
-              weekStarts.push(dayjs.utc(firstPagesRead).add(7 * i, 'day').format());
+              weekStarts.push(dayjs.utc(firstPagesRead).local().add(7 * i, 'day').format());
             }
             return weekStarts
           }
