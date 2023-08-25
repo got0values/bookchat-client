@@ -56,6 +56,7 @@ export default function Stats({server}: {server: string}) {
     .from(Array(7).keys())
     .map((idx) => {
         const d = dayjs.utc(aDate).toDate(); 
+        console.log("start",d)
         d.setDate(d.getDate() - d.getDay() + idx); 
         console.log(d)
         return d; 
@@ -112,16 +113,19 @@ export default function Stats({server}: {server: string}) {
         setSuggestionCount(response.data.message.suggestionCount)
 
         setPagesRead((p)=>{
-          const pR = getDaysOfTheWeekArray(pagesReadStartWeekDate ? new Date(pagesReadStartWeekDate) : new Date()).map((d)=>{
+          const pR = getDaysOfTheWeekArray(pagesReadStartWeekDate ? dayjs.utc(pagesReadStartWeekDate).toDate() : dayjs.utc().toDate()).map((d,i)=>{
+            console.log(i,"pre-spr",response.data.message.pagesRead)
+            console.log(i,"spr",d)
             if (
-                response.data.message.pagesRead.find((pred:any)=>pred.date === dayjs.utc(d).format('ddd MMM D YYYY'))
+                response.data.message.pagesRead.find((pred:any)=>dayjs.utc(pred.date).format('ddd MMM D YYYY') === dayjs.utc(d).format('ddd MMM D YYYY'))
               ) {
-              return response.data.message.pagesRead.find((pred:any)=>pred.date === dayjs.utc(d).format('ddd MMM D YYYY'))
+              return response.data.message.pagesRead.find((pred:any)=>dayjs.utc(pred.date).format('ddd MMM D YYYY') === dayjs.utc(d).format('ddd MMM D YYYY'))
             }
             else {
+              console.log(i,"made-it",dayjs.utc(d).format('ddd MMM D YYYY'))
               return (
                 {
-                  date: dayjs.utc(d).format('ddd MMM D YYYY'),
+                  date: dayjs(d).format('ddd MMM D YYYY'),
                   read: 0
                 }
               )
