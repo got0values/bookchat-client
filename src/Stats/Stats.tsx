@@ -117,6 +117,7 @@ export default function Stats({server}: {server: string}) {
 
         setPagesRead((p)=>{
           const weekArray = getDaysOfTheWeekArray(pagesReadStartWeekDate ? dayjs(pagesReadStartWeekDate).local().toDate() : dayjs().local().toDate());
+          console.log("either or",pagesReadStartWeekDate ? dayjs(pagesReadStartWeekDate).local().toDate() : dayjs().local().toDate())
           console.log("weekArray",weekArray)
           const pR = weekArray.map((d,i)=>{
             console.log(i,"pre-spr",response.data.message.pagesRead)
@@ -144,7 +145,7 @@ export default function Stats({server}: {server: string}) {
             let weekStarts = [];
             const numWeeksBetween = dayjs(thisWeekStart).local().diff(dayjs(firstPagesRead).local(),'week');
             for (let i = 0; i < numWeeksBetween; i++) {
-              weekStarts.push(dayjs.utc(firstPagesRead).local().add(7 * i, 'day').format());
+              weekStarts.push(dayjs(firstPagesRead).local().add(7 * i, 'day').format());
             }
             return weekStarts
           }
@@ -307,14 +308,14 @@ export default function Stats({server}: {server: string}) {
             size="xs"
             onChange={e=>setPagesReadStartWeekDate(e.target.value)}
           >
-            <option value="">{dayjs.utc(thisWeekStart).format('MM/DD/YYYY')}</option>
+            <option value="">{dayjs(thisWeekStart).local().format('MM/DD/YYYY')}</option>
             {pagesReadDateRange.map((p,i)=>{
               return (
                 <option
                   key={i}
                   value={p}
                 >
-                  {dayjs.utc(p).format('MM/DD/YYYY')}
+                  {dayjs(p).local().format('MM/DD/YYYY')}
                 </option>
               )
             }).reverse()}
