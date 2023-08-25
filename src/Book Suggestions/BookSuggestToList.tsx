@@ -9,7 +9,6 @@ import {
   Avatar,
   Button,
   Flex,
-  Divider,
   Popover,
   PopoverTrigger,
   PopoverCloseButton,
@@ -19,10 +18,7 @@ import {
   Skeleton,
 } from "@chakra-ui/react";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
-import { BsArrowRight } from 'react-icons/bs';
-import { ImInfo } from 'react-icons/im';
-import { FaPlay } from 'react-icons/fa'
-import StarRating from "../shared/StarRating";
+import { FaPlay, FaArrowCircleRight } from 'react-icons/fa'
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -125,7 +121,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
                     to={`/profile/${bookshelf.Profile.username}`}
                     src={bookshelf.Profile.profile_photo} 
                     size="sm"
-                    name={bookshelf.Profile.username}
+                    // name={bookshelf.Profile.username}
                   />
                   <Flex align="center" gap={1}>
                     <Text 
@@ -133,7 +129,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
                       as={Link}
                       to={`/profile/${bookshelf.Profile.username}`}
                     >
-                      {bookshelf.Profile.username}
+                      @{bookshelf.Profile.username}
                     </Text>
                     {/* <Box w="1.4rem">
                       {bookshelf.Flag ? <bookshelf.Flag/> : null}
@@ -146,7 +142,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
                   gap={2}
                 >
                   <Box>
-                    <Text as="span" fontWeight="bold">Books on shelf:</Text> {(bookshelf as any)._count.BookshelfBook}
+                    <Text as="span" fontWeight="bold">Shelf:</Text> {(bookshelf as any)._count.BookshelfBook}
                   </Box>
                   <Button
                     as={Link}
@@ -154,7 +150,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
                     variant="ghost"
                     p={0}
                   >
-                    <BsArrowRight size={20} />
+                    <FaArrowCircleRight size={20} color="teal" />
                   </Button>
                 </Flex>
               </Flex>
