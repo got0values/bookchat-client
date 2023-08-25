@@ -111,7 +111,9 @@ export default function Stats({server}: {server: string}) {
         setSuggestionCount(response.data.message.suggestionCount)
 
         setPagesRead((p)=>{
-          const pR = getDaysOfTheWeekArray(pagesReadStartWeekDate ? dayjs(pagesReadStartWeekDate).local().toDate() : dayjs().local().toDate()).map((d,i)=>{
+          const weekArray = getDaysOfTheWeekArray(pagesReadStartWeekDate ? dayjs(pagesReadStartWeekDate).local().toDate() : dayjs().local().toDate());
+          console.log("weekArray",weekArray)
+          const pR = weekArray.map((d,i)=>{
             console.log(i,"pre-spr",response.data.message.pagesRead)
             console.log(i,"spr",d)
             if (
