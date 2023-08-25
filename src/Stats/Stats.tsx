@@ -106,7 +106,6 @@ export default function Stats({server}: {server: string}) {
       }
       )
       .then((response)=>{
-        console.log(response.data.message)
         setSuggestionRating(response.data.message.suggestionRating)
         setSuggestionCount(response.data.message.suggestionCount)
 
