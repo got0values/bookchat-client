@@ -113,14 +113,14 @@ export default function Stats({server}: {server: string}) {
           const weekArray = getDaysOfTheWeekArray(pagesReadStartWeekDate ? dayjs(pagesReadStartWeekDate).local().toDate() : dayjs().local().toDate());
           const pR = weekArray.map((d,i)=>{
             if (
-                response.data.message.pagesRead.find((pred:any)=>dayjs(pred.date).local().format('ddd MMM D YYYY') === dayjs(d).local().format('ddd MMM D YYYY'))
+                response.data.message.pagesRead.find((pred:any)=>dayjs(pred.date.split("T")[0]).format('ddd MMM D YYYY') === dayjs(d).format('ddd MMM D YYYY'))
               ) {
-              return response.data.message.pagesRead.find((pred:any)=>dayjs(pred.date).local().format('ddd MMM D YYYY') === dayjs(d).local().format('ddd MMM D YYYY'))
+              return response.data.message.pagesRead.find((pred:any)=>dayjs(pred.date.split("T")[0]).format('ddd MMM D YYYY') === dayjs(d).format('ddd MMM D YYYY'))
             }
             else {
               return (
                 {
-                  date: dayjs(d).local().format('ddd MMM D YYYY'),
+                  date: dayjs(d).format('ddd MMM D YYYY'),
                   read: 0
                 }
               )
@@ -176,10 +176,10 @@ export default function Stats({server}: {server: string}) {
 
         setBookshelfBooksAdded((prev)=>{
           let bsba: any = []
-          getDaysOfTheWeekArray(bookshelfBooksAddedStartWeekDate ? new Date(bookshelfBooksAddedStartWeekDate) : new Date()).forEach((d)=>{
+          getDaysOfTheWeekArray(bookshelfBooksAddedStartWeekDate ? dayjs(bookshelfBooksAddedStartWeekDate).local().toDate() : dayjs().local().toDate()).forEach((d)=>{
             let count = 0;
             response.data.message.bookshelfBooksAdded.forEach((bsb: any)=>{
-              if (new Date(bsb.created_on).toDateString() === d.toDateString()) {
+              if (dayjs(bsb.created_on.split("T")[0]).format('ddd MMM D YYYY') === dayjs(d).format('ddd MMM D YYYY')) {
                 count++;
               }
             })
