@@ -1530,7 +1530,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                               <Text 
                                 fontStyle="italic"
                               >
-                                {dayjs(book.created_on).local().format('MMM DD, YYYY')}
+                                {dayjs.utc(book.created_on).format('MMM DD, YYYY')}
                               </Text>
                               <Button
                                 size="xs"
@@ -1551,7 +1551,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             >
                               <Input
                                 type="date"
-                                defaultValue={dayjs(book.created_on).local().format("YYYY-MM-DD")}
+                                defaultValue={dayjs.utc(book.created_on).format("YYYY-MM-DD")}
                                 id={`date-input-${book.id}`}
                                 size="sm"
                               />
