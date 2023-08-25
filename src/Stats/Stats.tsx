@@ -145,6 +145,7 @@ export default function Stats({server}: {server: string}) {
             let weekStarts = [];
             const numWeeksBetween = dayjs(thisWeekStart).local().diff(dayjs(firstPagesRead).local(),'week');
             for (let i = 0; i < numWeeksBetween; i++) {
+              console.log("dayjs(firstPagesRead).local()",dayjs(firstPagesRead).local())
               weekStarts.push(dayjs(firstPagesRead).local().add(7 * i, 'day').format());
             }
             return weekStarts
