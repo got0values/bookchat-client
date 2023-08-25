@@ -164,9 +164,9 @@ export default function Stats({server}: {server: string}) {
           let firstCurrentlyReading = response.data.message.firstCurrentlyReading;
           if (firstCurrentlyReading) {
             let weekStarts = [];
-            const numWeeksBetween = dayjs(thisWeekStart).diff(dayjs(firstCurrentlyReading),'week');
+            const numWeeksBetween = dayjs(thisWeekStart).diff(dayjs(firstCurrentlyReading.split("T")[0]),'week');
             for (let i = 0; i < numWeeksBetween; i++) {
-              weekStarts.push(dayjs(firstCurrentlyReading).add(7 * i, 'day').format());
+              weekStarts.push(dayjs(firstCurrentlyReading.split("T")[0]).add(7 * i, 'day').format());
             }
             return weekStarts
           }
@@ -197,7 +197,7 @@ export default function Stats({server}: {server: string}) {
             let weekStarts = [];
             const numWeeksBetween = dayjs(thisWeekStart).diff(dayjs(firstBookshelfBook.split("T")[0]),'week');
             for (let i = 0; i < numWeeksBetween; i++) {
-              weekStarts.push(dayjs(firstBookshelfBook).add(7 * i, 'day').format());
+              weekStarts.push(dayjs(firstBookshelfBook.split("T")[0]).add(7 * i, 'day').format());
             }
             return weekStarts
           }
@@ -438,14 +438,14 @@ export default function Stats({server}: {server: string}) {
                   size="xs"
                   onChange={e=>setCurrentlyReadingPostsStartWeekDate(e.target.value)}
                 >
-                  <option value="">{dayjs(thisWeekStart).format('MM/DD/YYYY')}</option>
+                  <option value="">{dayjs(thisWeekStart).local().format('MM/DD/YYYY')}</option>
                   {currentlyReadingPostsDateRange.map((p,i)=>{
                     return (
                       <option
                         key={i}
                         value={p}
                       >
-                        {dayjs(p).format('MM/DD/YYYY')}
+                        {dayjs(p).local().format('MM/DD/YYYY')}
                       </option>
                     )
                   }).reverse()}
@@ -531,14 +531,14 @@ export default function Stats({server}: {server: string}) {
                     size="xs"
                     onChange={e=>setBookshelfBooksAddedStartWeekDate(e.target.value)}
                   >
-                    <option value="">{dayjs(thisWeekStart).format('MM/DD/YYYY')}</option>
+                    <option value="">{dayjs(thisWeekStart).local().format('MM/DD/YYYY')}</option>
                     {bookshelfBooksAddedDateRange.map((p,i)=>{
                       return (
                         <option
                           key={i}
                           value={p}
                         >
-                          {dayjs(p).format('MM/DD/YYYY')}
+                          {dayjs(p).local().format('MM/DD/YYYY')}
                         </option>
                       )
                     }).reverse()}
