@@ -15,6 +15,7 @@ import {
   PopoverContent,
   PopoverBody,
   PopoverArrow,
+  Divider,
   Skeleton,
 } from "@chakra-ui/react";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
@@ -103,87 +104,93 @@ export function BookSuggestionToList({server}: {server: string;}) {
       {bookSuggestToList?.length ? (
         bookSuggestToList.map((bookshelf: BookshelfType, i: number)=>{
           return (
-            <Box
-              className="well"
-              key={i}
-            >
-              <Flex 
-                align="center"
-                justify="space-between"
+            <>
+              <Box
+                // className="well"
+                key={i}
               >
-                <Flex
+                <Flex 
                   align="center"
-                  gap={2}
-                  wrap="wrap"
+                  justify="space-between"
                 >
-                  <Avatar 
-                    as={Link}
-                    to={`/profile/${bookshelf.Profile.username}`}
-                    src={bookshelf.Profile.profile_photo} 
-                    size="sm"
-                    // name={bookshelf.Profile.username}
-                  />
-                  <Flex align="center" gap={1}>
-                    <Text 
-                      fontWeight="bold"
+                  <Flex
+                    align="center"
+                    gap={2}
+                    wrap="wrap"
+                  >
+                    <Avatar 
                       as={Link}
                       to={`/profile/${bookshelf.Profile.username}`}
+                      src={bookshelf.Profile.profile_photo} 
+                      size="sm"
+                      // name={bookshelf.Profile.username}
+                    />
+                    <Flex align="center" gap={1}>
+                      <Text 
+                        fontWeight="bold"
+                        fontSize="sm"
+                        as={Link}
+                        to={`/profile/${bookshelf.Profile.username}`}
+                      >
+                        @{bookshelf.Profile.username}
+                      </Text>
+                      {/* <Box w="1.4rem">
+                        {bookshelf.Flag ? <bookshelf.Flag/> : null}
+                      </Box> */}
+                      <SuggestionCountBadge suggestionCount={bookshelf.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile}/>
+                    </Flex>
+                  </Flex>
+                  <Flex
+                    align="center"
+                    gap={2}
+                  >
+                    <Box fontSize="sm">
+                      <Text as="span" fontWeight="bold">Shelf:</Text> {(bookshelf as any)._count.BookshelfBook}
+                    </Box>
+                    <Button
+                      as={Link}
+                      to={`/booksuggestions/bookshelf?profile=${bookshelf.Profile.username}`}
+                      variant="ghost"
+                      p={0}
                     >
-                      @{bookshelf.Profile.username}
-                    </Text>
-                    {/* <Box w="1.4rem">
-                      {bookshelf.Flag ? <bookshelf.Flag/> : null}
-                    </Box> */}
-                    <SuggestionCountBadge suggestionCount={bookshelf.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile}/>
+                      <FaArrowCircleRight size={20} color="teal" />
+                    </Button>
                   </Flex>
                 </Flex>
-                <Flex
-                  align="center"
-                  gap={2}
-                >
-                  <Box>
-                    <Text as="span" fontWeight="bold">Shelf:</Text> {(bookshelf as any)._count.BookshelfBook}
-                  </Box>
-                  <Button
-                    as={Link}
-                    to={`/booksuggestions/bookshelf?profile=${bookshelf.Profile.username}`}
-                    variant="ghost"
-                    p={0}
-                  >
-                    <FaArrowCircleRight size={20} color="teal" />
-                  </Button>
-                </Flex>
-              </Flex>
-              <Box>
-                <Popover isLazy>
-                  <PopoverTrigger>
-                    <Box
-                      _hover={{
-                        cursor: "pointer"
-                      }}
-                    >
-                      {bookshelf.suggestions_notes ? (
-                        <Text fontStyle="italic" noOfLines={2}>
-                          "{bookshelf.suggestions_notes}"
-                        </Text>
-                      ): null}
-                    </Box>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <PopoverArrow />
-                    <PopoverCloseButton />
-                    <PopoverBody 
-                      fontSize="sm"
-                      _dark={{
-                        bg: "black"
-                      }}
-                    >
-                      {bookshelf.suggestions_notes}
-                    </PopoverBody>
-                  </PopoverContent>
-                </Popover>
+                <Box>
+                  <Popover isLazy>
+                    <PopoverTrigger>
+                      <Box
+                        _hover={{
+                          cursor: "pointer"
+                        }}
+                      >
+                        {bookshelf.suggestions_notes ? (
+                          <Text fontStyle="italic" noOfLines={2}>
+                            "{bookshelf.suggestions_notes}"
+                          </Text>
+                        ): null}
+                      </Box>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <PopoverArrow />
+                      <PopoverCloseButton />
+                      <PopoverBody 
+                        fontSize="sm"
+                        _dark={{
+                          bg: "black"
+                        }}
+                      >
+                        {bookshelf.suggestions_notes}
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Popover>
+                </Box>
               </Box>
-            </Box>
+              {i !== bookSuggestToList.length - 1 ? (
+                <Divider borderColor="blackAlpha.600" my={2} />
+              ): null}
+            </>
           )
         })
       ): (

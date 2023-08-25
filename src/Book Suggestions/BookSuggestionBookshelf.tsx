@@ -8,9 +8,7 @@ import {
   Text,
   Avatar,
   Image,
-  Center,
   Spinner,
-  Stack,
   Button,
   Input,
   Flex,
@@ -27,12 +25,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  Popover,
-  PopoverTrigger,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverBody,
-  PopoverArrow,
+  Divider,
   useDisclosure,
   useToast
 } from "@chakra-ui/react";
@@ -227,7 +220,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
   }
 
   return (
-    <Box className="main-content-smaller">
+    <Box className="main-content-medium">
       <Skeleton
         isLoaded={!isLoading}
       >
@@ -310,51 +303,58 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
             ): null}
           </Box>
         </Flex>
+        <Divider borderColor="blackAlpha.700" mb={2} />
         <Box 
-          rounded="md"
-          border="1px solid black"
-          p={2}
+          // rounded="md"
+          // border="1px solid"
+          // borderColor="gray.300"
+          // p={2}
           className="non-well"
         >
-          <Heading as="h3" size="sm" mb={1}>Others have suggested:</Heading>
+          <Heading as="h3" size="sm" mb={1} color="blackAlpha.800">Others have suggested:</Heading>
           <Flex
             // align="center"
             wrap="wrap"
             gap={2}
             maxH="25vh"
             overflow="auto"
+            p={.5}
           >
             {previousSuggestions !== null && previousSuggestions.length ? (
               previousSuggestions.map((suggestion,i)=>{
                 return (
                   <Box
-                    maxW="200px"
+                    // maxW="200px"
                     key={i}
                     border="1px solid"
-                    p={1}
+                    borderColor="gray.400"
+                    p={2}
                     rounded="md"
+                    flex="1 0"
+                    minW="250px"
+                    backgroundColor="gray.50"
                   >
+                    <Text
+                      as={Link}
+                      to={`/profile/${suggestion.Profile_BookSuggestion_suggestorToProfile.username}`}
+                      fontSize="sm"
+                      fontWeight="bold"
+                      noOfLines={1}
+                    >
+                      {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
+                    </Text>
                     <Flex
                       // align="center"
-                      gap={1}
+                      gap={2}
+                      width="100%"
                     >
                       <Image
                         src={suggestion.image}
                         height="100%"
-                        maxH="85px"
+                        maxH="60px"
                         boxShadow="1px 1px 1px 1px darkgrey"
                       />
                       <Box>
-                        <Text
-                          as={Link}
-                          to={`/profile/${suggestion.Profile_BookSuggestion_suggestorToProfile.username}`}
-                          fontSize="sm"
-                          fontWeight="bold"
-                          noOfLines={1}
-                          mb={-1}
-                        >
-                          {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
-                        </Text>
                         <Text 
                           fontSize="sm"
                           opacity="80%"
@@ -364,14 +364,15 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                         </Text>
                         <Text
                           fontSize="sm"
-                          fontStyle="italic"
+                          fontWeight="bold"
+                          // fontStyle="italic"
                           noOfLines={1}
                           mb={-1}
                         >
                           {suggestion.title}
                         </Text>
                         <Text
-                          fontSize="sm"
+                          fontSize="xs"
                           noOfLines={1}
                           mb={-1}
                         >
@@ -402,6 +403,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
             )}
           </Flex>
         </Box>
+        <Divider borderColor="blackAlpha.700" my={3} />
         {bookSuggestionBookshelf?.allow_suggestions !== 1 ? (
           <Flex align="center" justify="center" minH="70vh">
             <Heading as="h1" size="xl">Currently not allowing suggestions</Heading>
@@ -424,9 +426,10 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                   type="search"
                   bg="white"
                   borderWidth={3}
-                  borderColor="purple.500"
+                  borderColor="teal"
                   size="lg"
                   placeholder="Suggest a book"
+                  mb={2}
                   _dark={{
                     bg: "gray.800"
                   }}
