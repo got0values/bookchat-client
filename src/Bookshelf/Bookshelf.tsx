@@ -612,14 +612,54 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   }
 
   const suggestionsNotesRef = useRef({} as HTMLTextAreaElement);
-  async function saveAllowSuggestions() {
+  async function saveNotes() {
     let tokenCookie: string | null = Cookies.get().token;
     const suggestionsNotes = suggestionsNotesRef.current.value;
     if (tokenCookie) {
       await axios
-      .put(server + "/api/saveallowsuggestions",
+      .put(server + "/api/saveallowsuggestionsnotes",
         {
-          suggestionsNotes: suggestionsNotes,
+          suggestionsNotes: suggestionsNotes
+        },
+        {
+          headers: {
+            authorization: tokenCookie
+          }
+        }
+      )
+      .then((response)=>{
+        toast({
+          description: "Notes updated",
+          status: "success",
+          duration: 9000,
+          isClosable: true
+        })
+      })
+      .catch((response)=>{
+        console.log(response)
+        toast({
+          description: "Error: BSN101",
+          status: "error",
+          duration: 9000,
+          isClosable: true
+        })
+        if (response.data?.message) {
+          throw new Error(response.data?.message)
+        }
+      })
+    }
+    else {
+      throw new Error("An error has occured")
+    }
+  }
+
+  async function savePollVoting() {
+    let tokenCookie: string | null = Cookies.get().token;
+    const suggestionsNotes = suggestionsNotesRef.current.value;
+    if (tokenCookie) {
+      await axios
+      .put(server + "/api/saveallowsuggestionspoll",
+        {
           startPoll: startPoll ? 1 : 0,
           suggestionPollBookOne: pollBookOne,
           suggestionPollBookTwo: pollBookTwo,
@@ -633,7 +673,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
       )
       .then((response)=>{
         toast({
-          description: "Allow suggestions data saved",
+          description: "Poll settings updated",
           status: "success",
           duration: 9000,
           isClosable: true
@@ -1077,6 +1117,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   <Flex
                     justify="flex-end"
                     w="100%"
+                    gap={1}
                   >
                     <Popover isLazy>
                       <PopoverTrigger>
@@ -1104,6 +1145,14 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         </PopoverBody>
                       </PopoverContent>
                     </Popover>
+                    <Button
+                      onClick={e=>saveNotes()}
+                      colorScheme="black"
+                      variant="outline"
+                      size="sm"
+                    >
+                      Save notes
+                    </Button>  
                   </Flex>
                   <Flex 
                     width="100%"
@@ -1261,15 +1310,40 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         </Flex>
                       </Box>
                     ): null}
-                    <Divider my={1} />
-                    <Flex justify="flex-end">
+                    <Flex justify="flex-end" w="100%" gap={1}>
+                      <Popover isLazy>
+                        <PopoverTrigger>
+                          <Flex 
+                            align="center" 
+                            justify="center" 
+                            me={2}
+                            _hover={{
+                              cursor: "pointer"
+                            }}
+                          >
+                            <ImInfo size={20} color="gray" />
+                          </Flex>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <PopoverArrow />
+                          <PopoverCloseButton />
+                          <PopoverBody 
+                            fontSize="sm"
+                            _dark={{
+                              bg: "black"
+                            }}
+                          >
+                            Saving will reset any current poll votes (if any).
+                          </PopoverBody>
+                        </PopoverContent>
+                      </Popover>
                       <Button
-                        onClick={e=>saveAllowSuggestions()}
+                        onClick={e=>savePollVoting()}
                         colorScheme="black"
                         variant="outline"
                         size="sm"
                       >
-                        Save
+                        Save poll
                       </Button>  
                     </Flex>
                   </Flex>
