@@ -465,3 +465,13 @@ export interface EditCurrentlyReadingType {
   showQuoteDesigner?: boolean;
   getPageCallback: ()=>Promise<any>;
 }
+
+export interface SuggestionPollBookType {
+  id: number;
+  bookshelf?: number;
+  author: string;
+  image: string;
+  title: string;
+  description: string;
+  created_on?: Date | string;
+}

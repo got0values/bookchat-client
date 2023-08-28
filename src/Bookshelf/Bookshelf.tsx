@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BookshelfCategory, BookshelfBook, SelectedBook } from "../types/types";
+import { BookshelfCategory, BookshelfBook, SelectedBook, SuggestionPollBookType } from "../types/types";
 import { 
   Box,
   Tag,
@@ -10,6 +10,7 @@ import {
   Text,
   Image,
   Spinner,
+  Center,
   Stack,
   Button,
   Input,
@@ -57,6 +58,7 @@ import {
 } from "@chakra-ui/react";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
 import BooksSearch from "../shared/BooksSearch";
+import BookImage from "../shared/BookImage";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { MdOutlineChat, MdEdit } from 'react-icons/md';
 import { BiDotsHorizontalRounded, BiTrash, BiPlus, BiHide } from 'react-icons/bi';
@@ -109,6 +111,10 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
           return responseMessage.BookshelfBook
         });
         setAllowSuggestions(responseMessage.allow_suggestions === 1 ? true : false);
+        setStartPoll(responseMessage.start_poll === 1 ? true : false);
+        setPollBookOne(responseMessage.BookSuggestionPollBookOne.length ? responseMessage.BookSuggestionPollBookOne[0] : null)
+        setPollBookTwo(responseMessage.BookSuggestionPollBookTwo.length ? responseMessage.BookSuggestionPollBookTwo[0] : null)
+        setPollBookThree(responseMessage.BookSuggestionPollBookThree.length ? responseMessage.BookSuggestionPollBookThree[0] : null)
         return responseMessage
       })
       .catch(({response})=>{
@@ -606,14 +612,18 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   }
 
   const suggestionsNotesRef = useRef({} as HTMLTextAreaElement);
-  async function saveSuggestionNotes() {
+  async function saveAllowSuggestions() {
     let tokenCookie: string | null = Cookies.get().token;
     const suggestionsNotes = suggestionsNotesRef.current.value;
     if (tokenCookie) {
       await axios
-      .put(server + "/api/savesuggestionsnotes",
+      .put(server + "/api/saveallowsuggestions",
         {
-          suggestionsNotes: suggestionsNotes
+          suggestionsNotes: suggestionsNotes,
+          startPoll: startPoll ? 1 : 0,
+          suggestionPollBookOne: pollBookOne,
+          suggestionPollBookTwo: pollBookTwo,
+          suggestionPollBookThree: pollBookThree
         },
         {
           headers: {
@@ -623,7 +633,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
       )
       .then((response)=>{
         toast({
-          description: "Notes saved",
+          description: "Allow suggestions data saved",
           status: "success",
           duration: 9000,
           isClosable: true
@@ -966,6 +976,44 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     updateBookshelfBookMutation.mutate(id)
   }
 
+  const [startPoll,setStartPoll] = useState(false);
+  const { 
+    isOpen: isOpenPollModal, 
+    onOpen: onOpenPollModal, 
+    onClose: onClosePollModal 
+  } = useDisclosure()
+
+  const searchPollBookRef = useRef({} as HTMLInputElement);
+  const [pollBookResults,setPollBookResults] = useState<any[] | null>(null);
+  const [pollBookResultsLoading,setPollBookResultsLoading] = useState(false);
+  const [pollBookOne,setPollBookOne] = useState<any | null>(null)
+  const [pollBookTwo,setPollBookTwo] = useState<any | null>(null)
+  const [pollBookThree,setPollBookThree] = useState<any | null>(null)
+  async function searchBook() {
+    setPollBookResultsLoading(true)
+    await axios
+      .get("https://openlibrary.org/search.json?q=" + searchPollBookRef.current.value)
+      .then((response)=>{
+        if (response.data.docs) {
+          if (response.data.docs.length > 5) {
+            const slicedResponse = response.data.docs.slice(0,5);
+            setPollBookResults(slicedResponse)
+          }
+          else {
+            setPollBookResults(response.data.docs)
+          }
+        }
+        else {
+          setPollBookResults(null)
+        }
+        setPollBookResultsLoading(false)
+      })
+      .catch((error)=>{
+        console.log(error)
+      })
+  }
+
+
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['bookshelfKey'], 
     queryFn: getBookshelf
@@ -1027,7 +1075,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   >
                   </Textarea>
                   <Flex
-                    justify="space-between"
+                    justify="flex-end"
                     w="100%"
                   >
                     <Popover isLazy>
@@ -1052,18 +1100,178 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             bg: "black"
                           }}
                         >
-                          To receive more suggestions, try suggesting books to other users. Also, in your suggestion notes, be descriptive about what you're looking for. Bookshelves without any books and no suggestion notes will not be listed.
+                          Be descriptive about what you're looking for. Bookshelves without any books and no suggestion notes will not be listed.
                         </PopoverBody>
                       </PopoverContent>
                     </Popover>
-                    <Button
-                      onClick={e=>saveSuggestionNotes()}
-                      colorScheme="black"
-                      variant="outline"
-                      size="sm"
+                  </Flex>
+                  <Flex 
+                    width="100%"
+                    direction="column"
+                    gap={2}
+                  >
+                    <Divider my={1} />
+                    <Flex
+                      align="center"
+                      justify="space-between"
+                      width="100%"
+                      className="non-well"
+                      sx={{
+                        m: "0!important"
+                      }}
                     >
-                      Save
-                    </Button>  
+                      <FormLabel 
+                        htmlFor="start-poll"
+                        fontWeight="bold"
+                        mb={0}
+                      >
+                        Start a poll?
+                      </FormLabel>
+                      <Switch
+                        id="start-poll"
+                        isChecked={startPoll}
+                        // ref={allowSuggestionsRef}
+                        onChange={e=>setStartPoll(prev=>!prev)}
+                      />
+                    </Flex>
+                    {startPoll ? (
+                      <Box>
+                        <Input 
+                          placeholder="Search for poll books" 
+                          size="lg"
+                          borderColor="black"
+                          onClick={e=>onOpenPollModal()}
+                          sx={{
+                            cursor: 'none',
+                            '&:hover': {
+                              cursor: 'pointer'
+                            }
+                          }}
+                          _dark={{
+                            borderColor: "darkgrey"
+                          }}
+                          readOnly={true}
+                        />
+                        <Flex 
+                          justify="space-between" 
+                          w="100%" 
+                          flexWrap="nowrap" 
+                          gap={2}
+                          p={5}
+                        >
+                          <Box flex="0 1 125px">
+                            {pollBookOne !== null ? (
+                            <>
+                              <Box maxW="75px">
+                                <Heading as="h5" size="sm" textAlign="center">1</Heading>
+                                <Image
+                                  maxW="100%" 
+                                  w="100%"
+                                  h="auto"
+                                  pt={2} 
+                                  mb={1}
+                                  className="book-image"
+                                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                  src={pollBookOne.image}
+                                  boxShadow="1px 1px 1px 1px darkgrey"
+                                  alt={pollBookOne.title}
+                                />
+                              </Box>
+                              <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                                {pollBookOne.title}
+                              </Text>
+                              <Text fontSize="sm">
+                                {pollBookOne.author}
+                              </Text>
+                              <Button
+                                size="xs"
+                                onClick={e=>setPollBookOne(null)}
+                              >
+                                Clear
+                              </Button> 
+                            </>
+                            ) : null}
+                          </Box>
+                          <Box flex="0 1 125px">
+                            {pollBookTwo !== null ? (
+                              <>
+                                <Box maxW="75px">
+                                  <Heading as="h5" size="sm" textAlign="center">2</Heading>
+                                  <Image
+                                    maxW="100%" 
+                                    w="100%"
+                                    h="auto"
+                                    pt={2} 
+                                    mb={1}
+                                    className="book-image"
+                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                    src={pollBookTwo.image}
+                                    boxShadow="1px 1px 1px 1px darkgrey"
+                                    alt={pollBookTwo.title}
+                                  />
+                                </Box>
+                                <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                                  {pollBookTwo.title}
+                                </Text>
+                                <Text fontSize="sm">
+                                  {pollBookTwo.author}
+                                </Text>
+                                <Button
+                                  size="xs"
+                                  onClick={e=>setPollBookTwo(null)}
+                                >
+                                  Clear
+                                </Button>
+                              </>
+                            ) : null}
+                          </Box>
+                          <Box flex="0 1 125px">
+                            {pollBookThree !== null ? (
+                              <>
+                                <Box maxW="75px">
+                                  <Heading as="h5" size="sm" textAlign="center">3</Heading>
+                                  <Image
+                                    maxW="100%" 
+                                    w="100%"
+                                    h="auto"
+                                    pt={2} 
+                                    mb={1}
+                                    className="book-image"
+                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                    src={pollBookThree.image}
+                                    boxShadow="1px 1px 1px 1px darkgrey"
+                                    alt={pollBookThree.title}
+                                  />
+                                </Box>
+                                <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                                  {pollBookThree.title}
+                                </Text>
+                                <Text fontSize="sm">
+                                  {pollBookThree.author}
+                                </Text>
+                                <Button
+                                  size="xs"
+                                  onClick={e=>setPollBookThree(null)}
+                                >
+                                  Clear
+                                </Button>
+                              </>
+                            ) : null}
+                          </Box>
+                        </Flex>
+                      </Box>
+                    ): null}
+                    <Divider my={1} />
+                    <Flex justify="flex-end">
+                      <Button
+                        onClick={e=>saveAllowSuggestions()}
+                        colorScheme="black"
+                        variant="outline"
+                        size="sm"
+                      >
+                        Save
+                      </Button>  
+                    </Flex>
                   </Flex>
                 </Flex>
               ) : (
@@ -2163,6 +2371,272 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
               </ModalBody>
               <ModalFooter>
 
+              </ModalFooter>
+          </ModalContent>
+        </Modal>
+
+        <Modal 
+          isOpen={isOpenPollModal} 
+          onClose={onClosePollModal}
+          isCentered
+        >
+          <ModalOverlay />
+          <ModalContent maxH="80vh" rounded="sm" boxShadow="1px 1px 2px 1px black">
+            <ModalHeader>
+              Choose Poll Books
+            </ModalHeader>
+            <ModalCloseButton />
+              <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
+                <Stack gap={2} position="relative">
+                  <Flex gap={1} position="sticky" top={0} zIndex={200}>
+                    <Input
+                      type="text"
+                      size="lg"
+                      ref={searchPollBookRef}
+                      bg="white"
+                      color="black"
+                      onKeyDown={e=>e.key === "Enter" ? searchBook() : null}
+                    />
+                    <Button
+                      onClick={searchBook}
+                      size="lg"
+                      borderColor="black"
+                      variant="outline"
+                    >
+                      Search
+                    </Button>
+                  </Flex>
+                  {pollBookResultsLoading ? (
+                    <Center>
+                      <Spinner size="xl"/>
+                    </Center>
+                  ) : (
+                    <Flex
+                      gap={1} 
+                      direction="column"
+                    >
+                      {pollBookResults ? pollBookResults.map((book,i)=>{
+                        return (
+                          <React.Fragment key={i}>
+                            <Flex
+                              gap={2}
+                            >
+                              <Box flex="1 1 auto" maxW="50px">
+                                {book.cover_i || book.lccn ? (
+                                  <Image
+                                    maxW="100%" 
+                                    w="100%"
+                                    h="auto"
+                                    className="book-image"
+                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                    src={book.cover_i ? (
+                                      `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg?default=false`
+                                    ) : (
+                                      book.lccn ? (
+                                        `https://covers.openlibrary.org/b/lccn/${book.lccn[0]}-M.jpg?default=false`
+                                      ) : (
+                                        "https://via.placeholder.com/165x215"
+                                      )
+                                    )}
+                                    alt="book image"
+                                    boxShadow="1px 1px 1px 1px darkgrey"
+                                    _hover={{
+                                      cursor: "pointer"
+                                    }}
+                                    id={`book-cover-${i}`}
+                                  />
+                                ): (
+                                  <BookImage 
+                                    isbn={book.isbn?.length ? book.isbn[book.isbn.length - 1] : null}
+                                    id={`book-cover-${i}`}
+                                  />
+                                )}
+                              </Box>
+                                <Box flex="1 1 auto">
+                                <Heading
+                                  as="h4"
+                                  size="sm"
+                                  noOfLines={1}
+                                >
+                                  {book.title}
+                                </Heading>
+                                <Text fontSize="sm" noOfLines={1}>
+                                  {book.author_name ? book.author_name[0] : null}
+                                </Text>
+                                <Text fontSize="sm" fontStyle="italic">
+                                  {book.publish_date ? dayjs(book.publish_date[0]).format('YYYY') : null}
+                                </Text>
+                                <Flex align="center" gap={2}>
+                                  {/* <GooglePreviewLink book={book}/> */}
+                                  <Button 
+                                    size="xs"
+                                    backgroundColor="black"
+                                    color="white"
+                                    onClick={e=>(
+                                      pollBookOne === null ? (
+                                        setPollBookOne({
+                                          title: book.title,
+                                          author: book.author_name ? book.author_name[0] : "",
+                                          image: document.getElementById(`book-cover-${i}`)!.getAttribute("src")!,
+                                          description: ""
+                                        })
+                                          ) : (
+                                            pollBookTwo === null ? (
+                                              setPollBookTwo({
+                                                title: book.title,
+                                                author: book.author_name ? book.author_name[0] : "",
+                                                image: document.getElementById(`book-cover-${i}`)!.getAttribute("src")!,
+                                                description: ""
+                                              })
+                                                ) : pollBookThree === null ? (
+                                                  setPollBookThree({
+                                                    title: book.title,
+                                                    author: book.author_name ? book.author_name[0] : "",
+                                                    image: document.getElementById(`book-cover-${i}`)!.getAttribute("src")!,
+                                                    description: ""
+                                                  })
+                                                  ) : null)
+                                    )}
+                                  >
+                                    Select
+                                  </Button>
+                                </Flex>
+                              </Box>
+                            </Flex>
+                            {i !== pollBookResults.length - 1 ? (
+                              <Divider/>
+                            ): null}
+                          </React.Fragment>
+                        )
+                      }) : null}
+                    </Flex>
+                  )}
+                </Stack>
+              </ModalBody>
+              <ModalFooter flexDirection="column">
+                <Flex justify="space-between" w="100%" flexWrap="nowrap" gap={2}>
+                  <Box flex="0 1 125px">
+                    {pollBookOne !== null ? (
+                    <>
+                      <Box maxW="75px">
+                        <Heading as="h5" size="sm" textAlign="center">1</Heading>
+                        <Image
+                          maxW="100%" 
+                          w="100%"
+                          h="auto"
+                          pt={2} 
+                          mb={1}
+                          className="book-image"
+                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                          src={pollBookOne.image}
+                          boxShadow="1px 1px 1px 1px darkgrey"
+                          alt={pollBookOne.title}
+                        />
+                      </Box>
+                      <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                        {pollBookOne.title}
+                      </Text>
+                      <Text fontSize="sm">
+                        {pollBookOne.author}
+                      </Text>
+                      <Button
+                        size="xs"
+                        onClick={e=>setPollBookOne(null)}
+                      >
+                        Clear
+                      </Button>
+                    </>
+                    ) : null}
+                  </Box>
+                  <Box flex="0 1 125px">
+                    {pollBookTwo !== null ? (
+                      <>
+                        <Box maxW="75px">
+                          <Heading as="h5" size="sm" textAlign="center">2</Heading>
+                          <Image
+                            maxW="100%" 
+                            w="100%"
+                            h="auto"
+                            pt={2} 
+                            mb={1}
+                            className="book-image"
+                            onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                            src={pollBookTwo.image}
+                            boxShadow="1px 1px 1px 1px darkgrey"
+                            alt={pollBookTwo.title}
+                          />
+                        </Box>
+                        <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                          {pollBookTwo.title}
+                        </Text>
+                        <Text fontSize="sm">
+                          {pollBookTwo.author}
+                        </Text>
+                        <Button
+                          size="xs"
+                          onClick={e=>setPollBookTwo(null)}
+                        >
+                          Clear
+                        </Button>
+                      </>
+                    ) : null}
+                  </Box>
+                  <Box flex="0 1 125px">
+                    {pollBookThree !== null ? (
+                      <>
+                        <Box maxW="75px">
+                          <Heading as="h5" size="sm" textAlign="center">3</Heading>
+                          <Image
+                            maxW="100%" 
+                            w="100%"
+                            h="auto"
+                            pt={2} 
+                            mb={1}
+                            className="book-image"
+                            onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                            src={pollBookThree.image}
+                            boxShadow="1px 1px 1px 1px darkgrey"
+                            alt={pollBookThree.title}
+                          />
+                        </Box>
+                        <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                          {pollBookThree.title}
+                        </Text>
+                        <Text fontSize="sm">
+                          {pollBookThree.author}
+                        </Text>
+                        <Button
+                          size="xs"
+                          onClick={e=>setPollBookThree(null)}
+                        >
+                          Clear
+                        </Button>
+                      </>
+                    ) : null}
+                  </Box>
+                </Flex>
+                <Divider mt={3} />
+                <Flex align="center" justify="space-between" w="100%" mt={3}>
+                  <Button 
+                    type="button"
+                    size="md"
+                    colorScheme="yellow"
+                    onClick={e=>{
+                      setPollBookOne(null)
+                      setPollBookTwo(null)
+                      setPollBookThree(null)
+                    }}
+                  >
+                    Reset Votes
+                  </Button>
+                  <Button
+                    onClick={onClosePollModal}
+                    backgroundColor="black"
+                    color="white"
+                  >
+                    Set
+                  </Button>
+                </Flex>
               </ModalFooter>
           </ModalContent>
         </Modal>

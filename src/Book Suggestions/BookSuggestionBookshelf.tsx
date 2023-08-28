@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link, useSearchParams, redirect } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { BookshelfBook, BookshelfType, BookSuggestionType, SelectedBook } from "../types/types";
+import { BookshelfBook, BookshelfType, BookSuggestionType, SelectedBook, SuggestionPollBookType } from "../types/types";
 import { 
   Box,
   Heading,
@@ -55,7 +55,12 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
 
   const [bookshelfProfileName,setBookshelfProfileName] = useState(searchParams.get("profile"))
   const [nextBookshelf,setNextBookshelf] = useState<BookshelfType | null>(null);
+  const [currentBookshelf,setCurrentBookshelf] = useState<BookshelfType | null>(null);
   const [previousSuggestions,setPreviousSuggestions] = useState<BookSuggestionType[] | null>(null);
+  const [startPoll,setStartPoll] = useState(false);
+  const [pollBookOne,setPollBookOne] = useState<SuggestionPollBookType | null>(null)
+  const [pollBookTwo,setPollBookTwo] = useState<SuggestionPollBookType | null>(null)
+  const [pollBookThree,setPollBookThree] = useState<SuggestionPollBookType | null>(null)
   const [take,setTake] = useState(10);
   const [endLoadMore,setEndLoadMore] = useState(false);
   const [loadMoreIsLoading,setLoadMoreIsLoading] = useState(false);
@@ -84,6 +89,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
       .then((response)=>{
         const {data} = response;
         const currentbookshelf = data.message;
+        setCurrentBookshelf(currentbookshelf);
         const nextbookshelfdata = data.nextbookshelf;
         const previoussuggestionsdata = data.previoussuggestions;
         if (nextbookshelfdata) {
@@ -99,6 +105,10 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           ...currentbookshelf,
           Flag: currentbookshelf?.Profile.country ? (countryFlagIconsReact as any)[currentbookshelf.Profile.country] : <Box></Box>
         });
+        setStartPoll(data.message.start_poll === 1 ? true : false);
+        setPollBookOne(data.message.BookSuggestionPollBookOne.length ? data.message.BookSuggestionPollBookOne[0] : null)
+        setPollBookTwo(data.message.BookSuggestionPollBookTwo.length ? data.message.BookSuggestionPollBookTwo[0] : null)
+        setPollBookThree(data.message.BookSuggestionPollBookThree.length ? data.message.BookSuggestionPollBookThree[0] : null)
         return currentbookshelf;
       })
       .catch(({response})=>{
@@ -201,6 +211,72 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
     }
   }
 
+  const castVoteMutation = useMutation({
+    mutationFn: async ({pollBookNumber, pollBookId}: {pollBookNumber: number, pollBookId: number})=>{
+      let tokenCookie: string | null = Cookies.get().token;
+      if (currentBookshelf && (pollBookOne || pollBookTwo || pollBookThree)) {
+        await axios
+        .post(server + "/api/castbooksuggestionvote", 
+          {
+            pollBookNumber: pollBookNumber,
+            pollBookId: pollBookId,
+            bookshelf: currentBookshelf.id
+          },
+          {
+            headers: {
+              'authorization': tokenCookie
+            }
+          }
+        )
+        .then((response)=>{
+          if (response.data.success) {
+            toast({
+              description: "Vote cast!",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+          }
+          else {
+            toast({
+              description: response.data.message,
+              status: "error",
+              duration: 9000,
+              isClosable: true
+            })
+          }
+          if (nextBookshelf) {
+            navigate(`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`)
+            setTimeout(()=>{
+              window.location.reload()
+            },1500)
+          }
+        })
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data) {
+            toast({
+              description: response.data.message,
+              status: "error",
+              duration: 9000,
+              isClosable: true
+            })
+            throw new Error(response.data.message)
+          }
+        })
+        return getBookSuggestionBookshelf();
+      }
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['bookSuggestionBookshelfKey'] })
+      queryClient.resetQueries({queryKey: ['bookSuggestionBookshelfKey']})
+      queryClient.setQueryData(["bookSuggestionBookshelfKey"],data)
+    }
+  })
+  async function castVote({pollBookNumber, pollBookId}: {pollBookNumber: number, pollBookId: number}) {
+    castVoteMutation.mutate({pollBookNumber,pollBookId});
+  }
+
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['bookSuggestionBookshelfKey'], 
     queryFn: getBookSuggestionBookshelf
@@ -220,7 +296,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
   }
 
   return (
-    <Box className="main-content-medium">
+    <Box className="main-content-smaller">
       <Skeleton
         isLoaded={!isLoading}
       >
@@ -303,107 +379,166 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
             ): null}
           </Box>
         </Flex>
-        <Divider borderColor="blackAlpha.700" mb={2} />
-        <Box 
-          // rounded="md"
-          // border="1px solid"
-          // borderColor="gray.300"
-          // p={2}
-          className="non-well"
-        >
-          <Heading as="h3" size="sm" mb={1} color="blackAlpha.800">Others have suggested:</Heading>
-          <Flex
-            // align="center"
-            wrap="wrap"
-            gap={2}
-            maxH="25vh"
-            overflow="auto"
-            p={.5}
-          >
-            {previousSuggestions !== null && previousSuggestions.length ? (
-              previousSuggestions.map((suggestion,i)=>{
-                return (
-                  <Box
-                    // maxW="200px"
-                    key={i}
-                    border="1px solid"
-                    borderColor="gray.400"
-                    p={2}
-                    rounded="md"
-                    flex="1 0"
-                    minW="250px"
-                    backgroundColor="gray.50"
-                  >
-                    <Text
-                      as={Link}
-                      to={`/profile/${suggestion.Profile_BookSuggestion_suggestorToProfile.username}`}
-                      fontSize="sm"
-                      fontWeight="bold"
-                      noOfLines={1}
-                    >
-                      {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
-                    </Text>
-                    <Flex
-                      // align="center"
-                      gap={2}
-                      width="100%"
-                    >
-                      <Image
-                        src={suggestion.image}
-                        height="100%"
-                        maxH="60px"
-                        boxShadow="1px 1px 1px 1px darkgrey"
-                      />
-                      <Box>
-                        <Text 
-                          fontSize="sm"
-                          opacity="80%"
-                          mb={-1}
-                        >
-                          {dayjs(suggestion.created_on).local().format("MM/DD/YY")}
-                        </Text>
-                        <Text
-                          fontSize="sm"
-                          fontWeight="bold"
-                          // fontStyle="italic"
-                          noOfLines={1}
-                          mb={-1}
-                        >
-                          {suggestion.title}
-                        </Text>
-                        <Text
-                          fontSize="xs"
-                          noOfLines={1}
-                          mb={-1}
-                        >
-                          {suggestion.author}
-                        </Text>
-                        {suggestion.rating !== null ? (
-                          <Flex align="baseline" gap={1}>
-                            <BsStarFill fill="gold" size={13} />
-                            <Text
-                              fontSize="sm"
-                              noOfLines={1}
-                            >
-                              {suggestion.rating}
-                            </Text>
-                          </Flex>
-                        ): null}
-                      </Box>
-                    </Flex>
-                  </Box>
-                )
-              })
-            ): (
-              <Text
-                fontStyle="italic"
+
+        {startPoll && (pollBookOne || pollBookTwo || pollBookThree) ? (
+          <>
+            <Divider borderColor="blackAlpha.700" mb={2} />
+              <Box 
+                className="non-well"
+                mb={2}
               >
-                None yet.
-              </Text>
-            )}
-          </Flex>
-        </Box>
-        <Divider borderColor="blackAlpha.700" my={3} />
+                <Heading as="h3" size="sm" mb={1} color="blackAlpha.800">Vote:</Heading>
+                  <Flex justify="space-around" w="100%" flexWrap="nowrap" gap={2}>
+                    {pollBookOne !== null ? (
+                    <Box 
+                      flex="0 1 125px"
+                      rounded="md"
+                      border="1px solid"
+                      borderColor="gray.400"
+                      p={1}
+                    >
+                      <Box 
+                        mx="auto"
+                        maxW="90px"
+                      >
+                        <Heading as="h5" size="sm" textAlign="center">1</Heading>
+                        <Image
+                          maxW="100%" 
+                          w="100%"
+                          h="auto"
+                          pt={2} 
+                          mb={1}
+                          className="book-image"
+                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                          src={pollBookOne.image}
+                          boxShadow="1px 1px 1px 1px darkgrey"
+                          alt={pollBookOne.title}
+                        />
+                      </Box>
+                      <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                        {pollBookOne.title}
+                      </Text>
+                      <Text fontSize="sm">
+                        {pollBookOne.author}
+                      </Text>
+                      <Flex justify="center">
+                        <Button
+                          size="sm"
+                          backgroundColor="black"
+                          color="white"
+                          onClick={e=>castVote({pollBookNumber: 1, pollBookId: pollBookOne.id})}
+                          isLoading={castVoteMutation.isLoading}
+                          isDisabled={castVoteMutation.isLoading}
+                        >
+                          Vote
+                        </Button>
+                      </Flex>
+                    </Box>
+                    ) : null}
+                    {pollBookTwo !== null ? (
+                    <Box 
+                      flex="0 1 125px"
+                      rounded="md"
+                      border="1px solid"
+                      borderColor="gray.400"
+                      p={1}
+                    >
+                      <Box
+                        mx="auto"
+                        maxW="90px"
+                      >
+                        <Heading as="h5" size="sm" textAlign="center">2</Heading>
+                        <Image
+                          maxW="100%" 
+                          w="100%"
+                          h="auto"
+                          pt={2} 
+                          mb={1}
+                          className="book-image"
+                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                          src={pollBookTwo.image}
+                          boxShadow="1px 1px 1px 1px darkgrey"
+                          alt={pollBookTwo.title}
+                        />
+                      </Box>
+                      <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                        {pollBookTwo.title}
+                      </Text>
+                      <Text fontSize="sm">
+                        {pollBookTwo.author}
+                      </Text>
+                      <Flex justify="center">
+                        <Button
+                          size="sm"
+                          backgroundColor="black"
+                          color="white"
+                          onClick={e=>castVote({pollBookNumber: 2, pollBookId: pollBookTwo.id})}
+                          isLoading={castVoteMutation.isLoading}
+                          isDisabled={castVoteMutation.isLoading}
+                        >
+                          Vote
+                        </Button>
+                      </Flex>
+                    </Box>
+                    ) : null}
+                    {pollBookThree !== null ? (
+                    <Box 
+                      flex="0 1 125px"
+                      rounded="md"
+                      border="1px solid"
+                      borderColor="gray.400"
+                      p={1}
+                    >
+                      <Box 
+                        mx="auto"
+                        maxW="90px"
+                      >
+                        <Heading as="h5" size="sm" textAlign="center">3</Heading>
+                        <Image
+                          maxW="100%" 
+                          w="100%"
+                          h="auto"
+                          pt={2} 
+                          mb={1}
+                          className="book-image"
+                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                          src={pollBookThree.image}
+                          boxShadow="1px 1px 1px 1px darkgrey"
+                          alt={pollBookThree.title}
+                        />
+                      </Box>
+                      <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                        {pollBookThree.title}
+                      </Text>
+                      <Text fontSize="sm">
+                        {pollBookThree.author}
+                      </Text>
+                      <Flex justify="center">
+                        <Button
+                          size="sm"
+                          backgroundColor="black"
+                          color="white"
+                          onClick={e=>castVote({pollBookNumber: 3, pollBookId: pollBookThree.id})}
+                          isLoading={castVoteMutation.isLoading}
+                          isDisabled={castVoteMutation.isLoading}
+                        >
+                          Vote
+                        </Button>
+                      </Flex>
+                    </Box>
+                    ) : null}
+                  </Flex>
+              </Box>
+              <Text 
+                textAlign="center"
+                fontWeight="bold"
+                my={5}
+              >
+              or
+            </Text>
+          </>
+        ): null}
+
         {bookSuggestionBookshelf?.allow_suggestions !== 1 ? (
           <Flex align="center" justify="center" minH="70vh">
             <Heading as="h1" size="xl">Currently not allowing suggestions</Heading>
@@ -542,6 +677,107 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
               ): null}
 
             </Flex>
+            <Divider borderColor="blackAlpha.700" mb={2} />
+            <Box 
+              // rounded="md"
+              // border="1px solid"
+              // borderColor="gray.300"
+              // p={2}
+              className="non-well"
+            >
+              <Heading as="h3" size="sm" mb={1} color="blackAlpha.800">Others have suggested:</Heading>
+              <Flex
+                // align="center"
+                wrap="wrap"
+                gap={2}
+                maxH="25vh"
+                overflow="auto"
+                p={.5}
+              >
+                {previousSuggestions !== null && previousSuggestions.length ? (
+                  previousSuggestions.map((suggestion,i)=>{
+                    return (
+                      <Box
+                        // maxW="200px"
+                        key={i}
+                        border="1px solid"
+                        borderColor="gray.400"
+                        p={2}
+                        rounded="md"
+                        flex="1 0"
+                        minW="250px"
+                        backgroundColor="gray.50"
+                      >
+                        <Text
+                          as={Link}
+                          to={`/profile/${suggestion.Profile_BookSuggestion_suggestorToProfile.username}`}
+                          fontSize="sm"
+                          fontWeight="bold"
+                          noOfLines={1}
+                        >
+                          {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
+                        </Text>
+                        <Flex
+                          // align="center"
+                          gap={2}
+                          width="100%"
+                        >
+                          <Image
+                            src={suggestion.image}
+                            height="100%"
+                            maxH="60px"
+                            boxShadow="1px 1px 1px 1px darkgrey"
+                          />
+                          <Box>
+                            <Text 
+                              fontSize="sm"
+                              opacity="80%"
+                              mb={-1}
+                            >
+                              {dayjs(suggestion.created_on).local().format("MM/DD/YY")}
+                            </Text>
+                            <Text
+                              fontSize="sm"
+                              fontWeight="bold"
+                              // fontStyle="italic"
+                              noOfLines={1}
+                              mb={-1}
+                            >
+                              {suggestion.title}
+                            </Text>
+                            <Text
+                              fontSize="xs"
+                              noOfLines={1}
+                              mb={-1}
+                            >
+                              {suggestion.author}
+                            </Text>
+                            {suggestion.rating !== null ? (
+                              <Flex align="baseline" gap={1}>
+                                <BsStarFill fill="gold" size={13} />
+                                <Text
+                                  fontSize="sm"
+                                  noOfLines={1}
+                                >
+                                  {suggestion.rating}
+                                </Text>
+                              </Flex>
+                            ): null}
+                          </Box>
+                        </Flex>
+                      </Box>
+                    )
+                  })
+                ): (
+                  <Text
+                    fontStyle="italic"
+                  >
+                    None yet.
+                  </Text>
+                )}
+              </Flex>
+            </Box>
+            <Divider borderColor="blackAlpha.700" my={3} />
             <Box className="well">
               <Heading as="h3" size="md">
                 Bookshelf
