@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent, HTMLInputTypeAttribute } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BookshelfType, BookSuggestionType } from "../types/types";
+import { BookSuggestionVoteType, BookSuggestionType } from "../types/types";
 import { 
   Box,
   Heading,
@@ -177,7 +177,9 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
     queryFn: getBookSuggestionsForMe
   });
 
-  let bookSuggestionsForMe: any = data ? data : null;
+  let bookSuggestions:any = data ? data : null;
+  let bookSuggestionsForMe = bookSuggestions?.bookSuggestionsForMe;
+  let bookshelf = bookSuggestions?.bookshelf
 
   if (isError) {
     return <Flex align="center" justify="center" minH="90vh">
@@ -189,6 +191,163 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
     <Skeleton
       isLoaded={!isLoading}
     >
+      {bookshelf && bookshelf.start_poll && (bookshelf.BookSuggestionPollBookOne.length || bookshelf.BookSuggestionPollBookTwo.length || bookshelf.BookSuggestionPollBookThree.length) ? (
+        <Flex justify="space-around" w="100%" flexWrap="nowrap" gap={2} mb={3}>
+          {bookshelf.BookSuggestionPollBookOne.length ? (
+            <Box 
+              flex="0 1 125px"
+              rounded="md"
+              border="1px solid"
+              borderColor="gray.400"
+              p={1}
+            >
+              <Box 
+                mx="auto"
+                maxW="90px"
+              >
+                <Heading as="h5" size="sm" textAlign="center">1</Heading>
+                <Image
+                  maxW="100%" 
+                  w="100%"
+                  h="auto"
+                  pt={2} 
+                  mb={1}
+                  className="book-image"
+                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                  src={bookshelf.BookSuggestionPollBookOne[0].image}
+                  boxShadow="1px 1px 1px 1px darkgrey"
+                  alt={bookshelf.BookSuggestionPollBookOne[0].title}
+                />
+              </Box>
+              <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                {bookshelf.BookSuggestionPollBookOne[0].title}
+              </Text>
+              <Text fontSize="sm">
+                {bookshelf.BookSuggestionPollBookOne[0].author}
+              </Text>
+              <Flex justify="center" gap={1} wrap="nowrap">
+                <Text fontSize="sm">
+                  Vote count: 
+                </Text>
+                <Text fontSize="sm" fontWeight="bold">
+                  {bookshelf.BookSuggestionVote.length ? (
+                    bookshelf.BookSuggestionVote.filter((vote: BookSuggestionVoteType)=>{
+                      if (vote.poll_book_number === 1 && vote.poll_book_id === bookshelf.BookSuggestionPollBookOne[0].id) {
+                        return true;
+                      }
+                      else {
+                        return false;
+                      }
+                    }).length
+                  ): 0}
+                </Text>
+              </Flex>
+            </Box>
+          ): null}
+          {bookshelf.BookSuggestionPollBookTwo.length ? (
+            <Box 
+              flex="0 1 125px"
+              rounded="md"
+              border="1px solid"
+              borderColor="gray.400"
+              p={1}
+            >
+              <Box 
+                mx="auto"
+                maxW="90px"
+              >
+                <Heading as="h5" size="sm" textAlign="center">2</Heading>
+                <Image
+                  maxW="100%" 
+                  w="100%"
+                  h="auto"
+                  pt={2} 
+                  mb={1}
+                  className="book-image"
+                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                  src={bookshelf.BookSuggestionPollBookTwo[0].image}
+                  boxShadow="1px 1px 1px 1px darkgrey"
+                  alt={bookshelf.BookSuggestionPollBookTwo[0].title}
+                />
+              </Box>
+              <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                {bookshelf.BookSuggestionPollBookTwo[0].title}
+              </Text>
+              <Text fontSize="sm">
+                {bookshelf.BookSuggestionPollBookTwo[0].author}
+              </Text>
+              <Flex justify="center" gap={1} wrap="nowrap">
+                <Text fontSize="sm">
+                  Vote count: 
+                </Text>
+                <Text fontSize="sm" fontWeight="bold">
+                  {bookshelf.BookSuggestionVote.length ? (
+                    bookshelf.BookSuggestionVote.filter((vote: BookSuggestionVoteType)=>{
+                      if (vote.poll_book_number === 2 && vote.poll_book_id === bookshelf.BookSuggestionPollBookTwo[0].id) {
+                        return true;
+                      }
+                      else {
+                        return false;
+                      }
+                    }).length
+                  ): 0}
+                </Text>
+              </Flex>
+            </Box>
+          ): null}
+          {bookshelf.BookSuggestionPollBookThree.length ? (
+            <Box 
+              flex="0 1 125px"
+              rounded="md"
+              border="1px solid"
+              borderColor="gray.400"
+              p={1}
+            >
+              <Box 
+                mx="auto"
+                maxW="90px"
+              >
+                <Heading as="h5" size="sm" textAlign="center">3</Heading>
+                <Image
+                  maxW="100%" 
+                  w="100%"
+                  h="auto"
+                  pt={2} 
+                  mb={1}
+                  className="book-image"
+                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                  src={bookshelf.BookSuggestionPollBookThree[0].image}
+                  boxShadow="1px 1px 1px 1px darkgrey"
+                  alt={bookshelf.BookSuggestionPollBookThree[0].title}
+                />
+              </Box>
+              <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                {bookshelf.BookSuggestionPollBookThree[0].title}
+              </Text>
+              <Text fontSize="sm">
+                {bookshelf.BookSuggestionPollBookThree[0].author}
+              </Text>
+              <Flex justify="center" gap={1} wrap="nowrap">
+                <Text fontSize="sm">
+                  Vote count: 
+                </Text>
+                <Text fontSize="sm" fontWeight="bold">
+                  {bookshelf.BookSuggestionVote.length ? (
+                    bookshelf.BookSuggestionVote.filter((vote: BookSuggestionVoteType)=>{
+                      if (vote.poll_book_number === 3 && vote.poll_book_id === bookshelf.BookSuggestionPollBookThree[0].id) {
+                        return true;
+                      }
+                      else {
+                        return false;
+                      }
+                    }).length
+                  ): 0}
+                </Text>
+              </Flex>
+            </Box>
+          ): null}
+        </Flex>
+      ): null}
       {bookSuggestionsForMe?.length ? (
         bookSuggestionsForMe.map((suggestion: BookSuggestionType, i: number)=>{
           return (
