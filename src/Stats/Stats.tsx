@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
   PopoverContent,
   Select,
+  Divider,
   PopoverArrow
 } from "@chakra-ui/react";
 import Cookies from "js-cookie";
@@ -31,6 +32,7 @@ import {
 import { Doughnut, Line, Bar, Chart } from 'react-chartjs-2';
 import { ImInfo } from 'react-icons/im';
 import { BsStarFill } from "react-icons/bs";
+import { BookSuggestionPollVoteType } from "../types/types";
 
 export default function Stats({server}: {server: string}) {
   dayjs.extend(utc);
@@ -79,6 +81,8 @@ export default function Stats({server}: {server: string}) {
   const [suggestionRating,setSuggestionRating] = useState<number>(0);
   const [suggestionCount,setSuggestionCount] = useState<number>(0);
   const [suggestionRatingGiven,setSuggestionRatingGiven] = useState<number>(0)
+
+  const [pollVotes,setPollVotes] = useState<BookSuggestionPollVoteType[]>([]);
 ;
   const [pagesRead,setPagesRead] = useState<any[]>([]);
   const [pagesReadDateRange,setPagesReadDateRange] = useState<any[]>([]);
@@ -111,6 +115,8 @@ export default function Stats({server}: {server: string}) {
         setSuggestionRating(response.data.message.suggestionRating)
         setSuggestionRatingGiven(response.data.message.suggestionRatingGiven)
         setSuggestionCount(response.data.message.suggestionCount)
+
+        setPollVotes(response.data.message.pollVotes)
 
         setPagesRead((p)=>{
           const weekArray = getDaysOfTheWeekArray(pagesReadStartWeekDate ? dayjs(pagesReadStartWeekDate).local().toDate() : dayjs().local().toDate());
@@ -222,20 +228,50 @@ export default function Stats({server}: {server: string}) {
   return (
     <Box className="main-content-medium" pb={20}>
       <Heading as="h1" className="visually-hidden">Stats</Heading>
+      <Heading as="h2" size="lg">All-time</Heading>
       <Flex
         align="center"
         justify="space-between"
         wrap="wrap"
       >
+        {suggestionCount !== null ? (
+          <Box
+            className="well"
+            minW="350px"
+            flex="1 1 45%"
+            pb={5}
+          >
+            <Heading
+              as="h3"
+              size="md"
+              mb={4}
+              textAlign="center"
+            >
+              Suggestion Count
+            </Heading>
+            <Flex
+              align="center"
+              justify="center"
+              gap={1}
+            >
+              <Text 
+                fontWeight="bold"
+                fontSize="lg"
+              >
+                {suggestionCount}
+              </Text>
+            </Flex>
+          </Box>
+        ): null}
         {suggestionRating !== null ? (
           <Box
             className="well"
             minW="350px"
-            flex="1 1 auto"
+            flex="1 1 45%"
             pb={5}
           >
             <Heading
-              as="h2"
+              as="h3"
               size="md"
               mb={4}
               textAlign="center"
@@ -257,36 +293,73 @@ export default function Stats({server}: {server: string}) {
             </Flex>
           </Box>
         ): null}
-        {suggestionCount !== null ? (
-          <Box
-            className="well"
-            minW="350px"
-            flex="1 1 auto"
-            pb={5}
-          >
-            <Heading
-              as="h2"
-              size="md"
-              mb={4}
-              textAlign="center"
+      </Flex>
+      <Flex
+        align="center"
+        justify="space-between"
+        wrap="wrap"
+      >
+        {pollVotes ? (
+          <>
+            <Box
+              className="well"
+              minW="350px"
+              flex="1 1 45%"
+              pb={5}
             >
-              Suggestion Count
-            </Heading>
-            <Flex
-              align="center"
-              justify="center"
-              gap={1}
-            >
-              <Text 
-                fontWeight="bold"
-                fontSize="lg"
+              <Heading
+                as="h3"
+                size="md"
+                mb={4}
+                textAlign="center"
               >
-                {suggestionCount}
-              </Text>
-            </Flex>
-          </Box>
+                Poll Votes
+              </Heading>
+              <Flex
+                align="center"
+                justify="center"
+                gap={1}
+              >
+                <Text 
+                  fontWeight="bold"
+                  fontSize="lg"
+                >
+                  {pollVotes.length}
+                </Text>
+              </Flex>
+            </Box>
+            <Box
+              className="well"
+              minW="350px"
+              flex="1 1 45%"
+              pb={5}
+            >
+              <Heading
+                as="h3"
+                size="md"
+                mb={4}
+                textAlign="center"
+              >
+                Poll Votes Won
+              </Heading>
+              <Flex
+                align="center"
+                justify="center"
+                gap={1}
+              >
+                <Text 
+                  fontWeight="bold"
+                  fontSize="lg"
+                >
+                  {pollVotes.filter((vote)=>vote.won === 1).length}
+                </Text>
+              </Flex>
+            </Box>
+          </>
         ): null}
       </Flex>
+      <Divider my={2} />
+      <Heading as="h2" size="lg">Weekly</Heading>
       <Flex
         className="well"
         wrap="wrap"
@@ -328,7 +401,7 @@ export default function Stats({server}: {server: string}) {
             >
               <Flex gap={1} justify="center">
                 <Heading
-                  as="h2"
+                  as="h3"
                   size="md"
                   mb={2}
                   textAlign="center"
@@ -394,7 +467,7 @@ export default function Stats({server}: {server: string}) {
               maxW="100%"
             >
               <Heading
-                as="h2"
+                as="h3"
                 size="md"
                 mb={2}
                 textAlign="center"
@@ -448,7 +521,7 @@ export default function Stats({server}: {server: string}) {
               justify="center"
             >
               <Heading
-                as="h2"
+                as="h3"
                 size="md"
                 mb={2}
                 textAlign="center"
@@ -544,7 +617,7 @@ export default function Stats({server}: {server: string}) {
                 justify="center"
               >
                 <Heading
-                  as="h2"
+                  as="h3"
                   size="md"
                   mb={2}
                   textAlign="center"
@@ -616,7 +689,7 @@ export default function Stats({server}: {server: string}) {
                 justify="center"
               >
                 <Heading
-                  as="h2"
+                  as="h3"
                   size="md"
                   mb={2}
                   textAlign="center"

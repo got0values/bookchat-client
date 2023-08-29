@@ -109,7 +109,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
                 // className="well"
               >
                 <Flex 
-                  align="center"
+                  align="flex-start"
                   justify="space-between"
                 >
                   <Flex
@@ -141,10 +141,23 @@ export function BookSuggestionToList({server}: {server: string;}) {
                   </Flex>
                   <Flex
                     align="center"
+                    justify="space-between"
                     gap={2}
+                    width="125px"
                   >
-                    <Box fontSize="sm">
-                      <Text as="span" fontWeight="bold">Shelf:</Text> {(bookshelf as any)._count.BookshelfBook}
+                    <Box>
+                      <Box fontSize="sm">
+                        <Text as="span" fontWeight="bold">Shelf:</Text> {(bookshelf as any)._count.BookshelfBook}
+                      </Box>
+                      {bookshelf.start_poll ? (
+                        <Text 
+                          fontSize="sm"
+                          fontWeight="bold"
+                          color="green"
+                        >
+                          Poll
+                        </Text>
+                      ): null}
                     </Box>
                     <Button
                       as={Link}

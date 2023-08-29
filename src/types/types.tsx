@@ -374,6 +374,7 @@ export interface BookshelfType {
   Profile: ProfileType;
   BookShelfCategory: BookshelfCategory[];
   BookshelfBook: BookshelfBook[];
+  start_poll: number;
   Flag?: any;
 }
 export interface BookshelfCategory {
@@ -482,6 +483,7 @@ export interface BookSuggestionPollVoteType {
   profile: number;
   poll_book_number: number;
   poll_book_id: number;
+  won: number;
 }
 
 export interface BookSuggestionPollVoteWinnerType {
