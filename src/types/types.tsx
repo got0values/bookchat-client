@@ -484,7 +484,7 @@ export interface BookSuggestionPollVoteType {
   poll_book_id: number;
 }
 
-export interface BookSuggestionPollWinnerType {
+export interface BookSuggestionPollVoteWinnerType {
   id: number;
   profile: number;
   bookshelf: number;
@@ -493,4 +493,5 @@ export interface BookSuggestionPollWinnerType {
   image: string;
   description: string;
   created_on: string;
+  Profile: ProfileType;
 }

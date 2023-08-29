@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, MouseEvent, HTMLInputTypeAttribute } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BookSuggestionPollVoteType, BookSuggestionType } from "../types/types";
+import { BookSuggestionPollVoteType, BookSuggestionPollVoteWinnerType, BookSuggestionType } from "../types/types";
 import { 
   Box,
   Heading,
@@ -31,7 +31,7 @@ import { AiFillStar } from "react-icons/ai";
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import { BsArchiveFill } from "react-icons/bs";
 import { ImBooks } from 'react-icons/im';
-import { FaShoppingCart } from 'react-icons/fa';
+import { FaShoppingCart, FaStore } from 'react-icons/fa';
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -141,6 +141,44 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
     archiveCallbackMutation.mutate(id)
   }
 
+  const archiveWinnerCallbackMutation = useMutation({
+    mutationFn: async (id: number) => {
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+        .put(server + "/api/booksuggestionwinnerarchive",
+          {
+            id: id,
+            toArchive: 1
+          },
+          {
+            headers: {
+              authorization: tokenCookie
+            }
+          }
+        )
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data?.message) {
+            throw new Error(response.data?.message)
+          }
+        })
+      }
+      else {
+        throw new Error("An error has occured")
+      }
+      return getBookSuggestionsForMe()
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['bookSuggestionsForMeKey'] })
+      queryClient.resetQueries({queryKey: ['bookSuggestionsForMeKey']})
+      queryClient.setQueryData(["bookSuggestionsForMeKey"],data)
+    }
+  })
+  function archiveWinnerCallback(id: number) {
+    archiveWinnerCallbackMutation.mutate(id)
+  }
+
   async function addToBookshelf(bookToAdd: any) {
     let tokenCookie: string | null = Cookies.get().token;
     await axios
@@ -225,7 +263,8 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
 
   let bookSuggestions:any = data ? data : null;
   let bookSuggestionsForMe = bookSuggestions?.bookSuggestionsForMe;
-  let bookshelf = bookSuggestions?.bookshelf
+  let bookshelf = bookSuggestions?.bookshelf;
+  let pollWinners = bookSuggestions?.pollVoteWinners;
 
   if (isError) {
     return <Flex align="center" justify="center" minH="90vh">
@@ -430,165 +469,261 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
           <Divider mt={2} mb={3} />
         </Box>
       ): null}
-      {bookSuggestionsForMe?.length ? (
-        bookSuggestionsForMe.map((suggestion: BookSuggestionType, i: number)=>{
-          return (
-            <Stack 
-              className="well"
-              spacing={4}
-              key={i}
-            >
-              <Flex
-                align="center"
-                gap={2}
+      <Box className="well">
+        <Heading as="h2" size="md">
+          Poll Winners
+        </Heading>
+        {pollWinners?.length ? (
+          pollWinners.map((winner: BookSuggestionPollVoteWinnerType, i: number)=>{
+            return (
+              <Box 
+                className="well-card"
+                p={3}
+                key={i}
               >
-                <Link to={`/profile/${suggestion.Profile_BookSuggestion_suggestorToProfile.username}`}>
-                  <Avatar 
-                    src={suggestion.Profile_BookSuggestion_suggestorToProfile.profile_photo}
-                    name={suggestion.Profile_BookSuggestion_suggestorToProfile.username}
-                  />
-                </Link>
-                <Box w="100%">
-                  <Flex align="center" justify="space-between">
-                    <Flex align="center" gap={1}>
-                      <Text fontWeight="bold">
-                        {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
-                      </Text>
-                      {/* <StarRating
-                        ratingCallback={null} 
-                        starRatingId={suggestion.id}
-                        defaultRating={suggestion.suggestorRating ? suggestion.suggestorRating : 0}
-                      /> */}
-                      {suggestion.suggestorRating ? (
-                        <Flex align="center" gap={0}>
-                          <Icon
-                            as={AiFillStar}
-                            size={25}
-                            color="gold"
-                          />
-                          <Text fontStyle="italic" fontSize="sm">
-                            {suggestion.suggestorRating.toFixed(1)}
-                          </Text>
-                        </Flex>
-                      ): null}
-                    </Flex>
-                    <Box>
-                      <Menu>
-                        <MenuButton 
-                          as={Button}
-                          size="md"
-                          variant="ghost"
-                          rounded="full"
-                          height="25px"
-                          title="menu"
-                        >
-                          <BiDotsHorizontalRounded/>
-                        </MenuButton>
-                        <MenuList>
-                          <MenuItem 
-                            // data-book={JSON.stringify(reading)}
-                            onClick={e=>archiveCallback(suggestion.id)}
-                            fontWeight="bold"
-                            icon={<BsArchiveFill size={20} />}
-                          >
-                            Archive
-                          </MenuItem>
-                          <MenuItem
-                            onClick={e=>addToBookshelf({
-                              image: suggestion.image,
-                              title: suggestion.title,
-                              author: suggestion.author,
-                              description: suggestion.description,
-                              isbn: suggestion.isbn ? suggestion.isbn : "",
-                              page_count: suggestion.page_count ? parseInt(suggestion.page_count as any) : null,
-                              published_date: suggestion.published_date ? suggestion.published_date : "",
-                            })}
-                            fontWeight="bold"
-                            icon={<ImBooks size={20} />}
-                          >
-                            Add to Bookshelf
-                          </MenuItem>
-                        </MenuList>
-                      </Menu>
-                    </Box>
-                  </Flex>
-                  <Text fontStyle="italic" opacity="75%">
-                    {dayjs(suggestion.created_on).local().format('MMM DD, YYYY')}
+                <Flex justify="space-between">
+                  <Text fontStyle="italic">
+                    {dayjs(winner.created_on).format('MMM DD, YYYY')}
                   </Text>
-                </Box>
-                {/* <Box w="1.4rem">
-                  {bookshelf.Flag ? <bookshelf.Flag/> : null}
-                </Box> */}
-              </Flex>
-              {suggestion.notes ? (
-                <Text fontStyle="italic">
-                  "{suggestion.notes}"
-                </Text>
-              ) : null}
-              <Divider />
-              <Flex
-                gap={1}
-              >
-                <Image
-                  src={suggestion.image}
-                  height="100%"
-                  maxH="125px"
-                  boxShadow="1px 1px 1px 1px darkgrey"
-                  alt={suggestion.title}
-                />
-                <Flex direction="column" justify="space-between" w="100%">
-                  <Box lineHeight={1.4}>
-                    <Heading
-                      as="h2"
-                      noOfLines={1}
-                      size="md"
-                    >
-                      {suggestion.title}
-                    </Heading>
-                    <Text
-                      fontWeight="bold"
-                      fontSize="lg"
-                      noOfLines={1}
-                    >
-                      {suggestion.author}
-                    </Text>
-                    {suggestion.published_date ? (
-                      <Text
-                        fontStyle="italic"
+                  <Box>
+                    <Menu>
+                      <MenuButton 
+                        as={Button}
+                        size="md"
+                        variant="ghost"
+                        rounded="full"
+                        height="25px"
+                        title="menu"
                       >
-                        {dayjs(suggestion.published_date).format("YYYY")}
-                      </Text>
-                    ): null}
-                    {/* <Popover isLazy>
-                      <PopoverTrigger>
-                        <Text
-                          noOfLines={1}
-                          _hover={{
-                            cursor: "pointer"
-                          }}
+                        <BiDotsHorizontalRounded/>
+                      </MenuButton>
+                      <MenuList>
+                        <MenuItem 
+                          onClick={e=>archiveWinnerCallback(winner.id)}
+                          fontWeight="bold"
+                          icon={<BsArchiveFill size={20} />}
                         >
-                          {suggestion.description}
-                        </Text>
-                      </PopoverTrigger>
-                      <PopoverContent>
-                        <PopoverArrow />
-                        <PopoverCloseButton />
-                        <PopoverBody
-                          _dark={{
-                            bg: "black"
-                          }}
+                          Archive
+                        </MenuItem>
+                        <MenuItem
+                          onClick={e=>addToBookshelf({
+                            image: winner.image,
+                            title: winner.title,
+                            author: winner.author,
+                            description: winner.description,
+                            isbn:  "",
+                            page_count: null,
+                            published_date: "",
+                          })}
+                          fontWeight="bold"
+                          icon={<ImBooks size={20} />}
                         >
-                          {suggestion.description}
-                        </PopoverBody>
-                      </PopoverContent>
-                    </Popover> */}
-                    {suggestion.page_count ? (
-                      <Text noOfLines={1}>
-                        {suggestion.page_count} pages
-                      </Text>
-                    ): null}
+                          Add to Bookshelf
+                        </MenuItem>
+                      </MenuList>
+                    </Menu>
                   </Box>
-                  <Flex align="center" justify="space-between" wrap="wrap">
+                </Flex>
+                <Flex
+                  gap={1}
+                >
+                  <Image
+                    src={winner.image}
+                    height="100%"
+                    maxH="85px"
+                    boxShadow="1px 1px 1px 1px darkgrey"
+                    alt={winner.title}
+                  />
+                  <Flex direction="column" justify="space-between" w="100%">
+                    <Box lineHeight={1.4}>
+                      <Heading
+                        as="h2"
+                        noOfLines={1}
+                        size="md"
+                      >
+                        {winner.title}
+                      </Heading>
+                      <Text
+                        fontWeight="bold"
+                        fontSize="lg"
+                        noOfLines={1}
+                      >
+                        {winner.author}
+                      </Text>
+                    </Box>
+                    <Flex align="center" justify="space-between" wrap="wrap">
+                      <Button
+                        as="a"
+                        href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(winner.title + " " + winner.author)}`}
+                        target="blank"
+                        size="xs"
+                        variant="ghost"
+                        backgroundColor="white"
+                        color="black"
+                        aria-label="find in bookshop.org"
+                        title="shop"
+                        p={0}
+                      >
+                        <FaStore size={15} />
+                      </Button>
+                    </Flex>
+                  </Flex>
+                </Flex>
+              </Box>
+            )
+          }).reverse()
+        ): (
+          <Text fontStyle="italic">None</Text>
+        )}
+      </Box>
+      <Box className="well">
+        <Heading as="h2" size="md">
+          Suggestions
+        </Heading>
+        {bookSuggestionsForMe?.length ? (
+          bookSuggestionsForMe.map((suggestion: BookSuggestionType, i: number)=>{
+            return (
+              <Stack 
+                className="well-card"
+                spacing={4}
+                key={i}
+              >
+                <Flex
+                  align="center"
+                  gap={2}
+                >
+                  <Link to={`/profile/${suggestion.Profile_BookSuggestion_suggestorToProfile.username}`}>
+                    <Avatar 
+                      src={suggestion.Profile_BookSuggestion_suggestorToProfile.profile_photo}
+                      name={suggestion.Profile_BookSuggestion_suggestorToProfile.username}
+                    />
+                  </Link>
+                  <Box w="100%">
+                    <Flex align="center" justify="space-between">
+                      <Flex align="center" gap={1}>
+                        <Text fontWeight="bold">
+                          {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
+                        </Text>
+                        {suggestion.suggestorRating ? (
+                          <Flex align="center" gap={0}>
+                            <Icon
+                              as={AiFillStar}
+                              size={25}
+                              color="gold"
+                            />
+                            <Text fontStyle="italic" fontSize="sm">
+                              {suggestion.suggestorRating.toFixed(1)}
+                            </Text>
+                          </Flex>
+                        ): null}
+                      </Flex>
+                      <Box>
+                        <Menu>
+                          <MenuButton 
+                            as={Button}
+                            size="md"
+                            variant="ghost"
+                            rounded="full"
+                            height="25px"
+                            title="menu"
+                          >
+                            <BiDotsHorizontalRounded/>
+                          </MenuButton>
+                          <MenuList>
+                            <MenuItem 
+                              // data-book={JSON.stringify(reading)}
+                              onClick={e=>archiveCallback(suggestion.id)}
+                              fontWeight="bold"
+                              icon={<BsArchiveFill size={20} />}
+                            >
+                              Archive
+                            </MenuItem>
+                            <MenuItem
+                              onClick={e=>addToBookshelf({
+                                image: suggestion.image,
+                                title: suggestion.title,
+                                author: suggestion.author,
+                                description: suggestion.description,
+                                isbn: suggestion.isbn ? suggestion.isbn : "",
+                                page_count: suggestion.page_count ? parseInt(suggestion.page_count as any) : null,
+                                published_date: suggestion.published_date ? suggestion.published_date : "",
+                              })}
+                              fontWeight="bold"
+                              icon={<ImBooks size={20} />}
+                            >
+                              Add to Bookshelf
+                            </MenuItem>
+                          </MenuList>
+                        </Menu>
+                      </Box>
+                    </Flex>
+                    <Text fontStyle="italic" opacity="75%">
+                      {dayjs(suggestion.created_on).local().format('MMM DD, YYYY')}
+                    </Text>
+                  </Box>
+                  {/* <Box w="1.4rem">
+                    {bookshelf.Flag ? <bookshelf.Flag/> : null}
+                  </Box> */}
+                </Flex>
+                {suggestion.notes ? (
+                  <Text fontStyle="italic">
+                    "{suggestion.notes}"
+                  </Text>
+                ) : null}
+                <Divider />
+                <Flex
+                  gap={1}
+                >
+                  <Image
+                    src={suggestion.image}
+                    height="100%"
+                    maxH="125px"
+                    boxShadow="1px 1px 1px 1px darkgrey"
+                    alt={suggestion.title}
+                  />
+                  <Flex direction="column" justify="space-between" w="100%">
+                    <Box lineHeight={1.4}>
+                      <Heading
+                        as="h2"
+                        noOfLines={1}
+                        size="md"
+                      >
+                        {suggestion.title}
+                      </Heading>
+                      <Text
+                        fontWeight="bold"
+                        fontSize="lg"
+                        noOfLines={1}
+                      >
+                        {suggestion.author}
+                      </Text>
+                      {suggestion.published_date ? (
+                        <Text
+                          fontStyle="italic"
+                        >
+                          {dayjs(suggestion.published_date).format("YYYY")}
+                        </Text>
+                      ): null}
+                      {suggestion.page_count ? (
+                        <Text noOfLines={1}>
+                          {suggestion.page_count} pages
+                        </Text>
+                      ): null}
+                      <Button
+                        as="a"
+                        href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(suggestion.title + " " + suggestion.author)}`}
+                        target="blank"
+                        size="xs"
+                        variant="ghost"
+                        backgroundColor="white"
+                        color="black"
+                        aria-label="find in bookshop.org"
+                        title="shop"
+                        p={0}
+                      >
+                        <FaStore size={15} />
+                      </Button>
+                    </Box>
                     <Flex
                       align="center"
                       gap={1}
@@ -607,27 +742,16 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                         defaultRating={suggestion.rating ? suggestion.rating : 0}
                       />
                     </Flex>
-                    <Button
-                      as="a"
-                      href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(suggestion.title + " " + suggestion.author)}`}
-                      target="blank"
-                      size="xs"
-                      variant="outline"
-                      backgroundColor="white"
-                      color="black"
-                      leftIcon={<FaShoppingCart size={15} />}
-                    >
-                      Shop
-                    </Button>
                   </Flex>
                 </Flex>
-              </Flex>
-            </Stack>
-          )
-        }).reverse()
-      ): (
-        <Box></Box>
-      )}
+              </Stack>
+            )
+          }).reverse()
+        ): (
+          <Text fontStyle="italic">None</Text>
+        )}
+      </Box>
+      
 
     </Skeleton>
   )
