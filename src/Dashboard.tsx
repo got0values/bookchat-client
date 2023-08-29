@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, Suspense } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { DashboardProps, CurrentlyReading, SelectedBook, User, BookSuggestionType } from './types/types';
@@ -107,6 +107,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   const items = useRef(10);
   const [followingSorted,setFollowingSorted] = useState([] as any)
   const [randomSorted,setRandomSorted] = useState([] as any)
+  const [endLoadMore,setEndLoadMore] = useState(false);
   async function getDashboard() {
     const tokenCookie = Cookies.get().token
     const dash = await axios
@@ -121,6 +122,9 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
         getUser();
         setFollowingSorted(response.data.message.followingCurrentlyReadingSorted)
         setRandomSorted(response.data.message.randomCurrentlyReadingSorted)
+        if (response.data.message.randomCurrentlyReadingSorted.length < items.current) {
+          setEndLoadMore(true)
+        }
         return response.data.message
       })
       .catch(({response})=>{
@@ -133,15 +137,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   //lazy loading
   const [isFetching,setIsFetching] = useState(false)
   const [publicTabChosen,setPublicTabChosen] = useState(true)
-  function handleScroll() {
-    if (Math.ceil(window.innerHeight + document.documentElement.scrollTop) !== document.documentElement.offsetHeight || isFetching) {
-      return;
-    }
-    setIsFetching(true);
-  }
-  useEffect(()=>{
-    window.addEventListener("scroll",handleScroll)
-  },[])
   useEffect(()=>{
     if (!isFetching || !publicTabChosen) return;
     else {
@@ -595,9 +590,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           className="well"
           // key={reading.id}
         >
-          <Suspense
-            fallback={<Box>...</Box>}
-          />
           <Flex
             align="flex-start"
             justify="space-between"
@@ -1201,6 +1193,20 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                           )
                         })
                       )}
+                      {!endLoadMore && !isFetching ? (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            colorScheme="blue"
+                            w="auto"
+                            onClick={e=>setIsFetching(true)}
+                            isLoading={isFetching}
+                          >
+                            Load more...
+                          </Button>
+                        </>
+                      ): null}
                       {isFetching && (
                         <Flex justify="center">
                           <Spinner size="xl"/>
