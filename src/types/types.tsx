@@ -476,10 +476,21 @@ export interface SuggestionPollBookType {
   created_on?: Date | string;
 }
 
-export interface BookSuggestionVoteType {
+export interface BookSuggestionPollVoteType {
   id: number;
   bookshelf: number;
   profile: number;
   poll_book_number: number;
   poll_book_id: number;
+}
+
+export interface BookSuggestionPollWinnerType {
+  id: number;
+  profile: number;
+  bookshelf: number;
+  title: string;
+  author: string;
+  image: string;
+  description: string;
+  created_on: string;
 }
