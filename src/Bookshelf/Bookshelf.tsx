@@ -1053,6 +1053,45 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
       })
   }
 
+  const clearBookshelfMutation = useMutation({
+    mutationFn: async () => {
+      let tokenCookie: string | null = Cookies.get().token;
+      if (confirm("Are you sure you would like to clear your bookshelf? This action cannot be undone.")) {
+        await axios
+          .delete(server + "/api/clearbookshelf",
+            {
+              headers: {
+                authorization: tokenCookie
+              }
+            }
+          )
+          .then(()=>{
+            toast({
+              description: "Bookshelf cleared",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+          })
+          .catch(({response})=>{
+            console.log(response)
+            if (response.data?.message) {
+              throw new Error(response.data?.message)
+            }
+          })
+        return getBookshelf()
+      }
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
+      queryClient.resetQueries({queryKey: ['bookshelfKey']})
+      queryClient.setQueryData(["bookshelfKey"],data)
+    }
+  })
+  function clearBookshelf() {
+    clearBookshelfMutation.mutate()
+  }
+
 
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['bookshelfKey'], 
@@ -1512,6 +1551,14 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                     >
                       Import
                     </MenuItem>
+                    {bookshelfBooks && bookshelfBooks.length ? (
+                      <MenuItem
+                        onClick={clearBookshelf}
+                        color="red"
+                      >
+                        Clear Bookshelf
+                      </MenuItem>
+                    ): null}
                   </MenuList>
                 </Menu>
               </Flex>
