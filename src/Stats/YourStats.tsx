@@ -242,7 +242,7 @@ export default function YourStats({server}: {server: string}) {
         {suggestionCount !== null ? (
           <Box
             className="well"
-            minW="350px"
+            minW="300px"
             flex="1 1 45%"
             pb={5}
           >
@@ -271,7 +271,7 @@ export default function YourStats({server}: {server: string}) {
         {suggestionRating !== null ? (
           <Box
             className="well"
-            minW="350px"
+            minW="300px"
             flex="1 1 45%"
             pb={5}
           >
@@ -308,7 +308,7 @@ export default function YourStats({server}: {server: string}) {
           <>
             <Box
               className="well"
-              minW="350px"
+              minW="300px"
               flex="1 1 45%"
               pb={5}
             >
@@ -335,7 +335,7 @@ export default function YourStats({server}: {server: string}) {
             </Box>
             <Box
               className="well"
-              minW="350px"
+              minW="300px"
               flex="1 1 45%"
               pb={5}
             >

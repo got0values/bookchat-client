@@ -5,7 +5,7 @@ import Login from './Login';
 import Register from './Register';
 import { RedirectPage } from './shared/RedirectPage';
 import TopNav from './TopNav';
-import Dashboard from './Dashboard';
+import Dashboard from './Dashboard/Dashboard';
 import BookClubs from './BookClubs/BookClubs';
 import BookClub from './BookClubs/BookClub';
 import BookClubBook from './BookClubs/BookClubBook';

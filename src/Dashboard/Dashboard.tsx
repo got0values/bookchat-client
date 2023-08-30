@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { DashboardProps, CurrentlyReading, SelectedBook, User, BookSuggestionType } from './types/types';
+import { DashboardProps, CurrentlyReading, SelectedBook, User, BookSuggestionType } from '../types/types';
 import { 
   Box,
   Heading,
@@ -49,14 +49,14 @@ import {
   useToast,
   useDisclosure
 } from "@chakra-ui/react";
-import { editPagesRead, cancelEditPagesRead } from "./shared/editCancelPagesRead";
-import { showEditCurrentlyReading, hideEditCurrentlyReading } from "./shared/editCancelCurrentlyReading";
-import BooksSearch from "./shared/BooksSearch";
-import { SocialSharePostButtons, SocialShareNoPostButtons } from "./shared/SocialShareButtons";
-import FeaturedBooks from "./shared/FeaturedBooks";
-import EditCurrentlyReading from "./shared/EditCurrentlyReading";
-import { QuoteDesigner } from "./shared/QuoteDesigner";
-import { SuggestionCountBadge } from "./shared/SuggestionCount";
+import { editPagesRead, cancelEditPagesRead } from "../shared/editCancelPagesRead";
+import { showEditCurrentlyReading, hideEditCurrentlyReading } from "../shared/editCancelCurrentlyReading";
+import BooksSearch from "../shared/BooksSearch";
+import { SocialSharePostButtons, SocialShareNoPostButtons } from "../shared/SocialShareButtons";
+import FeaturedBooks from "../shared/FeaturedBooks";
+import EditCurrentlyReading from "../shared/EditCurrentlyReading";
+import { QuoteDesigner } from "../shared/QuoteDesigner";
+import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
 import { BsReplyFill, BsStarFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
@@ -64,13 +64,13 @@ import { MdOutlineChat, MdEdit, MdOutlineCancel } from 'react-icons/md';
 import { FaStore } from 'react-icons/fa';
 import { ImBooks } from 'react-icons/im';
 import { HiOutlineMail } from 'react-icons/hi';
-import Comments from "./shared/CurrentlyReadingComments";
-import { useAuth } from './hooks/useAuth';
+import Comments from "../shared/CurrentlyReadingComments";
+import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import axios from "axios";
-import packageJson from '../package.json';
+import packageJson from '../../package.json';
 
 
 export default function Dashboard({server,gbooksapi}: DashboardProps) {
