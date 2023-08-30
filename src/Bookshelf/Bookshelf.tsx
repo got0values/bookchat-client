@@ -560,14 +560,38 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   }
 
   const searchInputRef = useRef({} as any);
-  function searchFilter() {
+  const [isSearchResults,setIsSearchResults] = useState(false);
+  async function searchFilter() {
     const searchInput = searchInputRef.current.value.toLowerCase();
-    setBookshelfBooks(prev=>{
-      return prev.filter((book)=>{
-        return book.title.toLowerCase().includes(searchInput) || book.author?.toLowerCase().includes(searchInput) || book.isbn?.toLowerCase().includes(searchInput);
+    let tokenCookie: string | null = Cookies.get().token;
+    await axios
+      .get(`${server}/api/searchbookshelf`,
+        {
+          headers: {
+            Authorization: tokenCookie
+          },
+          params: {
+            searchInput: searchInput
+          }
+        }
+      )
+      .then((response)=>{
+        setIsSearchResults(true)
+        setBookshelfBooks(response.data.message)
+        // setBookshelfBooks(prev=>{
+        //   return prev.filter((book)=>{
+        //     return book.title.toLowerCase().includes(searchInput) || book.author?.toLowerCase().includes(searchInput) || book.isbn?.toLowerCase().includes(searchInput);
+        //   })
+        // })
       })
-    })
+      .catch(({response})=>{
+        console.log(response)
+        if (response.data?.message) {
+          throw new Error(response.data?.message)
+        }
+      })
   }
+  
   function resetSearchFilter() {
     searchInputRef.current.value = "";
     setBookshelfBooks(bookshelfBooksOriginal);
@@ -1133,7 +1157,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                 </FormLabel>
                 <Switch
                   id="allow-suggestions"
-                  isChecked={allowSuggestions}
+                  isChecked={allowSuggestions === true ? true : false}
                   ref={allowSuggestionsRef}
                   onChange={e=>allowSuggestionsToggle()}
                 />
@@ -2373,7 +2397,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   )
                 })
               ): null}
-              {!endLoadMore ? (
+              {!endLoadMore && !isSearchResults ? (
                 <>
                   <Button
                     variant="ghost"
