@@ -20,6 +20,7 @@ import {
   NumberDecrementStepper,
   useToast
 } from "@chakra-ui/react";
+import { MultiSelect } from 'chakra-multiselect'
 import * as htmlToImage from 'html-to-image';
 import { b64toBlob } from "./b64toBlob";
 import dayjs from "dayjs";
@@ -60,7 +61,7 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
       let title = titleRef.current.value;
       let author = authorRef.current.value;
       let description = descriptionRef.current.value;
-      let subjects = selectedBook2.subjects ? JSON.stringify(selectedBook2.subjects) : "";
+      let subjects = selectedSubjects ? JSON.stringify(selectedSubjects.map((subject:any)=>subject.value)) : "";
       let isbn = selectedBook2.isbn;
       let page_count = pagesRef.current.value;
       let published_date = yearRef.current.value;
@@ -175,6 +176,8 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
   function postCurrentlyReading() {
     postCurrentlyReadingMutation.mutate();
   }
+
+  const [selectedSubjects,setSelectedSubjects] = useState([]);
 
   return (
     <>
@@ -309,59 +312,31 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
                     </NumberInputStepper>
                   </NumberInput>
                 </FormControl>
-                {selectedBook2.subjects ? (
-                  <>
-                    {selectedBook2.subjects.length ? (
-                      <Button
-                        size="xs"
-                        w="auto"
-                        onClick={e=>setSelectedBook2((prev:any)=>({...prev,subjects: []}))}
-                      >
-                        Clear all subjects
-                      </Button>
-                    ): null}
-                    <Flex 
-                      // noOfLines={1}
-                      align="center"
-                      // height="2.2rem"
-                      py={1}
-                      gap={1}
-                      // maxWidth="350px"
-                      wrap="wrap"
-                      _hover={{
-                        cursor: "pointer"
-                      }}
-                      sx={{
-                        display: "flex",
-                        mt: "0px!important"
-                      }}
-                    >
-                      {selectedBook2.subjects.map((subject:string,i:number)=>{
-                        return (
-                          <Tag
-                            key={i}
-                            colorScheme="purple"
-                            size="sm"
-                            minH={15}
-                            minW="unset"
-                          >
-                            <TagLabel>{subject}</TagLabel>
-                            <TagCloseButton
-                              onClick={e=>{
-                                return setSelectedBook2((prev:any)=>{
-                                  let newSubjects =  prev.subjects.filter((s:string,fi:number)=>{
-                                    return fi !== i;
-                                  })
-                                  return {...prev, subjects: newSubjects}
-                                });
-                              }}
-                            />
-                          </Tag>
-                        )
-                      })}
-                    </Flex>
-                  </>
-                ):null}
+                <FormControl variant="floatingstatic">
+                  {selectedBook2.subjects ? (
+                    <>
+                      <FormLabel>
+                        Add subjects
+                      </FormLabel>
+                      <Box pb={2}>
+                        {selectedBook2.subjects.length ? (
+                          <MultiSelect
+                            options={selectedBook2.subjects.map((subject:any)=>{
+                              return (
+                                {
+                                  label: subject,
+                                  value: subject
+                                }
+                              )
+                            })}
+                            value={selectedSubjects}
+                            onChange={e=>setSelectedSubjects(e as any)}
+                          />
+                        ): null}
+                      </Box>
+                    </>
+                  ):null}
+              </FormControl>
               </Stack>
               <Flex justify="flex-end">
                 <Button 
