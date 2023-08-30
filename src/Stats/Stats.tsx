@@ -32,7 +32,7 @@ export default function Stats({server}: {server: string}) {
             }}
             className="tab-button"
           >
-            Your Stats
+            Leaderboard
           </Tab>
           <Tab
             fontWeight="bold"
@@ -41,15 +41,15 @@ export default function Stats({server}: {server: string}) {
             }}
             className="tab-button"
           >
-            Weekly Leaderboard
+            Your Stats
           </Tab>
         </TabList>
         <TabPanels>
           <TabPanel px={0}>
-            <YourStats server={server}/>
+            <Leaderboard server={server}/>
           </TabPanel>
           <TabPanel px={0}>
-            <Leaderboard server={server}/>
+            <YourStats server={server}/>
           </TabPanel>
         </TabPanels>
       </Tabs>

@@ -63,7 +63,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
         navigate(locationState.redirectTo)
       }
       else {
-        navigate("/booksuggestions");
+        navigate("/stats");
       }
     },100)
     return
