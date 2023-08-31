@@ -393,7 +393,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                     </MenuButton>
                     <MenuList>
                       {bookSuggestionBookshelf?.Profile.id !== user.Profile.id && user.Profile.Bookshelf?.allow_suggestions ? (
-                        <RequestSuggestion server={server} requestee={bookSuggestionBookshelf?.Profile.id} />
+                        <RequestSuggestion server={server} requestee={bookSuggestionBookshelf?.Profile.id ? bookSuggestionBookshelf?.Profile.id : null} />
                       ): null}
                     </MenuList>
                   </Menu>

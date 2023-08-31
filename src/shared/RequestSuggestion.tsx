@@ -20,7 +20,7 @@ import { HiOutlineMail } from 'react-icons/hi';
 import Cookies from "js-cookie";
 import axios from "axios";
 
-export default function RequestSuggestion({server,requestee}:{server:string,requestee:number}) {
+export default function RequestSuggestion({server,requestee}:{server:string,requestee:number|null}) {
   const toast = useToast();
 
   const { 
@@ -33,32 +33,34 @@ export default function RequestSuggestion({server,requestee}:{server:string,requ
   const [error,setError] = useState("");
   async function sendSuggestionRequest() {
     let tokenCookie: string | null = Cookies.get().token;
-    await axios
-    .post(server + "/api/sendsuggestionrequest",
-      {
-        note: noteRef.current.value,
-        requestee: requestee
-      },
-      {
-        headers: {
-          authorization: tokenCookie
+    if (requestee) {
+      await axios
+      .post(server + "/api/sendsuggestionrequest",
+        {
+          note: noteRef.current.value,
+          requestee: requestee
+        },
+        {
+          headers: {
+            authorization: tokenCookie
+          }
         }
-      }
-    )
-    .then((response)=>{
-      toast({
-        description: "Suggestion request sent",
-        status: "success",
-        duration: 9000,
-        isClosable: true
-      });
-      onCloseRequestSuggestionModal()
-    })
-    .catch((response)=>{
-      console.log(response)
-      setError(response.data.message)
-      throw new Error(response.data?.message)
-    })
+      )
+      .then((response)=>{
+        toast({
+          description: "Suggestion request sent",
+          status: "success",
+          duration: 9000,
+          isClosable: true
+        });
+        onCloseRequestSuggestionModal()
+      })
+      .catch((response)=>{
+        console.log(response)
+        setError(response.data.message)
+        throw new Error(response.data?.message)
+      })
+    }
   }
 
   return (

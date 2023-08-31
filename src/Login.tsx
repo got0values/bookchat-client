@@ -70,21 +70,23 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
   useEffect(()=>{
     async function checkLoginToken() {
       const tokenCookie = Cookies.get().token;
-      await axios
-        .get(server + "/api/checklogintoken", {
-          headers: {
-            authorization: tokenCookie
-          }
-        })
-        .then((response)=>{
-          const responseData = response.data;
-          if (responseData.success) {
-            navigate("/")
-          }
-        })
-        .catch((response)=>{
-          console.log(response)
-        })
+      if (tokenCookie) {
+        await axios
+          .get(server + "/api/checklogintoken", {
+            headers: {
+              authorization: tokenCookie
+            }
+          })
+          .then((response)=>{
+            const responseData = response.data;
+            if (responseData.success) {
+              navigate("/")
+            }
+          })
+          .catch((response)=>{
+            console.log(response)
+          })
+      }
     }
     checkLoginToken();
   },[])
