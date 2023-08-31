@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { LoginFormProps } from "./types/types";
 import { 
@@ -29,6 +30,7 @@ import logo from './assets/BookChatNoirNewBlack.png';
 import logoWhite from './assets/BookChatNoirNewWhite.png';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from "./hooks/useAuth";
+import Cookies from "js-cookie";
 import axios from "axios";
 
 
@@ -39,6 +41,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
   const { user,getUser } = useAuth();
   const toast = useToast();
   const {colorMode} = useColorMode()
+  const navigate = useNavigate();
 
   // const handleSubmitMutation = useMutation({
   //   mutationFn: async (e,googleRegister) => {
@@ -63,6 +66,29 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
   //     })
   //   }
   // });
+
+  useEffect(()=>{
+    async function checkLoginToken() {
+      const tokenCookie = Cookies.get().token;
+      await axios
+        .get(server + "/api/checklogintoken", {
+          headers: {
+            authorization: tokenCookie
+          }
+        })
+        .then((response)=>{
+          const responseData = response.data;
+          if (responseData.success) {
+            navigate("/")
+          }
+        })
+        .catch((response)=>{
+          console.log(response)
+        })
+    }
+    checkLoginToken();
+  },[])
+
   async function handleSubmit(e: React.FormEvent | any, googleRegister: boolean) {
       if (!googleRegister) {
         e.preventDefault();
