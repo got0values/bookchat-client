@@ -64,7 +64,6 @@ import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { MdOutlineChat, MdEdit, MdOutlineCancel } from 'react-icons/md';
 import { FaStore } from 'react-icons/fa';
 import { ImBooks } from 'react-icons/im';
-import { HiOutlineMail } from 'react-icons/hi';
 import Comments from "../shared/CurrentlyReadingComments";
 import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
