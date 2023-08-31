@@ -36,7 +36,6 @@ export function BookSuggestionToList({server}: {server: string;}) {
   const endLoadMore = useRef(false);
   async function getBookSuggestToList() {
     let tokenCookie: string | null = Cookies.get().token;
-    console.log(take.current)
     const bookSuggestToList = axios
       .get(`${server}/api/getbooksuggesttolist`,
         {
