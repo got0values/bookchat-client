@@ -57,6 +57,7 @@ import FeaturedBooks from "../shared/FeaturedBooks";
 import EditCurrentlyReading from "../shared/EditCurrentlyReading";
 import { QuoteDesigner } from "../shared/QuoteDesigner";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
+import RequestSuggestion from "../shared/RequestSuggestion";
 import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
 import { BsReplyFill, BsStarFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
@@ -351,30 +352,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
     )
   }
 
-  async function requestSuggestion(id: number) {
-    const tokenCookie = Cookies.get().token;
-    await axios
-      .post(server + "/api/requestsuggestion",
-        {
-          id: id
-        },
-        {headers: {
-          Authorization: tokenCookie
-        }}
-      )
-      .then((response)=>{
-        toast({
-          description: "Suggestion request sent!",
-          status: "success",
-          duration: 9000,
-          isClosable: true
-        })
-      })
-      .catch(({response})=>{
-        console.log(response)
-      })
-  }
-
   const CurrentlyReadingInput = () => {
     const [showQuoteDesigner,setShowQuoteDesigner] = useState(false);
 
@@ -415,7 +392,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               onChange={e=>setShowQuoteDesigner(prev=>!prev)}
               fontWeight="bold"
             >
-              Add a quote (New)
+              Add a quote
             </Checkbox>
             <CloseButton
               position="absolute"
@@ -724,15 +701,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                             </MenuItem>
                           ): null}
                           {reading.Profile.id !== user.Profile.id && user.Profile.Bookshelf?.allow_suggestions ? (
-                            <MenuItem
-                              onClick={e=>requestSuggestion(reading.Profile.id)}
-                              fontWeight="bold"
-                              fontSize="sm"
-                              aria-label="request a suggestion"
-                              icon={<HiOutlineMail size={20} />}
-                            >
-                              Request Suggestion
-                            </MenuItem>
+                            <RequestSuggestion server={server} requestee={reading.Profile.id} />
                           ): null}
                         </MenuList>
                       </Menu>
