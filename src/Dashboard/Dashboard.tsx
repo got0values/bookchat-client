@@ -109,7 +109,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   const [randomSorted,setRandomSorted] = useState([] as any)
   const [endLoadMore,setEndLoadMore] = useState(false);
   async function getDashboard() {
-    console.log("yes")
     const tokenCookie = Cookies.get().token
     const dash = await axios
       .get(server + "/api/dashboard?items=" + items.current,
