@@ -26,15 +26,21 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   Divider,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
   useDisclosure,
   useToast
 } from "@chakra-ui/react";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
 import BooksSearch from "../shared/BooksSearch";
+import RequestSuggestion from "../shared/RequestSuggestion";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import { BsArrowRight } from 'react-icons/bs';
 import { MdChevronRight } from 'react-icons/md';
 import { BsStarFill } from "react-icons/bs";
+import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import StarRating from "../shared/StarRating";
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import dayjs from "dayjs";
@@ -369,7 +375,29 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                 {/* <Box w="1.4rem">
                   {bookSuggestionBookshelf.Flag ? <bookSuggestionBookshelf.Flag/> : null}
                 </Box> */}
+
                 <SuggestionCountBadge suggestionCount={bookSuggestionBookshelf?.Profile?._count.BookSuggestion_BookSuggestion_suggestorToProfile}/>
+
+                {bookSuggestionBookshelf?.Profile.id !== user.Profile.id && user.Profile.Bookshelf?.allow_suggestions ? (
+                  <Menu>
+                    <MenuButton 
+                      as={Button}
+                      size="sm"
+                      // variant="ghost"
+                      rounded="full"
+                      height="20px"
+                      title="menu"
+                      px={2}
+                    >
+                      <BiDotsHorizontalRounded size={15} />
+                    </MenuButton>
+                    <MenuList>
+                      {bookSuggestionBookshelf?.Profile.id !== user.Profile.id && user.Profile.Bookshelf?.allow_suggestions ? (
+                        <RequestSuggestion server={server} requestee={bookSuggestionBookshelf?.Profile.id} />
+                      ): null}
+                    </MenuList>
+                  </Menu>
+                ): null}
               </Flex>
             </Flex>
             {bookSuggestionBookshelf?.suggestions_notes ? (
