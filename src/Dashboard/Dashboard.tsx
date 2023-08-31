@@ -109,6 +109,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   const [randomSorted,setRandomSorted] = useState([] as any)
   const [endLoadMore,setEndLoadMore] = useState(false);
   async function getDashboard() {
+    console.log("yes")
     const tokenCookie = Cookies.get().token
     const dash = await axios
       .get(server + "/api/dashboard?items=" + items.current,
@@ -263,29 +264,26 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
     let currentlyReading = parseInt((e.target as HTMLDivElement).dataset.currentlyreading!);
     await axios
       .post(server + "/api/likeunlikecurrentlyreading",
-      {
-        currentlyReading
-      },
-      {
-        headers: {
-          'authorization': tokenCookie
+        {
+          currentlyReading
+        },
+        {
+          headers: {
+            'authorization': tokenCookie
+          }
         }
-      }
       )
-      .then(()=>{
-        getDashboard()
-      })
       .catch(({response})=>{
         console.log(response)
         throw new Error(response.message)
       })
       return getDashboard();
     },
-    onSuccess: (data,variables)=>{
-      queryClient.invalidateQueries({ queryKey: ["dashboardKey"] })
-      queryClient.resetQueries({queryKey: ["dashboardKey"]})
-      queryClient.setQueryData(["dashboardKey"],data)
-    }
+    // onSuccess: (data,variables)=>{
+    //   queryClient.invalidateQueries({ queryKey: ["dashboardKey"] })
+    //   queryClient.resetQueries({queryKey: ["dashboardKey"]})
+    //   queryClient.setQueryData(["dashboardKey"],data)
+    // }
   })
   function likeUnlikeCurrentlyReading(e: React.FormEvent) {
     likeUnlikeCurrentlyReadingMutation.mutate(e)
