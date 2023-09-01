@@ -63,22 +63,21 @@ export default function Leaderboard({server}: {server: string}) {
     setIsLoading(true)
     await axios
       .get(`${server}/api/leaderboard`,
-      {
-        headers: {
-          Authorization: tokenCookie
-        }
-      }
-      )
-      .then((response)=>{
-        setAllPagesReadLeaderboard(response.data.message.allPagesRead)
-        setFollowingPagesReadLeaderboard(response.data.message.followingPagesRead)
-        setAllPointsLeaderboard(response.data.message.allPoints)
-        setFollowingPointsLeaderboard(response.data.message.followingPoints)
-      })
-      .catch(({response})=>{
-        console.log(response)
-        throw new Error(response.message)
-      })
+        {
+          headers: {
+            Authorization: tokenCookie
+          }
+        })
+        .then((response)=>{
+          setAllPagesReadLeaderboard(response.data.message.allPagesRead)
+          setFollowingPagesReadLeaderboard(response.data.message.followingPagesRead)
+          setAllPointsLeaderboard(response.data.message.allPoints)
+          setFollowingPointsLeaderboard(response.data.message.followingPoints)
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.message)
+        })
       setIsLoading(false)
   }
 
@@ -105,6 +104,7 @@ export default function Leaderboard({server}: {server: string}) {
           <PopoverHeader>Points</PopoverHeader>
           <PopoverBody 
             fontSize="sm"
+            textTransform="none"
             _dark={{
               bg: "black"
             }}
@@ -123,6 +123,14 @@ export default function Leaderboard({server}: {server: string}) {
               </Text>
               <Text fontWeight="bold">
                 100
+              </Text>
+            </Flex>
+            <Flex justify="space-between" gap={2}>
+              <Text>
+                Poll vote won
+              </Text>
+              <Text fontWeight="bold">
+                125
               </Text>
             </Flex>
             <Flex justify="space-between" gap={2}>
