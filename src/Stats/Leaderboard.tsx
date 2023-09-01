@@ -96,7 +96,7 @@ export default function Leaderboard({server}: {server: string}) {
               cursor: "pointer"
             }}
           >
-            <ImInfo size={20} color="gray" />
+            <ImInfo size={16} color="gray" />
           </Flex>
         </PopoverTrigger>
         <PopoverContent width="auto">
@@ -150,19 +150,15 @@ export default function Leaderboard({server}: {server: string}) {
           <Text fontWeight="bold" className="non-well" textAlign="center">
             {dayjs(thisWeekStart).format('M/D/YY')} - {dayjs(thisWeekStart).add(6,"day").format('M/D/YY')}
           </Text>
-          <Heading as="h2" size="lg" className="non-well">All Users</Heading>
+          <Heading as="h2" size="md" className="non-well">Top Readers</Heading>
           <Box className="well">
-            <Flex gap={2} align="center">
-              <Heading as="h3" size="md" mb={2} >Points</Heading>
-              <PointsPopover/>
-            </Flex>
             <TableContainer>
               <Table variant='simple' size="sm">
                 <Thead>
                   <Tr>
                     <Th>Pos.</Th>
                     <Th>Username</Th>
-                    <Th>Score</Th>
+                    <Th display="flex" gap={2} align="center">Score <PointsPopover/></Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -249,24 +245,20 @@ export default function Leaderboard({server}: {server: string}) {
             </TableContainer>
           </Box> */}
           <Divider mb={1} mt={4} />
-          <Heading as="h2" size="lg" className="non-well">Following</Heading>
+          <Heading as="h2" size="md" className="non-well">Following</Heading>
           <Box 
             className="well" 
             sx={{
               marginBottom: ".5rem!important"
             }}
           >
-            <Flex gap={2} align="center">
-              <Heading as="h3" size="md" mb={2} >Points</Heading>
-              <PointsPopover/>
-            </Flex>
             <TableContainer>
               <Table variant='simple' size="sm">
                 <Thead>
                   <Tr>
                     <Th>Pos.</Th>
                     <Th>Username</Th>
-                    <Th>Score</Th>
+                    <Th display="flex" gap={2} align="center">Score <PointsPopover/></Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -306,7 +298,6 @@ export default function Leaderboard({server}: {server: string}) {
             </TableContainer>
           </Box>
           <Box className="well">
-            <Heading as="h3" size="md" mb={2} >Pages Read</Heading>
             <TableContainer>
               <Table variant='simple' size="sm">
                 <Thead>
