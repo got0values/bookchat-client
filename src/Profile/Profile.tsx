@@ -982,7 +982,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                       >
                         <ImBooks size="20"/>
                         <Heading as="h2" size="md">
-                          {profileData?.User.first_name}'s Bookshelf
+                          {profileData?.username}'s Bookshelf
                         </Heading>
                       </Flex>
                     </Box>

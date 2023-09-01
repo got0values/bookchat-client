@@ -1241,7 +1241,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                         to={`/profile/${profile.username}`}
                         onClick={closeSearchModal}
                       >
-                        <HStack>
+                        <HStack spacing={1}>
                           <Avatar 
                             size="xs"
                             name={profile.username}
@@ -1249,9 +1249,9 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                           <Text>
                             @{profile.username}
                           </Text>
-                          <Text>
+                          {/* <Text>
                             {profile.User.first_name + " " + profile.User.last_name}
-                          </Text>
+                          </Text> */}
                         </HStack>
                       </Link>
                     </Box>

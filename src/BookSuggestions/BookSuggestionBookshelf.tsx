@@ -29,7 +29,13 @@ import {
   Menu,
   MenuButton,
   MenuList,
-  MenuItem,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverCloseButton,
+  PopoverHeader,
+  PopoverBody,
   useDisclosure,
   useToast
 } from "@chakra-ui/react";
@@ -41,6 +47,7 @@ import { BsArrowRight } from 'react-icons/bs';
 import { MdChevronRight } from 'react-icons/md';
 import { BsStarFill } from "react-icons/bs";
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
+import { FaStore } from 'react-icons/fa';
 import StarRating from "../shared/StarRating";
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import dayjs from "dayjs";
@@ -443,9 +450,38 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                           alt={pollBookOne.title}
                         />
                       </Box>
-                      <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
-                        {pollBookOne.title}
-                      </Text>
+                      <Flex align="center" gap={1}>
+                        <Popover isLazy>
+                          <PopoverTrigger>
+                            <Box
+                              _hover={{
+                                cursor: "pointer"
+                              }}
+                            >
+                              <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                                {pollBookOne.title}
+                              </Text>
+                            </Box>
+                          </PopoverTrigger>
+                          <PopoverContent w="auto">
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverHeader me={5}>{pollBookOne.title}</PopoverHeader>
+                          </PopoverContent>
+                        </Popover>
+                        <Button
+                          as={Link}
+                          to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(pollBookOne.title + " " + pollBookOne.author)}`}
+                          target="blank"
+                          size="xs"
+                          variant="ghost"
+                          aria-label="View in Bookshop"
+                          title="View in Bookshop"
+                          p={0}
+                        >
+                          <FaStore size={17} />
+                        </Button>
+                      </Flex>
                       <Text fontSize="sm">
                         {pollBookOne.author}
                       </Text>
@@ -489,9 +525,38 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                           alt={pollBookTwo.title}
                         />
                       </Box>
-                      <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
-                        {pollBookTwo.title}
-                      </Text>
+                      <Flex align="center" gap={1}>
+                        <Popover isLazy>
+                          <PopoverTrigger>
+                            <Box
+                              _hover={{
+                                cursor: "pointer"
+                              }}
+                            >
+                              <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                                {pollBookTwo.title}
+                              </Text>
+                            </Box>
+                          </PopoverTrigger>
+                          <PopoverContent w="auto">
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverHeader me={5}>{pollBookTwo.title}</PopoverHeader>
+                          </PopoverContent>
+                        </Popover>
+                        <Button
+                          as={Link}
+                          to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(pollBookTwo.title + " " + pollBookTwo.author)}`}
+                          target="blank"
+                          size="xs"
+                          variant="ghost"
+                          aria-label="View in Bookshop"
+                          title="View in Bookshop"
+                          p={0}
+                        >
+                          <FaStore size={17} />
+                        </Button>
+                      </Flex>
                       <Text fontSize="sm">
                         {pollBookTwo.author}
                       </Text>
@@ -535,9 +600,38 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                           alt={pollBookThree.title}
                         />
                       </Box>
-                      <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
-                        {pollBookThree.title}
-                      </Text>
+                      <Flex align="center" gap={1}>
+                        <Popover isLazy>
+                          <PopoverTrigger>
+                            <Box
+                              _hover={{
+                                cursor: "pointer"
+                              }}
+                            >
+                              <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                                {pollBookThree.title}
+                              </Text>
+                            </Box>
+                          </PopoverTrigger>
+                          <PopoverContent w="auto">
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverHeader me={5}>{pollBookThree.title}</PopoverHeader>
+                          </PopoverContent>
+                        </Popover>
+                        <Button
+                          as={Link}
+                          to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(pollBookThree.title + " " + pollBookThree.author)}`}
+                          target="blank"
+                          size="xs"
+                          variant="ghost"
+                          aria-label="View in Bookshop"
+                          title="View in Bookshop"
+                          p={0}
+                        >
+                          <FaStore size={17} />
+                        </Button>
+                      </Flex>
                       <Text fontSize="sm">
                         {pollBookThree.author}
                       </Text>
