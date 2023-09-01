@@ -79,8 +79,12 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
           })
           .then((response)=>{
             const responseData = response.data;
+            console.log(responseData)
             if (responseData.success) {
-              navigate("/")
+              getUser()
+              if (user) {
+                navigate("/stats")
+              }
             }
           })
           .catch((response)=>{
