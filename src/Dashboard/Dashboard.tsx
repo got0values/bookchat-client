@@ -72,7 +72,6 @@ import utc from "dayjs/plugin/utc";
 import axios from "axios";
 import packageJson from '../../package.json';
 
-
 export default function Dashboard({server,gbooksapi}: DashboardProps) {
   dayjs.extend(utc);
   const { user, getUser } = useAuth();
