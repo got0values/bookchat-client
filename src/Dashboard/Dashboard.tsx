@@ -53,7 +53,6 @@ import { editPagesRead, cancelEditPagesRead } from "../shared/editCancelPagesRea
 import { showEditCurrentlyReading, hideEditCurrentlyReading } from "../shared/editCancelCurrentlyReading";
 import BooksSearch from "../shared/BooksSearch";
 import { SocialSharePostButtons, SocialShareNoPostButtons } from "../shared/SocialShareButtons";
-import FeaturedBooks from "../shared/FeaturedBooks";
 import EditCurrentlyReading from "../shared/EditCurrentlyReading";
 import { QuoteDesigner } from "../shared/QuoteDesigner";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
@@ -1038,10 +1037,11 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                         {reading.CurrentlyReadingLike?.length ? reading.CurrentlyReadingLike.length.toString() : "0"}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent>
+                    <PopoverContent width="auto">
                       <PopoverArrow />
                       <PopoverCloseButton />
                       <PopoverBody
+                       mt={5}
                         _dark={{
                           bg: "black"
                         }}
@@ -1129,16 +1129,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               >
                 Following
               </Tab>
-              <Tab
-                fontWeight="bold"
-                className="tab-button"
-                _selected={{
-                  borderBottom: "2px solid gray"
-                }}
-                onClick={e=>setPublicTabChosen(false)}
-              >
-                Featured Books
-              </Tab>
             </TabList>
             <TabPanels>
               <TabPanel px={0}>
@@ -1211,9 +1201,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     </Box>
                   )}
                 </Flex>
-              </TabPanel>
-              <TabPanel px={0}>
-                <FeaturedBooks/>
               </TabPanel>
             </TabPanels>
           </Tabs>
