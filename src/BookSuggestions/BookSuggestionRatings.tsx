@@ -72,14 +72,19 @@ export default function BookSuggestionRatings({server}: {server: string}) {
                     wrap="wrap" 
                     lineHeight={1}
                     mb={1}
-                    fontWeight="bold"
+                    fontSize="sm"
                   >
+                    <Text>
+                      {dayjs(suggestion.created_on).local().format('M/DD/YY')}
+                    </Text>
                     <BsArrowRightShort size={20} />
-                    <Link
+                    <Text
+                      as={Link}
                       to={`/profile/${suggestion.Profile_BookSuggestion_suggesteeToProfile?.username}`}
+                      fontWeight="bold"
                     >
-                      {suggestion.Profile_BookSuggestion_suggesteeToProfile?.username}
-                    </Link>
+                      @{suggestion.Profile_BookSuggestion_suggesteeToProfile?.username}
+                    </Text>
                   </Flex>
                   <Flex gap={2} mb={2}>
                     <Image
@@ -116,7 +121,7 @@ export default function BookSuggestionRatings({server}: {server: string}) {
                       />
                       <Button
                         as={Link}
-                        to={`/booksuggestions/bookshelf?profile=${suggestion.Profile_BookSuggestion_suggesteeToProfile?.username}`}
+                        to={suggestion.Profile_BookSuggestion_suggesteeToProfile?.Bookshelf && suggestion.Profile_BookSuggestion_suggesteeToProfile?.Bookshelf.allow_suggestions ? `/booksuggestions/bookshelf?profile=${suggestion.Profile_BookSuggestion_suggesteeToProfile?.username}` : "#"}
                         size="xs"
                         variant="ghost"
                         p={0}
