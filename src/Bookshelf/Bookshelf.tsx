@@ -758,7 +758,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     onClose: onCloseImportBookshelfModal 
   } = useDisclosure()
 
-  const [importLimit,setImportLimit] = useState(7500);
+  const [importLimit,setImportLimit] = useState(15000);
   async function getImportLimit() {
     const tokenCookie = Cookies.get().token;
     await axios
