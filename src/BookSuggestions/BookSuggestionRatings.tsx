@@ -54,7 +54,7 @@ export default function BookSuggestionRatings({server}: {server: string}) {
       direction="column"
       alignItems="stretch"
     >
-      {suggestionRatings ? (
+      {suggestionRatings && suggestionRatings.length ? (
         suggestionRatings.map((suggestion,i)=>{
           return (
             <React.Fragment key={i}>
