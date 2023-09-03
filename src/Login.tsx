@@ -82,7 +82,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
             if (responseData.success) {
               getUser()
               if (user) {
-                navigate("/stats")
+                navigate("/booksuggestions")
               }
             }
           })
