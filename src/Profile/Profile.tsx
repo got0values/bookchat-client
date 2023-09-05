@@ -50,6 +50,7 @@ import {
   MenuList,
   MenuItem,
   CloseButton,
+  Progress,
   Divider,
   useDisclosure,
   useToast
@@ -933,6 +934,24 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           {profileData.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0)} pages read this week
                         </Text>
                       ): null}
+
+                    {profileData.Bookshelf?.allow_suggestions ? (
+                      <Flex 
+                        as={Link} 
+                        to={`/booksuggestions/bookshelf?profile=${profileData.username}`}
+                        gap={1}
+                        align="center"
+                        justify="center"
+                        pt={1}
+                        pb={2}
+                      >
+                        <ImBooks size="20"/>
+                        View Bookshelf
+                      </Flex>
+                    ):(
+                      null
+                    )}
+
                       {viewer === "self" ? (
                         <>
                           {profileData.hidden ? (
@@ -970,25 +989,6 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                     </Box>
                     <Text color="red" pt={2}>{profileActionError}</Text>
                   </Center>
-    
-                  {profileData.Bookshelf?.allow_suggestions ? (
-                    <Box className="well">
-                      <Flex 
-                        as={Link} 
-                        to={`/booksuggestions/bookshelf?profile=${profileData.username}`}
-                        gap={1}
-                        align="center"
-                        justify="center"
-                      >
-                        <ImBooks size="20"/>
-                        <Heading as="h2" size="md">
-                          {profileData?.username}'s Bookshelf
-                        </Heading>
-                      </Flex>
-                    </Box>
-                  ):(
-                    null
-                  )}
     
                   {profileData.BookClubs.length && (viewer === "following" || viewer === "self") ? (
                     <Box className="well">
