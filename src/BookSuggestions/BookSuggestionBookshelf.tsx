@@ -687,6 +687,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                   size="lg"
                   placeholder="Suggest a book"
                   mb={2}
+                  width="100%"
                   _dark={{
                     bg: "gray.800"
                   }}
@@ -694,7 +695,21 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                     cursor: 'none',
                     '&:hover': {
                       cursor: 'pointer'
-                    }
+                    },
+                    animationIterationCount: "6",
+                    '@keyframes borderFade': {
+                      '0%': {
+                        borderColor: "teal"
+                      },
+                      '50%': {
+                        borderColor: "gray.400"
+                      },
+                      '100%': {
+                        borderColor: "teal"
+                      }
+                    },
+                    animationName: "borderFade",
+                    animationDuration: ".5s"
                   }}
                   readOnly={true}
                   onClick={e=>onOpenSearchModal()}
