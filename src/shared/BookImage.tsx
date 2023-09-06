@@ -5,7 +5,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 
-export default function BookImage({isbn,id}: {isbn?: string,id:string}) {
+export default function BookImage({isbn,id,maxHeight="unset"}: {isbn?: string,id:string, maxHeight?: string}) {
   const RAPIDAPIKEY = import.meta.env.VITE_RAPID_API_KEY;
   const [bookImageSrc,setBookImageSrc] = useState("https://via.placeholder.com/165x215");
   const [bookImgIsLoading,setBookImgIsLoading] = useState(false);
@@ -45,12 +45,13 @@ export default function BookImage({isbn,id}: {isbn?: string,id:string}) {
         <Spinner/>
       ): (
         <Image
-          maxW="100%" 
-          w="100%"
-          h="auto"
+          // maxW="100%" 
+          // w="100%"
+          // h="auto"
           className="book-image"
           onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
           src={bookImageSrc}
+          maxHeight={maxHeight}
           alt="book image"
           boxShadow="1px 1px 1px 1px darkgrey"
           _hover={{

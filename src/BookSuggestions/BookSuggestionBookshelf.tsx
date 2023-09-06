@@ -40,6 +40,7 @@ import {
   useToast
 } from "@chakra-ui/react";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
+import BookImage from "../shared/BookImage";
 import BooksSearch from "../shared/BooksSearch";
 import RequestSuggestion from "../shared/RequestSuggestion";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
@@ -910,14 +911,18 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                         key={i}
                       >
                         <Flex>
-                          <Image
-                            src={book.image ? book.image : "https://via.placeholder.com/165x215"}
-                            onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                            height="100%"
-                            maxH="125px"
-                            boxShadow="1px 1px 1px 1px darkgrey"
-                            alt={book.title}
-                          />
+                          {book.image === "https://via.placeholder.com/165x215" ? (
+                            <BookImage isbn={book.isbn} id={`book-image-${Math.random()}`} maxHeight="125px"/>
+                          ) : (
+                            <Image
+                              src={book.image ? book.image : "https://via.placeholder.com/165x215"}
+                              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                              height="100%"
+                              maxH="125px"
+                              boxShadow="1px 1px 1px 1px darkgrey"
+                              alt={book.title}
+                            />
+                          )}
                           <Box mx={2} w="100%">
                             <Heading 
                               as="h5" 

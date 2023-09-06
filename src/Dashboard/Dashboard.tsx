@@ -52,6 +52,7 @@ import {
 import { editPagesRead, cancelEditPagesRead } from "../shared/editCancelPagesRead";
 import { showEditCurrentlyReading, hideEditCurrentlyReading } from "../shared/editCancelCurrentlyReading";
 import BooksSearch from "../shared/BooksSearch";
+import BookImage from '../shared/BookImage';
 import { SocialSharePostButtons, SocialShareNoPostButtons } from "../shared/SocialShareButtons";
 import EditCurrentlyReading from "../shared/EditCurrentlyReading";
 import { QuoteDesigner } from "../shared/QuoteDesigner";
@@ -801,13 +802,17 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               </Text>
             ): null}
             <Flex>
-              <Image 
-                src={reading.image ? reading.image : "https://via.placeholder.com/165x215"}
-                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                maxH="150px"
-                boxShadow="1px 1px 1px 1px darkgrey"
-                alt={`${reading.title} image`}
-              />
+              {reading.image === "https://via.placeholder.com/165x215" ? (
+                <BookImage isbn={reading.isbn} id={`book-image-${Math.random()}`} maxHeight="150px"/>
+              ): (
+                <Image 
+                  src={reading.image ? reading.image : "https://via.placeholder.com/165x215"}
+                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                  maxH="150px"
+                  boxShadow="1px 1px 1px 1px darkgrey"
+                  alt={`${reading.title} image`}
+                />
+              )}
               <Box mx={2} w="100%">
                 <Box lineHeight={1.4}>
                   <Heading as="h2" size="md" me={3} noOfLines={1}>
