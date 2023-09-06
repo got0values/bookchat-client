@@ -114,7 +114,7 @@ export default function Leaderboard({server}: {server: string}) {
                 Page read
               </Text>
               <Text fontWeight="bold">
-                1
+                2
               </Text>
             </Flex>
             <Flex justify="space-between" gap={2}>
@@ -138,7 +138,7 @@ export default function Leaderboard({server}: {server: string}) {
                 Book Suggestion
               </Text>
               <Text fontWeight="bold">
-                200
+                175
               </Text>
             </Flex>
           </PopoverBody>
