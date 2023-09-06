@@ -43,7 +43,7 @@ import {
   Link as ChakraLink,
 } from '@chakra-ui/react';
 import { SkipNavLink, SkipNavContent } from '@chakra-ui/skip-nav';
-import { MdLogout } from 'react-icons/md';
+import { MdLogout, MdOutlineContactSupport } from 'react-icons/md';
 import { BsFillMoonFill, BsFillSunFill, BsFillChatFill, BsPostcardHeartFill } from 'react-icons/bs';
 import { FiSettings } from 'react-icons/fi';
 import { RxDotFilled } from 'react-icons/rx';
@@ -849,6 +849,16 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                     fontWeight="600"
                   >
                     Settings
+                  </MenuItem>
+                  <MenuItem
+                    aria-label="support/request"
+                    as={Link}
+                    to="/supportrequest"
+                    icon={<MdOutlineContactSupport size={20}/>}
+                    fontSize="lg"
+                    fontWeight="600"
+                  >
+                    Support/Request
                   </MenuItem>
                   <MenuItem
                     aria-label="logout"

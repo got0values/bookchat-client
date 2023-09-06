@@ -15,6 +15,7 @@ import ChatRoom from './Chat/ChatRoom';
 import Bookshelf from './Bookshelf/Bookshelf';
 import BookSuggestions from "./BookSuggestions/BookSuggestions";
 import BookSuggestionBookshelf from "./BookSuggestions/BookSuggestionBookshelf";
+import SupportRequest from "./SupportRequest";
 import Stats from "./Stats/Stats";
 import Settings from './Settings';
 import Confirm from './Confirm';
@@ -134,6 +135,10 @@ function App() {
         <Route 
           path="settings" 
           element={ <Settings server={server} /> } 
+        />
+        <Route 
+          path="supportrequest" 
+          element={ <SupportRequest server={server} /> } 
         />
         <Route 
           path="*" 
