@@ -850,15 +850,15 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                         boxShadow="1px 1px 1px 1px darkgrey"
                       />
                       <Box>
-                        <Text 
+                        {/* <Text 
                           fontSize="sm"
                           opacity="80%"
                           mb={-1}
                         >
                           {dayjs(previousSuggestions[previousSuggestions.length - 1].created_on).local().format("MM/DD/YY")}
-                        </Text>
+                        </Text> */}
                         <Text
-                          fontSize="sm"
+                          fontSize="md"
                           fontWeight="bold"
                           // fontStyle="italic"
                           noOfLines={1}
@@ -867,7 +867,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                           {previousSuggestions[previousSuggestions.length - 1].title}
                         </Text>
                         <Text
-                          fontSize="xs"
+                          fontSize="md"
                           noOfLines={1}
                           mb={-1}
                         >
