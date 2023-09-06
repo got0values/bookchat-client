@@ -816,13 +816,9 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
             </Flex>
             <Divider borderColor="blackAlpha.700" mb={2} />
             <Box 
-              // rounded="md"
-              // border="1px solid"
-              // borderColor="gray.300"
-              // p={2}
               className="non-well"
             >
-              <Heading as="h3" size="sm" mb={1} color="blackAlpha.800">Others have suggested:</Heading>
+              <Heading as="h3" size="sm" mb={1} color="blackAlpha.800">Latest suggestion:</Heading>
               <Flex
                 // align="center"
                 wrap="wrap"
@@ -832,79 +828,65 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                 p={.5}
               >
                 {previousSuggestions !== null && previousSuggestions.length ? (
-                  previousSuggestions.map((suggestion,i)=>{
-                    return (
-                      <Box
-                        // maxW="200px"
-                        key={i}
-                        border="1px solid"
-                        borderColor="gray.400"
-                        p={2}
-                        rounded="md"
-                        flex="1 0"
-                        minW="250px"
-                        backgroundColor="gray.50"
-                      >
+                  <Box
+                    // maxW="200px"
+                    border="1px solid"
+                    borderColor="gray.400"
+                    p={2}
+                    rounded="md"
+                    flex="1 0"
+                    minW="250px"
+                    backgroundColor="gray.50"
+                  >
+                    <Flex
+                      // align="center"
+                      gap={2}
+                      width="100%"
+                    >
+                      <Image
+                        src={previousSuggestions[previousSuggestions.length - 1].image}
+                        height="100%"
+                        maxH="60px"
+                        boxShadow="1px 1px 1px 1px darkgrey"
+                      />
+                      <Box>
+                        <Text 
+                          fontSize="sm"
+                          opacity="80%"
+                          mb={-1}
+                        >
+                          {dayjs(previousSuggestions[previousSuggestions.length - 1].created_on).local().format("MM/DD/YY")}
+                        </Text>
                         <Text
-                          as={Link}
-                          to={`/profile/${suggestion.Profile_BookSuggestion_suggestorToProfile.username}`}
                           fontSize="sm"
                           fontWeight="bold"
+                          // fontStyle="italic"
                           noOfLines={1}
+                          mb={-1}
                         >
-                          {suggestion.Profile_BookSuggestion_suggestorToProfile.username}
+                          {previousSuggestions[previousSuggestions.length - 1].title}
                         </Text>
-                        <Flex
-                          // align="center"
-                          gap={2}
-                          width="100%"
+                        <Text
+                          fontSize="xs"
+                          noOfLines={1}
+                          mb={-1}
                         >
-                          <Image
-                            src={suggestion.image}
-                            height="100%"
-                            maxH="60px"
-                            boxShadow="1px 1px 1px 1px darkgrey"
-                          />
-                          <Box>
-                            <Text 
-                              fontSize="sm"
-                              opacity="80%"
-                              mb={-1}
-                            >
-                              {dayjs(suggestion.created_on).local().format("MM/DD/YY")}
-                            </Text>
+                          {previousSuggestions[previousSuggestions.length - 1].author}
+                        </Text>
+                        {previousSuggestions[previousSuggestions.length - 1].rating !== null ? (
+                          <Flex align="baseline" gap={1}>
+                            <BsStarFill fill="gold" size={13} />
                             <Text
                               fontSize="sm"
-                              fontWeight="bold"
-                              // fontStyle="italic"
                               noOfLines={1}
-                              mb={-1}
                             >
-                              {suggestion.title}
+                              {previousSuggestions[previousSuggestions.length - 1].rating}
                             </Text>
-                            <Text
-                              fontSize="xs"
-                              noOfLines={1}
-                              mb={-1}
-                            >
-                              {suggestion.author}
-                            </Text>
-                            {suggestion.rating !== null ? (
-                              <Flex align="baseline" gap={1}>
-                                <BsStarFill fill="gold" size={13} />
-                                <Text
-                                  fontSize="sm"
-                                  noOfLines={1}
-                                >
-                                  {suggestion.rating}
-                                </Text>
-                              </Flex>
-                            ): null}
-                          </Box>
-                        </Flex>
+                          </Flex>
+                        ): null}
                       </Box>
-                    )
-                  })
+                    </Flex>
+                  </Box>
                 ): (
                   <Text
                     fontStyle="italic"
