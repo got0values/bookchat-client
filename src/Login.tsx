@@ -242,8 +242,11 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
             onError={()=>setError("error")} 
           />
         </Center>
-        <Text fontSize={'lg'} color={'gray.600'} textAlign="center">
+        {/* <Text fontSize={'lg'} color={'gray.600'} textAlign="center">
           Don't have an account? <Link href="/register" fontWeight="bold">Register</Link>
+        </Text> */}
+        <Text fontSize={'lg'} color={'gray.600'} textAlign="center">
+          Don't have an account? <Link href="https://bookchatnoir.com/apply" fontWeight="bold">Apply</Link>
         </Text>
       </Stack>
 

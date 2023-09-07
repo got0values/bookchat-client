@@ -3,6 +3,7 @@ import { AuthContextProps } from './types/types';
 import { ProtectedRoute } from './shared/ProtectedRoute';
 import Login from './Login';
 import Register from './Register';
+import RegisterTwo from './RegisterTwo';
 import { RedirectPage } from './shared/RedirectPage';
 import TopNav from './TopNav';
 import Dashboard from './Dashboard/Dashboard';
@@ -18,6 +19,7 @@ import BookSuggestionBookshelf from "./BookSuggestions/BookSuggestionBookshelf";
 import SupportRequest from "./SupportRequest";
 import Stats from "./Stats/Stats";
 import Settings from './Settings';
+import AdminArea from "./AdminArea";
 import Confirm from './Confirm';
 import ResetPassword from "./ResetPassword";
 import Terms from "./Terms";
@@ -37,8 +39,12 @@ function App() {
         } 
       />
       <Route 
-        path="/register" 
+        path="/registerbypass" 
         element={<Register onLogin={onLogin} server={server} />} 
+      />
+      <Route 
+        path="/register" 
+        element={<RegisterTwo onLogin={onLogin} server={server} />} 
       />
       <Route 
         path="/terms" 
@@ -135,6 +141,10 @@ function App() {
         <Route 
           path="settings" 
           element={ <Settings server={server} /> } 
+        />
+        <Route 
+          path="adminarea" 
+          element={ <AdminArea server={server} /> } 
         />
         <Route 
           path="supportrequest" 
