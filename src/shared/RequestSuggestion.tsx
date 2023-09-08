@@ -83,7 +83,7 @@ export default function RequestSuggestion({server,requestee}:{server:string,requ
         aria-label="request a suggestion"
         icon={<HiOutlineMail size={20} />}
       >
-        Request a suggestion
+        Request a Suggestion
       </MenuItem>
 
       <Modal isOpen={isOpenRequestSuggestionModal} onClose={onCloseRequestSuggestionModal} size="xl" isCentered>
