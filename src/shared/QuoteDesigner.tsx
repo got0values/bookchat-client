@@ -40,8 +40,8 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
   const [textColor,setTextColor] = useState("#ffffff");
   const [textSize,setTextSize] = useState(25);
   const [textAlign,setTextAlign] = useState("center");
-  const [bgLeft,setBgLeft] = useState("#104080");
-  const [bgRight,setBgRight] = useState("#f3f659");
+  const [bgLeft,setBgLeft] = useState("#267FF2");
+  const [bgRight,setBgRight] = useState("#011C46");
   const [bgDarkness,setBgDarkness] = useState("0%");
   const [bgBlur,setBgBlur] = useState("0px");
   const [backgroundImage,setBackgroundImage] = useState("");
@@ -132,9 +132,12 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
           direction="column"
           align="center"
           justify="center"
-          height={["300px","320px","320px"]}
+          sx={{
+            aspectRatio: "1/0.6"
+          }}
+          // height={["300px","320px","320px"]}
           minHeight="100%"
-          width={["300px","445px","615px"]}
+          width={["350px","445px","615px"]}
           border="1px solid"
           borderColor="inherit"
           px={5}
@@ -146,6 +149,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
           backgroundImage={`linear-gradient(to right, ${bgLeft}, ${bgRight})`}
           backgroundSize="cover"
           backgroundPosition="center"
+          rounded="lg"
         >
           <Box
             position="absolute"
@@ -183,6 +187,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
             fontSize={`${textSize}px`}
             fontWeight="bold"
             textAlign={textAlign as any}
+            lineHeight={1.1}
             my="auto"
             zIndex={1}
           >
@@ -192,7 +197,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
             position="absolute"
             left={3}
             bottom={2}
-            lineHeight="1.2rem"
+            lineHeight={["1.1rem","1.4rem"]}
             zIndex={1}
           >
             <Flex gap={2}>
@@ -203,24 +208,24 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
                   boxShadow="-1px 1px 5px #222222"
                 />
               ): null}
-              <Box>
+              <Box lineHeight={1.4}>
                 {includeTitle && sharedTitle ? (
                   <Text
                     fontStyle="italic"
-                    fontSize=".85rem"
                     fontWeight="900"
                     color="white"
                     textShadow="-1px 1px 2px black"
+                    fontSize={[".65rem","1rem"]}
                   >
                     {sharedTitle ? sharedTitle : null}
                   </Text>
                 ): null}
                 {includeAuthor && sharedAuthor ? (
                   <Text
-                    fontSize=".8rem"
                     fontWeight="900"
                     color="white"
                     textShadow="-1px 1px 2px black"
+                    fontSize={[".65rem","1rem"]}
                   >
                     {sharedAuthor}
                   </Text>
@@ -228,7 +233,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
               </Box>
             </Flex>
           </Box>
-          <Box
+          {/* <Box
             position="absolute"
             right={0}
             bottom={0}
@@ -243,9 +248,9 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
               color="black"
               p={.5}
             >
-              🐈‍⬛ BookChatNoir.com
+              🐈‍ BookChatNoir.com
             </Text>
-          </Box>
+          </Box> */}
         </Flex>
         <Box 
           id="preview-div"

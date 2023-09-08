@@ -72,12 +72,12 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
 
       if (showQuoteDesigner && quoteBox) {
         const bcnWatermark = document.getElementById("bcn-watermark")
-        bcnWatermark!.style.display = "block";
+        bcnWatermark ? bcnWatermark!.style.display = "block" : null;
         await htmlToImage.toPng(quoteBox!)
         .then(async function (quoteImageBase) {
           let blob = await b64toBlob(quoteImageBase,'image/png',1024)
           let newFile = new File([blob], "quoteImage", {type: "image/png"})
-          bcnWatermark!.style.display = "none";
+          bcnWatermark ? bcnWatermark.style.display = "none" : null;
           const formData = new FormData();
           formData.append("quoteimage", newFile as Blob)
           formData.append("id", id)
