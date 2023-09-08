@@ -114,7 +114,7 @@ export default function AdminArea({server}: AdminAreaProps) {
                   colorScheme="green"
                   onClick={e=>createRegistrationLink()}
                 >
-                  Save
+                  Submit
                 </Button>
               </Flex>
             </Flex>
