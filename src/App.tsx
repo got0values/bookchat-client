@@ -39,7 +39,7 @@ function App() {
         } 
       />
       <Route 
-        path="/registerbypass" 
+        path="/registerb" 
         element={<Register onLogin={onLogin} server={server} />} 
       />
       <Route 
