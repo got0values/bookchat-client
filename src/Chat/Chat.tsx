@@ -104,7 +104,7 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
             <TabList
               // borderBottom="none"
             >
-              <Tab 
+              {/* <Tab 
                 fontWeight="bold"
                 className="tab-button"
                 _selected={{
@@ -112,7 +112,7 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                 }}
               >
                 Browse
-              </Tab>
+              </Tab> */}
               <Tab 
                 fontWeight="bold"
                 className="tab-button"
@@ -126,7 +126,7 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
 
             <TabPanels>
 
-              <TabPanel px={0}>
+              {/* <TabPanel px={0}>
                 <Box
                   className="well"
                 >
@@ -231,7 +231,8 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
                     )}
                   </Flex>
                 </Box>
-              </TabPanel>
+              </TabPanel> */}
+              
               <TabPanel px={0}>
                 <Flex
                   direction="column"
