@@ -31,7 +31,6 @@ export function BookSuggestionToList({server}: {server: string;}) {
   dayjs.extend(utc);
   const queryClient = useQueryClient();
 
-  const [firstBookshelf,setFirstBookshelf] = useState<User | null>(null)
   const take = useRef(20);
   const endLoadMore = useRef(false);
   async function getBookSuggestToList() {
@@ -49,7 +48,6 @@ export function BookSuggestionToList({server}: {server: string;}) {
       )
       .then((response)=>{
         const {data} = response;
-        setFirstBookshelf(data.message.firstBookshelf)
         endLoadMore.current = data.message.endLoadMore
         return data.message.bookshelfList;
       })
@@ -104,160 +102,134 @@ export function BookSuggestionToList({server}: {server: string;}) {
 
   return (
     <>
+      
+      {bookSuggestToList?.length ? (
         <>
-          {firstBookshelf ? (
-            <Flex
-              align="center"
-              justify="center"
-              wrap="wrap"
-              gap={2}
-              // mb={3}
-            >
-              <Button
-                as="a"
-                href={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
-                // variant="outline"
-                colorScheme="teal"
-                size="sm"
-                aria-label="random bookshelf"
-                display="flex"
-                gap={2}
-                // borderColor="purple"
-                // p={2}
-                mb={1}
-              >
-                Random <FaPlay size={15}/>
-              </Button>
-            </Flex>
-          ): null}
-          {bookSuggestToList?.length ? (
-            <>
-              {bookSuggestToList.map((bookshelf: BookshelfType, i: number)=>{
-                return (
-                  <React.Fragment key={i}>
-                    <Box
-                      // className="well"
-                    >
-                      <Flex 
-                        align="flex-start"
-                        justify="space-between"
-                      >
-                        <Flex
-                          align="center"
-                          gap={2}
-                          wrap="wrap"
-                        >
-                          <Avatar 
-                            as={Link}
-                            to={`/profile/${bookshelf.Profile.username}`}
-                            src={bookshelf.Profile.profile_photo} 
-                            size="sm"
-                            // name={bookshelf.Profile.username}
-                          />
-                          <Flex align="center" gap={1}>
-                            <Text 
-                              fontWeight="bold"
-                              fontSize="sm"
-                              as={Link}
-                              to={`/profile/${bookshelf.Profile.username}`}
-                            >
-                              @{bookshelf.Profile.username}
-                            </Text>
-                            {/* <Box w="1.4rem">
-                              {bookshelf.Flag ? <bookshelf.Flag/> : null}
-                            </Box> */}
-                            <SuggestionCountBadge suggestionCount={bookshelf.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile}/>
-                          </Flex>
-                        </Flex>
-                        <Flex
-                          align="center"
-                          justify="space-between"
-                          gap={2}
-                          width="125px"
-                        >
-                          <Box>
-                            <Box fontSize="sm">
-                              <Text as="span" fontWeight="bold">Shelf:</Text> {(bookshelf as any)._count.BookshelfBook}
-                            </Box>
-                            {bookshelf.start_poll ? (
-                              <Text 
-                                fontSize="sm"
-                                fontWeight="bold"
-                                color="green"
-                              >
-                                Poll
-                              </Text>
-                            ): null}
-                          </Box>
-                          <Button
-                            as={Link}
-                            to={`/booksuggestions/bookshelf?profile=${bookshelf.Profile.username}`}
-                            variant="ghost"
-                            p={0}
-                          >
-                            <FaArrowCircleRight size={20} color="teal" />
-                          </Button>
-                        </Flex>
-                      </Flex>
-                      <Box>
-                        <Popover isLazy>
-                          <PopoverTrigger>
-                            <Box
-                              _hover={{
-                                cursor: "pointer"
-                              }}
-                            >
-                              {bookshelf.suggestions_notes ? (
-                                <Text fontStyle="italic" noOfLines={2}>
-                                  "{bookshelf.suggestions_notes}"
-                                </Text>
-                              ): null}
-                            </Box>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <PopoverArrow />
-                            <PopoverCloseButton />
-                            <PopoverBody 
-                              fontSize="sm"
-                              _dark={{
-                                bg: "black"
-                              }}
-                            >
-                              {bookshelf.suggestions_notes}
-                            </PopoverBody>
-                          </PopoverContent>
-                        </Popover>
-                      </Box>
-                    </Box>
-                    {i !== bookSuggestToList.length - 1 ? (
-                      <Divider borderColor="blackAlpha.600" my={2} />
-                    ): null}
-                  </React.Fragment>
-                )
-              })}
-              {endLoadMore.current === false ? (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    colorScheme="blue"
-                    w="100%"
-                    onClick={e=>loadMore()}
-                    isLoading={loadMoreMutation.isLoading}
+          {bookSuggestToList.map((bookshelf: BookshelfType, i: number)=>{
+            return (
+              <React.Fragment key={i}>
+                <Box
+                  // className="well"
+                >
+                  <Flex 
+                    align="flex-start"
+                    justify="space-between"
                   >
-                    Load more...
-                  </Button>
-                </>
-              ): null}
+                    <Flex
+                      align="center"
+                      gap={2}
+                      wrap="wrap"
+                    >
+                      <Avatar 
+                        as={Link}
+                        to={`/profile/${bookshelf.Profile.username}`}
+                        src={bookshelf.Profile.profile_photo} 
+                        size="sm"
+                        // name={bookshelf.Profile.username}
+                      />
+                      <Flex align="center" gap={1}>
+                        <Text 
+                          fontWeight="bold"
+                          fontSize="sm"
+                          as={Link}
+                          to={`/profile/${bookshelf.Profile.username}`}
+                        >
+                          @{bookshelf.Profile.username}
+                        </Text>
+                        {/* <Box w="1.4rem">
+                          {bookshelf.Flag ? <bookshelf.Flag/> : null}
+                        </Box> */}
+                        <SuggestionCountBadge suggestionCount={bookshelf.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile}/>
+                      </Flex>
+                    </Flex>
+                    <Flex
+                      align="center"
+                      justify="space-between"
+                      gap={2}
+                      width="125px"
+                    >
+                      <Box>
+                        <Box fontSize="sm">
+                          <Text as="span" fontWeight="bold">Shelf:</Text> {(bookshelf as any)._count.BookshelfBook}
+                        </Box>
+                        {bookshelf.start_poll ? (
+                          <Text 
+                            fontSize="sm"
+                            fontWeight="bold"
+                            color="green"
+                          >
+                            Poll
+                          </Text>
+                        ): null}
+                      </Box>
+                      <Button
+                        as={Link}
+                        to={`/booksuggestions/bookshelf?profile=${bookshelf.Profile.username}`}
+                        variant="ghost"
+                        p={0}
+                      >
+                        <FaArrowCircleRight size={20} color="teal" />
+                      </Button>
+                    </Flex>
+                  </Flex>
+                  <Box>
+                    <Popover isLazy>
+                      <PopoverTrigger>
+                        <Box
+                          _hover={{
+                            cursor: "pointer"
+                          }}
+                        >
+                          {bookshelf.suggestions_notes ? (
+                            <Text fontStyle="italic" noOfLines={2}>
+                              "{bookshelf.suggestions_notes}"
+                            </Text>
+                          ): null}
+                        </Box>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <PopoverArrow />
+                        <PopoverCloseButton />
+                        <PopoverBody 
+                          fontSize="sm"
+                          _dark={{
+                            bg: "black"
+                          }}
+                        >
+                          {bookshelf.suggestions_notes}
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Popover>
+                  </Box>
+                </Box>
+                {i !== bookSuggestToList.length - 1 ? (
+                  <Divider borderColor="blackAlpha.600" my={2} />
+                ): null}
+              </React.Fragment>
+            )
+          })}
+          {endLoadMore.current === false ? (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                colorScheme="blue"
+                w="100%"
+                onClick={e=>loadMore()}
+                isLoading={loadMoreMutation.isLoading}
+              >
+                Load more...
+              </Button>
             </>
-          ): (
-            <Box>
-              <Text fontStyle="italic">
-                Please check back tomorrow!
-              </Text>
-            </Box>
-          )}
+          ): null}
         </>
+      ): (
+        <Box>
+          <Text fontStyle="italic">
+            Please check back tomorrow!
+          </Text>
+        </Box>
+      )}
     </>
   )
 }
