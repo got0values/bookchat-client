@@ -102,7 +102,10 @@ export function BookSuggestionToList({server}: {server: string;}) {
 
   return (
     <>
-      
+      <Heading as="h2" size="md" textAlign="center">Suggestion Exchange</Heading>
+      <Text fontSize="md" textAlign="center" mb="2">
+        Give a suggestion to get a suggestion in return
+      </Text>
       {bookSuggestToList?.length ? (
         <>
           {bookSuggestToList.map((bookshelf: BookshelfType, i: number)=>{
