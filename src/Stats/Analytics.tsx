@@ -96,6 +96,7 @@ export default function Analytics({server}: {server: string}) {
 
   const [currentlyReadingPosts,setCurrentlyReadingPosts] = useState<any[]>([]);
   const [currentlyReadingPostsDateRange,setCurrentlyReadingPostsDateRange] = useState<any[]>([]);
+  const [currentlyReadingPostsSubjects,setCurrentlyReadingPostsSubjects] = useState<any[]>([]);
   const [currentlyReadingStartWeekDate,setCurrentlyReadingPostsStartWeekDate] = useState<string>("");
 
   const [bookshelfBooksAdded,setBookshelfBooksAdded] = useState<any[]>([]);
@@ -157,7 +158,6 @@ export default function Analytics({server}: {server: string}) {
             return [];
           }
         })
-
         setCurrentlyReadingPosts((cR)=>{
           let crp: any = []
           getDaysOfTheWeekArray(currentlyReadingStartWeekDate ? new Date(currentlyReadingStartWeekDate) : new Date()).forEach((d)=>{
@@ -187,6 +187,38 @@ export default function Analytics({server}: {server: string}) {
           else {
             return [];
           }
+        })
+
+        setCurrentlyReadingPostsSubjects((prev:any)=>{
+          let subjects:any = []
+          response.data.message.currentlyReadingPosts
+            .forEach(
+                (crp:any)=>crp.subjects.length ? (
+                  Array(JSON.parse(crp.subjects))
+                    .forEach(
+                      (s:any)=>s.forEach((su:any)=>subjects.push(su))
+                    )
+                ) : []
+              )
+          let subjectsCountObject:any = {};
+          if (subjects.length) {
+            subjects.forEach((s:any)=>{
+              if (subjectsCountObject[s]) {
+                subjectsCountObject[s] += 1;
+              }
+              else {
+                subjectsCountObject[s] = 1
+              }
+            })
+          }
+          let subjectsCount = []
+          for (const key in subjectsCountObject) {
+            subjectsCount.push({
+              name: key,
+              count: subjectsCountObject[key]
+            })
+          }
+          return subjectsCount
         })
 
         setBookshelfBooksAdded((prev)=>{
@@ -508,73 +540,141 @@ export default function Analytics({server}: {server: string}) {
         </Flex>
       </Box>
       {currentlyReadingPosts ? (
-        <Flex
-          justify="center"
+        <Box
           className="well"
         >
-          <Box 
-            height="100%"
-            width="100%"
-            maxW="100%"
-          >
-            {currentlyReadingPostsDateRange.length ? (
-              <Select
-                width="auto"
-                maxW="150px"
-                size="xs"
-                onChange={e=>setCurrentlyReadingPostsStartWeekDate(e.target.value)}
-              >
-                <option value="">{dayjs(thisWeekStart).local().format('MM/DD/YYYY')}</option>
-                {currentlyReadingPostsDateRange.map((p,i)=>{
-                  return (
-                    <option
-                      key={i}
-                      value={p}
-                    >
-                      {dayjs(p).local().format('MM/DD/YYYY')}
-                    </option>
-                  )
-                }).reverse()}
-              </Select>
-            ): null}
-            <Flex 
-              gap={1}
-              align="bottom"
-              justify="center"
+          {currentlyReadingPostsDateRange.length ? (
+            <Select
+              width="auto"
+              maxW="150px"
+              size="xs"
+              onChange={e=>setCurrentlyReadingPostsStartWeekDate(e.target.value)}
             >
-              <Heading
-                as="h3"
-                size="md"
-                mb={2}
-                textAlign="center"
-                ml={[5,0]}
+              <option value="">{dayjs(thisWeekStart).local().format('MM/DD/YYYY')}</option>
+              {currentlyReadingPostsDateRange.map((p,i)=>{
+                return (
+                  <option
+                    key={i}
+                    value={p}
+                  >
+                    {dayjs(p).local().format('MM/DD/YYYY')}
+                  </option>
+                )
+              }).reverse()}
+            </Select>
+          ): null}
+          <Flex
+            gap={2}
+            wrap="wrap"
+          >
+            <Flex
+              justify="center"
+              width="350px"
+              flex="1 1 auto"
+            >
+              <Box
+                height="100%"
+                width="100%"
+                maxW="100%"
               >
-                Currently Reading Books
-              </Heading>
-            </Flex>
-            <Bar 
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    display: false
-                  }
-                }
-              }} 
-              data={{
-                labels: currentlyReadingPosts.map(p=>dayjs(p.date).format('M/D')),
-                datasets:[
-                    {
-                      label: "Posted",
-                      data: currentlyReadingPosts.map((crp)=>crp.posts),
-                      borderColor: `rgba(9, 146, 200, 1)`,
-                      backgroundColor: `rgba(23, 56, 200, 1)`,
+                <Flex 
+                  gap={1}
+                  align="bottom"
+                  justify="center"
+                >
+                  <Heading
+                    as="h3"
+                    size="md"
+                    mb={2}
+                    textAlign="center"
+                    ml={[5,0]}
+                  >
+                    Currently Reading Books
+                  </Heading>
+                </Flex>
+                <Bar 
+                  options={{
+                    responsive: true,
+                    plugins: {
+                      legend: {
+                        display: false
+                      }
                     }
-                  ]
-              }}
-            />
-          </Box>
-        </Flex>
+                  }} 
+                  data={{
+                    labels: currentlyReadingPosts.map(p=>dayjs(p.date).format('M/D')),
+                    datasets:[
+                        {
+                          label: "Posted",
+                          data: currentlyReadingPosts.map((crp)=>crp.posts),
+                          borderColor: `rgba(9, 146, 200, 1)`,
+                          backgroundColor: `rgba(23, 56, 200, 1)`,
+                        }
+                      ]
+                  }}
+                />
+              </Box>
+            </Flex>
+            <Flex
+              justify="center"
+              width="350px"
+              flex="1 1 auto"
+            >
+              <Box
+                height="100%"
+                width="100%"
+                maxW="100%"
+              >
+                <Heading
+                  as="h3"
+                  size="md"
+                  mb={2}
+                  textAlign="center"
+                  ml={[5,0]}
+                >
+                  Subjects/genres
+                </Heading>
+                <Flex
+                  maxH="200px"
+                  justify="center"
+                >
+                  {currentlyReadingPostsSubjects.length ? (
+                    <Doughnut
+                      options={{
+                        responsive: true,
+                        plugins: {
+                          legend: {
+                            display: false
+                          }
+                        }
+                      }} 
+                      data={{
+                        labels: currentlyReadingPostsSubjects.length ? currentlyReadingPostsSubjects.map(crps=>crps.name) : [],
+                        datasets:[
+                            {
+                              // label: "Subjects/genres",
+                              data: currentlyReadingPostsSubjects.length ? currentlyReadingPostsSubjects.map((crps)=>crps.count) : [],
+                              // borderColor: `rgba(9, 146, 200, 1)`,
+                              backgroundColor: currentlyReadingPostsSubjects ? (
+                                currentlyReadingPostsSubjects.map((crps,i)=>`rgb(${i * 15},${i * 26},${i * 37})`)
+                              ) : [],
+                            }
+                          ]
+                      }}
+                    />
+                  ): (
+                    <Text
+                      fontStyle="italic"
+                      fontSize="sm"
+                    >
+                      No subjects/genres added
+                    </Text>
+                  )}
+                </Flex>
+              </Box>
+            </Flex>
+          </Flex>
+        </Box>
       ): null}
       <Box className="well">
         {bookshelfBooksAddedDateRange.length ? (

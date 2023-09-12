@@ -20,6 +20,7 @@ import {
   NumberDecrementStepper,
   useToast
 } from "@chakra-ui/react";
+import { genres } from "./genres";
 import { MultiSelect } from 'chakra-multiselect'
 import * as htmlToImage from 'html-to-image';
 import { b64toBlob } from "./b64toBlob";
@@ -32,6 +33,13 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
   const toast = useToast();
 
   const [selectedBook2,setSelectedBook2] = useState<any | null>(selectedBook);
+
+  useEffect(()=>{
+    const genresNames = genres.map((g)=>g.name);
+    setSelectedBook2((prev:any)=>{
+      return {...prev,subjects: prev.subjects ? [...prev.subjects,...genresNames] : [...genresNames]}
+    })
+  },[])
 
   const thoughtsRef = useRef({} as HTMLInputElement);
   const pagesReadRef = useRef({} as HTMLInputElement);
@@ -316,7 +324,7 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
                   {selectedBook2.subjects ? (
                     <>
                       <FormLabel>
-                        Add subjects
+                        Add subjects/genres
                       </FormLabel>
                       <Box pb={2}>
                         {selectedBook2.subjects.length ? (

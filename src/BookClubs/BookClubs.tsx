@@ -42,7 +42,7 @@ import { IoIosAdd } from 'react-icons/io';
 import Cookies from "js-cookie";
 import axios from "axios";
 import { BookClubsType } from "../types/types";
-import {genres} from "./genres";
+import {genres} from "../shared/genres";
 
 
 export default function BookClubs({server}: {server: string}) {

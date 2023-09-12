@@ -63,7 +63,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import {genres} from "./genres";
+import {genres} from "../shared/genres";
 import googleWatermark from "/src/assets/google_watermark.gif";
 
 export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: string}) {
