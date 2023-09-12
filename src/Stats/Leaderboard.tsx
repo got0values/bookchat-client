@@ -14,6 +14,7 @@ import {
   Avatar,
   TableContainer,
   Divider,
+  Select,
   Popover,
   PopoverHeader,
   PopoverTrigger,
@@ -57,6 +58,8 @@ export default function Leaderboard({server}: {server: string}) {
   const [followingPagesReadLeaderboard,setFollowingPagesReadLeaderboard] = useState<any[]>([]);
   const [allPointsLeaderboard,setAllPointsLeaderboard] = useState<any[]>([]);
   const [followingPointsLeaderboard,setFollowingPointsLeaderboard] = useState<any[]>([]);
+  const [weekStartRange,setWeekStartRange] = useState<any[]>([]);
+  const [chosenWeekStart,setChosenWeekStart] = useState<string>("");
   const [isLoading,setIsLoading] = useState(false);
   async function getLeaderboard() {
     const tokenCookie = Cookies.get().token
@@ -66,6 +69,9 @@ export default function Leaderboard({server}: {server: string}) {
         {
           headers: {
             Authorization: tokenCookie
+          },
+          params: {
+            chosenWeekStart: chosenWeekStart
           }
         })
         .then((response)=>{
@@ -83,7 +89,21 @@ export default function Leaderboard({server}: {server: string}) {
 
   useEffect(()=>{
     getLeaderboard()
-  },[])
+    setWeekStartRange((prev:any)=>{
+      let weekStart10Ago = dayjs(thisWeekStart).subtract(7 * 10,'day').toDate();
+      if (thisWeekStart) {
+        let weekStarts = [];
+        const numWeeksBetween = dayjs(thisWeekStart).diff(dayjs(weekStart10Ago),'week');
+        for (let i = 0; i < numWeeksBetween; i++) {
+          weekStarts.push(dayjs(weekStart10Ago).add(7 * i, 'day').format());
+        }
+        return weekStarts
+      }
+      else {
+        return [];
+      }
+    })
+  },[chosenWeekStart])
 
   const PointsPopover = () => {
     return (
@@ -155,9 +175,32 @@ export default function Leaderboard({server}: {server: string}) {
         </Flex>
       ): (
         <>
-          <Text fontWeight="bold" className="non-well" textAlign="center">
+          {/* <Text fontWeight="bold" className="non-well" textAlign="center">
             {dayjs(thisWeekStart).format('M/D/YY')} - {dayjs(thisWeekStart).add(6,"day").format('M/D/YY')}
-          </Text>
+          </Text> */}
+          {weekStartRange.length ? (
+            <Flex justify="center">
+              <Select
+                width="auto"
+                maxW="150px"
+                size="md"
+                defaultValue={chosenWeekStart}
+                onChange={e=>setChosenWeekStart(e.target.value)}
+              >
+                <option value="">{dayjs(thisWeekStart).local().format('MM/DD/YYYY')}</option>
+                {weekStartRange.map((p,i)=>{
+                  return (
+                    <option
+                      key={i}
+                      value={p}
+                    >
+                      {dayjs(p).local().format('MM/DD/YYYY')}
+                    </option>
+                  )
+                }).reverse()}
+              </Select>
+            </Flex>
+          ): null}
           <Heading as="h2" size="md" className="non-well">Top Readers</Heading>
           <Box className="well">
             <TableContainer>
