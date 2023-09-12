@@ -8,7 +8,7 @@ import {
   TabPanels,
   TabPanel,
 } from "@chakra-ui/react";
-import YourStats from "./YourStats";
+import Analytics from "./Analytics";
 import Leaderboard from "./Leaderboard";
 
 export default function Stats({server}: {server: string}) {
@@ -32,7 +32,7 @@ export default function Stats({server}: {server: string}) {
             }}
             className="tab-button"
           >
-            Leaderboard
+            Analytics
           </Tab>
           <Tab
             fontWeight="bold"
@@ -41,15 +41,15 @@ export default function Stats({server}: {server: string}) {
             }}
             className="tab-button"
           >
-            Your Stats
+            Leaderboard
           </Tab>
         </TabList>
         <TabPanels>
           <TabPanel px={0}>
-            <Leaderboard server={server}/>
+            <Analytics server={server}/>
           </TabPanel>
           <TabPanel px={0}>
-            <YourStats server={server}/>
+            <Leaderboard server={server}/>
           </TabPanel>
         </TabPanels>
       </Tabs>

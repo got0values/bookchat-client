@@ -34,7 +34,7 @@ import { ImInfo } from 'react-icons/im';
 import { BsStarFill } from "react-icons/bs";
 import { BookSuggestionPollVoteType } from "../types/types";
 
-export default function YourStats({server}: {server: string}) {
+export default function Analytics({server}: {server: string}) {
   dayjs.extend(utc);
 
   ChartJS.register(
