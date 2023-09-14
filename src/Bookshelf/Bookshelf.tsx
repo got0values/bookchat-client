@@ -2772,7 +2772,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       setPollBookThree(null)
                     }}
                   >
-                    Reset Votes
+                    Reset
                   </Button>
                   <Button
                     onClick={onClosePollModal}
