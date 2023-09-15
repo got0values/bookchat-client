@@ -710,7 +710,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                       }
                     },
                     animationName: "borderFade",
-                    animationDuration: ".5s"
+                    animationDuration: "1s"
                   }}
                   readOnly={true}
                   onClick={e=>onOpenSearchModal()}
