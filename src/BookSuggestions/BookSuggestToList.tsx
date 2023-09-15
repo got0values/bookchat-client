@@ -1,5 +1,5 @@
-import React, { useState, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useRef } from "react";
+import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { BookshelfType, User } from "../types/types";
 import { 
@@ -17,6 +17,10 @@ import {
   PopoverArrow,
   Divider,
   Spinner,
+  Alert,
+  AlertDescription,
+  CloseButton,
+  useDisclosure
 } from "@chakra-ui/react";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import { FaPlay, FaArrowCircleRight } from 'react-icons/fa'
@@ -57,6 +61,12 @@ export function BookSuggestionToList({server}: {server: string;}) {
       })
     return bookSuggestToList;
   }
+
+  const {
+    isOpen: isVisible,
+    onClose,
+    onOpen,
+  } = useDisclosure({ defaultIsOpen: true })
 
   const loadMoreMutation = useMutation({
     mutationFn: async ()=>{
@@ -102,10 +112,27 @@ export function BookSuggestionToList({server}: {server: string;}) {
 
   return (
     <>
-      <Heading as="h2" size="md" textAlign="center">Suggestion Exchange</Heading>
-      <Text fontSize="md" textAlign="center" mb="2">
-        Give a suggestion to get a suggestion in return
-      </Text>
+      {isVisible ? (
+        <Alert 
+          status='success'
+          rounded="md"
+          mb={3}
+          position="relative"
+        >
+          <Box>
+            <AlertDescription>
+              These are bookshelves of users who need your help finding more books to read.
+            </AlertDescription>
+          </Box>
+          <CloseButton
+            alignSelf='flex-start'
+            position='absolute'
+            right={1}
+            top={0}
+            onClick={onClose}
+          />
+        </Alert>
+      ): null}
       {bookSuggestToList?.length ? (
         <>
           {bookSuggestToList.map((bookshelf: BookshelfType, i: number)=>{
