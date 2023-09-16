@@ -44,6 +44,7 @@ import BookImage from "../shared/BookImage";
 import BooksSearch from "../shared/BooksSearch";
 import RequestSuggestion from "../shared/RequestSuggestion";
 import CurrentWeekSuggestionCount from "./CurrentWeekSuggestionCount";
+import { CheckedAnimation } from "../shared/Animations";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import { BsArrowRight } from 'react-icons/bs';
 import { MdChevronRight } from 'react-icons/md';
@@ -80,6 +81,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
   const [endLoadMore,setEndLoadMore] = useState(false);
   const [loadMoreIsLoading,setLoadMoreIsLoading] = useState(false);
   const [bookSuggestionBookshelf,setBookSuggestionBookshelf] = useState<BookshelfType>();
+  const [finishedSuggesting,setFinishedSuggesting] = useState(false);
   async function getBookSuggestionBookshelf() {
     if (!searchParams.get("profile")) {
       throw new Error("No Profile")
@@ -197,6 +199,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           })
           searchInputRef.current.value = "";
           if (nextBookshelf) {
+            setFinishedSuggesting(true)
             navigate(`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`)
             setTimeout(()=>{
               window.location.reload()
@@ -261,6 +264,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
             })
           }
           if (nextBookshelf) {
+            setFinishedSuggesting(true)
             navigate(`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`)
             setTimeout(()=>{
               window.location.reload()
@@ -315,713 +319,719 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
       <Skeleton
         isLoaded={!isLoading}
       >
-        <Flex
-          className="non-well"
-          direction="column"
-          // pb={2}
-        >
+        {finishedSuggesting ? (
+          <CheckedAnimation/>
+        ): (
+        <>
           <Flex
-            align="center"
-            justify="space-between"
             className="non-well"
-          >
-            <Breadcrumb 
-              spacing='8px' 
-              separator={<MdChevronRight color='gray.500' />}
-            >
-              <BreadcrumbItem>
-                <BreadcrumbLink href='/booksuggestions'>Book Suggestions</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbItem isCurrentPage>
-                <BreadcrumbLink href='#'>Bookshelf</BreadcrumbLink>
-              </BreadcrumbItem>
-            </Breadcrumb>
-            {nextBookshelf ? (
-              <Button
-                as="a"
-                href={`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`}
-                variant="ghost"
-                fontSize="md"
-                display="flex"
-                gap={2}
-                p={0}
-                _hover={{
-                  bg: "transparent"
-                }}
-                // onClick={e=>redirect(`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`)}
-              >
-                Skip <BsArrowRight size={20} />
-              </Button>
-            ): null}
-          </Flex>
-          <Box
-            rounded="md"
-            // border="1px solid black"
-            p={2}
+            direction="column"
+            // pb={2}
           >
             <Flex
               align="center"
               justify="space-between"
+              className="non-well"
+            >
+              <Breadcrumb 
+                spacing='8px' 
+                separator={<MdChevronRight color='gray.500' />}
+              >
+                <BreadcrumbItem>
+                  <BreadcrumbLink href='/booksuggestions'>Book Suggestions</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbItem isCurrentPage>
+                  <BreadcrumbLink href='#'>Bookshelf</BreadcrumbLink>
+                </BreadcrumbItem>
+              </Breadcrumb>
+              {nextBookshelf ? (
+                <Button
+                  as="a"
+                  href={`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`}
+                  variant="ghost"
+                  fontSize="md"
+                  display="flex"
+                  gap={2}
+                  p={0}
+                  _hover={{
+                    bg: "transparent"
+                  }}
+                  // onClick={e=>redirect(`/booksuggestions/bookshelf?profile=${nextBookshelf.Profile.username}`)}
+                >
+                  Skip <BsArrowRight size={20} />
+                </Button>
+              ): null}
+            </Flex>
+            <Box
+              rounded="md"
+              // border="1px solid black"
+              p={2}
             >
               <Flex
                 align="center"
-                gap={2}
+                justify="space-between"
               >
-                <Avatar 
-                  as={Link}
-                  to={`/profile/${bookSuggestionBookshelf?.Profile?.username}`}
-                  src={bookSuggestionBookshelf?.Profile?.profile_photo} 
-                  name={bookSuggestionBookshelf?.Profile?.username} 
-                />
-                <Text 
-                  as={Link}
-                  to={`/profile/${bookSuggestionBookshelf?.Profile?.username}`}
-                  fontWeight="bold" 
-                  fontSize="xl"
+                <Flex
+                  align="center"
+                  gap={2}
                 >
-                  {bookSuggestionBookshelf?.Profile?.username} 
-                </Text>
-                {/* <Box w="1.4rem">
-                  {bookSuggestionBookshelf.Flag ? <bookSuggestionBookshelf.Flag/> : null}
-                </Box> */}
-
-                <SuggestionCountBadge suggestionCount={bookSuggestionBookshelf?.Profile?._count.BookSuggestion_BookSuggestion_suggestorToProfile}/>
-
-                {bookSuggestionBookshelf?.Profile.id !== user.Profile.id && user.Profile.Bookshelf?.allow_suggestions ? (
-                  <Menu>
-                    <MenuButton 
-                      as={Button}
-                      size="sm"
-                      // variant="ghost"
-                      rounded="full"
-                      height="20px"
-                      title="menu"
-                      px={2}
-                    >
-                      <BiDotsHorizontalRounded size={15} />
-                    </MenuButton>
-                    <MenuList>
-                      {bookSuggestionBookshelf?.Profile.id !== user.Profile.id && user.Profile.Bookshelf?.allow_suggestions ? (
-                        <RequestSuggestion server={server} requestee={bookSuggestionBookshelf?.Profile.id ? bookSuggestionBookshelf?.Profile.id : null} />
-                      ): null}
-                    </MenuList>
-                  </Menu>
-                ): null}
-              </Flex>
-            </Flex>
-            {bookSuggestionBookshelf?.suggestions_notes ? (
-              <Text fontStyle="italic">
-                "{bookSuggestionBookshelf?.suggestions_notes}"
-              </Text>
-            ): null}
-          </Box>
-        </Flex>
-
-        <Divider borderColor="blackAlpha.700" mb={2} />
-
-        {startPoll && (pollBookOne || pollBookTwo || pollBookThree) ? (
-          <>
-            <Box 
-              className="non-well"
-              mb={2}
-            >
-              <Heading as="h3" size="sm" mb={1} color="blackAlpha.800">Vote:</Heading>
-                <Flex justify="space-around" w="100%" flexWrap="nowrap" gap={2}>
-                  {pollBookOne !== null ? (
-                  <Box 
-                    flex="0 1 125px"
-                    rounded="md"
-                    border="1px solid"
-                    borderColor="gray.400"
-                    p={1}
-                  >
-                    <Box 
-                      mx="auto"
-                      maxW="90px"
-                    >
-                      <Heading as="h5" size="sm" textAlign="center">1</Heading>
-                      <Image
-                        maxW="100%" 
-                        w="100%"
-                        h="auto"
-                        pt={2} 
-                        mb={1}
-                        className="book-image"
-                        onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                        src={pollBookOne.image}
-                        boxShadow="1px 1px 1px 1px darkgrey"
-                        alt={pollBookOne.title}
-                      />
-                    </Box>
-                    <Flex align="center" gap={1}>
-                      <Popover isLazy>
-                        <PopoverTrigger>
-                          <Box
-                            _hover={{
-                              cursor: "pointer"
-                            }}
-                          >
-                            <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
-                              {pollBookOne.title}
-                            </Text>
-                          </Box>
-                        </PopoverTrigger>
-                        <PopoverContent w="auto">
-                          <PopoverArrow />
-                          <PopoverCloseButton />
-                          <PopoverHeader me={5}>{pollBookOne.title}</PopoverHeader>
-                        </PopoverContent>
-                      </Popover>
-                      <Button
-                        as={Link}
-                        to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(pollBookOne.title + " " + pollBookOne.author)}`}
-                        target="blank"
-                        size="xs"
-                        variant="ghost"
-                        aria-label="View in Bookshop"
-                        title="View in Bookshop"
-                        p={0}
-                      >
-                        <FaStore size={17} />
-                      </Button>
-                    </Flex>
-                    <Text fontSize="sm">
-                      {pollBookOne.author}
-                    </Text>
-                    <Flex justify="center">
-                      <Button
-                        size="sm"
-                        backgroundColor="black"
-                        color="white"
-                        onClick={e=>castVote({pollBookNumber: 1, pollBookId: pollBookOne.id})}
-                        isLoading={castVoteMutation.isLoading}
-                        isDisabled={castVoteMutation.isLoading}
-                      >
-                        Vote
-                      </Button>
-                    </Flex>
-                  </Box>
-                  ) : null}
-                  {pollBookTwo !== null ? (
-                  <Box 
-                    flex="0 1 125px"
-                    rounded="md"
-                    border="1px solid"
-                    borderColor="gray.400"
-                    p={1}
-                  >
-                    <Box
-                      mx="auto"
-                      maxW="90px"
-                    >
-                      <Heading as="h5" size="sm" textAlign="center">2</Heading>
-                      <Image
-                        maxW="100%" 
-                        w="100%"
-                        h="auto"
-                        pt={2} 
-                        mb={1}
-                        className="book-image"
-                        onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                        src={pollBookTwo.image}
-                        boxShadow="1px 1px 1px 1px darkgrey"
-                        alt={pollBookTwo.title}
-                      />
-                    </Box>
-                    <Flex align="center" gap={1}>
-                      <Popover isLazy>
-                        <PopoverTrigger>
-                          <Box
-                            _hover={{
-                              cursor: "pointer"
-                            }}
-                          >
-                            <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
-                              {pollBookTwo.title}
-                            </Text>
-                          </Box>
-                        </PopoverTrigger>
-                        <PopoverContent w="auto">
-                          <PopoverArrow />
-                          <PopoverCloseButton />
-                          <PopoverHeader me={5}>{pollBookTwo.title}</PopoverHeader>
-                        </PopoverContent>
-                      </Popover>
-                      <Button
-                        as={Link}
-                        to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(pollBookTwo.title + " " + pollBookTwo.author)}`}
-                        target="blank"
-                        size="xs"
-                        variant="ghost"
-                        aria-label="View in Bookshop"
-                        title="View in Bookshop"
-                        p={0}
-                      >
-                        <FaStore size={17} />
-                      </Button>
-                    </Flex>
-                    <Text fontSize="sm">
-                      {pollBookTwo.author}
-                    </Text>
-                    <Flex justify="center">
-                      <Button
-                        size="sm"
-                        backgroundColor="black"
-                        color="white"
-                        onClick={e=>castVote({pollBookNumber: 2, pollBookId: pollBookTwo.id})}
-                        isLoading={castVoteMutation.isLoading}
-                        isDisabled={castVoteMutation.isLoading}
-                      >
-                        Vote
-                      </Button>
-                    </Flex>
-                  </Box>
-                  ) : null}
-                  {pollBookThree !== null ? (
-                  <Box 
-                    flex="0 1 125px"
-                    rounded="md"
-                    border="1px solid"
-                    borderColor="gray.400"
-                    p={1}
-                  >
-                    <Box 
-                      mx="auto"
-                      maxW="90px"
-                    >
-                      <Heading as="h5" size="sm" textAlign="center">3</Heading>
-                      <Image
-                        maxW="100%" 
-                        w="100%"
-                        h="auto"
-                        pt={2} 
-                        mb={1}
-                        className="book-image"
-                        onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                        src={pollBookThree.image}
-                        boxShadow="1px 1px 1px 1px darkgrey"
-                        alt={pollBookThree.title}
-                      />
-                    </Box>
-                    <Flex align="center" gap={1}>
-                      <Popover isLazy>
-                        <PopoverTrigger>
-                          <Box
-                            _hover={{
-                              cursor: "pointer"
-                            }}
-                          >
-                            <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
-                              {pollBookThree.title}
-                            </Text>
-                          </Box>
-                        </PopoverTrigger>
-                        <PopoverContent w="auto">
-                          <PopoverArrow />
-                          <PopoverCloseButton />
-                          <PopoverHeader me={5}>{pollBookThree.title}</PopoverHeader>
-                        </PopoverContent>
-                      </Popover>
-                      <Button
-                        as={Link}
-                        to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(pollBookThree.title + " " + pollBookThree.author)}`}
-                        target="blank"
-                        size="xs"
-                        variant="ghost"
-                        aria-label="View in Bookshop"
-                        title="View in Bookshop"
-                        p={0}
-                      >
-                        <FaStore size={17} />
-                      </Button>
-                    </Flex>
-                    <Text fontSize="sm">
-                      {pollBookThree.author}
-                    </Text>
-                    <Flex justify="center">
-                      <Button
-                        size="sm"
-                        backgroundColor="black"
-                        color="white"
-                        onClick={e=>castVote({pollBookNumber: 3, pollBookId: pollBookThree.id})}
-                        isLoading={castVoteMutation.isLoading}
-                        isDisabled={castVoteMutation.isLoading}
-                      >
-                        Vote
-                      </Button>
-                    </Flex>
-                  </Box>
-                  ) : null}
-                </Flex>
-            </Box>
-            <Text 
-              textAlign="center"
-              fontWeight="bold"
-              my={5}
-            >
-              or
-            </Text>
-          </>
-        ): null}
-
-        {bookSuggestionBookshelf?.allow_suggestions !== 1 ? (
-          <Flex align="center" justify="center" minH="70vh">
-            <Heading as="h1" size="xl">Currently not allowing suggestions</Heading>
-          </Flex>
-        ) : (
-          <>
-            <Flex
-              align="center"
-              justify="space-between"
-              className="non-well"
-              gap={1}
-              direction="column"
-            >
-              {bookSuggestionBookshelf.Profile.id === user.Profile.id ? (
-                <Text>
-                  This is your bookshelf.
-                </Text>
-              ): (
-                <Input
-                  type="search"
-                  bg="white"
-                  borderWidth={3}
-                  borderColor="teal"
-                  size="lg"
-                  placeholder="Suggest a book"
-                  mb={2}
-                  width="100%"
-                  _dark={{
-                    bg: "gray.800"
-                  }}
-                  sx={{
-                    cursor: 'none',
-                    '&:hover': {
-                      cursor: 'pointer'
-                    },
-                    animationIterationCount: "15",
-                    '@keyframes borderFade': {
-                      '0%': {
-                        borderColor: "teal"
-                      },
-                      '50%': {
-                        borderColor: "gray.400"
-                      },
-                      '100%': {
-                        borderColor: "teal"
-                      }
-                    },
-                    animationName: "borderFade",
-                    animationDuration: "1s"
-                  }}
-                  readOnly={true}
-                  onClick={e=>onOpenSearchModal()}
-                />
-              )}
-
-              {selectedBook ? (
-                <Box
-                  className="well"
-                  mx="0!important"
-                  position="relative"
-                  w="100%"
-                  maxW="500px"
-                >
-                  <CloseButton
-                    onClick={e=>setSelectedBook(null)}
-                    position="absolute"
-                    top={1}
-                    right={1}
+                  <Avatar 
+                    as={Link}
+                    to={`/profile/${bookSuggestionBookshelf?.Profile?.username}`}
+                    src={bookSuggestionBookshelf?.Profile?.profile_photo} 
+                    name={bookSuggestionBookshelf?.Profile?.username} 
                   />
-                  <Flex>
-                    <Image
-                      src={selectedBook.image}
-                      height="100%"
-                      maxH="90px"
-                      boxShadow="1px 1px 1px 1px darkgrey"
-                      alt={selectedBook.title}
-                    />
-                    <Box mx={2} w="100%">
-                      <Heading 
-                        as="h5" 
-                        size="md"
-                        me={3}
-                        noOfLines={1}
+                  <Text 
+                    as={Link}
+                    to={`/profile/${bookSuggestionBookshelf?.Profile?.username}`}
+                    fontWeight="bold" 
+                    fontSize="xl"
+                  >
+                    {bookSuggestionBookshelf?.Profile?.username} 
+                  </Text>
+                  {/* <Box w="1.4rem">
+                    {bookSuggestionBookshelf.Flag ? <bookSuggestionBookshelf.Flag/> : null}
+                  </Box> */}
+
+                  <SuggestionCountBadge suggestionCount={bookSuggestionBookshelf?.Profile?._count.BookSuggestion_BookSuggestion_suggestorToProfile}/>
+
+                  {bookSuggestionBookshelf?.Profile.id !== user.Profile.id && user.Profile.Bookshelf?.allow_suggestions ? (
+                    <Menu>
+                      <MenuButton 
+                        as={Button}
+                        size="sm"
+                        // variant="ghost"
+                        rounded="full"
+                        height="20px"
+                        title="menu"
+                        px={2}
                       >
-                        {selectedBook.title}
-                      </Heading>
-                      <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
-                        {selectedBook.author}
-                      </Text>
-                      <Text fontStyle="italic">
-                        {selectedBook.published_date !== null ? 
-                          (
-                            dayjs(selectedBook.published_date).format("YYYY")
-                          ) : null
-                        }
-                      </Text>
-                      {selectedBook.page_count ? (
-                        <Text fontSize="sm">
-                          {selectedBook.page_count} pages
-                        </Text>
-                      ): null}
-                      {/* <Popover isLazy>
-                        <PopoverTrigger>
-                          <Box
-                            _hover={{
-                              cursor: "pointer"
-                            }}
-                          >
-                            <Text noOfLines={1}>
-                              {selectedBook.description ? selectedBook.description: null}
-                            </Text>
-                          </Box>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <PopoverArrow />
-                          <PopoverCloseButton />
-                          <PopoverBody 
-                          _dark={{
-                            bg: "black"
-                          }}
-                            fontSize="sm"
-                          >
-                            {selectedBook.description ? selectedBook.description: null}
-                          </PopoverBody>
-                        </PopoverContent>
-                      </Popover> */}
-                    </Box>
-                  </Flex>
-                  <Box
-                    mt={2}
-                  >
-                    <Textarea
-                      placeholder="Notes (optional)"
-                      ref={notesRef}
-                      maxLength={500}
-                    />
-                  </Box>
-                  <Flex
-                    justify="flex-end"
-                    mt={2}
-                  >
-                    <Button
-                      backgroundColor="black"
-                      color="white"
-                      onClick={e=>suggestBook(e)}
-                    >
-                      Suggest
-                    </Button>
-                  </Flex>
-                </Box>
-              ): null}
-
-              <CurrentWeekSuggestionCount/>
-
-            </Flex>
-            <Divider borderColor="blackAlpha.700" mb={2} />
-            <Box 
-              className="non-well"
-            >
-              <Heading as="h3" size="sm" mb={1} color="blackAlpha.800">Latest suggestion:</Heading>
-              <Flex
-                // align="center"
-                wrap="wrap"
-                gap={2}
-                maxH="25vh"
-                overflow="auto"
-                p={.5}
-              >
-                {previousSuggestions !== null && previousSuggestions.length ? (
-                  <Box
-                    // maxW="200px"
-                    border="1px solid"
-                    borderColor="gray.400"
-                    p={2}
-                    rounded="md"
-                    flex="1 0"
-                    minW="250px"
-                    backgroundColor="gray.50"
-                  >
-                    <Flex
-                      // align="center"
-                      gap={2}
-                      width="100%"
-                    >
-                      <Image
-                        src={previousSuggestions[previousSuggestions.length - 1].image}
-                        height="100%"
-                        maxH="60px"
-                        boxShadow="1px 1px 1px 1px darkgrey"
-                      />
-                      <Box>
-                        {/* <Text 
-                          fontSize="sm"
-                          opacity="80%"
-                          mb={-1}
-                        >
-                          {dayjs(previousSuggestions[previousSuggestions.length - 1].created_on).local().format("MM/DD/YY")}
-                        </Text> */}
-                        <Text
-                          fontSize="md"
-                          fontWeight="bold"
-                          // fontStyle="italic"
-                          noOfLines={1}
-                          mb={-1}
-                        >
-                          {previousSuggestions[previousSuggestions.length - 1].title}
-                        </Text>
-                        <Text
-                          fontSize="md"
-                          noOfLines={1}
-                          mb={-1}
-                        >
-                          {previousSuggestions[previousSuggestions.length - 1].author}
-                        </Text>
-                        {previousSuggestions[previousSuggestions.length - 1].rating !== null ? (
-                          <Flex align="baseline" gap={1}>
-                            <BsStarFill fill="gold" size={13} />
-                            <Text
-                              fontSize="sm"
-                              noOfLines={1}
-                            >
-                              {previousSuggestions[previousSuggestions.length - 1].rating}
-                            </Text>
-                          </Flex>
+                        <BiDotsHorizontalRounded size={15} />
+                      </MenuButton>
+                      <MenuList>
+                        {bookSuggestionBookshelf?.Profile.id !== user.Profile.id && user.Profile.Bookshelf?.allow_suggestions ? (
+                          <RequestSuggestion server={server} requestee={bookSuggestionBookshelf?.Profile.id ? bookSuggestionBookshelf?.Profile.id : null} />
                         ): null}
+                      </MenuList>
+                    </Menu>
+                  ): null}
+                </Flex>
+              </Flex>
+              {bookSuggestionBookshelf?.suggestions_notes ? (
+                <Text fontStyle="italic">
+                  "{bookSuggestionBookshelf?.suggestions_notes}"
+                </Text>
+              ): null}
+            </Box>
+          </Flex>
+
+          <Divider borderColor="blackAlpha.700" mb={2} />
+
+          {startPoll && (pollBookOne || pollBookTwo || pollBookThree) ? (
+            <>
+              <Box 
+                className="non-well"
+                mb={2}
+              >
+                <Heading as="h3" size="sm" mb={1} color="blackAlpha.800">Vote:</Heading>
+                  <Flex justify="space-around" w="100%" flexWrap="nowrap" gap={2}>
+                    {pollBookOne !== null ? (
+                    <Box 
+                      flex="0 1 125px"
+                      rounded="md"
+                      border="1px solid"
+                      borderColor="gray.400"
+                      p={1}
+                    >
+                      <Box 
+                        mx="auto"
+                        maxW="90px"
+                      >
+                        <Heading as="h5" size="sm" textAlign="center">1</Heading>
+                        <Image
+                          maxW="100%" 
+                          w="100%"
+                          h="auto"
+                          pt={2} 
+                          mb={1}
+                          className="book-image"
+                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                          src={pollBookOne.image}
+                          boxShadow="1px 1px 1px 1px darkgrey"
+                          alt={pollBookOne.title}
+                        />
+                      </Box>
+                      <Flex align="center" gap={1}>
+                        <Popover isLazy>
+                          <PopoverTrigger>
+                            <Box
+                              _hover={{
+                                cursor: "pointer"
+                              }}
+                            >
+                              <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                                {pollBookOne.title}
+                              </Text>
+                            </Box>
+                          </PopoverTrigger>
+                          <PopoverContent w="auto">
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverHeader me={5}>{pollBookOne.title}</PopoverHeader>
+                          </PopoverContent>
+                        </Popover>
+                        <Button
+                          as={Link}
+                          to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(pollBookOne.title + " " + pollBookOne.author)}`}
+                          target="blank"
+                          size="xs"
+                          variant="ghost"
+                          aria-label="View in Bookshop"
+                          title="View in Bookshop"
+                          p={0}
+                        >
+                          <FaStore size={17} />
+                        </Button>
+                      </Flex>
+                      <Text fontSize="sm">
+                        {pollBookOne.author}
+                      </Text>
+                      <Flex justify="center">
+                        <Button
+                          size="sm"
+                          backgroundColor="black"
+                          color="white"
+                          onClick={e=>castVote({pollBookNumber: 1, pollBookId: pollBookOne.id})}
+                          isLoading={castVoteMutation.isLoading}
+                          isDisabled={castVoteMutation.isLoading}
+                        >
+                          Vote
+                        </Button>
+                      </Flex>
+                    </Box>
+                    ) : null}
+                    {pollBookTwo !== null ? (
+                    <Box 
+                      flex="0 1 125px"
+                      rounded="md"
+                      border="1px solid"
+                      borderColor="gray.400"
+                      p={1}
+                    >
+                      <Box
+                        mx="auto"
+                        maxW="90px"
+                      >
+                        <Heading as="h5" size="sm" textAlign="center">2</Heading>
+                        <Image
+                          maxW="100%" 
+                          w="100%"
+                          h="auto"
+                          pt={2} 
+                          mb={1}
+                          className="book-image"
+                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                          src={pollBookTwo.image}
+                          boxShadow="1px 1px 1px 1px darkgrey"
+                          alt={pollBookTwo.title}
+                        />
+                      </Box>
+                      <Flex align="center" gap={1}>
+                        <Popover isLazy>
+                          <PopoverTrigger>
+                            <Box
+                              _hover={{
+                                cursor: "pointer"
+                              }}
+                            >
+                              <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                                {pollBookTwo.title}
+                              </Text>
+                            </Box>
+                          </PopoverTrigger>
+                          <PopoverContent w="auto">
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverHeader me={5}>{pollBookTwo.title}</PopoverHeader>
+                          </PopoverContent>
+                        </Popover>
+                        <Button
+                          as={Link}
+                          to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(pollBookTwo.title + " " + pollBookTwo.author)}`}
+                          target="blank"
+                          size="xs"
+                          variant="ghost"
+                          aria-label="View in Bookshop"
+                          title="View in Bookshop"
+                          p={0}
+                        >
+                          <FaStore size={17} />
+                        </Button>
+                      </Flex>
+                      <Text fontSize="sm">
+                        {pollBookTwo.author}
+                      </Text>
+                      <Flex justify="center">
+                        <Button
+                          size="sm"
+                          backgroundColor="black"
+                          color="white"
+                          onClick={e=>castVote({pollBookNumber: 2, pollBookId: pollBookTwo.id})}
+                          isLoading={castVoteMutation.isLoading}
+                          isDisabled={castVoteMutation.isLoading}
+                        >
+                          Vote
+                        </Button>
+                      </Flex>
+                    </Box>
+                    ) : null}
+                    {pollBookThree !== null ? (
+                    <Box 
+                      flex="0 1 125px"
+                      rounded="md"
+                      border="1px solid"
+                      borderColor="gray.400"
+                      p={1}
+                    >
+                      <Box 
+                        mx="auto"
+                        maxW="90px"
+                      >
+                        <Heading as="h5" size="sm" textAlign="center">3</Heading>
+                        <Image
+                          maxW="100%" 
+                          w="100%"
+                          h="auto"
+                          pt={2} 
+                          mb={1}
+                          className="book-image"
+                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                          src={pollBookThree.image}
+                          boxShadow="1px 1px 1px 1px darkgrey"
+                          alt={pollBookThree.title}
+                        />
+                      </Box>
+                      <Flex align="center" gap={1}>
+                        <Popover isLazy>
+                          <PopoverTrigger>
+                            <Box
+                              _hover={{
+                                cursor: "pointer"
+                              }}
+                            >
+                              <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                                {pollBookThree.title}
+                              </Text>
+                            </Box>
+                          </PopoverTrigger>
+                          <PopoverContent w="auto">
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverHeader me={5}>{pollBookThree.title}</PopoverHeader>
+                          </PopoverContent>
+                        </Popover>
+                        <Button
+                          as={Link}
+                          to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(pollBookThree.title + " " + pollBookThree.author)}`}
+                          target="blank"
+                          size="xs"
+                          variant="ghost"
+                          aria-label="View in Bookshop"
+                          title="View in Bookshop"
+                          p={0}
+                        >
+                          <FaStore size={17} />
+                        </Button>
+                      </Flex>
+                      <Text fontSize="sm">
+                        {pollBookThree.author}
+                      </Text>
+                      <Flex justify="center">
+                        <Button
+                          size="sm"
+                          backgroundColor="black"
+                          color="white"
+                          onClick={e=>castVote({pollBookNumber: 3, pollBookId: pollBookThree.id})}
+                          isLoading={castVoteMutation.isLoading}
+                          isDisabled={castVoteMutation.isLoading}
+                        >
+                          Vote
+                        </Button>
+                      </Flex>
+                    </Box>
+                    ) : null}
+                  </Flex>
+              </Box>
+              <Text 
+                textAlign="center"
+                fontWeight="bold"
+                my={5}
+              >
+                or
+              </Text>
+            </>
+          ): null}
+
+          {bookSuggestionBookshelf?.allow_suggestions !== 1 ? (
+            <Flex align="center" justify="center" minH="70vh">
+              <Heading as="h1" size="xl">Currently not allowing suggestions</Heading>
+            </Flex>
+          ) : (
+            <>
+              <Flex
+                align="center"
+                justify="space-between"
+                className="non-well"
+                gap={1}
+                direction="column"
+              >
+                {bookSuggestionBookshelf?.Profile.id === user.Profile.id ? (
+                  <Text>
+                    This is your bookshelf.
+                  </Text>
+                ): (
+                  <Input
+                    type="search"
+                    bg="white"
+                    borderWidth={3}
+                    borderColor="teal"
+                    size="lg"
+                    placeholder="Suggest a book"
+                    mb={2}
+                    width="100%"
+                    _dark={{
+                      bg: "gray.800"
+                    }}
+                    sx={{
+                      cursor: 'none',
+                      '&:hover': {
+                        cursor: 'pointer'
+                      },
+                      animationIterationCount: "15",
+                      '@keyframes borderFade': {
+                        '0%': {
+                          borderColor: "teal"
+                        },
+                        '50%': {
+                          borderColor: "gray.400"
+                        },
+                        '100%': {
+                          borderColor: "teal"
+                        }
+                      },
+                      animationName: "borderFade",
+                      animationDuration: "1s"
+                    }}
+                    readOnly={true}
+                    onClick={e=>onOpenSearchModal()}
+                  />
+                )}
+
+                {selectedBook ? (
+                  <Box
+                    className="well"
+                    mx="0!important"
+                    position="relative"
+                    w="100%"
+                    maxW="500px"
+                  >
+                    <CloseButton
+                      onClick={e=>setSelectedBook(null)}
+                      position="absolute"
+                      top={1}
+                      right={1}
+                    />
+                    <Flex>
+                      <Image
+                        src={selectedBook.image}
+                        height="100%"
+                        maxH="90px"
+                        boxShadow="1px 1px 1px 1px darkgrey"
+                        alt={selectedBook.title}
+                      />
+                      <Box mx={2} w="100%">
+                        <Heading 
+                          as="h5" 
+                          size="md"
+                          me={3}
+                          noOfLines={1}
+                        >
+                          {selectedBook.title}
+                        </Heading>
+                        <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
+                          {selectedBook.author}
+                        </Text>
+                        <Text fontStyle="italic">
+                          {selectedBook.published_date !== null ? 
+                            (
+                              dayjs(selectedBook.published_date).format("YYYY")
+                            ) : null
+                          }
+                        </Text>
+                        {selectedBook.page_count ? (
+                          <Text fontSize="sm">
+                            {selectedBook.page_count} pages
+                          </Text>
+                        ): null}
+                        {/* <Popover isLazy>
+                          <PopoverTrigger>
+                            <Box
+                              _hover={{
+                                cursor: "pointer"
+                              }}
+                            >
+                              <Text noOfLines={1}>
+                                {selectedBook.description ? selectedBook.description: null}
+                              </Text>
+                            </Box>
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverBody 
+                            _dark={{
+                              bg: "black"
+                            }}
+                              fontSize="sm"
+                            >
+                              {selectedBook.description ? selectedBook.description: null}
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Popover> */}
                       </Box>
                     </Flex>
-                  </Box>
-                ): (
-                  <Text
-                    fontStyle="italic"
-                  >
-                    None yet.
-                  </Text>
-                )}
-              </Flex>
-            </Box>
-            <Divider borderColor="blackAlpha.700" my={3} />
-            <Box className="well">
-              <Heading as="h3" size="md">
-                Bookshelf
-              </Heading>
-              <Box>
-                {bookSuggestionBookshelf?.BookshelfBook?.length ? (
-                  bookSuggestionBookshelf.BookshelfBook.map((book: BookshelfBook,i: number)=>{
-                    return (
-                      <Box 
-                        className="well-card"
-                        key={i}
-                      >
-                        <Flex>
-                          {book.image === "https://via.placeholder.com/165x215" ? (
-                            <BookImage isbn={book.isbn} id={`book-image-${Math.random()}`} maxHeight="125px"/>
-                          ) : (
-                            <Image
-                              src={book.image ? book.image : "https://via.placeholder.com/165x215"}
-                              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                              height="100%"
-                              maxH="125px"
-                              boxShadow="1px 1px 1px 1px darkgrey"
-                              alt={book.title}
-                            />
-                          )}
-                          <Box mx={2} w="100%">
-                            <Heading 
-                              as="h5" 
-                              size="md"
-                              me={3}
-                              noOfLines={1}
-                            >
-                              {book.title}
-                            </Heading>
-                            <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
-                              {book.author}
-                            </Text>
-                            <Text fontStyle="italic">
-                              {book.published_date ? dayjs(book.published_date).format("YYYY"): null}
-                            </Text>
-                            {book.page_count ? (
-                              <Text fontSize="sm">
-                                {book.page_count} pages
-                              </Text>
-                            ): null}
-                            {/* <Popover isLazy>
-                              <PopoverTrigger>
-                                <Box
-                                  _hover={{
-                                    cursor: "pointer"
-                                  }}
-                                >
-                                  <Text noOfLines={1}>
-                                    {book.description}
-                                  </Text>
-                                </Box>
-                              </PopoverTrigger>
-                              <PopoverContent>
-                                <PopoverArrow />
-                                <PopoverCloseButton />
-                                <PopoverBody 
-                                _dark={{
-                                  bg: "black"
-                                }}
-                                  fontSize="sm"
-                                >
-                                  {book.description}
-                                </PopoverBody>
-                              </PopoverContent>
-                            </Popover> */}
-                            <Flex
-                              align="center"
-                              wrap="wrap"
-                              gap={1}
-                              rowGap={0}
-                            >
-                              <Text fontWeight="bold">
-                                {bookSuggestionBookshelf.Profile?.username}'s rating:
-                              </Text>
-                              <StarRating
-                                ratingCallback={null} 
-                                starRatingId={book.id}
-                                defaultRating={book.rating}
-                              />
-                            </Flex>
-                            {book.review ? (
-                              <Text fontStyle="italic">
-                                "{book.review}"
-                              </Text>
-                            ): null}
-                          </Box>
-                        </Flex>
-                      </Box>
-                    )
-                  })
-                ): (
-                  <Text fontStyle="italic">
-                    Empty
-                  </Text>
-                )}
-                <Box>
-                  {!endLoadMore ? (
-                    <>
+                    <Box
+                      mt={2}
+                    >
+                      <Textarea
+                        placeholder="Notes (optional)"
+                        ref={notesRef}
+                        maxLength={500}
+                      />
+                    </Box>
+                    <Flex
+                      justify="flex-end"
+                      mt={2}
+                    >
                       <Button
-                        variant="ghost"
-                        size="sm"
-                        colorScheme="blue"
-                        onClick={e=>{
-                          setTake(prev=>prev+10)
-                        }}
-                        isLoading={loadMoreIsLoading}
+                        backgroundColor="black"
+                        color="white"
+                        onClick={e=>suggestBook(e)}
                       >
-                        Load more...
+                        Suggest
                       </Button>
-                    </>
-                  ): null}
+                    </Flex>
+                  </Box>
+                ): null}
+
+                <CurrentWeekSuggestionCount/>
+
+              </Flex>
+              <Divider borderColor="blackAlpha.700" mb={2} />
+              <Box 
+                className="non-well"
+              >
+                <Heading as="h3" size="sm" mb={1} color="blackAlpha.800">Latest suggestion:</Heading>
+                <Flex
+                  // align="center"
+                  wrap="wrap"
+                  gap={2}
+                  maxH="25vh"
+                  overflow="auto"
+                  p={.5}
+                >
+                  {previousSuggestions !== null && previousSuggestions.length ? (
+                    <Box
+                      // maxW="200px"
+                      border="1px solid"
+                      borderColor="gray.400"
+                      p={2}
+                      rounded="md"
+                      flex="1 0"
+                      minW="250px"
+                      backgroundColor="gray.50"
+                    >
+                      <Flex
+                        // align="center"
+                        gap={2}
+                        width="100%"
+                      >
+                        <Image
+                          src={previousSuggestions[previousSuggestions.length - 1].image}
+                          height="100%"
+                          maxH="60px"
+                          boxShadow="1px 1px 1px 1px darkgrey"
+                        />
+                        <Box>
+                          {/* <Text 
+                            fontSize="sm"
+                            opacity="80%"
+                            mb={-1}
+                          >
+                            {dayjs(previousSuggestions[previousSuggestions.length - 1].created_on).local().format("MM/DD/YY")}
+                          </Text> */}
+                          <Text
+                            fontSize="md"
+                            fontWeight="bold"
+                            // fontStyle="italic"
+                            noOfLines={1}
+                            mb={-1}
+                          >
+                            {previousSuggestions[previousSuggestions.length - 1].title}
+                          </Text>
+                          <Text
+                            fontSize="md"
+                            noOfLines={1}
+                            mb={-1}
+                          >
+                            {previousSuggestions[previousSuggestions.length - 1].author}
+                          </Text>
+                          {previousSuggestions[previousSuggestions.length - 1].rating !== null ? (
+                            <Flex align="baseline" gap={1}>
+                              <BsStarFill fill="gold" size={13} />
+                              <Text
+                                fontSize="sm"
+                                noOfLines={1}
+                              >
+                                {previousSuggestions[previousSuggestions.length - 1].rating}
+                              </Text>
+                            </Flex>
+                          ): null}
+                        </Box>
+                      </Flex>
+                    </Box>
+                  ): (
+                    <Text
+                      fontStyle="italic"
+                    >
+                      None yet.
+                    </Text>
+                  )}
+                </Flex>
+              </Box>
+              <Divider borderColor="blackAlpha.700" my={3} />
+              <Box className="well">
+                <Heading as="h3" size="md">
+                  Bookshelf
+                </Heading>
+                <Box>
+                  {bookSuggestionBookshelf?.BookshelfBook?.length ? (
+                    bookSuggestionBookshelf.BookshelfBook.map((book: BookshelfBook,i: number)=>{
+                      return (
+                        <Box 
+                          className="well-card"
+                          key={i}
+                        >
+                          <Flex>
+                            {book.image === "https://via.placeholder.com/165x215" ? (
+                              <BookImage isbn={book.isbn} id={`book-image-${Math.random()}`} maxHeight="125px"/>
+                            ) : (
+                              <Image
+                                src={book.image ? book.image : "https://via.placeholder.com/165x215"}
+                                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                height="100%"
+                                maxH="125px"
+                                boxShadow="1px 1px 1px 1px darkgrey"
+                                alt={book.title}
+                              />
+                            )}
+                            <Box mx={2} w="100%">
+                              <Heading 
+                                as="h5" 
+                                size="md"
+                                me={3}
+                                noOfLines={1}
+                              >
+                                {book.title}
+                              </Heading>
+                              <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
+                                {book.author}
+                              </Text>
+                              <Text fontStyle="italic">
+                                {book.published_date ? dayjs(book.published_date).format("YYYY"): null}
+                              </Text>
+                              {book.page_count ? (
+                                <Text fontSize="sm">
+                                  {book.page_count} pages
+                                </Text>
+                              ): null}
+                              {/* <Popover isLazy>
+                                <PopoverTrigger>
+                                  <Box
+                                    _hover={{
+                                      cursor: "pointer"
+                                    }}
+                                  >
+                                    <Text noOfLines={1}>
+                                      {book.description}
+                                    </Text>
+                                  </Box>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                  <PopoverArrow />
+                                  <PopoverCloseButton />
+                                  <PopoverBody 
+                                  _dark={{
+                                    bg: "black"
+                                  }}
+                                    fontSize="sm"
+                                  >
+                                    {book.description}
+                                  </PopoverBody>
+                                </PopoverContent>
+                              </Popover> */}
+                              <Flex
+                                align="center"
+                                wrap="wrap"
+                                gap={1}
+                                rowGap={0}
+                              >
+                                <Text fontWeight="bold">
+                                  {bookSuggestionBookshelf?.Profile?.username}'s rating:
+                                </Text>
+                                <StarRating
+                                  ratingCallback={null} 
+                                  starRatingId={book.id}
+                                  defaultRating={book.rating}
+                                />
+                              </Flex>
+                              {book.review ? (
+                                <Text fontStyle="italic">
+                                  "{book.review}"
+                                </Text>
+                              ): null}
+                            </Box>
+                          </Flex>
+                        </Box>
+                      )
+                    })
+                  ): (
+                    <Text fontStyle="italic">
+                      Empty
+                    </Text>
+                  )}
+                  <Box>
+                    {!endLoadMore ? (
+                      <>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          colorScheme="blue"
+                          onClick={e=>{
+                            setTake(prev=>prev+10)
+                          }}
+                          isLoading={loadMoreIsLoading}
+                        >
+                          Load more...
+                        </Button>
+                      </>
+                    ): null}
+                  </Box>
                 </Box>
               </Box>
-            </Box>
-          </>
+            </>
+          )}
+        </>
         )}
       </Skeleton>
 
