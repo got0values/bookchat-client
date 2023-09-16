@@ -287,7 +287,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
         >
           <Box>
             <AlertDescription>
-              Add books to your bookshelf or post what you're currently reading to generate and view your bookshelf list here.
+              Add books to your bookshelf or post what you're currently reading to generate and view your suggestion bookshelf list.
             </AlertDescription>
           </Box>
         </Alert>

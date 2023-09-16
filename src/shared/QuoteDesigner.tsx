@@ -256,7 +256,7 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
           id="preview-div"
           mx="auto"
         ></Box>
-        <FormControl variant="floating" mt={2}>
+        <FormControl variant="floatingstatic" mt={2}>
           <FormLabel>
             Quote
           </FormLabel>

@@ -328,18 +328,32 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
                       </FormLabel>
                       <Box pb={2}>
                         {selectedBook2.subjects.length ? (
-                          <MultiSelect
-                            options={selectedBook2.subjects.map((subject:any)=>{
-                              return (
-                                {
-                                  label: subject,
-                                  value: subject
+                          <Box
+                            sx={{
+                              "& ul": {
+                                zIndex: 2
+                              }
+                            }}
+                          >
+                            <MultiSelect
+                              backgroundColor="black"
+                              sx={{
+                                "& ul": {
+                                  bg: "black"
                                 }
-                              )
-                            })}
-                            value={selectedSubjects}
-                            onChange={e=>setSelectedSubjects(e as any)}
-                          />
+                              }}
+                              options={selectedBook2.subjects.map((subject:any)=>{
+                                return (
+                                  {
+                                    label: subject,
+                                    value: subject
+                                  }
+                                )
+                              })}
+                              value={selectedSubjects}
+                              onChange={e=>setSelectedSubjects(e as any)}
+                            />
+                          </Box>
                         ): null}
                       </Box>
                     </>

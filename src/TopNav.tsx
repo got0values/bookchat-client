@@ -761,14 +761,14 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
               </MenuButton>
               <Portal>
                 <MenuList position="relative" zIndex={100}>
-                  <MenuItem
-                    as={Link}
-                    to={`/profile/${user.Profile.username}`}
-                    fontSize="lg"
-                    fontWeight="600"
-                  >
-                    Profile
-                  </MenuItem>
+                  <Link to={`/profile/${user.Profile.username}`}>
+                    <MenuItem
+                      fontSize="lg"
+                      fontWeight="600"
+                    >
+                      Profile
+                    </MenuItem>
+                  </Link>
                   <MenuDivider/>
                   <MenuItem
                     aria-label="notifications"
@@ -792,26 +792,26 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                   >
                     {colorMode === "light" ? "Dark" : "Light"} Mode
                   </MenuItem>
-                  <MenuItem
-                    aria-label="settings"
-                    as={Link}
-                    to="/settings"
-                    icon={<FiSettings size={20}/>}
-                    fontSize="lg"
-                    fontWeight="600"
-                  >
-                    Settings
-                  </MenuItem>
-                  <MenuItem
-                    aria-label="support/request"
-                    as={Link}
-                    to="/supportrequest"
-                    icon={<MdOutlineContactSupport size={20}/>}
-                    fontSize="lg"
-                    fontWeight="600"
-                  >
-                    Support/Request
-                  </MenuItem>
+                  <Link to="/settings">
+                    <MenuItem
+                      aria-label="settings"
+                      icon={<FiSettings size={20}/>}
+                      fontSize="lg"
+                      fontWeight="600"
+                    >
+                      Settings
+                    </MenuItem>
+                  </Link>
+                  <Link to="/supportrequest">
+                    <MenuItem
+                      aria-label="support/request"
+                      icon={<MdOutlineContactSupport size={20}/>}
+                      fontSize="lg"
+                      fontWeight="600"
+                    >
+                      Support/Request
+                    </MenuItem>
+                  </Link>
                   <MenuItem
                     aria-label="logout"
                     onClick={e=>onLogout()}

@@ -175,7 +175,7 @@ const customTheme = {
               transformOrigin: "left top",
               transform: "scale(0.85) translateY(-22px)",
               _dark: {
-                backgroundColor: "blackAlpha.300"
+                backgroundColor: "#0e0e0e"
               }
             }
           }
