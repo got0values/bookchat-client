@@ -1153,7 +1153,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   mb={0}
                   fontWeight="bold"
                 >
-                  Allow suggestions?
+                  Request suggestions (make public)
                 </FormLabel>
                 <Switch
                   id="allow-suggestions"

@@ -711,54 +711,6 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
               >
                 {`@${user?.Profile.username}`}
               </Text>
-              {/* <Text
-                fontSize=".6rem"
-                lineHeight={1.2}
-              >
-                {user.Profile.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0) > 0 ? user.Profile.PagesRead?.map((p)=>p.pages_read).reduce((partialSum, a) => partialSum + a as number, 0) : 0} pgs read this week
-              </Text>
-              <Flex gap={.5} align="center" justify="center" mt={.5} width="max-content">
-                <Text
-                  fontSize=".6rem"
-                  lineHeight={1.2}
-                  color={user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile === 0 ? "#b50000" : "unset"}
-                >
-                  {user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile ? user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile : 0} books suggested
-                </Text>
-                {user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile === 0 ? (
-                  <Popover placement='left'>
-                    <PopoverTrigger>
-                      <Badge
-                        as={Button}
-                        size="xs"
-                        minW="unset"
-                        height="unset"
-                        fontSize=".65rem"
-                        textTransform="none"
-                        p={0}
-                        backgroundColor="transparent"
-                        display="flex"
-                        alignItems="top"
-                        gap={1}
-                        position="relative"
-                        zIndex="100"
-                        aria-label="suggest books badge"
-                      >
-                        <FaExclamationCircle fill="red" size={10}/>
-                      </Badge>
-                    </PopoverTrigger>
-                    <PopoverContent maxW="260px" fontSize="sm">
-                      <PopoverArrow/>
-                      <PopoverCloseButton/>
-                      <PopoverBody>
-                        Start suggestion books
-                      </PopoverBody>
-                    </PopoverContent>
-                  </Popover>
-                ): (
-                  <SuggestionCountBadge suggestionCount={user.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile}/>
-                )}
-              </Flex> */}
             </Box>
             <Menu>
               <MenuButton
