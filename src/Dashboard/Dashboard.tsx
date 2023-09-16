@@ -622,7 +622,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                             </Text>
                           </Flex>
                         </PopoverTrigger>
-                        <PopoverContent>
+                        <PopoverContent width="auto">
                           <Text textAlign="center" p={1}>
                             {ratingAverage.toFixed(1)} suggestion rating
                           </Text>
@@ -919,9 +919,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                         })}
                       </HStack>
                     </PopoverTrigger>
-                    <PopoverContent>
+                    <PopoverContent width="auto">
                       <PopoverArrow />
-                      <PopoverCloseButton />
                       <PopoverBody 
                         fontSize="sm"
                         _dark={{
