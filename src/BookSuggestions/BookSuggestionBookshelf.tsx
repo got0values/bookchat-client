@@ -43,6 +43,7 @@ import GooglePreviewLink from "../shared/GooglePreviewLink";
 import BookImage from "../shared/BookImage";
 import BooksSearch from "../shared/BooksSearch";
 import RequestSuggestion from "../shared/RequestSuggestion";
+import CurrentWeekSuggestionCount from "./CurrentWeekSuggestionCount";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import { BsArrowRight } from 'react-icons/bs';
 import { MdChevronRight } from 'react-icons/md';
@@ -416,247 +417,248 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           </Box>
         </Flex>
 
+        <Divider borderColor="blackAlpha.700" mb={2} />
+
         {startPoll && (pollBookOne || pollBookTwo || pollBookThree) ? (
           <>
-            <Divider borderColor="blackAlpha.700" mb={2} />
-              <Box 
-                className="non-well"
-                mb={2}
-              >
-                <Heading as="h3" size="sm" mb={1} color="blackAlpha.800">Vote:</Heading>
-                  <Flex justify="space-around" w="100%" flexWrap="nowrap" gap={2}>
-                    {pollBookOne !== null ? (
+            <Box 
+              className="non-well"
+              mb={2}
+            >
+              <Heading as="h3" size="sm" mb={1} color="blackAlpha.800">Vote:</Heading>
+                <Flex justify="space-around" w="100%" flexWrap="nowrap" gap={2}>
+                  {pollBookOne !== null ? (
+                  <Box 
+                    flex="0 1 125px"
+                    rounded="md"
+                    border="1px solid"
+                    borderColor="gray.400"
+                    p={1}
+                  >
                     <Box 
-                      flex="0 1 125px"
-                      rounded="md"
-                      border="1px solid"
-                      borderColor="gray.400"
-                      p={1}
+                      mx="auto"
+                      maxW="90px"
                     >
-                      <Box 
-                        mx="auto"
-                        maxW="90px"
-                      >
-                        <Heading as="h5" size="sm" textAlign="center">1</Heading>
-                        <Image
-                          maxW="100%" 
-                          w="100%"
-                          h="auto"
-                          pt={2} 
-                          mb={1}
-                          className="book-image"
-                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                          src={pollBookOne.image}
-                          boxShadow="1px 1px 1px 1px darkgrey"
-                          alt={pollBookOne.title}
-                        />
-                      </Box>
-                      <Flex align="center" gap={1}>
-                        <Popover isLazy>
-                          <PopoverTrigger>
-                            <Box
-                              _hover={{
-                                cursor: "pointer"
-                              }}
-                            >
-                              <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
-                                {pollBookOne.title}
-                              </Text>
-                            </Box>
-                          </PopoverTrigger>
-                          <PopoverContent w="auto">
-                            <PopoverArrow />
-                            <PopoverCloseButton />
-                            <PopoverHeader me={5}>{pollBookOne.title}</PopoverHeader>
-                          </PopoverContent>
-                        </Popover>
-                        <Button
-                          as={Link}
-                          to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(pollBookOne.title + " " + pollBookOne.author)}`}
-                          target="blank"
-                          size="xs"
-                          variant="ghost"
-                          aria-label="View in Bookshop"
-                          title="View in Bookshop"
-                          p={0}
-                        >
-                          <FaStore size={17} />
-                        </Button>
-                      </Flex>
-                      <Text fontSize="sm">
-                        {pollBookOne.author}
-                      </Text>
-                      <Flex justify="center">
-                        <Button
-                          size="sm"
-                          backgroundColor="black"
-                          color="white"
-                          onClick={e=>castVote({pollBookNumber: 1, pollBookId: pollBookOne.id})}
-                          isLoading={castVoteMutation.isLoading}
-                          isDisabled={castVoteMutation.isLoading}
-                        >
-                          Vote
-                        </Button>
-                      </Flex>
+                      <Heading as="h5" size="sm" textAlign="center">1</Heading>
+                      <Image
+                        maxW="100%" 
+                        w="100%"
+                        h="auto"
+                        pt={2} 
+                        mb={1}
+                        className="book-image"
+                        onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                        src={pollBookOne.image}
+                        boxShadow="1px 1px 1px 1px darkgrey"
+                        alt={pollBookOne.title}
+                      />
                     </Box>
-                    ) : null}
-                    {pollBookTwo !== null ? (
+                    <Flex align="center" gap={1}>
+                      <Popover isLazy>
+                        <PopoverTrigger>
+                          <Box
+                            _hover={{
+                              cursor: "pointer"
+                            }}
+                          >
+                            <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                              {pollBookOne.title}
+                            </Text>
+                          </Box>
+                        </PopoverTrigger>
+                        <PopoverContent w="auto">
+                          <PopoverArrow />
+                          <PopoverCloseButton />
+                          <PopoverHeader me={5}>{pollBookOne.title}</PopoverHeader>
+                        </PopoverContent>
+                      </Popover>
+                      <Button
+                        as={Link}
+                        to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(pollBookOne.title + " " + pollBookOne.author)}`}
+                        target="blank"
+                        size="xs"
+                        variant="ghost"
+                        aria-label="View in Bookshop"
+                        title="View in Bookshop"
+                        p={0}
+                      >
+                        <FaStore size={17} />
+                      </Button>
+                    </Flex>
+                    <Text fontSize="sm">
+                      {pollBookOne.author}
+                    </Text>
+                    <Flex justify="center">
+                      <Button
+                        size="sm"
+                        backgroundColor="black"
+                        color="white"
+                        onClick={e=>castVote({pollBookNumber: 1, pollBookId: pollBookOne.id})}
+                        isLoading={castVoteMutation.isLoading}
+                        isDisabled={castVoteMutation.isLoading}
+                      >
+                        Vote
+                      </Button>
+                    </Flex>
+                  </Box>
+                  ) : null}
+                  {pollBookTwo !== null ? (
+                  <Box 
+                    flex="0 1 125px"
+                    rounded="md"
+                    border="1px solid"
+                    borderColor="gray.400"
+                    p={1}
+                  >
+                    <Box
+                      mx="auto"
+                      maxW="90px"
+                    >
+                      <Heading as="h5" size="sm" textAlign="center">2</Heading>
+                      <Image
+                        maxW="100%" 
+                        w="100%"
+                        h="auto"
+                        pt={2} 
+                        mb={1}
+                        className="book-image"
+                        onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                        src={pollBookTwo.image}
+                        boxShadow="1px 1px 1px 1px darkgrey"
+                        alt={pollBookTwo.title}
+                      />
+                    </Box>
+                    <Flex align="center" gap={1}>
+                      <Popover isLazy>
+                        <PopoverTrigger>
+                          <Box
+                            _hover={{
+                              cursor: "pointer"
+                            }}
+                          >
+                            <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                              {pollBookTwo.title}
+                            </Text>
+                          </Box>
+                        </PopoverTrigger>
+                        <PopoverContent w="auto">
+                          <PopoverArrow />
+                          <PopoverCloseButton />
+                          <PopoverHeader me={5}>{pollBookTwo.title}</PopoverHeader>
+                        </PopoverContent>
+                      </Popover>
+                      <Button
+                        as={Link}
+                        to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(pollBookTwo.title + " " + pollBookTwo.author)}`}
+                        target="blank"
+                        size="xs"
+                        variant="ghost"
+                        aria-label="View in Bookshop"
+                        title="View in Bookshop"
+                        p={0}
+                      >
+                        <FaStore size={17} />
+                      </Button>
+                    </Flex>
+                    <Text fontSize="sm">
+                      {pollBookTwo.author}
+                    </Text>
+                    <Flex justify="center">
+                      <Button
+                        size="sm"
+                        backgroundColor="black"
+                        color="white"
+                        onClick={e=>castVote({pollBookNumber: 2, pollBookId: pollBookTwo.id})}
+                        isLoading={castVoteMutation.isLoading}
+                        isDisabled={castVoteMutation.isLoading}
+                      >
+                        Vote
+                      </Button>
+                    </Flex>
+                  </Box>
+                  ) : null}
+                  {pollBookThree !== null ? (
+                  <Box 
+                    flex="0 1 125px"
+                    rounded="md"
+                    border="1px solid"
+                    borderColor="gray.400"
+                    p={1}
+                  >
                     <Box 
-                      flex="0 1 125px"
-                      rounded="md"
-                      border="1px solid"
-                      borderColor="gray.400"
-                      p={1}
+                      mx="auto"
+                      maxW="90px"
                     >
-                      <Box
-                        mx="auto"
-                        maxW="90px"
-                      >
-                        <Heading as="h5" size="sm" textAlign="center">2</Heading>
-                        <Image
-                          maxW="100%" 
-                          w="100%"
-                          h="auto"
-                          pt={2} 
-                          mb={1}
-                          className="book-image"
-                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                          src={pollBookTwo.image}
-                          boxShadow="1px 1px 1px 1px darkgrey"
-                          alt={pollBookTwo.title}
-                        />
-                      </Box>
-                      <Flex align="center" gap={1}>
-                        <Popover isLazy>
-                          <PopoverTrigger>
-                            <Box
-                              _hover={{
-                                cursor: "pointer"
-                              }}
-                            >
-                              <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
-                                {pollBookTwo.title}
-                              </Text>
-                            </Box>
-                          </PopoverTrigger>
-                          <PopoverContent w="auto">
-                            <PopoverArrow />
-                            <PopoverCloseButton />
-                            <PopoverHeader me={5}>{pollBookTwo.title}</PopoverHeader>
-                          </PopoverContent>
-                        </Popover>
-                        <Button
-                          as={Link}
-                          to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(pollBookTwo.title + " " + pollBookTwo.author)}`}
-                          target="blank"
-                          size="xs"
-                          variant="ghost"
-                          aria-label="View in Bookshop"
-                          title="View in Bookshop"
-                          p={0}
-                        >
-                          <FaStore size={17} />
-                        </Button>
-                      </Flex>
-                      <Text fontSize="sm">
-                        {pollBookTwo.author}
-                      </Text>
-                      <Flex justify="center">
-                        <Button
-                          size="sm"
-                          backgroundColor="black"
-                          color="white"
-                          onClick={e=>castVote({pollBookNumber: 2, pollBookId: pollBookTwo.id})}
-                          isLoading={castVoteMutation.isLoading}
-                          isDisabled={castVoteMutation.isLoading}
-                        >
-                          Vote
-                        </Button>
-                      </Flex>
+                      <Heading as="h5" size="sm" textAlign="center">3</Heading>
+                      <Image
+                        maxW="100%" 
+                        w="100%"
+                        h="auto"
+                        pt={2} 
+                        mb={1}
+                        className="book-image"
+                        onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                        src={pollBookThree.image}
+                        boxShadow="1px 1px 1px 1px darkgrey"
+                        alt={pollBookThree.title}
+                      />
                     </Box>
-                    ) : null}
-                    {pollBookThree !== null ? (
-                    <Box 
-                      flex="0 1 125px"
-                      rounded="md"
-                      border="1px solid"
-                      borderColor="gray.400"
-                      p={1}
-                    >
-                      <Box 
-                        mx="auto"
-                        maxW="90px"
+                    <Flex align="center" gap={1}>
+                      <Popover isLazy>
+                        <PopoverTrigger>
+                          <Box
+                            _hover={{
+                              cursor: "pointer"
+                            }}
+                          >
+                            <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                              {pollBookThree.title}
+                            </Text>
+                          </Box>
+                        </PopoverTrigger>
+                        <PopoverContent w="auto">
+                          <PopoverArrow />
+                          <PopoverCloseButton />
+                          <PopoverHeader me={5}>{pollBookThree.title}</PopoverHeader>
+                        </PopoverContent>
+                      </Popover>
+                      <Button
+                        as={Link}
+                        to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(pollBookThree.title + " " + pollBookThree.author)}`}
+                        target="blank"
+                        size="xs"
+                        variant="ghost"
+                        aria-label="View in Bookshop"
+                        title="View in Bookshop"
+                        p={0}
                       >
-                        <Heading as="h5" size="sm" textAlign="center">3</Heading>
-                        <Image
-                          maxW="100%" 
-                          w="100%"
-                          h="auto"
-                          pt={2} 
-                          mb={1}
-                          className="book-image"
-                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                          src={pollBookThree.image}
-                          boxShadow="1px 1px 1px 1px darkgrey"
-                          alt={pollBookThree.title}
-                        />
-                      </Box>
-                      <Flex align="center" gap={1}>
-                        <Popover isLazy>
-                          <PopoverTrigger>
-                            <Box
-                              _hover={{
-                                cursor: "pointer"
-                              }}
-                            >
-                              <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
-                                {pollBookThree.title}
-                              </Text>
-                            </Box>
-                          </PopoverTrigger>
-                          <PopoverContent w="auto">
-                            <PopoverArrow />
-                            <PopoverCloseButton />
-                            <PopoverHeader me={5}>{pollBookThree.title}</PopoverHeader>
-                          </PopoverContent>
-                        </Popover>
-                        <Button
-                          as={Link}
-                          to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(pollBookThree.title + " " + pollBookThree.author)}`}
-                          target="blank"
-                          size="xs"
-                          variant="ghost"
-                          aria-label="View in Bookshop"
-                          title="View in Bookshop"
-                          p={0}
-                        >
-                          <FaStore size={17} />
-                        </Button>
-                      </Flex>
-                      <Text fontSize="sm">
-                        {pollBookThree.author}
-                      </Text>
-                      <Flex justify="center">
-                        <Button
-                          size="sm"
-                          backgroundColor="black"
-                          color="white"
-                          onClick={e=>castVote({pollBookNumber: 3, pollBookId: pollBookThree.id})}
-                          isLoading={castVoteMutation.isLoading}
-                          isDisabled={castVoteMutation.isLoading}
-                        >
-                          Vote
-                        </Button>
-                      </Flex>
-                    </Box>
-                    ) : null}
-                  </Flex>
-              </Box>
-              <Text 
-                textAlign="center"
-                fontWeight="bold"
-                my={5}
-              >
+                        <FaStore size={17} />
+                      </Button>
+                    </Flex>
+                    <Text fontSize="sm">
+                      {pollBookThree.author}
+                    </Text>
+                    <Flex justify="center">
+                      <Button
+                        size="sm"
+                        backgroundColor="black"
+                        color="white"
+                        onClick={e=>castVote({pollBookNumber: 3, pollBookId: pollBookThree.id})}
+                        isLoading={castVoteMutation.isLoading}
+                        isDisabled={castVoteMutation.isLoading}
+                      >
+                        Vote
+                      </Button>
+                    </Flex>
+                  </Box>
+                  ) : null}
+                </Flex>
+            </Box>
+            <Text 
+              textAlign="center"
+              fontWeight="bold"
+              my={5}
+            >
               or
             </Text>
           </>
@@ -697,7 +699,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                     '&:hover': {
                       cursor: 'pointer'
                     },
-                    animationIterationCount: "6",
+                    animationIterationCount: "15",
                     '@keyframes borderFade': {
                       '0%': {
                         borderColor: "teal"
@@ -813,6 +815,8 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                   </Flex>
                 </Box>
               ): null}
+
+              <CurrentWeekSuggestionCount/>
 
             </Flex>
             <Divider borderColor="blackAlpha.700" mb={2} />

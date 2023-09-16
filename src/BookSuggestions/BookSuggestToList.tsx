@@ -20,9 +20,12 @@ import {
   Alert,
   AlertDescription,
   CloseButton,
+  Progress,
   useDisclosure
 } from "@chakra-ui/react";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
+import CurrentWeekSuggestionCount from "./CurrentWeekSuggestionCount";
+import { ImInfo } from 'react-icons/im';
 import { FaPlay, FaArrowCircleRight } from 'react-icons/fa'
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import { useAuth } from "../hooks/useAuth";
@@ -41,7 +44,6 @@ export function BookSuggestionToList({server}: {server: string;}) {
   const endLoadMore = useRef(false);
   async function getBookSuggestToList() {
     getUser()
-    // console.log(user)
     let tokenCookie: string | null = Cookies.get().token;
     const bookSuggestToList = axios
       .get(`${server}/api/getbooksuggesttolist`,
@@ -116,7 +118,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
 
   return (
     <>
-      {user.Profile._count.BookshelfBook > 0 || user.Profile._count.CurrentlyReading > 0 ? (
+      {user?.Profile?._count.BookshelfBook > 0 || user?.Profile?._count?.CurrentlyReading > 0 ? (
         <>
           {alertIsVisible ? (
             <Alert 
@@ -126,8 +128,16 @@ export function BookSuggestionToList({server}: {server: string;}) {
               position="relative"
             >
               <Box>
-                <AlertDescription>
-                  {user.first_name}, these are bookshelves of people who can use your help finding more books to read.
+                <AlertDescription 
+                  pe={7} 
+                  display="flex" 
+                  alignItems="center" 
+                  gap={2} 
+                  fontSize=".97rem"
+                  lineHeight={1}
+                >
+                  <Box as={ImInfo} size={15} minWidth="15px" /> 
+                  {user?.first_name}, these are bookshelves of people who can use your help discovering more books to read.
                 </AlertDescription>
               </Box>
               <CloseButton
@@ -139,6 +149,9 @@ export function BookSuggestionToList({server}: {server: string;}) {
               />
             </Alert>
           ): null}
+          
+          <CurrentWeekSuggestionCount/>
+
           {bookSuggestToList?.length ? (
             <>
               {bookSuggestToList.map((bookshelf: BookshelfType, i: number)=>{
