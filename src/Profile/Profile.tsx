@@ -721,6 +721,42 @@ export const useProfile = ({server}: {server: string}) => {
     updatePagesReadMutation.mutate(bookId)
   }
 
+  const removeCurrentlyReadingUploadedImageMutation = useMutation({
+    mutationFn: async (bookId: number)=>{
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .put(server + "/api/removecurrentlyreadinguploadedimage",
+            {
+              currentlyReadingId: bookId
+            },
+            {
+              headers: {
+                'authorization': tokenCookie
+              }
+            })
+            .then((response)=>{
+            })
+            .catch(({response})=>{
+              console.log(response)
+              throw new Error(response.message)
+            })
+      }
+      else {
+        throw new Error("Please login again")
+      }
+      return getProfile();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ["profileKey"] })
+      queryClient.resetQueries({queryKey: ["profileKey"]})
+      queryClient.setQueryData(["profileKey"],data)
+    }
+  })
+  function removeCurrentlyReadingUploadedImage(bookId: number) {
+    removeCurrentlyReadingUploadedImageMutation.mutate(bookId)
+  }
+
   async function addToBookshelf(bookToAdd: any) {
     let tokenCookie: string | null = Cookies.get().token;
     await axios
@@ -752,12 +788,12 @@ export const useProfile = ({server}: {server: string}) => {
       })
   }
 
-  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,removeProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount};
+  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,removeProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount,removeCurrentlyReadingUploadedImage};
 }
 
 
 export default function Profile({server,gbooksapi}: ProfileProps) {
-  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,removeProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount} = useProfile({server});
+  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,removeProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount,removeCurrentlyReadingUploadedImage} = useProfile({server});
 
   
 
@@ -1216,6 +1252,21 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     // w="100%"
                                   />
                                 </Flex>
+                                <Flex
+                                  justify="flex-end"
+                                  mb={2}
+                                >
+                                  <Button
+                                    color="tomato"
+                                    size="xs"
+                                    variant="ghost"
+                                    onClick={e=>removeCurrentlyReadingUploadedImage(profileData.CurrentlyReading[0].id)}
+                                    fontWeight="bold"
+                                    title="remove image"
+                                  >
+                                    <BiTrash size={18} />
+                                  </Button>
+                                </Flex>
                                 <Divider mb={2} />
                               </>
                             ): null}
@@ -1597,6 +1648,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                         // w="100%"
                                       />
                                     </Flex>
+
                                     <Divider mb={2} />
                                   </>
                                 ): null}
@@ -1959,6 +2011,23 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                             // w="100%"
                                           />
                                         </Flex>
+                                        {viewer === "self" ? (
+                                          <Flex
+                                            justify="flex-end"
+                                            mb={2}
+                                          >
+                                            <Button
+                                              color="tomato"
+                                              size="xs"
+                                              variant="ghost"
+                                              onClick={e=>removeCurrentlyReadingUploadedImage(readBook.id)}
+                                              fontWeight="bold"
+                                              title="remove image"
+                                            >
+                                              <BiTrash size={18} />
+                                            </Button>
+                                          </Flex>
+                                        ): null}
                                         <Divider mb={2} />
                                       </>
                                     ): null}

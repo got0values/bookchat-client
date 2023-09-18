@@ -345,6 +345,42 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
     let newFile = new File([blob], previewImageFile.name, {type: "image/png"})
     setCurrentlyReadingImageFile(newFile)
   }
+
+  const removeCurrentlyReadingUploadedImageMutation = useMutation({
+    mutationFn: async (bookId: number)=>{
+      let tokenCookie: string | null = Cookies.get().token;
+      if (tokenCookie) {
+        await axios
+          .put(server + "/api/removecurrentlyreadinguploadedimage",
+            {
+              currentlyReadingId: bookId
+            },
+            {
+              headers: {
+                'authorization': tokenCookie
+              }
+            })
+            .then((response)=>{
+            })
+            .catch(({response})=>{
+              console.log(response)
+              throw new Error(response.message)
+            })
+      }
+      else {
+        throw new Error("Please login again")
+      }
+      return getDashboard();
+    },
+    onSuccess: (data,variables)=>{
+      queryClient.invalidateQueries({ queryKey: ["dashboardKey"] })
+      queryClient.resetQueries({queryKey: ["dashboardKey"]})
+      queryClient.setQueryData(["dashboardKey"],data)
+    }
+  })
+  function removeCurrentlyReadingUploadedImage(bookId: number) {
+    removeCurrentlyReadingUploadedImageMutation.mutate(bookId)
+  }
   
   const dashboard = useQuery({
     queryKey: ["dashboardKey"],
@@ -463,15 +499,16 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               ): null}
 
               {currentlyReadingPreviewImage ? (
-                <Image 
-                  src={currentlyReadingPreviewImage ? currentlyReadingPreviewImage : ""} 
-                  objectFit="cover"
-                  boxSize="100%" 
-                  ref={currentlyReadingImagePreviewRef}
-                  p={5}
-                  maxW="80%"
-                  alt="profile preview image"
-                />
+                <Flex 
+                  justify="center"
+                  maxH="400px"
+                >
+                  <Image 
+                    src={currentlyReadingPreviewImage ? currentlyReadingPreviewImage : ""} 
+                    ref={currentlyReadingImagePreviewRef}
+                    alt="profile preview image"
+                  />
+                </Flex>
               ) : (
                 null
               )}
@@ -792,15 +829,30 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             <>
               <Flex 
                 id="preview-div"
-                align="center"
                 justify="center"
-                mb={2}
+                maxH="400px"
               >
                 <Image
                   src={reading.uploaded_image}
-                  // w="100%"
                 />
               </Flex>
+              {reading.Profile.id === user?.Profile.id && (
+                <Flex
+                  justify="flex-end"
+                  mb={2}
+                >
+                  <Button
+                    color="tomato"
+                    size="xs"
+                    variant="ghost"
+                    onClick={e=>removeCurrentlyReadingUploadedImage(reading.id)}
+                    fontWeight="bold"
+                    title="remove image"
+                  >
+                    <BiTrash size={18} />
+                  </Button>
+                </Flex>
+              )}
               <Divider mb={2} />
             </>
           ): null}
