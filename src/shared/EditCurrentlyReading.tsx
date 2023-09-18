@@ -408,19 +408,21 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
                   align="center"
                   gap={2}
                 >
-                  {postCurrentlyReadingMutation.error && (
-                    <Text color="red">
-                      {(postCurrentlyReadingMutation.error as Error).message}
-                    </Text>
-                  )}
-                  <Button 
-                    backgroundColor="black"
-                    color="white"
-                    onClick={e=>postCurrentlyReading()}
-                    isLoading={postCurrentlyReadingMutation.isLoading}
-                  >
-                    Post
-                  </Button>
+                  <>
+                    {postCurrentlyReadingMutation.error && (
+                      <Text color="red">
+                        {(postCurrentlyReadingMutation.error as Error).message}
+                      </Text>
+                    )}
+                    <Button 
+                      backgroundColor="black"
+                      color="white"
+                      onClick={e=>postCurrentlyReading()}
+                      isLoading={postCurrentlyReadingMutation.isLoading}
+                    >
+                      Post
+                    </Button>
+                  </>
                 </Flex>
               </Flex>
             </Box>
