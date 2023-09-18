@@ -501,12 +501,12 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               {currentlyReadingPreviewImage ? (
                 <Flex 
                   justify="center"
-                  maxH="400px"
                 >
                   <Image 
                     src={currentlyReadingPreviewImage ? currentlyReadingPreviewImage : ""} 
                     ref={currentlyReadingImagePreviewRef}
                     alt="profile preview image"
+                    maxH="400px"
                   />
                 </Flex>
               ) : (
@@ -830,10 +830,11 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               <Flex 
                 id="preview-div"
                 justify="center"
-                maxH="400px"
+                mb={2}
               >
                 <Image
                   src={reading.uploaded_image}
+                  maxH="400px"
                 />
               </Flex>
               {reading.Profile.id === user?.Profile.id && (

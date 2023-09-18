@@ -403,14 +403,24 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
               </FormControl>
               </Stack>
               <Flex justify="flex-end">
-                <Button 
-                  backgroundColor="black"
-                  color="white"
-                  onClick={e=>postCurrentlyReading()}
-                  isLoading={postCurrentlyReadingMutation.isLoading}
+                <Flex
+                  align="center"
+                  gap={2}
                 >
-                  Post
-                </Button>
+                  {postCurrentlyReadingMutation.error && (
+                    <Text color="red">
+                      {(postCurrentlyReadingMutation.error as Error).message}
+                    </Text>
+                  )}
+                  <Button 
+                    backgroundColor="black"
+                    color="white"
+                    onClick={e=>postCurrentlyReading()}
+                    isLoading={postCurrentlyReadingMutation.isLoading}
+                  >
+                    Post
+                  </Button>
+                </Flex>
               </Flex>
             </Box>
           </Flex>

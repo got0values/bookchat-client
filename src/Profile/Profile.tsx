@@ -1249,6 +1249,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 >
                                   <Image
                                     src={profileData.CurrentlyReading[0].uploaded_image}
+                                    maxH="400px"
                                     // w="100%"
                                   />
                                 </Flex>
@@ -1645,6 +1646,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     >
                                       <Image
                                         src={profileData.CurrentlyReading[0].uploaded_image}
+                                        maxH="400px"
                                         // w="100%"
                                       />
                                     </Flex>
@@ -2008,6 +2010,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                         >
                                           <Image
                                             src={readBook.uploaded_image}
+                                            maxH="400px"
                                             // w="100%"
                                           />
                                         </Flex>
