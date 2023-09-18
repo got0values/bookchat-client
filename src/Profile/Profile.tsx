@@ -1203,7 +1203,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 <MdOutlineCancel size={25} />
                               </Button>
                             </Flex>
-                            {profileData.CurrentlyReading[0].quote_image ? (
+                            {profileData.CurrentlyReading[0].uploaded_image ? (
                               <>
                                 <Flex 
                                   id="preview-div"
@@ -1212,7 +1212,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   mb={2}
                                 >
                                   <Image
-                                    src={profileData.CurrentlyReading[0].quote_image}
+                                    src={profileData.CurrentlyReading[0].uploaded_image}
                                     // w="100%"
                                   />
                                 </Flex>
@@ -1584,7 +1584,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   </Box>
                                 </Flex>
                                 <Divider mt={1} mb={2} />
-                                {profileData.CurrentlyReading[0].quote_image ? (
+                                {profileData.CurrentlyReading[0].uploaded_image ? (
                                   <>
                                     <Flex 
                                       id="preview-div"
@@ -1593,7 +1593,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       mb={2}
                                     >
                                       <Image
-                                        src={profileData.CurrentlyReading[0].quote_image}
+                                        src={profileData.CurrentlyReading[0].uploaded_image}
                                         // w="100%"
                                       />
                                     </Flex>
@@ -1946,7 +1946,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                       </Flex>
                                     </Flex>
                                     <Divider my={2} />
-                                    {readBook.quote_image ? (
+                                    {readBook.uploaded_image ? (
                                       <>
                                         <Flex 
                                           id="preview-div"
@@ -1955,7 +1955,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                           mb={2}
                                         >
                                           <Image
-                                            src={readBook.quote_image}
+                                            src={readBook.uploaded_image}
                                             // w="100%"
                                           />
                                         </Flex>

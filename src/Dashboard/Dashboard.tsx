@@ -46,6 +46,7 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  Icon,
   useToast,
   useDisclosure
 } from "@chakra-ui/react";
@@ -62,6 +63,7 @@ import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
 import { BsReplyFill, BsStarFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { MdOutlineChat, MdEdit, MdOutlineCancel } from 'react-icons/md';
+import { FiFile } from 'react-icons/fi';
 import { FaStore } from 'react-icons/fa';
 import { ImBooks } from 'react-icons/im';
 import Comments from "../shared/CurrentlyReadingComments";
@@ -329,6 +331,20 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   function updatePagesRead(bookId: number) {
     updatePagesReadMutation.mutate(bookId)
   }
+
+  const currentlyReadingImageUploadRef = useRef<HTMLInputElement>({} as HTMLInputElement);
+  const currentlyReadingImagePreviewRef = useRef<HTMLImageElement>({} as HTMLImageElement);
+  const [currentlyReadingPreviewImage,setCurrentlyReadingPreviewImage] = useState("");
+  const [currentlyReadingImageFile,setCurrentlyReadingImageFile] = useState<Blob | string | ArrayBuffer | null>(null);
+  function currentlyReadingImageChange(e: HTMLInputElement | any) {
+    // currentlyReadingImagePreviewRef.current.style ? currentlyReadingImagePreviewRef.current.style.display = "block" : null;
+    let targetFiles = e.target.files as FileList
+    let previewImageFile = targetFiles[0];
+    setCurrentlyReadingPreviewImage(URL.createObjectURL(previewImageFile))
+    let blob = previewImageFile.slice(0,previewImageFile.size,"image/png")
+    let newFile = new File([blob], previewImageFile.name, {type: "image/png"})
+    setCurrentlyReadingImageFile(newFile)
+  }
   
   const dashboard = useQuery({
     queryKey: ["dashboardKey"],
@@ -385,30 +401,88 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             position="relative"
             id="edit-currently-reading-000"
           >
-            <Checkbox
-              isChecked={showQuoteDesigner}
-              onChange={e=>setShowQuoteDesigner(prev=>!prev)}
-              fontWeight="bold"
+            {!currentlyReadingPreviewImage ? (
+              <>
+                <Checkbox
+                  isChecked={showQuoteDesigner}
+                  onChange={e=>setShowQuoteDesigner(prev=>!prev)}
+                  fontWeight="bold"
+                >
+                  Add a quote
+                </Checkbox>
+
+                {showQuoteDesigner ? (
+                  <>
+                    <QuoteDesigner 
+                      sharedTitle={sharedTitle} 
+                      sharedAuthor={sharedAuthor}
+                      bookImage={bookImage}
+                    />
+                    <Divider mt={3} />
+                  </>
+                ): null}
+              </>
+            ): null}
+
+            <Box
+              mt={2}
             >
-              Add a quote
-            </Checkbox>
+              {!showQuoteDesigner ? (
+                <>
+                  {!currentlyReadingPreviewImage ? (
+                    <Button
+                      size="sm"
+                      backgroundColor="black"
+                      color="white"
+                      onClick={e=>currentlyReadingImageUploadRef.current.click()}
+                    >
+                      Add Image
+                      <Input
+                        type="file" 
+                        accept="image/png, image/jpeg"
+                        ref={currentlyReadingImageUploadRef}
+                        isRequired={true} 
+                        display="none"
+                        onChange={e=>currentlyReadingImageChange(e)}
+                      />
+                    </Button>
+                  ): (
+                    <Button
+                      size="sm"
+                      backgroundColor="tomato"
+                      color="white"
+                      onClick={e=>{
+                        setCurrentlyReadingPreviewImage("")
+                        setCurrentlyReadingImageFile(null)
+                      }}
+                    >
+                      Remove Image
+                    </Button>
+                  )}
+                </>
+              ): null}
+
+              {currentlyReadingPreviewImage ? (
+                <Image 
+                  src={currentlyReadingPreviewImage ? currentlyReadingPreviewImage : ""} 
+                  objectFit="cover"
+                  boxSize="100%" 
+                  ref={currentlyReadingImagePreviewRef}
+                  p={5}
+                  maxW="80%"
+                  alt="profile preview image"
+                />
+              ) : (
+                null
+              )}
+            </Box>
+
             <CloseButton
               position="absolute"
               top="0"
               right="0"
               onClick={e=>hideEditCurrentlyReading("000")}
             />
-
-            {showQuoteDesigner ? (
-              <>
-                <QuoteDesigner 
-                  sharedTitle={sharedTitle} 
-                  sharedAuthor={sharedAuthor}
-                  bookImage={bookImage}
-                />
-                <Divider mt={3} />
-              </>
-            ): null}
 
             <EditCurrentlyReading 
               server={server} 
@@ -418,6 +492,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               setSelectedBook={setSelectedBook} 
               showQuoteDesigner={showQuoteDesigner}
               getPageCallback={getDashboard} 
+              uploadedImageFile={currentlyReadingImageFile}
             />
 
           </Box>
@@ -713,7 +788,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             </HStack>
           </Flex>
           <Divider mb={2} />
-          {reading.quote_image ? (
+          {reading.uploaded_image ? (
             <>
               <Flex 
                 id="preview-div"
@@ -722,7 +797,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 mb={2}
               >
                 <Image
-                  src={reading.quote_image}
+                  src={reading.uploaded_image}
                   // w="100%"
                 />
               </Flex>

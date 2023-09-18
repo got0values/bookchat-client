@@ -280,7 +280,7 @@ export interface CurrentlyReading {
   page_count: number;
   published_date: string;
   created_on: Date;
-  quote_image: string;
+  uploaded_image: string;
   pages_read: number;
   subjects: string,
   Profile: ProfileType;
@@ -466,6 +466,7 @@ export interface EditCurrentlyReadingType {
   setSharedAuthor?: React.Dispatch<any> | null;
   showQuoteDesigner?: boolean;
   getPageCallback: ()=>Promise<any>;
+  uploadedImageFile?: Blob | string | ArrayBuffer | null;
 }
 
 export interface SuggestionPollBookType {

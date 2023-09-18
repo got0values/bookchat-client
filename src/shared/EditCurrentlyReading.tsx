@@ -28,7 +28,7 @@ import dayjs from "dayjs";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-export default function EditCurrentlyReading({server,selectedBook, setSelectedBook, getPageCallback, setSharedTitle, setSharedAuthor, showQuoteDesigner}: EditCurrentlyReadingType) {
+export default function EditCurrentlyReading({server,selectedBook, setSelectedBook, getPageCallback, setSharedTitle, setSharedAuthor, showQuoteDesigner, uploadedImageFile}: EditCurrentlyReadingType) {
   const queryClient = useQueryClient();
   const toast = useToast();
 
@@ -87,7 +87,8 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
           let newFile = new File([blob], "quoteImage", {type: "image/png"})
           bcnWatermark ? bcnWatermark.style.display = "none" : null;
           const formData = new FormData();
-          formData.append("quoteimage", newFile as Blob)
+          formData.append("uploadedimage", newFile as Blob)
+          formData.append("uploadedimagetype", "quoteimage")
           formData.append("id", id)
           formData.append("google_books_id",google_books_id)
           formData.append("image",image)
@@ -127,11 +128,51 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
         });
         return getPageCallback;
       }
+      else if (uploadedImageFile !== null) {
+        const formData = new FormData();
+        formData.append("uploadedimage", uploadedImageFile as Blob)
+        formData.append("uploadedimagetype", "uploadedimage")
+        formData.append("id", id)
+        formData.append("google_books_id",google_books_id)
+        formData.append("image",image)
+        formData.append("title",title)
+        formData.append("author",author)
+        formData.append("description",description)
+        formData.append("isbn",isbn)
+        formData.append("page_count",page_count)
+        formData.append("subjects",subjects)
+        formData.append("published_date",published_date)
+        formData.append("thoughts",thoughts)
+        formData.append("pages_read",pages_read)
+
+        await axios
+        .post(server + "/api/currentlyreading",
+          formData,
+          {
+            headers: {
+              'authorization': tokenCookie,
+              'content-type': 'multipart/form-data'
+            }
+          }
+        )
+        .then((response)=>{
+          setSelectedBook2(null);
+          if (setSelectedBook) {
+            setSelectedBook(null)
+          }
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.message)
+        })
+        return getPageCallback;
+      }
       else {
         await axios
         .post(server + "/api/currentlyreading",
           {
             id: id,
+            uploadedimagetype: "",
             google_books_id: google_books_id,
             image: image,
             title: title,
@@ -143,7 +184,8 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
             published_date: published_date,
             thoughts: thoughts,
             pages_read: pages_read,
-            quote_image: null
+            uploaded_image: null,
+            uploaded_image_file: uploadedImageFile
           },
           {
             headers: {
