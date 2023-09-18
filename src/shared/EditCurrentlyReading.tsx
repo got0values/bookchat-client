@@ -12,6 +12,7 @@ import {
   Tag,
   TagLabel,
   TagCloseButton,
+  Text,
   Stack,
   NumberInput,
   NumberInputField,
