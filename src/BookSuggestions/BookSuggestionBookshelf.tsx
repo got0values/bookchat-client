@@ -43,7 +43,6 @@ import GooglePreviewLink from "../shared/GooglePreviewLink";
 import BookImage from "../shared/BookImage";
 import BooksSearch from "../shared/BooksSearch";
 import RequestSuggestion from "../shared/RequestSuggestion";
-import CurrentWeekSuggestionCount from "./CurrentWeekSuggestionCount";
 import { CheckedAnimation } from "../shared/Animations";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import { BsArrowRight } from 'react-icons/bs';
@@ -823,8 +822,6 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                     </Flex>
                   </Box>
                 ): null}
-
-                <CurrentWeekSuggestionCount/>
 
               </Flex>
               <Divider borderColor="blackAlpha.700" mb={2} />
