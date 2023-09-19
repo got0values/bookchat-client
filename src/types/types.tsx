@@ -466,7 +466,6 @@ export interface EditCurrentlyReadingType {
   setSharedAuthor?: React.Dispatch<any> | null;
   showQuoteDesigner?: boolean;
   getPageCallback: ()=>Promise<any>;
-  uploadedImageFile?: Blob | string | ArrayBuffer | null;
 }
 
 export interface SuggestionPollBookType {

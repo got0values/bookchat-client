@@ -29,7 +29,7 @@ import dayjs from "dayjs";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-export default function EditCurrentlyReading({server,selectedBook, setSelectedBook, getPageCallback, setSharedTitle, setSharedAuthor, showQuoteDesigner, uploadedImageFile}: EditCurrentlyReadingType) {
+export default function EditCurrentlyReading({server,selectedBook, setSelectedBook, getPageCallback, setSharedTitle, setSharedAuthor, showQuoteDesigner}: EditCurrentlyReadingType) {
   const queryClient = useQueryClient();
   const toast = useToast();
 
@@ -78,6 +78,7 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
       let pages_read = pagesReadRef.current.value;
 
       const quoteBox = document.getElementById('quote-box');
+      const uploadImagePreview = document.getElementById('upload-image-preview');
 
       if (showQuoteDesigner && quoteBox) {
         const bcnWatermark = document.getElementById("bcn-watermark")
@@ -129,43 +130,51 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
         });
         return getPageCallback;
       }
-      else if (uploadedImageFile !== null) {
-        const formData = new FormData();
-        formData.append("uploadedimage", uploadedImageFile as Blob)
-        formData.append("uploadedimagetype", "uploadedimage")
-        formData.append("id", id)
-        formData.append("google_books_id",google_books_id)
-        formData.append("image",image)
-        formData.append("title",title)
-        formData.append("author",author)
-        formData.append("description",description)
-        formData.append("isbn",isbn)
-        formData.append("page_count",page_count)
-        formData.append("subjects",subjects)
-        formData.append("published_date",published_date)
-        formData.append("thoughts",thoughts)
-        formData.append("pages_read",pages_read)
+      else if (uploadImagePreview) {
+        await htmlToImage.toPng(uploadImagePreview!)
+          .then(async function(uploadedImageBase) {
+            let blob = await b64toBlob(uploadedImageBase,'image/png',1024)
+            let newFile = new File([blob], "uploadedimage", {type: "image/png"})
+            const formData = new FormData();
+            formData.append("uploadedimage", newFile as Blob)
+            formData.append("uploadedimagetype", "uploadedimage")
+            formData.append("id", id)
+            formData.append("google_books_id",google_books_id)
+            formData.append("image",image)
+            formData.append("title",title)
+            formData.append("author",author)
+            formData.append("description",description)
+            formData.append("isbn",isbn)
+            formData.append("page_count",page_count)
+            formData.append("subjects",subjects)
+            formData.append("published_date",published_date)
+            formData.append("thoughts",thoughts)
+            formData.append("pages_read",pages_read)
 
-        await axios
-        .post(server + "/api/currentlyreading",
-          formData,
-          {
-            headers: {
-              'authorization': tokenCookie,
-              'content-type': 'multipart/form-data'
-            }
-          }
-        )
-        .then((response)=>{
-          setSelectedBook2(null);
-          if (setSelectedBook) {
-            setSelectedBook(null)
-          }
-        })
-        .catch(({response})=>{
-          console.log(response)
-          throw new Error(response.message)
-        })
+            await axios
+            .post(server + "/api/currentlyreading",
+              formData,
+              {
+                headers: {
+                  'authorization': tokenCookie,
+                  'content-type': 'multipart/form-data'
+                }
+              }
+            )
+            .then((response)=>{
+              setSelectedBook2(null);
+              if (setSelectedBook) {
+                setSelectedBook(null)
+              }
+            })
+            .catch(({response})=>{
+              console.log(response)
+              throw new Error(response.message)
+            })
+          })
+          .catch(function (error) {
+            console.error('oops, something went wrong!', error);
+          });
         return getPageCallback;
       }
       else {
@@ -185,8 +194,7 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
             published_date: published_date,
             thoughts: thoughts,
             pages_read: pages_read,
-            uploaded_image: null,
-            uploaded_image_file: uploadedImageFile
+            uploaded_image: null
           },
           {
             headers: {

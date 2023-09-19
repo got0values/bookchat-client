@@ -9,7 +9,7 @@ import {
   Spinner,
   CloseButton,
   Text,
-  Image,
+  Image as ChakraImage,
   Avatar,
   Button,
   Menu,
@@ -59,6 +59,8 @@ import EditCurrentlyReading from "../shared/EditCurrentlyReading";
 import { QuoteDesigner } from "../shared/QuoteDesigner";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import RequestSuggestion from "../shared/RequestSuggestion";
+import * as htmlToImage from 'html-to-image';
+import { b64toBlob } from "../shared/b64toBlob";
 import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
 import { BsReplyFill, BsStarFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
@@ -336,10 +338,11 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   const currentlyReadingImagePreviewRef = useRef<HTMLImageElement>({} as HTMLImageElement);
   const [currentlyReadingPreviewImage,setCurrentlyReadingPreviewImage] = useState("");
   const [currentlyReadingImageFile,setCurrentlyReadingImageFile] = useState<Blob | string | ArrayBuffer | null>(null);
-  function currentlyReadingImageChange(e: HTMLInputElement | any) {
+  async function currentlyReadingImageChange(e: HTMLInputElement | any) {
     // currentlyReadingImagePreviewRef.current.style ? currentlyReadingImagePreviewRef.current.style.display = "block" : null;
     let targetFiles = e.target.files as FileList
     let previewImageFile = targetFiles[0];
+
     setCurrentlyReadingPreviewImage(URL.createObjectURL(previewImageFile))
     let blob = previewImageFile.slice(0,previewImageFile.size,"image/png")
     let newFile = new File([blob], previewImageFile.name, {type: "image/png"})
@@ -502,9 +505,10 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 <Flex 
                   justify="center"
                 >
-                  <Image 
+                  <ChakraImage 
                     src={currentlyReadingPreviewImage ? currentlyReadingPreviewImage : ""} 
                     ref={currentlyReadingImagePreviewRef}
+                    id="upload-image-preview"
                     alt="profile preview image"
                     maxH="400px"
                   />
@@ -529,7 +533,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               setSelectedBook={setSelectedBook} 
               showQuoteDesigner={showQuoteDesigner}
               getPageCallback={getDashboard} 
-              uploadedImageFile={currentlyReadingImageFile}
             />
 
           </Box>
@@ -832,7 +835,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 justify="center"
                 mb={2}
               >
-                <Image
+                <ChakraImage
                   src={reading.uploaded_image}
                   maxH="400px"
                 />
@@ -933,7 +936,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               {reading.image === "https://via.placeholder.com/165x215" ? (
                 <BookImage isbn={reading.isbn} id={`book-image-${Math.random()}`} maxHeight="150px"/>
               ): (
-                <Image 
+                <ChakraImage 
                   src={reading.image ? reading.image : "https://via.placeholder.com/165x215"}
                   onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                   maxH="150px"
