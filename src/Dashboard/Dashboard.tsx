@@ -59,13 +59,11 @@ import EditCurrentlyReading from "../shared/EditCurrentlyReading";
 import { QuoteDesigner } from "../shared/QuoteDesigner";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import RequestSuggestion from "../shared/RequestSuggestion";
-import * as htmlToImage from 'html-to-image';
-import { b64toBlob } from "../shared/b64toBlob";
+import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
 import { BsReplyFill, BsStarFill } from 'react-icons/bs';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { MdOutlineChat, MdEdit, MdOutlineCancel } from 'react-icons/md';
-import { FiFile } from 'react-icons/fi';
 import { FaStore } from 'react-icons/fa';
 import { ImBooks } from 'react-icons/im';
 import Comments from "../shared/CurrentlyReadingComments";
@@ -667,6 +665,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
     let ratings = reading.Profile.BookSuggestion_BookSuggestion_suggestorToProfile?.map(r=>r.rating);
     let ratingAverage = ratings.length ? ratings.reduce((a,b)=>a+b) as any/ratings.length : null;
 
+    const Flag = reading.Profile.country ? (countryFlagIconsReact as any)[reading.Profile.country] : null;
+
     return (
       reading.hidden ? (
         null
@@ -722,10 +722,21 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     >
                       {reading.Profile.username}
                     </Text>
+                    {Flag ? (
+                      <Box w="1rem">
+                        <Flag title={reading.Profile.country + " flag"}/>
+                      </Box>
+                    ): null}
                     {ratingAverage ? (
                       <Popover size="sm">
                         <PopoverTrigger>
-                          <Flex align="center" gap={0}>
+                          <Flex 
+                            align="center" 
+                            gap={0}
+                            _hover={{
+                              cursor: 'pointer'
+                            }}
+                          >
                             <Box 
                               as={BsStarFill} 
                               fill="gold" 

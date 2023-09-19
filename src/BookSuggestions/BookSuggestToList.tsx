@@ -27,7 +27,6 @@ import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import { ImInfo } from 'react-icons/im';
 import { FaPlay, FaArrowCircleRight } from 'react-icons/fa'
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
-import { useAuth } from "../hooks/useAuth";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
@@ -37,12 +36,10 @@ import axios from "axios";
 export function BookSuggestionToList({server}: {server: string;}) {
   dayjs.extend(utc);
   const queryClient = useQueryClient();
-  const { user, getUser } = useAuth();
 
   const take = useRef(20);
   const endLoadMore = useRef(false);
   async function getBookSuggestToList() {
-    getUser()
     let tokenCookie: string | null = Cookies.get().token;
     const bookSuggestToList = axios
       .get(`${server}/api/getbooksuggesttolist`,
@@ -95,12 +92,12 @@ export function BookSuggestionToList({server}: {server: string;}) {
 
   let bookSuggestToList: any = data ? data : null;
 
-  // bookSuggestToList = bookSuggestToList?.map((bookshelf: BookshelfType)=>{
-  //   return {
-  //     ...bookshelf,
-  //     Flag: bookshelf.Profile.country ? (countryFlagIconsReact as any)[bookshelf.Profile.country] : <Box></Box>
-  //   }
-  // })
+  bookSuggestToList = bookSuggestToList?.map((bookshelf: BookshelfType)=>{
+    return {
+      ...bookshelf,
+      Flag: bookshelf.Profile.country ? (countryFlagIconsReact as any)[bookshelf.Profile.country] : null
+    }
+  })
 
   if (isLoading) {
     return (
@@ -134,7 +131,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
               lineHeight={1}
             >
               <Box as={ImInfo} size={15} minWidth="15px" /> 
-              {user?.first_name}, these are bookshelves of people who can use your help discovering more books to read.
+              These users need your help discovering more books to read.
             </AlertDescription>
           </Box>
           <CloseButton
@@ -180,9 +177,11 @@ export function BookSuggestionToList({server}: {server: string;}) {
                         >
                           @{bookshelf.Profile.username}
                         </Text>
-                        {/* <Box w="1.4rem">
-                          {bookshelf.Flag ? <bookshelf.Flag/> : null}
-                        </Box> */}
+                        {bookshelf.Flag ? (
+                          <Box w="1rem">
+                             <bookshelf.Flag title={bookshelf.Profile.country} />
+                          </Box>
+                        ): null}
                         <SuggestionCountBadge suggestionCount={bookshelf.Profile._count.BookSuggestion_BookSuggestion_suggestorToProfile}/>
                       </Flex>
                     </Flex>

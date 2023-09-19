@@ -25,6 +25,7 @@ import {
   Spinner
 } from "@chakra-ui/react";
 import { ImInfo } from 'react-icons/im';
+import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -215,6 +216,7 @@ export default function Leaderboard({server}: {server: string}) {
                 <Tbody>
                   {allPointsLeaderboard && allPointsLeaderboard.length ? (
                     allPointsLeaderboard.map((ap,i)=>{
+                      const Flag = ap.country ? (countryFlagIconsReact as any)[ap.country] : null;
                       return (
                         <Tr key={i}>
                           <Td>
@@ -237,6 +239,11 @@ export default function Leaderboard({server}: {server: string}) {
                               <Text>
                                 @{ap.username}
                               </Text>
+                              {Flag ? (
+                                <Box w="1rem">
+                                  <Flag title={ap.country + " flag"} />
+                                </Box>
+                              ): null}
                             </Flex>
                           </Td>
                           <Td>{ap.totalScore}</Td>
@@ -315,6 +322,7 @@ export default function Leaderboard({server}: {server: string}) {
                 <Tbody>
                   {followingPointsLeaderboard && followingPointsLeaderboard.length ? (
                     followingPointsLeaderboard.map((fp,i)=>{
+                      const Flag = fp.country ? (countryFlagIconsReact as any)[fp.country] : null;
                       return (
                         <Tr key={i}>
                           <Td>
@@ -337,6 +345,11 @@ export default function Leaderboard({server}: {server: string}) {
                               <Text>
                                 @{fp.username}
                               </Text>
+                              {Flag ? (
+                                <Box w="1rem">
+                                  <Flag title={fp.country + " flag"} />
+                                </Box>
+                              ): null}
                             </Flex>
                           </Td>
                           <Td>{fp.totalScore}</Td>
@@ -361,6 +374,7 @@ export default function Leaderboard({server}: {server: string}) {
                 <Tbody>
                   {followingPagesReadLeaderboard && followingPagesReadLeaderboard.length ? (
                     followingPagesReadLeaderboard.map((fpr,i)=>{
+                      const Flag = fpr.country ? (countryFlagIconsReact as any)[fpr.country] : null;
                       return (
                         <Tr key={i}>
                           <Td>
@@ -383,6 +397,11 @@ export default function Leaderboard({server}: {server: string}) {
                               <Text>
                                 @{fpr.Profile.username}
                               </Text>
+                              {Flag ? (
+                                <Box w="1rem">
+                                  <Flag title={fpr.country + " flag"} />
+                                </Box>
+                              ): null}
                             </Flex>
                           </Td>
                           <Td>{fpr.read}</Td>
