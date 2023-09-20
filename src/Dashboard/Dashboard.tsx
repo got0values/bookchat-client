@@ -109,10 +109,11 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   const [followingSorted,setFollowingSorted] = useState([] as any)
   const [randomSorted,setRandomSorted] = useState([] as any)
   const [endLoadMore,setEndLoadMore] = useState(false);
+  const [skipRandom,setSkipRandom] = useState(Math.floor(Math.random() * 5))
   async function getDashboard() {
     const tokenCookie = Cookies.get().token
     const dash = await axios
-      .get(server + "/api/dashboard?items=" + items.current,
+      .get(`${server}/api/dashboard?items=${items.current}&skip=${skipRandom}`,
       {
         headers: {
           Authorization: tokenCookie
@@ -1306,7 +1307,19 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                             Load more...
                           </Button>
                         </>
-                      ): null}
+                      ): (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            colorScheme="blue"
+                            w="auto"
+                            onClick={e=>window.location.reload()}
+                          >
+                            Refresh
+                          </Button>
+                        </>
+                      )}
                       {isFetching && (
                         <Flex justify="center">
                           <Spinner size="xl"/>
