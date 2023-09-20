@@ -1078,8 +1078,8 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                     </Box>
                     <Text color="red" pt={2}>{profileActionError}</Text>
                   </Center>
-    
-                  {profileData.BookClubs.length && (viewer === "following" || viewer === "self") ? (
+
+                  {viewer === "following" || viewer === "self" ? (
                     <>
                       {profileData.CurrentlyReading.filter((cR)=>cR.uploaded_image !== null).length ? (
                         <Box className="well">
@@ -1116,24 +1116,26 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                           </Flex>
                         </Box>
                       ): null}
-
-                      <Box className="well">
-                        <Heading as="h2" size="md" mb={1}>Book Clubs</Heading>
-                        <UnorderedList my={1}>
-                          {profileData.BookClubs.map((bookClub,i)=>{
-                            return (
-                              <ListItem key={i}>
-                                <Link
-                                  to={`/bookclubs/${bookClub.id}`}
-                                >
-                                  {bookClub.name}
-                                </Link>
-                              </ListItem>
-                            )
-                          })}
-                        </UnorderedList>
-                      </Box>
                     </>
+                  ): null}
+    
+                  {profileData.BookClubs.length && (viewer === "following" || viewer === "self") ? (
+                    <Box className="well">
+                      <Heading as="h2" size="md" mb={1}>Book Clubs</Heading>
+                      <UnorderedList my={1}>
+                        {profileData.BookClubs.map((bookClub,i)=>{
+                          return (
+                            <ListItem key={i}>
+                              <Link
+                                to={`/bookclubs/${bookClub.id}`}
+                              >
+                                {bookClub.name}
+                              </Link>
+                            </ListItem>
+                          )
+                        })}
+                      </UnorderedList>
+                    </Box>
                   ): null}
                 </Stack>
     
