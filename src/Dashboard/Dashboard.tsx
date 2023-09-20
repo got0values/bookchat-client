@@ -106,6 +106,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
 
   // const [items,setItems] = useState(10);
   const items = useRef(10);
+  const [adminCurrentlyReading,setAdminCurrentlyReading] = useState([] as any);
   const [followingSorted,setFollowingSorted] = useState([] as any)
   const [randomSorted,setRandomSorted] = useState([] as any)
   const [endLoadMore,setEndLoadMore] = useState(false);
@@ -122,6 +123,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
       )
       .then((response)=>{
         getUser();
+        setAdminCurrentlyReading(response.data.message.adminCurrentlyReading)
         setFollowingSorted(response.data.message.followingCurrentlyReadingSorted)
         setRandomSorted(response.data.message.randomCurrentlyReadingSorted)
         if (response.data.message.randomCurrentlyReadingSorted.length < items.current) {
@@ -1284,6 +1286,18 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   direction="column"
                   gap={1}
                 >
+                  {adminCurrentlyReading.length && adminCurrentlyReading[0].hidden !== 1 ? (
+                    <>
+                      {adminCurrentlyReading.map((reading: CurrentlyReading,i:number)=>{
+                        return (
+                          <React.Fragment key={`admin-feed-${reading.id}`}>
+                            <CurrentlyReadingFeed reading={reading}/>
+                          </React.Fragment>
+                        )
+                      })}
+                    </>
+                  ): null}
+                  
                   {randomSorted?.length ? (
                     <>
                       {randomSorted.length && (
