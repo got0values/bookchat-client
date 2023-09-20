@@ -532,6 +532,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               setSelectedBook={setSelectedBook} 
               showQuoteDesigner={showQuoteDesigner}
               getPageCallback={getDashboard} 
+              setSkipRandom={setSkipRandom}
             />
 
           </Box>

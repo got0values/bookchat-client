@@ -29,7 +29,7 @@ import dayjs from "dayjs";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-export default function EditCurrentlyReading({server,selectedBook, setSelectedBook, getPageCallback, setSharedTitle, setSharedAuthor, showQuoteDesigner}: EditCurrentlyReadingType) {
+export default function EditCurrentlyReading({server,selectedBook, setSelectedBook, getPageCallback, setSharedTitle, setSharedAuthor, showQuoteDesigner, setSkipRandom}: EditCurrentlyReadingType) {
   const queryClient = useQueryClient();
   const toast = useToast();
 
@@ -60,6 +60,10 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
           isClosable: true
         })
         throw new Error("Please enter a title");
+      }
+
+      if (setSkipRandom) {
+        setSkipRandom((prev: any)=>0)
       }
 
       let tokenCookie: string | null = Cookies.get().token;
