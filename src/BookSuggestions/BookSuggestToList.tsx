@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { BookshelfType, User } from "../types/types";
@@ -39,6 +39,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
 
   const take = useRef(20);
   const endLoadMore = useRef(false);
+  const [firstBookshelf,setFirstBookshelf] = useState<BookshelfType | null>(null);
   async function getBookSuggestToList() {
     let tokenCookie: string | null = Cookies.get().token;
     const bookSuggestToList = axios
@@ -54,6 +55,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
       )
       .then((response)=>{
         const {data} = response;
+        setFirstBookshelf(data.message.firstBookshelf)
         endLoadMore.current = data.message.endLoadMore
         return data.message.bookshelfList;
       })
@@ -114,7 +116,20 @@ export function BookSuggestionToList({server}: {server: string;}) {
 
   return (
     <>
-      {alertIsVisible ? (
+      {firstBookshelf ? (
+        <Flex justify="center">
+          <Button
+            as={Link}
+            to={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
+            size="lg"
+            colorScheme="teal"
+            borderRadius="50px"
+          >
+            <Box as={FaPlay} me={2} /> Start
+          </Button>
+        </Flex>
+      ): null}
+      {/* {alertIsVisible ? (
         <Alert 
           status='success'
           rounded="md"
@@ -272,7 +287,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
             Please check back tomorrow!
           </Text>
         </Box>
-      )}
+      )} */}
     </>
   )
 }
