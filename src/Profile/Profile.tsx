@@ -135,6 +135,7 @@ export const useProfile = ({server}: {server: string}) => {
             }
             setCurrentlyReadingLength(responseProfileData.CurrentlyReading ? responseProfileData.CurrentlyReading : 0);
             setAdvisorCount(response.data.advisorCount)
+            console.log(responseProfileData)
             return responseProfileData;
           }
       })
@@ -402,6 +403,23 @@ export const useProfile = ({server}: {server: string}) => {
     onCloseFollowingModal()
   }
 
+  //Image modal
+  const { 
+    isOpen: isOpenImageModal, 
+    onOpen: onOpenImageModal, 
+    onClose: onCloseImageModal 
+  } = useDisclosure()
+  const [imageModalImage,setImageModalImage] = useState<string | null>(null)
+  function openImageModal(img: string) {
+    setImageModalImage(img)
+    onOpenImageModal()
+  }
+  function closeImageModal(){
+    setImageModalImage(null)
+    onCloseImageModal()
+  }
+
+  //Reading modal
   const { 
     isOpen: isOpenReadingModal, 
     onOpen: onOpenReadingModal, 
@@ -788,12 +806,12 @@ export const useProfile = ({server}: {server: string}) => {
       })
   }
 
-  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,removeProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount,removeCurrentlyReadingUploadedImage};
+  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,removeProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount,removeCurrentlyReadingUploadedImage,isOpenImageModal,openImageModal,closeImageModal,imageModalImage};
 }
 
 
 export default function Profile({server,gbooksapi}: ProfileProps) {
-  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,removeProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount,removeCurrentlyReadingUploadedImage} = useProfile({server});
+  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,removeProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount,removeCurrentlyReadingUploadedImage,isOpenImageModal,openImageModal,closeImageModal,imageModalImage} = useProfile({server});
 
   
 
@@ -1062,22 +1080,60 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                   </Center>
     
                   {profileData.BookClubs.length && (viewer === "following" || viewer === "self") ? (
-                    <Box className="well">
-                      <Heading as="h2" size="md">{profileData?.User.first_name}'s Book Clubs</Heading>
-                      <UnorderedList my={1}>
-                        {profileData.BookClubs.map((bookClub,i)=>{
-                          return (
-                            <ListItem key={i}>
-                              <Link
-                                to={`/bookclubs/${bookClub.id}`}
-                              >
-                                {bookClub.name}
-                              </Link>
-                            </ListItem>
-                          )
-                        })}
-                      </UnorderedList>
-                    </Box>
+                    <>
+                      {profileData.CurrentlyReading.filter((cR)=>cR.uploaded_image !== null).length ? (
+                        <Box className="well">
+                          <Heading as="h2" size="md" mb={1}>Images</Heading>
+                          <Flex
+                            align="center"
+                            wrap="wrap"
+                            gap={1}
+                          >
+                            {profileData.CurrentlyReading.map((cR,i)=>{
+                              return (
+                                <React.Fragment key={i}>
+                                  {cR.uploaded_image !== null ? (
+                                    <Box 
+                                      key={i}
+                                      onClick={e=>openImageModal(cR.uploaded_image)}
+                                      _hover={{
+                                        cursor: "pointer"
+                                      }}
+                                      aria-label="open uploaded image"
+                                    >
+                                      <Image
+                                        src={cR.uploaded_image}
+                                        h="90px"
+                                        w="80px"
+                                        objectFit="cover"
+                                        alt="uploaded image"
+                                      />
+                                    </Box>
+                                  ): null}
+                                </React.Fragment>
+                              )
+                            })}
+                          </Flex>
+                        </Box>
+                      ): null}
+
+                      <Box className="well">
+                        <Heading as="h2" size="md" mb={1}>Book Clubs</Heading>
+                        <UnorderedList my={1}>
+                          {profileData.BookClubs.map((bookClub,i)=>{
+                            return (
+                              <ListItem key={i}>
+                                <Link
+                                  to={`/bookclubs/${bookClub.id}`}
+                                >
+                                  {bookClub.name}
+                                </Link>
+                              </ListItem>
+                            )
+                          })}
+                        </UnorderedList>
+                      </Box>
+                    </>
                   ): null}
                 </Stack>
     
@@ -2729,6 +2785,30 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                             </Flex>
                           )
                         })
+                      ): null}
+                    </ModalBody>
+                    <ModalFooter flexDirection="column">
+                    </ModalFooter>
+                </ModalContent>
+              </Modal>
+
+              <Modal 
+                isOpen={isOpenImageModal} 
+                onClose={closeImageModal}
+                isCentered
+              >
+                <ModalOverlay />
+                <ModalContent maxH="80vh" rounded="sm" boxShadow="1px 1px 2px 1px black">
+                  <ModalHeader>
+                    Image
+                  </ModalHeader>
+                  <ModalCloseButton />
+                    <ModalBody h="auto" maxH="75vh" overflow="auto">
+                      {imageModalImage ? (
+                        <Image
+                          src={imageModalImage}
+                          alt="uploaded image"
+                        />
                       ): null}
                     </ModalBody>
                     <ModalFooter flexDirection="column">
