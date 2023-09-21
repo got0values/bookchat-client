@@ -113,7 +113,8 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
       suggestionRequests: [],
       comments: [],
       replies: [],
-      likes: []
+      likes: [],
+      commentOnOtherUsersPostYouCommentedOn: []
     }
     let totalNotifications = 0;
     try {
@@ -135,6 +136,16 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
           })
           let commentData = otherNotifications?.filter((on: OtherNotificationsType)=>on.type === 1);
           commentData = commentData.map((comment: any)=>{
+            return (
+              {
+                ...comment,
+                from_data: JSON.parse(comment.from_data),
+                subject: JSON.parse(comment.subject)
+              }
+            )
+          })
+          let commentOnOtherUsersPostYouCommentedOnData = otherNotifications?.filter((on: OtherNotificationsType)=>on.type === 5);
+          commentOnOtherUsersPostYouCommentedOnData = commentOnOtherUsersPostYouCommentedOnData.map((comment: any)=>{
             return (
               {
                 ...comment,
@@ -176,6 +187,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
           userNotifications = {
             ...userNotifications, 
             comments: [...userNotifications.comments as any[], ...commentData],
+            commentOnOtherUsersPostYouCommentedOn: [...userNotifications.commentOnOtherUsersPostYouCommentedOn as any[], ...commentOnOtherUsersPostYouCommentedOnData],
             replies: [...userNotifications.replies as any[], ...replyData],
             likes: [...userNotifications.likes as any[], ...likeData],
             suggestionRequests: [...userNotifications.suggestionRequests as any[], ...suggestionRequestData]
@@ -204,7 +216,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
             }
           }
         }
-        totalNotifications = userNotifications.followRequests.length + userNotifications.bookClubRequests.length + userNotifications.comments.length + userNotifications.replies.length + userNotifications.likes.length + userNotifications.suggestionRequests.length;
+        totalNotifications = userNotifications.followRequests.length + userNotifications.bookClubRequests.length + userNotifications.comments.length + userNotifications.commentOnOtherUsersPostYouCommentedOn.length + userNotifications.replies.length + userNotifications.likes.length + userNotifications.suggestionRequests.length;
         return {
           userNotifications,
           totalNotifications
@@ -995,6 +1007,56 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                             >
                               post
                             </Text>
+                        </Text>
+                      </Flex>
+                      <Flex m={1} gap={1} justify="flex-end">
+                        <Button 
+                          size="sm"
+                          onClick={e=>readNotification(comment.id)}
+                          isLoading={readNotificationMutation.isLoading}
+                        >
+                          OK
+                        </Button>
+                      </Flex>
+                    </Flex>
+                  )
+                })}
+
+                {userNotifications?.commentOnOtherUsersPostYouCommentedOn?.map((comment,i)=>{
+                  return (
+                    <Flex 
+                      align="center" 
+                      gap={1} 
+                      justify="space-between" 
+                      flexWrap="wrap"
+                      width="100%"
+                      key={i}
+                    >
+                      <Flex align="center" gap={1}>
+                        <Avatar src={comment.from_data?.profile_photo} size="sm" name={comment.from_data?.username}/>
+                        <Text>
+                          <Text
+                            as={Link} 
+                            to={`/profile/${comment.from_data?.username}`}
+                            onClick={onCloseNotificationsModal}
+                          >
+                            <Text 
+                              as="span"
+                              fontWeight="bold"
+                            >
+                            @{comment.from_data?.username}
+                            </Text> 
+                          </Text>
+                            {" "} commented on a {" "}
+                            <Text 
+                              as={Link} 
+                              to={comment.subject?.uri}
+                              onClick={onCloseNotificationsModal}
+                              fontWeight="bold"
+                            >
+                              post thread
+                            </Text>
+                            {" "} you're a part of
                         </Text>
                       </Flex>
                       <Flex m={1} gap={1} justify="flex-end">

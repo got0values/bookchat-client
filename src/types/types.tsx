@@ -315,7 +315,8 @@ export enum Notifications {
   Comment = 1,
   GeneralReply = 2,
   Like = 3,
-  RequestSuggestion = 4
+  RequestSuggestion = 4,
+  CommentOnOtherUsersPostYouCommentedOn = 5
 }
 
 export interface UserNotificationsType {
@@ -325,6 +326,7 @@ export interface UserNotificationsType {
   replies: OtherNotificationsType[];
   likes: OtherNotificationsType[];
   suggestionRequests: OtherNotificationsType[];
+  commentOnOtherUsersPostYouCommentedOn: OtherNotificationsType[];
 }
 
 export interface OtherNotificationsType {
