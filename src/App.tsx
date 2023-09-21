@@ -103,7 +103,7 @@ function App() {
         >
           <Route
             index
-            element={<Chat gbooksapi={GBOOKSAPI}/>}
+            element={<Chat gbooksapi={GBOOKSAPI} server={server} />}
           />
           <Route
             path="room"

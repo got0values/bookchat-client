@@ -14,25 +14,54 @@ import {
   Tr,
   Td,
   TableContainer,
-  Image,
   Tabs, 
   TabList, 
   TabPanels, 
   Tab, 
   TabPanel,
-  useColorMode
+  Spinner
 } from "@chakra-ui/react";
 import { BsArrowRight } from 'react-icons/bs';
+import { GoDotFill } from 'react-icons/go';
+import { MdRefresh } from 'react-icons/md';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import {socket} from "./customSocket";
+import Cookies from "js-cookie";
 import axios from "axios";
 
 
-export default function Chat({gbooksapi}: {gbooksapi: string}) {
+export default function Chat({gbooksapi, server}: {gbooksapi: string, server: string}) {
   dayjs.extend(utc);
-  const navigate = useNavigate();
-  const {colorMode} = useColorMode();
+
+  const [usersOnline,setUsersOnline] = useState(0);
+  const [getUsersLoading,setGetUsersLoading] = useState(false);
+  async function getUsersOnline() {
+    const tokenCookie = Cookies.get().token
+    setGetUsersLoading(true)
+    await axios
+      .get(`${server}/api/getusersonline`,
+        {
+          headers: {
+            Authorization: tokenCookie
+          }
+        }
+        )
+        .then((response)=>{
+          setTimeout(()=>{
+            setGetUsersLoading(false)
+            setUsersOnline(response.data.message)
+          },5000)
+        })
+        .catch(({response})=>{
+          setGetUsersLoading(false)
+          console.log(response)
+          throw new Error(response.message)
+        })
+  }
+  useEffect(()=>{
+    getUsersOnline();
+  },[])
 
   function disconnectSocket() {
     socket.disconnect();
@@ -97,6 +126,21 @@ export default function Chat({gbooksapi}: {gbooksapi: string}) {
       <Box className="main-content-smaller">
         <Heading as="h1" className="visually-hidden">Chat Rooms</Heading>
         <Skeleton isLoaded={true}>
+          <Flex align="center" gap={1}>
+            <GoDotFill fill={getUsersLoading ?  "red" : "green"}/> 
+            <Flex align="center" fontSize="sm" gap={1}>
+              {getUsersLoading ? <Spinner size="xs" />  : usersOnline} people online now 
+            </Flex>
+            <Button 
+              size="xs" 
+              fontSize="md"
+              p={0} 
+              variant="ghost"
+              onClick={e=>getUsersOnline()}
+            >
+              <MdRefresh/>
+            </Button>
+          </Flex>
           <Tabs 
             variant="enclosed"
             p={2}
