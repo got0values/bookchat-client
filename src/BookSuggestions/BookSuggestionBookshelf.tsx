@@ -43,6 +43,7 @@ import GooglePreviewLink from "../shared/GooglePreviewLink";
 import BookImage from "../shared/BookImage";
 import BooksSearch from "../shared/BooksSearch";
 import RequestSuggestion from "../shared/RequestSuggestion";
+import CurrentWeekSuggestionCount from "./CurrentWeekSuggestionCount";
 import { CheckedAnimation } from "../shared/Animations";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import { BsArrowRight } from 'react-icons/bs';
@@ -689,41 +690,44 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                     This is your bookshelf.
                   </Text>
                 ): (
-                  <Input
-                    type="search"
-                    bg="white"
-                    borderWidth={3}
-                    borderColor="teal"
-                    size="lg"
-                    placeholder="Suggest a book"
-                    mb={2}
-                    width="100%"
-                    _dark={{
-                      bg: "gray.800"
-                    }}
-                    sx={{
-                      cursor: 'none',
-                      '&:hover': {
-                        cursor: 'pointer'
-                      },
-                      animationIterationCount: "15",
-                      '@keyframes borderFade': {
-                        '0%': {
-                          borderColor: "teal"
+                  <>
+                    <CurrentWeekSuggestionCount/>
+                    <Input
+                      type="search"
+                      bg="white"
+                      borderWidth={3}
+                      borderColor="teal"
+                      size="lg"
+                      placeholder="Suggest a book"
+                      mb={2}
+                      width="100%"
+                      _dark={{
+                        bg: "gray.800"
+                      }}
+                      sx={{
+                        cursor: 'none',
+                        '&:hover': {
+                          cursor: 'pointer'
                         },
-                        '50%': {
-                          borderColor: "gray.400"
+                        animationIterationCount: "infinite",
+                        '@keyframes borderFade': {
+                          '0%': {
+                            borderColor: "teal"
+                          },
+                          '50%': {
+                            borderColor: "gray.400"
+                          },
+                          '100%': {
+                            borderColor: "teal"
+                          }
                         },
-                        '100%': {
-                          borderColor: "teal"
-                        }
-                      },
-                      animationName: "borderFade",
-                      animationDuration: "1s"
-                    }}
-                    readOnly={true}
-                    onClick={e=>onOpenSearchModal()}
-                  />
+                        animationName: "borderFade",
+                        animationDuration: "1s"
+                      }}
+                      readOnly={true}
+                      onClick={e=>onOpenSearchModal()}
+                    />
+                  </>
                 )}
 
                 {selectedBook ? (

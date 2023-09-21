@@ -5,25 +5,26 @@ import { BookshelfType, User } from "../types/types";
 import { 
   Box,
   Heading,
-  Text,
-  Avatar,
   Button,
   Flex,
-  Popover,
-  PopoverTrigger,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverBody,
-  PopoverArrow,
-  Divider,
   Spinner,
-  Alert,
-  AlertDescription,
-  CloseButton,
-  Progress,
-  useDisclosure
+  useDisclosure,
+  // Text,
+  // Avatar,
+  // Popover,
+  // PopoverTrigger,
+  // PopoverCloseButton,
+  // PopoverContent,
+  // PopoverBody,
+  // PopoverArrow,
+  // Divider,
+  // Alert,
+  // AlertDescription,
+  // CloseButton,
+  // Progress,
 } from "@chakra-ui/react";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
+import CurrentWeekSuggestionCount from "./CurrentWeekSuggestionCount";
 import { ImInfo } from 'react-icons/im';
 import { FaPlay, FaArrowCircleRight } from 'react-icons/fa'
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
@@ -116,14 +117,37 @@ export function BookSuggestionToList({server}: {server: string;}) {
 
   return (
     <>
+      <CurrentWeekSuggestionCount/>
       {firstBookshelf ? (
         <Flex justify="center">
           <Button
             as={Link}
             to={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
-            size="lg"
+            // size="lg"
+            p={8}
+            fontSize="2xl"
             colorScheme="teal"
             borderRadius="50px"
+            boxShadow="2px 2px 1px 1px black"
+            _active={{
+              boxShadow: "0 1px 1px 0 black"
+            }}
+            sx={{
+              animationIterationCount: "infinite",
+              '@keyframes glowing': {
+                '0%': {
+                  bgColor: "teal"
+                },
+                '50%': {
+                  bgColor: "teal.400"
+                },
+                '100%': {
+                  bgColor: "teal"
+                }
+              },
+              animationName: "glowing",
+              animationDuration: "2s"
+            }}
           >
             <Box as={FaPlay} me={2} /> Start
           </Button>

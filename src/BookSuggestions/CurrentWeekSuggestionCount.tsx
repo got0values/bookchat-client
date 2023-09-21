@@ -28,7 +28,7 @@ export default function CurrentWeekSuggestionCount() {
       gap={2}
       wrap="nowrap"
       mt={2}
-      mb={5}
+      mb={2}
       rounded="md"
       bg="blue.50"
       p={2}
@@ -37,7 +37,7 @@ export default function CurrentWeekSuggestionCount() {
       }}
     >
       <Progress 
-        height="27px"
+        height="35px"
         rounded="sm"
         bg="gray.200"
         // maxW="200px"
