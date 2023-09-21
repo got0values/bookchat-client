@@ -11,6 +11,8 @@ import {
   Input,
   Text,
   Stack,
+  Checkbox,
+  Divider,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
@@ -18,6 +20,7 @@ import {
   NumberDecrementStepper,
   useToast
 } from "@chakra-ui/react";
+import { QuoteDesigner } from "./QuoteDesigner";
 import { genres } from "./genres";
 import { MultiSelect } from 'chakra-multiselect'
 import * as htmlToImage from 'html-to-image';
@@ -26,7 +29,7 @@ import dayjs from "dayjs";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-export default function EditCurrentlyReading({server,selectedBook, setSelectedBook, getPageCallback, setSharedTitle, setSharedAuthor, showQuoteDesigner}: EditCurrentlyReadingType) {
+export default function EditCurrentlyReading({server,selectedBook, setSelectedBook, getPageCallback, newBook, isOwner}: EditCurrentlyReadingType) {
   const queryClient = useQueryClient();
   const toast = useToast();
 
@@ -235,204 +238,305 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
 
   const [selectedSubjects,setSelectedSubjects] = useState([]);
 
+
+  const [showQuoteDesigner,setShowQuoteDesigner] = useState(false);
+  const [sharedTitle,setSharedTitle] = useState(selectedBook?.title);
+  const [sharedAuthor,setSharedAuthor] = useState(selectedBook?.author);
+  const bookImage = selectedBook?.image;
+
+  const currentlyReadingImageUploadRef = useRef<HTMLInputElement>({} as HTMLInputElement);
+  const currentlyReadingImagePreviewRef = useRef<HTMLImageElement>({} as HTMLImageElement);
+  const [currentlyReadingPreviewImage,setCurrentlyReadingPreviewImage] = useState("");
+  const [currentlyReadingImageFile,setCurrentlyReadingImageFile] = useState<Blob | string | ArrayBuffer | null>(null);
+  async function currentlyReadingImageChange(e: HTMLInputElement | any) {
+    // currentlyReadingImagePreviewRef.current.style ? currentlyReadingImagePreviewRef.current.style.display = "block" : null;
+    let targetFiles = e.target.files as FileList
+    let previewImageFile = targetFiles[0];
+
+    setCurrentlyReadingPreviewImage(URL.createObjectURL(previewImageFile))
+    let blob = previewImageFile.slice(0,previewImageFile.size,"image/png")
+    let newFile = new File([blob], previewImageFile.name, {type: "image/png"})
+    setCurrentlyReadingImageFile(newFile)
+  }
+
   return (
     <>
-      {selectedBook2 ? (
-        <Box>
-          <Input
-            type="text"
-            mt={3}
-            mb={3}
-            placeholder="Thoughts?"
-            maxLength={300}
-            ref={thoughtsRef}
-            defaultValue={selectedBook2.thoughts ? selectedBook2.thoughts : ""}
-          />
-          <Flex>
+      {selectedBook2 && isOwner ? (
+        <>
+          {newBook ? (
             <Box>
-              <Image 
-                src={selectedBook2.image ? selectedBook2.image : "https://via.placeholder.com/165x215"}
-                maxH="120px"
-                boxShadow="1px 1px 1px 1px darkgrey"
-                alt={selectedBook2.title}
-              />
-              <Input
-                type="hidden"
-                defaultValue={selectedBook2.image ? selectedBook2.image : "https://via.placeholder.com/165x215"}
-                ref={imageRef}
-              />
-              {/* <Flex justify="center" mt={1}>
-                <Popover>
-                  <PopoverTrigger>
-                    <IconButton 
-                      aria-label="edit" 
-                      size='sm' 
-                      icon={<MdEdit />} 
-                      variant="ghost"
-                    />
-                  </PopoverTrigger>
-                  <PopoverContent p={5}>
-                    <PopoverArrow />
-                    <PopoverCloseButton />
-                    <FormControl variant="floatingstatic">
-                      <FormLabel>
-                        Image Source
-                      </FormLabel>
-                      <Input
-                        type="text"
-                        ref={imageRef}
-                        defaultValue={selectedBook2.image}
-                      />
-                    </FormControl>
-                  </PopoverContent>
-                </Popover>
-              </Flex> */}
-            </Box>
-            <Box 
-              mx={2}
-              w="100%"
-            >
-              <Stack spacing={3} lineHeight={1.4}>
-                <FormControl variant="floatingstatic">
-                  <FormLabel>
-                    Title
-                  </FormLabel>
-                  <Input
-                    type="text"
-                    defaultValue={selectedBook2.title}
-                    ref={titleRef}
-                    maxLength={200}
-                    onChange={e=>{
-                      if (setSharedTitle) {
-                        setSharedTitle(()=>e.target.value)
-                      }
-                    }}
-                  />
-                </FormControl>
-                <FormControl variant="floatingstatic">
-                  <FormLabel>
-                    Author
-                  </FormLabel>
-                  <Input
-                    type="text"
-                    defaultValue={selectedBook2.author}
-                    ref={authorRef}
-                    maxLength={150}
-                    onChange={e=>{
-                      if (setSharedAuthor) {
-                        setSharedAuthor(()=>e.target.value)
-                      }
-                    }}
-                  />
-                </FormControl>
-                <FormControl variant="floatingstatic">
-                  <FormLabel>
-                    Year
-                  </FormLabel>
-                  <Input
-                    type="text"
-                    defaultValue={selectedBook2.published_date !== null ? (dayjs(selectedBook2.published_date).format("YYYY")) : ""}
-                    maxW="125px"
-                    ref={yearRef}
-                    maxLength={4}
-                  />
-                </FormControl>
-                <FormControl variant="floatingstatic">
-                  <FormLabel>
-                    Pages
-                  </FormLabel>
-                  <NumberInput
-                    defaultValue={selectedBook2.page_count ? selectedBook2.page_count : ""}
-                    maxW="125px"
+              {!currentlyReadingPreviewImage ? (
+                <Box>
+                  <Checkbox
+                    isChecked={showQuoteDesigner}
+                    onChange={e=>setShowQuoteDesigner((prev: any)=>!prev)}
+                    fontWeight="bold"
                   >
-                    <NumberInputField ref={pagesRef} />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                </FormControl>
-                <FormControl variant="floatingstatic">
-                  <FormLabel>
-                    Pages read
-                  </FormLabel>
-                  <NumberInput
-                    maxWidth="125px"
-                    min={0}
-                    defaultValue={selectedBook2.pages_read ? selectedBook2.pages_read : ""}
-                  >
-                    <NumberInputField ref={pagesReadRef} />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                </FormControl>
-                <FormControl variant="floatingstatic">
-                  {selectedBook2.subjects ? (
+                    Add a quote
+                  </Checkbox>
+
+                  {showQuoteDesigner ? (
                     <>
-                      <FormLabel>
-                        Add subjects/genres
-                      </FormLabel>
-                      <Box pb={2}>
-                        {selectedBook2.subjects.length ? (
-                          <Box
-                            sx={{
-                              "& ul": {
-                                zIndex: 2
-                              }
-                            }}
-                          >
-                            <MultiSelect
-                              backgroundColor="black"
+                      <QuoteDesigner 
+                        sharedTitle={sharedTitle} 
+                        sharedAuthor={sharedAuthor}
+                        bookImage={bookImage}
+                      />
+                      <Divider mt={3} />
+                    </>
+                  ): null}
+                </Box>
+              ): null}
+              {!showQuoteDesigner ? (
+                <Box mt={2}>
+                  {!currentlyReadingPreviewImage ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      backgroundColor="yellow"
+                      color="black"
+                      borderColor="black"
+                      onClick={e=>currentlyReadingImageUploadRef.current.click()}
+                    >
+                      Add Image
+                      <Input
+                        type="file" 
+                        accept="image/png, image/jpeg"
+                        ref={currentlyReadingImageUploadRef}
+                        isRequired={true} 
+                        display="none"
+                        onChange={e=>currentlyReadingImageChange(e)}
+                      />
+                    </Button>
+                    ): (
+                    <Button
+                      size="sm"
+                      backgroundColor="tomato"
+                      color="white"
+                      onClick={e=>{
+                        setCurrentlyReadingPreviewImage("")
+                        setCurrentlyReadingImageFile(null)
+                      }}
+                    >
+                      Remove Image
+                    </Button>
+                  )}
+                  {currentlyReadingPreviewImage ? (
+                    <Flex 
+                      justify="center"
+                    >
+                      <Image 
+                        src={currentlyReadingPreviewImage ? currentlyReadingPreviewImage : ""} 
+                        ref={currentlyReadingImagePreviewRef}
+                        id="upload-image-preview"
+                        alt="profile preview image"
+                        maxH="400px"
+                      />
+                    </Flex>
+                  ) : (
+                    null
+                  )}
+                </Box>
+              ): null}
+            </Box>
+          ): null}
+
+          <Box>
+            <Input
+              type="text"
+              mt={3}
+              mb={3}
+              placeholder="Thoughts?"
+              maxLength={300}
+              ref={thoughtsRef}
+              defaultValue={selectedBook2.thoughts ? selectedBook2.thoughts : ""}
+            />
+            <Flex>
+              <Box>
+                <Image 
+                  src={selectedBook2.image ? selectedBook2.image : "https://via.placeholder.com/165x215"}
+                  maxH="120px"
+                  boxShadow="1px 1px 1px 1px darkgrey"
+                  alt={selectedBook2.title}
+                />
+                <Input
+                  type="hidden"
+                  defaultValue={selectedBook2.image ? selectedBook2.image : "https://via.placeholder.com/165x215"}
+                  ref={imageRef}
+                />
+                {/* <Flex justify="center" mt={1}>
+                  <Popover>
+                    <PopoverTrigger>
+                      <IconButton 
+                        aria-label="edit" 
+                        size='sm' 
+                        icon={<MdEdit />} 
+                        variant="ghost"
+                      />
+                    </PopoverTrigger>
+                    <PopoverContent p={5}>
+                      <PopoverArrow />
+                      <PopoverCloseButton />
+                      <FormControl variant="floatingstatic">
+                        <FormLabel>
+                          Image Source
+                        </FormLabel>
+                        <Input
+                          type="text"
+                          ref={imageRef}
+                          defaultValue={selectedBook2.image}
+                        />
+                      </FormControl>
+                    </PopoverContent>
+                  </Popover>
+                </Flex> */}
+              </Box>
+              <Box 
+                mx={2}
+                w="100%"
+              >
+                <Stack spacing={3} lineHeight={1.4}>
+                  <FormControl variant="floatingstatic">
+                    <FormLabel>
+                      Title
+                    </FormLabel>
+                    <Input
+                      type="text"
+                      defaultValue={selectedBook2.title}
+                      ref={titleRef}
+                      maxLength={200}
+                      onChange={e=>{
+                        if (setSharedTitle) {
+                          setSharedTitle(()=>e.target.value)
+                        }
+                      }}
+                    />
+                  </FormControl>
+                  <FormControl variant="floatingstatic">
+                    <FormLabel>
+                      Author
+                    </FormLabel>
+                    <Input
+                      type="text"
+                      defaultValue={selectedBook2.author}
+                      ref={authorRef}
+                      maxLength={150}
+                      onChange={e=>{
+                        if (setSharedAuthor) {
+                          setSharedAuthor(()=>e.target.value)
+                        }
+                      }}
+                    />
+                  </FormControl>
+                  <FormControl variant="floatingstatic">
+                    <FormLabel>
+                      Year
+                    </FormLabel>
+                    <Input
+                      type="text"
+                      defaultValue={selectedBook2.published_date !== null ? (dayjs(selectedBook2.published_date).format("YYYY")) : ""}
+                      maxW="125px"
+                      ref={yearRef}
+                      maxLength={4}
+                    />
+                  </FormControl>
+                  <FormControl variant="floatingstatic">
+                    <FormLabel>
+                      Pages
+                    </FormLabel>
+                    <NumberInput
+                      defaultValue={selectedBook2.page_count ? selectedBook2.page_count : ""}
+                      maxW="125px"
+                    >
+                      <NumberInputField ref={pagesRef} />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                  </FormControl>
+                  <FormControl variant="floatingstatic">
+                    <FormLabel>
+                      Pages read
+                    </FormLabel>
+                    <NumberInput
+                      maxWidth="125px"
+                      min={0}
+                      defaultValue={selectedBook2.pages_read ? selectedBook2.pages_read : ""}
+                    >
+                      <NumberInputField ref={pagesReadRef} />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                  </FormControl>
+                  <FormControl variant="floatingstatic">
+                    {selectedBook2.subjects ? (
+                      <>
+                        <FormLabel>
+                          Add subjects/genres
+                        </FormLabel>
+                        <Box pb={2}>
+                          {selectedBook2.subjects.length ? (
+                            <Box
                               sx={{
                                 "& ul": {
-                                  bg: "black"
+                                  zIndex: 2
                                 }
                               }}
-                              options={selectedBook2.subjects.map((subject:any)=>{
-                                return (
-                                  {
-                                    label: subject,
-                                    value: subject
+                            >
+                              <MultiSelect
+                                backgroundColor="black"
+                                sx={{
+                                  "& ul": {
+                                    bg: "black"
                                   }
-                                )
-                              })}
-                              value={selectedSubjects}
-                              onChange={e=>setSelectedSubjects(e as any)}
-                            />
-                          </Box>
-                        ): null}
-                      </Box>
+                                }}
+                                options={selectedBook2.subjects.map((subject:any)=>{
+                                  return (
+                                    {
+                                      label: subject,
+                                      value: subject
+                                    }
+                                  )
+                                })}
+                                value={selectedSubjects}
+                                onChange={e=>setSelectedSubjects(e as any)}
+                              />
+                            </Box>
+                          ): null}
+                        </Box>
+                      </>
+                    ):null}
+                </FormControl>
+                </Stack>
+                <Flex justify="flex-end">
+                  <Flex
+                    align="center"
+                    gap={2}
+                  >
+                    <>
+                      {postCurrentlyReadingMutation.error && (
+                        <Text color="red">
+                          {(postCurrentlyReadingMutation.error as Error).message}
+                        </Text>
+                      )}
+                      <Button 
+                        backgroundColor="black"
+                        color="white"
+                        onClick={e=>postCurrentlyReading()}
+                        isLoading={postCurrentlyReadingMutation.isLoading}
+                      >
+                        Post
+                      </Button>
                     </>
-                  ):null}
-              </FormControl>
-              </Stack>
-              <Flex justify="flex-end">
-                <Flex
-                  align="center"
-                  gap={2}
-                >
-                  <>
-                    {postCurrentlyReadingMutation.error && (
-                      <Text color="red">
-                        {(postCurrentlyReadingMutation.error as Error).message}
-                      </Text>
-                    )}
-                    <Button 
-                      backgroundColor="black"
-                      color="white"
-                      onClick={e=>postCurrentlyReading()}
-                      isLoading={postCurrentlyReadingMutation.isLoading}
-                    >
-                      Post
-                    </Button>
-                  </>
+                  </Flex>
                 </Flex>
-              </Flex>
-            </Box>
-          </Flex>
-        </Box>
+              </Box>
+            </Flex>
+          </Box>
+        </>
       ): null}
     </>
   )

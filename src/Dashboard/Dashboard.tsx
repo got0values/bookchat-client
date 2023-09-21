@@ -54,10 +54,8 @@ import { editPagesRead, cancelEditPagesRead } from "../shared/editCancelPagesRea
 import { showEditCurrentlyReading, hideEditCurrentlyReading } from "../shared/editCancelCurrentlyReading";
 import BooksSearch from "../shared/BooksSearch";
 import BookImage from '../shared/BookImage';
-import ImageUpload from "../shared/ImageUpload";
 import { SocialSharePostButtons, SocialShareNoPostButtons } from "../shared/SocialShareButtons";
 import EditCurrentlyReading from "../shared/EditCurrentlyReading";
-import { QuoteDesigner } from "../shared/QuoteDesigner";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import RequestSuggestion from "../shared/RequestSuggestion";
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
@@ -406,10 +404,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   }
 
   const CurrentlyReadingInput = () => {
-    const [showQuoteDesigner,setShowQuoteDesigner] = useState(false);
-    const [sharedTitle,setSharedTitle] = useState(selectedBook?.title);
-    const [sharedAuthor,setSharedAuthor] = useState(selectedBook?.author);
-    const bookImage = selectedBook?.image;
 
     return (
       <>
@@ -439,14 +433,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             position="relative"
             id="edit-currently-reading-000"
           >
-            <ImageUpload
-              sharedTitle={sharedTitle} 
-              sharedAuthor={sharedAuthor}
-              bookImage={bookImage}
-              showQuoteDesigner={showQuoteDesigner}
-              setShowQuoteDesigner={setShowQuoteDesigner}
-            />
-
             <CloseButton
               position="absolute"
               top="0"
@@ -457,11 +443,10 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             <EditCurrentlyReading 
               server={server} 
               selectedBook={selectedBook} 
-              setSharedTitle={setSharedTitle}
-              setSharedAuthor={setSharedAuthor}
               setSelectedBook={setSelectedBook} 
-              showQuoteDesigner={showQuoteDesigner}
               getPageCallback={getDashboard} 
+              newBook={true}
+              isOwner={true}
             />
 
           </Box>
@@ -773,7 +758,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
           {reading.uploaded_image ? (
             <>
               <Flex 
-                id="preview-div"
                 justify="center"
                 mb={2}
               >
@@ -1060,6 +1044,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                 pages_read: reading.pages_read,
                 thoughts: reading.thoughts
               }}
+              newBook={false}
+              isOwner={reading.Profile.id === user?.Profile.id}
             />
           </Box>
           <Divider mt={2} mb={1} />

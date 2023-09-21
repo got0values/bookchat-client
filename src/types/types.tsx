@@ -462,10 +462,9 @@ export interface EditCurrentlyReadingType {
   server: string;
   selectedBook: SelectedBook;
   setSelectedBook?: React.Dispatch<any> | null;
-  setSharedTitle?: React.Dispatch<any> | null;
-  setSharedAuthor?: React.Dispatch<any> | null;
-  showQuoteDesigner?: boolean;
   getPageCallback: ()=>Promise<any>;
+  newBook: boolean;
+  isOwner: boolean;
 }
 
 export interface SuggestionPollBookType {

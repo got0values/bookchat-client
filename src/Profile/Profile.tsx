@@ -63,7 +63,6 @@ import collectionToArray from "../utils/collectionToArray";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
 import BooksSearch from "../shared/BooksSearch";
 import EditCurrentlyReading from "../shared/EditCurrentlyReading";
-import ImageUpload from "../shared/ImageUpload";
 import { FiFile } from 'react-icons/fi';
 import { MdEdit, MdOutlineChat, MdOutlineCancel } from 'react-icons/md';
 import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
@@ -1176,13 +1175,6 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                             position="relative"
                             id="edit-currently-reading-000"
                           >
-                            <ImageUpload
-                              sharedTitle={sharedTitle} 
-                              sharedAuthor={sharedAuthor}
-                              bookImage={bookImage}
-                              showQuoteDesigner={showQuoteDesigner}
-                              setShowQuoteDesigner={setShowQuoteDesigner}
-                            />
                             <CloseButton
                               position="absolute"
                               top="0"
@@ -1193,10 +1185,9 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                               server={server} 
                               selectedBook={selectedBook} 
                               setSelectedBook={setSelectedBook} 
-                              setSharedTitle={setSharedTitle}
-                              setSharedAuthor={setSharedAuthor}
-                              showQuoteDesigner={showQuoteDesigner}
                               getPageCallback={getProfile} 
+                              newBook={true}
+                              isOwner={true}
                             />
                           </Box>
                         ) : null}
@@ -1318,7 +1309,6 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                             {profileData.CurrentlyReading[0].uploaded_image ? (
                               <>
                                 <Flex 
-                                  id="preview-div"
                                   align="center"
                                   justify="center"
                                   mb={2}
@@ -1555,6 +1545,8 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                   pages_read: profileData.CurrentlyReading[0].pages_read,
                                   thoughts: profileData.CurrentlyReading[0].thoughts
                                 }}
+                                newBook={false}
+                                isOwner={viewer === "self"}
                               />
                             </Box>
                             <Divider mb={1} mt={3} />
@@ -1715,7 +1707,6 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                 {profileData.CurrentlyReading[0].uploaded_image ? (
                                   <>
                                     <Flex 
-                                      id="preview-div"
                                       align="center"
                                       justify="center"
                                       mb={2}
@@ -2079,7 +2070,6 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     {readBook.uploaded_image ? (
                                       <>
                                         <Flex 
-                                          id="preview-div"
                                           align="center"
                                           justify="center"
                                           mb={2}
@@ -2308,6 +2298,8 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                           pages_read: readBook.pages_read,
                                           thoughts: readBook.thoughts
                                         }}
+                                        newBook={false}
+                                        isOwner={viewer === "self"}
                                       />
                                     </Box>
                                     <Divider mt={2} />
