@@ -109,11 +109,10 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
   const [followingSorted,setFollowingSorted] = useState([] as any)
   const [randomSorted,setRandomSorted] = useState([] as any)
   const [endLoadMore,setEndLoadMore] = useState(false);
-  const [skipRandom,setSkipRandom] = useState(Math.floor(Math.random() * 5))
   async function getDashboard() {
     const tokenCookie = Cookies.get().token
     const dash = await axios
-      .get(`${server}/api/dashboard?items=${items.current}&skip=${skipRandom}`,
+      .get(`${server}/api/dashboard?items=${items.current}`,
       {
         headers: {
           Authorization: tokenCookie
@@ -533,7 +532,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               setSelectedBook={setSelectedBook} 
               showQuoteDesigner={showQuoteDesigner}
               getPageCallback={getDashboard} 
-              setSkipRandom={setSkipRandom}
             />
 
           </Box>

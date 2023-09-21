@@ -466,7 +466,6 @@ export interface EditCurrentlyReadingType {
   setSharedAuthor?: React.Dispatch<any> | null;
   showQuoteDesigner?: boolean;
   getPageCallback: ()=>Promise<any>;
-  setSkipRandom?: React.Dispatch<any> | any;
 }
 
 export interface SuggestionPollBookType {
