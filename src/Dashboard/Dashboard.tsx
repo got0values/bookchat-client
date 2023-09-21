@@ -61,8 +61,7 @@ import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import RequestSuggestion from "../shared/RequestSuggestion";
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
-import { BsReplyFill, BsStarFill } from 'react-icons/bs';
-import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
+import { BsReplyFill, BsStarFill, BsHandThumbsUp, BsHandThumbsUpFill } from 'react-icons/bs';
 import { MdOutlineChat, MdEdit, MdOutlineCancel } from 'react-icons/md';
 import { FaStore } from 'react-icons/fa';
 import { ImBooks } from 'react-icons/im';
@@ -1170,9 +1169,9 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   title="like post"
                 >
                   {reading.CurrentlyReadingLike?.filter((like)=>like.profile===user?.Profile?.id).length ? (
-                    <AiFillHeart fill="red" pointerEvents="none" size={20} />
+                    <BsHandThumbsUpFill fill="black" pointerEvents="none" size={18} />
                   ) : (
-                    <AiOutlineHeart pointerEvents="none" size={20} />
+                    <BsHandThumbsUp pointerEvents="none" size={18} />
                   )}
                 </Button>
                 {reading.CurrentlyReadingLike?.length ? (

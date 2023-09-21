@@ -65,10 +65,8 @@ import BooksSearch from "../shared/BooksSearch";
 import EditCurrentlyReading from "../shared/EditCurrentlyReading";
 import { FiFile } from 'react-icons/fi';
 import { MdEdit, MdOutlineChat, MdOutlineCancel } from 'react-icons/md';
-import { BsPlusLg } from 'react-icons/bs';
 import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
-import { BsReplyFill } from 'react-icons/bs';
-import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
+import { BsReplyFill, BsPlusLg, BsHandThumbsUp, BsHandThumbsUpFill } from 'react-icons/bs';
 import { ImBooks } from 'react-icons/im';
 import { FaShoppingCart } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
@@ -1569,7 +1567,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                     onClick={e=>likeUnlikeCurrentlyReading(e)}
                                     aria-label="like/unlike"
                                   >
-                                    {profileData.CurrentlyReading[0].CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                                    {profileData.CurrentlyReading[0].CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <BsHandThumbsUpFill color="black" pointerEvents="none" size={18} /> : <BsHandThumbsUp pointerEvents="none" size={18} />}
                                   </Button>
                                   {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? (
                                     <Popover isLazy size="sm">
@@ -1874,7 +1872,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                         onClick={e=>likeUnlikeCurrentlyReading(e)}
                                         aria-label="like/unlike"
                                       >
-                                        {profileData.CurrentlyReading[0].CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                                        {profileData.CurrentlyReading[0].CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <BsHandThumbsUpFill color="black" pointerEvents="none" size={18} /> : <BsHandThumbsUp pointerEvents="none" size={18} />}
                                       </Button>
                                       {profileData.CurrentlyReading[0].CurrentlyReadingLike?.length ? (
                                         <Popover isLazy size="sm">
@@ -2320,7 +2318,7 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                                             onClick={e=>likeUnlikeCurrentlyReading(e)}
                                             aria-label="like/unlike"
                                           >
-                                            {readBook.CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <AiFillHeart color="red" pointerEvents="none" size={20} /> : <AiOutlineHeart pointerEvents="none" size={20} />}
+                                            {readBook.CurrentlyReadingLike?.filter((like)=>like.profile===user.Profile.id).length ? <BsHandThumbsUpFill color="black" pointerEvents="none" size={18} /> : <BsHandThumbsUp pointerEvents="none" size={18} />}
                                           </Button>
                                           {readBook.CurrentlyReadingLike?.length ? (
                                             <Popover isLazy size="sm">
