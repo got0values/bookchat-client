@@ -73,11 +73,11 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
 
   function previewImage() {
     const quoteBox = document.getElementById('quote-box');
-    const bcnWatermark = document.getElementById("bcn-watermark");
-    bcnWatermark!.style.display = "block";
+    // const bcnWatermark = document.getElementById("bcn-watermark");
+    // bcnWatermark!.style.display = "block";
     htmlToImage.toPng(quoteBox!)
     .then(function (dataUrl) {
-      bcnWatermark!.style.display = "none";
+      // bcnWatermark!.style.display = "none";
       var img = new Image();
       img.src = dataUrl;
       const previewDiv = document.getElementById("preview-div")

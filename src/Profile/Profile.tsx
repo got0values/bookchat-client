@@ -63,6 +63,7 @@ import collectionToArray from "../utils/collectionToArray";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
 import BooksSearch from "../shared/BooksSearch";
 import EditCurrentlyReading from "../shared/EditCurrentlyReading";
+import ImageUpload from "../shared/ImageUpload";
 import { FiFile } from 'react-icons/fi';
 import { MdEdit, MdOutlineChat, MdOutlineCancel } from 'react-icons/md';
 import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
@@ -803,12 +804,17 @@ export const useProfile = ({server}: {server: string}) => {
       })
   }
 
-  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,removeProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount,removeCurrentlyReadingUploadedImage,isOpenImageModal,openImageModal,closeImageModal,imageModalImage};
+  const [showQuoteDesigner,setShowQuoteDesigner] = useState(false);
+  const [sharedTitle,setSharedTitle] = useState(selectedBook?.title);
+  const [sharedAuthor,setSharedAuthor] = useState(selectedBook?.author);
+  const bookImage = selectedBook?.image;
+
+  return {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,profileImageFile,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,onCloseProfileDataModal,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,removeProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount,removeCurrentlyReadingUploadedImage,isOpenImageModal,openImageModal,closeImageModal,imageModalImage,showQuoteDesigner,setShowQuoteDesigner,sharedTitle,setSharedTitle,sharedAuthor,setSharedAuthor,bookImage};
 }
 
 
 export default function Profile({server,gbooksapi}: ProfileProps) {
-  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,removeProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount,removeCurrentlyReadingUploadedImage,isOpenImageModal,openImageModal,closeImageModal,imageModalImage} = useProfile({server});
+  const {user,navigate,viewer,profileActionError,setProfileActionError,profileUploadRef,isOpenProfileDataModal,onOpenProfilePicModal,userProfilePhoto,openProfileDataModal,isOpenProfilePicModal,closeProfilePicModal,photoImageChange,previewImage,imagePreviewRef,profileUserNameRef,profileAboutRef,profileInterests,interestsInputRef,handleAddInterest,handleDeleteInterest,updateProfileData,getProfile,paramsUsername,profilePhotoMutation,updateUserProfilePhoto,removeProfilePhoto,closeProfileDataModal,profileDataMutation,whatImReadingRef,closeReadingModal,isOpenReadingModal,onOpenReadingModal,selectBook,selectedBook,setSelectedBook,postCurrentlyReading,deleteReading,hideReading,commentCurrentlyReading,openCommentModal,closeCommentModal,isOpenCommentModal,commentBookData,commentRef,commentCurrentlyReadingButton,Comments,isOpenFollowersModal,openFollowersModal,closeFollowersModal,isOpenFollowingModal,openFollowingModal,closeFollowingModal,followers,following,removeFollower,removeFollowerMutation,likeUnlikeCurrentlyReading,countries,countrySelectRef,thoughtsRef,addToBookshelf,isFetching,items,theEnd,editPagesRead,cancelEditPagesRead,pagesReadRef,updatePagesRead,advisorCount,removeCurrentlyReadingUploadedImage,isOpenImageModal,openImageModal,closeImageModal,imageModalImage,showQuoteDesigner,setShowQuoteDesigner,sharedTitle,setSharedTitle,sharedAuthor,setSharedAuthor,bookImage} = useProfile({server});
 
   
 
@@ -1170,13 +1176,28 @@ export default function Profile({server,gbooksapi}: ProfileProps) {
                             position="relative"
                             id="edit-currently-reading-000"
                           >
+                            <ImageUpload
+                              sharedTitle={sharedTitle} 
+                              sharedAuthor={sharedAuthor}
+                              bookImage={bookImage}
+                              showQuoteDesigner={showQuoteDesigner}
+                              setShowQuoteDesigner={setShowQuoteDesigner}
+                            />
                             <CloseButton
                               position="absolute"
                               top="0"
                               right="0"
                               onClick={e=>hideEditCurrentlyReading("000")}
                             />
-                            <EditCurrentlyReading server={server} selectedBook={selectedBook} setSelectedBook={setSelectedBook} getPageCallback={getProfile} />
+                            <EditCurrentlyReading 
+                              server={server} 
+                              selectedBook={selectedBook} 
+                              setSelectedBook={setSelectedBook} 
+                              setSharedTitle={setSharedTitle}
+                              setSharedAuthor={setSharedAuthor}
+                              showQuoteDesigner={showQuoteDesigner}
+                              getPageCallback={getProfile} 
+                            />
                           </Box>
                         ) : null}
     

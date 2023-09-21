@@ -78,13 +78,13 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
       const uploadImagePreview = document.getElementById('upload-image-preview');
 
       if (showQuoteDesigner && quoteBox) {
-        const bcnWatermark = document.getElementById("bcn-watermark")
-        bcnWatermark ? bcnWatermark!.style.display = "block" : null;
+        // const bcnWatermark = document.getElementById("bcn-watermark")
+        // bcnWatermark ? bcnWatermark!.style.display = "block" : null;
         await htmlToImage.toPng(quoteBox!)
         .then(async function (quoteImageBase) {
           let blob = await b64toBlob(quoteImageBase,'image/png',1024)
           let newFile = new File([blob], "quoteImage", {type: "image/png"})
-          bcnWatermark ? bcnWatermark.style.display = "none" : null;
+          // bcnWatermark ? bcnWatermark.style.display = "none" : null;
           const formData = new FormData();
           formData.append("uploadedimage", newFile as Blob)
           formData.append("uploadedimagetype", "quoteimage")

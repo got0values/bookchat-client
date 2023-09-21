@@ -54,6 +54,7 @@ import { editPagesRead, cancelEditPagesRead } from "../shared/editCancelPagesRea
 import { showEditCurrentlyReading, hideEditCurrentlyReading } from "../shared/editCancelCurrentlyReading";
 import BooksSearch from "../shared/BooksSearch";
 import BookImage from '../shared/BookImage';
+import ImageUpload from "../shared/ImageUpload";
 import { SocialSharePostButtons, SocialShareNoPostButtons } from "../shared/SocialShareButtons";
 import EditCurrentlyReading from "../shared/EditCurrentlyReading";
 import { QuoteDesigner } from "../shared/QuoteDesigner";
@@ -406,7 +407,6 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
 
   const CurrentlyReadingInput = () => {
     const [showQuoteDesigner,setShowQuoteDesigner] = useState(false);
-
     const [sharedTitle,setSharedTitle] = useState(selectedBook?.title);
     const [sharedAuthor,setSharedAuthor] = useState(selectedBook?.author);
     const bookImage = selectedBook?.image;
@@ -439,83 +439,13 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             position="relative"
             id="edit-currently-reading-000"
           >
-            {!currentlyReadingPreviewImage ? (
-              <>
-                <Checkbox
-                  isChecked={showQuoteDesigner}
-                  onChange={e=>setShowQuoteDesigner(prev=>!prev)}
-                  fontWeight="bold"
-                >
-                  Add a quote
-                </Checkbox>
-
-                {showQuoteDesigner ? (
-                  <>
-                    <QuoteDesigner 
-                      sharedTitle={sharedTitle} 
-                      sharedAuthor={sharedAuthor}
-                      bookImage={bookImage}
-                    />
-                    <Divider mt={3} />
-                  </>
-                ): null}
-              </>
-            ): null}
-
-            <Box
-              mt={2}
-            >
-              {!showQuoteDesigner ? (
-                <>
-                  {!currentlyReadingPreviewImage ? (
-                    <Button
-                      size="sm"
-                      backgroundColor="black"
-                      color="white"
-                      onClick={e=>currentlyReadingImageUploadRef.current.click()}
-                    >
-                      Add Image
-                      <Input
-                        type="file" 
-                        accept="image/png, image/jpeg"
-                        ref={currentlyReadingImageUploadRef}
-                        isRequired={true} 
-                        display="none"
-                        onChange={e=>currentlyReadingImageChange(e)}
-                      />
-                    </Button>
-                  ): (
-                    <Button
-                      size="sm"
-                      backgroundColor="tomato"
-                      color="white"
-                      onClick={e=>{
-                        setCurrentlyReadingPreviewImage("")
-                        setCurrentlyReadingImageFile(null)
-                      }}
-                    >
-                      Remove Image
-                    </Button>
-                  )}
-                </>
-              ): null}
-
-              {currentlyReadingPreviewImage ? (
-                <Flex 
-                  justify="center"
-                >
-                  <ChakraImage 
-                    src={currentlyReadingPreviewImage ? currentlyReadingPreviewImage : ""} 
-                    ref={currentlyReadingImagePreviewRef}
-                    id="upload-image-preview"
-                    alt="profile preview image"
-                    maxH="400px"
-                  />
-                </Flex>
-              ) : (
-                null
-              )}
-            </Box>
+            <ImageUpload
+              sharedTitle={sharedTitle} 
+              sharedAuthor={sharedAuthor}
+              bookImage={bookImage}
+              showQuoteDesigner={showQuoteDesigner}
+              setShowQuoteDesigner={setShowQuoteDesigner}
+            />
 
             <CloseButton
               position="absolute"
