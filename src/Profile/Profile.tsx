@@ -135,7 +135,6 @@ export const useProfile = ({server}: {server: string}) => {
             }
             setCurrentlyReadingLength(responseProfileData.CurrentlyReading ? responseProfileData.CurrentlyReading : 0);
             setAdvisorCount(response.data.advisorCount)
-            console.log(responseProfileData)
             return responseProfileData;
           }
       })

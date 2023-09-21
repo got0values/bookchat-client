@@ -36,6 +36,9 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
   const [selectedBook2,setSelectedBook2] = useState<any | null>(selectedBook);
 
   useEffect(()=>{
+    if (setSkipRandom) {
+      setSkipRandom((prev: any)=>0)
+    }
     const genresNames = genres.map((g)=>g.name);
     setSelectedBook2((prev:any)=>{
       return {...prev,subjects: prev.subjects ? [...prev.subjects,...genresNames] : [...genresNames]}
@@ -60,10 +63,6 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
           isClosable: true
         })
         throw new Error("Please enter a title");
-      }
-
-      if (setSkipRandom) {
-        setSkipRandom((prev: any)=>0)
       }
 
       let tokenCookie: string | null = Cookies.get().token;
