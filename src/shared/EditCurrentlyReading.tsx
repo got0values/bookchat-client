@@ -293,10 +293,14 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
                     <Button
                       size="sm"
                       variant="outline"
-                      backgroundColor="yellow"
+                      backgroundColor="white"
                       color="black"
                       borderColor="black"
                       onClick={e=>currentlyReadingImageUploadRef.current.click()}
+                      boxShadow="2px 3px 2px black"
+                      _active={{
+                        boxShadow: "0 1px 1px black"
+                      }}
                     >
                       Add Image
                       <Input
@@ -311,14 +315,15 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
                     ): (
                     <Button
                       size="sm"
-                      backgroundColor="tomato"
-                      color="white"
+                      // backgroundColor="tomato"
+                      color="red"
+                      variant="ghost"
                       onClick={e=>{
                         setCurrentlyReadingPreviewImage("")
                         setCurrentlyReadingImageFile(null)
                       }}
                     >
-                      Remove Image
+                      Remove
                     </Button>
                   )}
                   {currentlyReadingPreviewImage ? (
