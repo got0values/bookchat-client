@@ -9,6 +9,7 @@ import {
   Flex,
   Spinner,
   useDisclosure,
+  Image
   // Text,
   // Avatar,
   // Popover,
@@ -124,8 +125,8 @@ export function BookSuggestionToList({server}: {server: string;}) {
             as={Link}
             to={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
             // size="lg"
-            p={8}
-            fontSize="2xl"
+            p={6}
+            fontSize="xl"
             colorScheme="teal"
             borderRadius="50px"
             boxShadow="2px 2px 1px 1px black"
