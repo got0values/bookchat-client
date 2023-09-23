@@ -538,24 +538,49 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     updateReviewMutation.mutate(e);
   }
 
-  function filterByCategory(checkedValues: string[]) {
+  const [filterIsLoading,setFilterIsLoading] = useState(false);
+  async function filterByCategory(checkedValues: string[]) {
     if (!checkedValues.length) {
       setBookshelfBooks(books);
     }
     else {
-      setBookshelfBooks(prev=>{
-        return (
-          books.filter((book: BookshelfBook)=>{
-            if (book.BookshelfBookCategory.length) {
-              const categories = book.BookshelfBookCategory.map((bsbc)=>bsbc.BookshelfCategory.id)
-              return !checkedValues.some((cV)=>categories.indexOf(parseInt(cV)) == -1)
+      setFilterIsLoading(true)
+      let tokenCookie: string | null = Cookies.get().token;
+      await axios
+        .get(`${server}/api/bookshelf`,
+          {
+            headers: {
+              Authorization: tokenCookie
+            },
+            params: {
+              take: 100000
             }
-            else {
-              return false;
-            }
-          })
+          }
         )
-      })
+        .then((response)=>{
+          setIsSearchResults(true)
+          const allBooks = response.data.message.BookshelfBook;
+          setBookshelfBooks(prev=>{
+            return (
+              allBooks.filter((book: BookshelfBook)=>{
+                if (book.BookshelfBookCategory.length) {
+                  const categories = book.BookshelfBookCategory.map((bsbc)=>bsbc.BookshelfCategory.id)
+                  return !checkedValues.some((cV)=>categories.indexOf(parseInt(cV)) == -1)
+                }
+                else {
+                  return false;
+                }
+              })
+            )
+          })
+        })
+        .catch(({response})=>{
+          console.log(response)
+          if (response.data?.message) {
+            throw new Error(response.data?.message)
+          }
+        })
+      setFilterIsLoading(false)
     }
   }
 
@@ -1859,544 +1884,552 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             </Box>
 
             <Box>
-              {bookshelfBooks ? (
-                bookshelfBooks.map((book: BookshelfBook)=>{
-                  return (
-                    <Flex 
-                      direction="column" 
-                      gap={2} 
-                      className="well-card" 
-                      key={book.id} 
-                      position="relative"
-                    >
-                      <Flex
-                        align="center"
-                        justify="space-between"
-                      >
-                        <Box>
-                          <Flex align="center" gap={1} wrap="wrap">
-                            <Flex
-                              align="center"
-                              gap={1}
-                              id={`date-text-${book.id}`}
-                            >
-                              <Text 
-                                fontStyle="italic"
-                              >
-                                {dayjs.utc(book.created_on).format('MMM DD, YYYY')}
-                              </Text>
-                              <Button
-                                size="xs"
-                                variant="ghost"
-                                aria-label="edit date"
-                                // px={0}
-                                minW="35px"
-                                onClick={e=>editDate(book.id)}
-                              >
-                                <MdEdit size={15} opacity={.9} />
-                              </Button>
-                            </Flex>
-                            <Flex 
-                              gap={1} 
-                              align="center"
-                              id={`date-input-block-${book.id}`}
-                              display="none"
-                            >
-                              <Input
-                                type="date"
-                                defaultValue={dayjs.utc(book.created_on).format("YYYY-MM-DD")}
-                                id={`date-input-${book.id}`}
-                                size="sm"
-                              />
-                              <Button
-                                backgroundColor="black"
-                                color="white"
-                                size="sm"
-                                onClick={e=>saveDate(book.id)}
-                              >
-                                Save
-                              </Button>
-                              <Button
-                                size="sm"
-                                onClick={e=>hideInputBlock(book.id)}
-                                variant="outline"
-                                borderColor="black"
-                              >
-                                Cancel
-                              </Button>
-                            </Flex>
-                          </Flex>
-                        </Box>
-                        <Flex align="center" gap={1}>
-                          {book.hidden ? (
-                            <Text 
-                              as="span"
-                              fontStyle="italic"
-                            >
-                              {" "} hidden
-                            </Text>
-                          ): null}
-                          <Menu>
-                            <MenuButton 
-                              as={Button}
-                              size="md"
-                              maxH="25px"
-                              variant="ghost"
-                              rounded="full"
-                              // p={1}
-                              title="menu"
-                            >
-                              <BiDotsHorizontalRounded size={20} />
-                            </MenuButton>
-                            <MenuList>
-                              <MenuItem 
-                                onClick={e=>navigate(`/chat/room?title=${book.title}&author=${book.author}`)}
-                                fontWeight="bold"
-                                icon={<MdOutlineChat size={20} />}
-                              >
-                                Chat Room
-                              </MenuItem>
-                              <MenuItem 
-                                as={Link}
-                                to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.title + " " + book.author)}`}
-                                target="blank"
-                                fontWeight="bold"
-                                icon={<FaShoppingCart size={20} />}
-                              >
-                                Shop
-                              </MenuItem>
-                              <MenuItem
-                                data-id={book.id}
-                                onClick={e=>hideOrShowBookshelfBook([book.id,book.hidden ? "show" : "hide"])}
-                                fontWeight="bold"
-                                icon={<BiHide size={20} />}
-                              >
-                                {book.hidden ? "Unhide" : "Hide"} From Suggestions
-                              </MenuItem>
-
-                              <MenuItem
-                                color="tomato"
-                                data-id={book.id}
-                                onClick={e=>deleteBookshelfBook(e)}
-                                fontWeight="bold"
-                                icon={<BiTrash size={20} />}
-                              >
-                                Delete
-                              </MenuItem>
-                            </MenuList>
-                          </Menu>
-                        </Flex>
-                      </Flex>
-                      <Flex>
-                        <Image
-                          src={book.image}
-                          maxH="100px"
-                          // minW="60px"
-                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                          boxShadow="1px 1px 1px 1px darkgrey"
-                          alt={book.title}
-                        />
-                        <Box w="100%">
-                          <Box
-                            mx={2} 
-                            w="100%" 
-                            lineHeight={1.4}
-                            id={`bookshelf-book-${book.id}`}
+              {!filterIsLoading ? (
+                <>
+                  {bookshelfBooks ? (
+                    bookshelfBooks.map((book: BookshelfBook)=>{
+                      return (
+                        <Flex 
+                          direction="column" 
+                          gap={2} 
+                          className="well-card" 
+                          key={book.id} 
+                          position="relative"
+                        >
+                          <Flex
+                            align="center"
+                            justify="space-between"
                           >
-                            <Flex
-                              align="center"
-                              // justify="space-between"
-                              gap={1}
-                            >
-                              <Heading 
-                                as="h2" 
-                                size="md"
-                                // me={3}
-                                noOfLines={2}
-                              >
-                                {book.title}
-                              </Heading>
-                              <Button
-                                size="xs"
-                                variant="ghost"
-                                aria-label="edit"
-                                // px={0}
-                                minW="35px"
-                                onClick={e=>showEditBookshelfBook(book.id)}
-                              >
-                                <MdEdit size={18} opacity={.9} />
-                              </Button>
-                            </Flex>
-                            {/* <Popover isLazy>
-                              <PopoverTrigger>
-
-                              </PopoverTrigger>
-                              <PopoverContent>
-                                <PopoverArrow />
-                                <PopoverCloseButton />
-                                <PopoverBody 
-                                _dark={{
-                                  bg: "black"
-                                }}
-                                  fontSize="sm"
-                                >
-                                  {book.description}
-                                </PopoverBody>
-                              </PopoverContent>
-                            </Popover> */}
-                            <Text fontWeight="bold" fontSize="lg" noOfLines={1}>
-                              {book.author}
-                            </Text>
-                            <Text fontStyle="italic">
-                              {book.published_date ? dayjs(book.published_date).format("YYYY") : null}
-                            </Text>
-                            {book.page_count ? (
-                              <Text noOfLines={1}>
-                                {book.page_count} pages
-                              </Text>
-                            ): null}
-                          </Box>
-                          <Box
-                            id={`edit-bookshelf-book-${book.id}`}
-                            display="none"
-                            mt={2}
-                            ms={2}
-                          >
-                            <Stack spacing={3} lineHeight={1.4}>
-                              <FormControl variant="floatingstatic">
-                                <FormLabel>
-                                  Title
-                                </FormLabel>
-                                <Input
-                                  type="text"
-                                  defaultValue={book.title}
-                                  id={`title-${book.id}`}
-                                  maxLength={200}
-                                />
-                              </FormControl>
-                              <FormControl variant="floatingstatic">
-                                <FormLabel>
-                                  Author
-                                </FormLabel>
-                                <Input
-                                  type="text"
-                                  defaultValue={book.author}
-                                  id={`author-${book.id}`}
-                                  maxLength={150}
-                                />
-                              </FormControl>
-                              <FormControl variant="floatingstatic">
-                                <FormLabel>
-                                  Year
-                                </FormLabel>
-                                <Input
-                                  type="text"
-                                  defaultValue={book.published_date ? dayjs(book.published_date).format("YYYY") : ""}
-                                  maxW="125px"
-                                  id={`year-${book.id}`}
-                                  maxLength={4}
-                                />
-                              </FormControl>
-                              <Flex
-                                justify="space-between"
-                              >
-                                <FormControl variant="floatingstatic">
-                                  <FormLabel>
-                                    Pages
-                                  </FormLabel>
-                                  <NumberInput
-                                    defaultValue={book.page_count ? book.page_count : ""}
-                                    maxW="125px"
-                                  >
-                                    <NumberInputField 
-                                      id={`pages-${book.id}`} 
-                                    />
-                                    <NumberInputStepper>
-                                      <NumberIncrementStepper />
-                                      <NumberDecrementStepper />
-                                    </NumberInputStepper>
-                                  </NumberInput>
-                                </FormControl>
+                            <Box>
+                              <Flex align="center" gap={1} wrap="wrap">
                                 <Flex
                                   align="center"
                                   gap={1}
+                                  id={`date-text-${book.id}`}
                                 >
-                                  <Button
-                                    variant="outline"
-                                    borderColor="black"
-                                    color="black"
-                                    onClick={e=>cancelShowEditBookshelfBook(book.id)}
-                                    aria-label="cancel"
+                                  <Text 
+                                    fontStyle="italic"
                                   >
-                                    Cancel
+                                    {dayjs.utc(book.created_on).format('MMM DD, YYYY')}
+                                  </Text>
+                                  <Button
+                                    size="xs"
+                                    variant="ghost"
+                                    aria-label="edit date"
+                                    // px={0}
+                                    minW="35px"
+                                    onClick={e=>editDate(book.id)}
+                                  >
+                                    <MdEdit size={15} opacity={.9} />
                                   </Button>
+                                </Flex>
+                                <Flex 
+                                  gap={1} 
+                                  align="center"
+                                  id={`date-input-block-${book.id}`}
+                                  display="none"
+                                >
+                                  <Input
+                                    type="date"
+                                    defaultValue={dayjs.utc(book.created_on).format("YYYY-MM-DD")}
+                                    id={`date-input-${book.id}`}
+                                    size="sm"
+                                  />
                                   <Button
                                     backgroundColor="black"
                                     color="white"
-                                    onClick={e=>updateBookshelfBook(book.id)}
-                                    aria-label="save"
+                                    size="sm"
+                                    onClick={e=>saveDate(book.id)}
                                   >
                                     Save
                                   </Button>
+                                  <Button
+                                    size="sm"
+                                    onClick={e=>hideInputBlock(book.id)}
+                                    variant="outline"
+                                    borderColor="black"
+                                  >
+                                    Cancel
+                                  </Button>
                                 </Flex>
                               </Flex>
-                            </Stack>
-                          </Box>
-                          <Box ms={2}>
-                            <StarRating
-                              ratingCallback={ratingCallback} 
-                              starRatingId={book.id}
-                              defaultRating={book.rating ? book.rating : 0}
-                            />
-                          </Box>
-                        </Box>
-                      </Flex>
-
-                      <Flex align="center" gap={1} wrap="wrap" justify="flex-end">
-                        {book.BookshelfBookCategory.length ? (
-                          book.BookshelfBookCategory.map((category,i)=>{
-                            return (
-                              <Tag
-                                size="xs"
-                                rounded="lg"
-                                p={1}
-                                pl={4}
-                                fontSize="sm"
-                                display="flex"
-                                alignItems="center"
-                                gap={2}
-                                key={i}
-                                onClick={e=>{
-                                  const closeButton = document.getElementById(`close-button-${book.id}-${category.BookshelfCategory.id}`)
-                                  if(closeButton?.style.visibility === "hidden") {
-                                    closeButton.style.visibility = "visible"
-                                  }
-                                  else if (closeButton?.style.visibility === "visible") {
-                                    closeButton.style.visibility = "hidden"
-                                  }
-                                }}
-                                _hover={{
-                                  cursor: "pointer"
-                                }}
-                              >
-                                <Text pointerEvents="none">
-                                  {category.BookshelfCategory.name}
+                            </Box>
+                            <Flex align="center" gap={1}>
+                              {book.hidden ? (
+                                <Text 
+                                  as="span"
+                                  fontStyle="italic"
+                                >
+                                  {" "} hidden
                                 </Text>
-                                <Box 
-                                  id={`close-button-${book.id}-${category.BookshelfCategory.id}`}
-                                  style={{visibility: "hidden"}}
-                                  data-bookid={book.id}
-                                  data-categoryid={category.BookshelfCategory.id}
-                                  onClick={e=>removeCategoryFromBook(e)}
-                                  _hover={{
-                                    cursor: "pointer"
-                                  }}
+                              ): null}
+                              <Menu>
+                                <MenuButton 
+                                  as={Button}
+                                  size="md"
+                                  maxH="25px"
+                                  variant="ghost"
+                                  rounded="full"
+                                  // p={1}
+                                  title="menu"
                                 >
-                                  <TagCloseButton 
-                                    color="red"
-                                    pointerEvents="none"
-                                  />
-                                </Box>
-                                {removeCategoryFromBookMutation.isLoading && (
-                                  <Spinner size="xs"/>
-                                )}
-                              </Tag>
-                            )
-                          })
-                        ): null}
-                        {categories?.length ? (
-                          <Menu>
-                            <MenuButton 
-                              as={Button}
-                              variant="ghost"
-                              rounded="full"
-                              height="20px"
-                              minWidth="auto"
-                              px={0}
-                              title="menu"
-                            >
-                              <BiPlus size={20} />
-                            </MenuButton>
-                            <MenuList>
-                              {categories ? (
-                                categories.map((category: BookshelfCategory)=>{
-                                  return (
-                                    <MenuItem
-                                      data-categoryid={category.id}
-                                      data-bookid={book.id}
-                                      key={category.id}
-                                      onClick={e=>addCategoryToBook(e)}
-                                    >
-                                      {category.name}
-                                    </MenuItem>
-                                  )
-                                })
-                              ):null}
+                                  <BiDotsHorizontalRounded size={20} />
+                                </MenuButton>
+                                <MenuList>
+                                  <MenuItem 
+                                    onClick={e=>navigate(`/chat/room?title=${book.title}&author=${book.author}`)}
+                                    fontWeight="bold"
+                                    icon={<MdOutlineChat size={20} />}
+                                  >
+                                    Chat Room
+                                  </MenuItem>
+                                  <MenuItem 
+                                    as={Link}
+                                    to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.title + " " + book.author)}`}
+                                    target="blank"
+                                    fontWeight="bold"
+                                    icon={<FaShoppingCart size={20} />}
+                                  >
+                                    Shop
+                                  </MenuItem>
+                                  <MenuItem
+                                    data-id={book.id}
+                                    onClick={e=>hideOrShowBookshelfBook([book.id,book.hidden ? "show" : "hide"])}
+                                    fontWeight="bold"
+                                    icon={<BiHide size={20} />}
+                                  >
+                                    {book.hidden ? "Unhide" : "Hide"} From Suggestions
+                                  </MenuItem>
 
-                            </MenuList>
-                          </Menu>
-                        ) : null}
-                      </Flex>
-                      <Accordion defaultIndex={[2]} allowMultiple>
-                        <AccordionItem 
-                          borderColor="black" 
-                          borderLeft="1px solid black"
-                          borderRight="1px solid black"
-                          rounded="sm"
-                          boxShadow="0"
-                          py={1}
-                          bg="white"
-                          _dark={{
-                            bg: "blackAlpha.300"
-                          }}
-                        >
-                          <AccordionButton>
-                            <Heading as="h3" size="sm">
-                              Review
-                            </Heading>
-                            <AccordionIcon ml="auto" />
-                          </AccordionButton>
-                          <AccordionPanel>
-                            <Flex
-                              direction="column"
-                              align="center"
-                              gap={2}
-                            >
-                              <Textarea
-                                rounded="md"
-                                defaultValue={book.review}
-                                id={`review-input-${book.id}`}
-                                maxLength={9000}
-                              />
-                              <Flex
-                                justify="flex-end"
-                                w="100%"
-                              >
-                                <Button
-                                  w="auto"
-                                  alignSelf="flex-end"
-                                  data-bookid={book.id}
-                                  onClick={e=>updateReview(e)}
-                                  size="sm"
-                                  backgroundColor="black"
-                                  color="white"
-                                >
-                                  Save Review
-                                </Button>
-                              </Flex>
+                                  <MenuItem
+                                    color="tomato"
+                                    data-id={book.id}
+                                    onClick={e=>deleteBookshelfBook(e)}
+                                    fontWeight="bold"
+                                    icon={<BiTrash size={20} />}
+                                  >
+                                    Delete
+                                  </MenuItem>
+                                </MenuList>
+                              </Menu>
                             </Flex>
-                          </AccordionPanel>
-                        </AccordionItem>
-                        <AccordionItem 
-                          borderColor="black" 
-                          borderLeft="1px solid black"
-                          borderRight="1px solid black"
-                          rounded="sm"
-                          boxShadow="0"
-                          py={1}
-                          bg="white"
-                          _dark={{
-                            bg: "blackAlpha.300"
-                          }}
-                        >
-                          <AccordionButton>
-                            <Heading as="h3" size="sm">
-                              Private Notes
-                            </Heading>
-                            <AccordionIcon ml="auto" />
-                          </AccordionButton>
-                          <AccordionPanel>
-                            <Flex
-                              direction="column"
-                              align="center"
-                              gap={2}
-                            >
-                              <Textarea
-                                as={ReactQuill}
-                                border="0" 
-                                rounded="md"
-                                theme="snow"
-                                sx={{
-                                  '.ql-toolbar': {
-                                    borderTopRadius: "5px",
-                                    borderColor: colorMode === "light" ? "#ccc" : "#222222"
-                                  },
-                                  '.ql-container': {
-                                    borderBottomRadius: "5px",
-                                    borderColor: colorMode === "light" ? "#ccc" : "#222222"
-                                  }
-                                }}
-                                modules={{
-                                  toolbar: [
-                                    [{ 'header': []}],
-                                    ['bold', 'italic', 'underline'],
-                                    [{'list': 'ordered'}, {'list': 'bullet'}],
-                                    ['link'],
-                                    [{'align': []}],
-                                    ['clean']
-                                  ]
-                                }}
-                                formats={[
-                                  'header','bold', 'italic', 'underline','list', 'bullet', 'align','link'
-                                ]}
-                                defaultValue={book.notes}
-                                onChange={e=>{ 
-                                    const notesInput: any = document.getElementById(`notes-input-${book.id}`);
-                                    notesInput!.value = e;
-                                  }
-                                }
-                                id={`notes-input-${book.id}`}
-                              />
-                              <Flex
-                                justify="space-between"
-                                w="100%"
+                          </Flex>
+                          <Flex>
+                            <Image
+                              src={book.image}
+                              maxH="100px"
+                              // minW="60px"
+                              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                              boxShadow="1px 1px 1px 1px darkgrey"
+                              alt={book.title}
+                            />
+                            <Box w="100%">
+                              <Box
+                                mx={2} 
+                                w="100%" 
+                                lineHeight={1.4}
+                                id={`bookshelf-book-${book.id}`}
                               >
-                                <Popover isLazy>
+                                <Flex
+                                  align="center"
+                                  // justify="space-between"
+                                  gap={1}
+                                >
+                                  <Heading 
+                                    as="h2" 
+                                    size="md"
+                                    // me={3}
+                                    noOfLines={2}
+                                  >
+                                    {book.title}
+                                  </Heading>
+                                  <Button
+                                    size="xs"
+                                    variant="ghost"
+                                    aria-label="edit"
+                                    // px={0}
+                                    minW="35px"
+                                    onClick={e=>showEditBookshelfBook(book.id)}
+                                  >
+                                    <MdEdit size={18} opacity={.9} />
+                                  </Button>
+                                </Flex>
+                                {/* <Popover isLazy>
                                   <PopoverTrigger>
-                                    <Flex 
-                                      align="center" 
-                                      justify="center" 
-                                      me={2}
-                                      _hover={{
-                                        cursor: "pointer"
-                                      }}
-                                    >
-                                      <ImInfo size={20} color="gray" />
-                                    </Flex>
+
                                   </PopoverTrigger>
                                   <PopoverContent>
                                     <PopoverArrow />
                                     <PopoverCloseButton />
                                     <PopoverBody 
+                                    _dark={{
+                                      bg: "black"
+                                    }}
                                       fontSize="sm"
-                                      _dark={{
-                                        bg: "black"
-                                      }}
                                     >
-                                      Private notes are only visible to you.
+                                      {book.description}
                                     </PopoverBody>
                                   </PopoverContent>
-                                </Popover>
-                                <Button
-                                  w="auto"
-                                  alignSelf="flex-end"
-                                  data-bookid={book.id}
-                                  onClick={e=>updateNotes(e)}
-                                  size="sm"
-                                  backgroundColor="black"
-                                  color="white"
+                                </Popover> */}
+                                <Text fontWeight="bold" fontSize="lg" noOfLines={1}>
+                                  {book.author}
+                                </Text>
+                                <Text fontStyle="italic">
+                                  {book.published_date ? dayjs(book.published_date).format("YYYY") : null}
+                                </Text>
+                                {book.page_count ? (
+                                  <Text noOfLines={1}>
+                                    {book.page_count} pages
+                                  </Text>
+                                ): null}
+                              </Box>
+                              <Box
+                                id={`edit-bookshelf-book-${book.id}`}
+                                display="none"
+                                mt={2}
+                                ms={2}
+                              >
+                                <Stack spacing={3} lineHeight={1.4}>
+                                  <FormControl variant="floatingstatic">
+                                    <FormLabel>
+                                      Title
+                                    </FormLabel>
+                                    <Input
+                                      type="text"
+                                      defaultValue={book.title}
+                                      id={`title-${book.id}`}
+                                      maxLength={200}
+                                    />
+                                  </FormControl>
+                                  <FormControl variant="floatingstatic">
+                                    <FormLabel>
+                                      Author
+                                    </FormLabel>
+                                    <Input
+                                      type="text"
+                                      defaultValue={book.author}
+                                      id={`author-${book.id}`}
+                                      maxLength={150}
+                                    />
+                                  </FormControl>
+                                  <FormControl variant="floatingstatic">
+                                    <FormLabel>
+                                      Year
+                                    </FormLabel>
+                                    <Input
+                                      type="text"
+                                      defaultValue={book.published_date ? dayjs(book.published_date).format("YYYY") : ""}
+                                      maxW="125px"
+                                      id={`year-${book.id}`}
+                                      maxLength={4}
+                                    />
+                                  </FormControl>
+                                  <Flex
+                                    justify="space-between"
+                                  >
+                                    <FormControl variant="floatingstatic">
+                                      <FormLabel>
+                                        Pages
+                                      </FormLabel>
+                                      <NumberInput
+                                        defaultValue={book.page_count ? book.page_count : ""}
+                                        maxW="125px"
+                                      >
+                                        <NumberInputField 
+                                          id={`pages-${book.id}`} 
+                                        />
+                                        <NumberInputStepper>
+                                          <NumberIncrementStepper />
+                                          <NumberDecrementStepper />
+                                        </NumberInputStepper>
+                                      </NumberInput>
+                                    </FormControl>
+                                    <Flex
+                                      align="center"
+                                      gap={1}
+                                    >
+                                      <Button
+                                        variant="outline"
+                                        borderColor="black"
+                                        color="black"
+                                        onClick={e=>cancelShowEditBookshelfBook(book.id)}
+                                        aria-label="cancel"
+                                      >
+                                        Cancel
+                                      </Button>
+                                      <Button
+                                        backgroundColor="black"
+                                        color="white"
+                                        onClick={e=>updateBookshelfBook(book.id)}
+                                        aria-label="save"
+                                      >
+                                        Save
+                                      </Button>
+                                    </Flex>
+                                  </Flex>
+                                </Stack>
+                              </Box>
+                              <Box ms={2}>
+                                <StarRating
+                                  ratingCallback={ratingCallback} 
+                                  starRatingId={book.id}
+                                  defaultRating={book.rating ? book.rating : 0}
+                                />
+                              </Box>
+                            </Box>
+                          </Flex>
+
+                          <Flex align="center" gap={1} wrap="wrap" justify="flex-end">
+                            {book.BookshelfBookCategory.length ? (
+                              book.BookshelfBookCategory.map((category,i)=>{
+                                return (
+                                  <Tag
+                                    size="xs"
+                                    rounded="lg"
+                                    p={1}
+                                    pl={4}
+                                    fontSize="sm"
+                                    display="flex"
+                                    alignItems="center"
+                                    gap={2}
+                                    key={i}
+                                    onClick={e=>{
+                                      const closeButton = document.getElementById(`close-button-${book.id}-${category.BookshelfCategory.id}`)
+                                      if(closeButton?.style.visibility === "hidden") {
+                                        closeButton.style.visibility = "visible"
+                                      }
+                                      else if (closeButton?.style.visibility === "visible") {
+                                        closeButton.style.visibility = "hidden"
+                                      }
+                                    }}
+                                    _hover={{
+                                      cursor: "pointer"
+                                    }}
+                                  >
+                                    <Text pointerEvents="none">
+                                      {category.BookshelfCategory.name}
+                                    </Text>
+                                    <Box 
+                                      id={`close-button-${book.id}-${category.BookshelfCategory.id}`}
+                                      style={{visibility: "hidden"}}
+                                      data-bookid={book.id}
+                                      data-categoryid={category.BookshelfCategory.id}
+                                      onClick={e=>removeCategoryFromBook(e)}
+                                      _hover={{
+                                        cursor: "pointer"
+                                      }}
+                                    >
+                                      <TagCloseButton 
+                                        color="red"
+                                        pointerEvents="none"
+                                      />
+                                    </Box>
+                                    {removeCategoryFromBookMutation.isLoading && (
+                                      <Spinner size="xs"/>
+                                    )}
+                                  </Tag>
+                                )
+                              })
+                            ): null}
+                            {categories?.length ? (
+                              <Menu>
+                                <MenuButton 
+                                  as={Button}
+                                  variant="ghost"
+                                  rounded="full"
+                                  height="20px"
+                                  minWidth="auto"
+                                  px={0}
+                                  title="menu"
                                 >
-                                  Save Notes
-                                </Button>
-                              </Flex>
-                            </Flex>
-                          </AccordionPanel>
-                        </AccordionItem>
-                      </Accordion>
-                    </Flex>
-                  )
-                })
-              ): null}
+                                  <BiPlus size={20} />
+                                </MenuButton>
+                                <MenuList>
+                                  {categories ? (
+                                    categories.map((category: BookshelfCategory)=>{
+                                      return (
+                                        <MenuItem
+                                          data-categoryid={category.id}
+                                          data-bookid={book.id}
+                                          key={category.id}
+                                          onClick={e=>addCategoryToBook(e)}
+                                        >
+                                          {category.name}
+                                        </MenuItem>
+                                      )
+                                    })
+                                  ):null}
+
+                                </MenuList>
+                              </Menu>
+                            ) : null}
+                          </Flex>
+                          <Accordion defaultIndex={[2]} allowMultiple>
+                            <AccordionItem 
+                              borderColor="black" 
+                              borderLeft="1px solid black"
+                              borderRight="1px solid black"
+                              rounded="sm"
+                              boxShadow="0"
+                              py={1}
+                              bg="white"
+                              _dark={{
+                                bg: "blackAlpha.300"
+                              }}
+                            >
+                              <AccordionButton>
+                                <Heading as="h3" size="sm">
+                                  Review
+                                </Heading>
+                                <AccordionIcon ml="auto" />
+                              </AccordionButton>
+                              <AccordionPanel>
+                                <Flex
+                                  direction="column"
+                                  align="center"
+                                  gap={2}
+                                >
+                                  <Textarea
+                                    rounded="md"
+                                    defaultValue={book.review}
+                                    id={`review-input-${book.id}`}
+                                    maxLength={9000}
+                                  />
+                                  <Flex
+                                    justify="flex-end"
+                                    w="100%"
+                                  >
+                                    <Button
+                                      w="auto"
+                                      alignSelf="flex-end"
+                                      data-bookid={book.id}
+                                      onClick={e=>updateReview(e)}
+                                      size="sm"
+                                      backgroundColor="black"
+                                      color="white"
+                                    >
+                                      Save Review
+                                    </Button>
+                                  </Flex>
+                                </Flex>
+                              </AccordionPanel>
+                            </AccordionItem>
+                            <AccordionItem 
+                              borderColor="black" 
+                              borderLeft="1px solid black"
+                              borderRight="1px solid black"
+                              rounded="sm"
+                              boxShadow="0"
+                              py={1}
+                              bg="white"
+                              _dark={{
+                                bg: "blackAlpha.300"
+                              }}
+                            >
+                              <AccordionButton>
+                                <Heading as="h3" size="sm">
+                                  Private Notes
+                                </Heading>
+                                <AccordionIcon ml="auto" />
+                              </AccordionButton>
+                              <AccordionPanel>
+                                <Flex
+                                  direction="column"
+                                  align="center"
+                                  gap={2}
+                                >
+                                  <Textarea
+                                    as={ReactQuill}
+                                    border="0" 
+                                    rounded="md"
+                                    theme="snow"
+                                    sx={{
+                                      '.ql-toolbar': {
+                                        borderTopRadius: "5px",
+                                        borderColor: colorMode === "light" ? "#ccc" : "#222222"
+                                      },
+                                      '.ql-container': {
+                                        borderBottomRadius: "5px",
+                                        borderColor: colorMode === "light" ? "#ccc" : "#222222"
+                                      }
+                                    }}
+                                    modules={{
+                                      toolbar: [
+                                        [{ 'header': []}],
+                                        ['bold', 'italic', 'underline'],
+                                        [{'list': 'ordered'}, {'list': 'bullet'}],
+                                        ['link'],
+                                        [{'align': []}],
+                                        ['clean']
+                                      ]
+                                    }}
+                                    formats={[
+                                      'header','bold', 'italic', 'underline','list', 'bullet', 'align','link'
+                                    ]}
+                                    defaultValue={book.notes}
+                                    onChange={e=>{ 
+                                        const notesInput: any = document.getElementById(`notes-input-${book.id}`);
+                                        notesInput!.value = e;
+                                      }
+                                    }
+                                    id={`notes-input-${book.id}`}
+                                  />
+                                  <Flex
+                                    justify="space-between"
+                                    w="100%"
+                                  >
+                                    <Popover isLazy>
+                                      <PopoverTrigger>
+                                        <Flex 
+                                          align="center" 
+                                          justify="center" 
+                                          me={2}
+                                          _hover={{
+                                            cursor: "pointer"
+                                          }}
+                                        >
+                                          <ImInfo size={20} color="gray" />
+                                        </Flex>
+                                      </PopoverTrigger>
+                                      <PopoverContent>
+                                        <PopoverArrow />
+                                        <PopoverCloseButton />
+                                        <PopoverBody 
+                                          fontSize="sm"
+                                          _dark={{
+                                            bg: "black"
+                                          }}
+                                        >
+                                          Private notes are only visible to you.
+                                        </PopoverBody>
+                                      </PopoverContent>
+                                    </Popover>
+                                    <Button
+                                      w="auto"
+                                      alignSelf="flex-end"
+                                      data-bookid={book.id}
+                                      onClick={e=>updateNotes(e)}
+                                      size="sm"
+                                      backgroundColor="black"
+                                      color="white"
+                                    >
+                                      Save Notes
+                                    </Button>
+                                  </Flex>
+                                </Flex>
+                              </AccordionPanel>
+                            </AccordionItem>
+                          </Accordion>
+                        </Flex>
+                      )
+                    })
+                  ): null}
+                </>
+              ):(
+                <Flex justify="center">
+                  <Spinner size="xl" />
+                </Flex>
+              )}
               {!endLoadMore && !isSearchResults ? (
                 <>
                   <Button
