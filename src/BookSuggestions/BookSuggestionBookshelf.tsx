@@ -136,6 +136,46 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
     return bookSuggestionBookshelfGet
   }
 
+  const searchBookshelfRef = useRef({} as HTMLInputElement);
+  const [isSearchResults,setIsSearchResults] = useState(false);
+  async function searchBookshelf() {
+    const searchTerm = searchBookshelfRef.current.value;
+    if (!searchTerm.length) {
+      setIsSearchResults(false);
+      getBookSuggestionBookshelf()
+    }
+    else {
+      let tokenCookie: string | null = Cookies.get().token;
+      axios
+        .get(server + "/api/searchbooksuggestionbookshelf",
+          {
+            headers: {
+              'authorization': tokenCookie
+            },
+            params: {
+              profilename: bookshelfProfileName,
+              searchTerm: searchTerm
+            }
+          }
+        )
+        .then((response)=>{
+          const {data} = response;
+          const currentbookshelf = data.message;
+          setCurrentBookshelf(currentbookshelf);
+          setBookSuggestionBookshelf({
+            ...currentbookshelf,
+            Flag: currentbookshelf?.Profile.country ? (countryFlagIconsReact as any)[currentbookshelf.Profile.country] : <Box></Box>
+          });
+          setIsSearchResults(true);
+          return currentbookshelf;
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.data.error)
+        })
+    }
+  }
+
   useEffect(()=>{
     getBookSuggestionBookshelf()
   },[take])
@@ -912,10 +952,26 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
               </Box>
               <Divider borderColor="blackAlpha.700" my={3} />
               <Box className="well">
-                <Heading as="h3" size="md">
+                <Heading as="h3" size="md" mb={2}>
                   Bookshelf
                 </Heading>
                 <Box>
+                  {bookSuggestionBookshelf?.BookshelfBook?.length ? (
+                    <Flex gap={1} mb={2}>
+                      <Input
+                        type="search"
+                        rounded="md"
+                        placeholder={`Search ${bookshelfProfileName}'s bookshelf`}
+                        ref={searchBookshelfRef}
+                        onKeyDown={e=> e.key === "Enter" ? searchBookshelf() : null}
+                      />
+                      <Button
+                        onClick={e=>searchBookshelf()}
+                      >
+                        Search
+                      </Button>
+                    </Flex>
+                  ): null}
                   {bookSuggestionBookshelf?.BookshelfBook?.length ? (
                     bookSuggestionBookshelf.BookshelfBook.map((book: BookshelfBook,i: number)=>{
                       return (
@@ -1012,7 +1068,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                     </Text>
                   )}
                   <Box>
-                    {!endLoadMore ? (
+                    {!endLoadMore && !isSearchResults ? (
                       <>
                         <Button
                           variant="ghost"
