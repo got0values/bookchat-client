@@ -130,8 +130,10 @@ export default function CurrentWeekSuggestionCount() {
             <Text fontWeight="bold">
               {sCount}/5 suggestions given today
             </Text>
-            <Text>
+            {/* <Text>
               Picture living in a world where reading options are influenced and limited by literary agents determining which authors get exposure based on mass appeal, online reviews and comments left by bots and internet trolls, and recommendations given by computers processing metadata through suspicious algorithms ignoring diversity and the complexity of readers' interests. They're all trying to manipulate us into reading what they want us to read. Help extinguish the fire and save our reading freedom by giving suggestions to fellow book lovers.
+            </Text> */}
+            <Text>Help extinguish the fire and save our reading freedom by giving suggestions to fellow book lovers.
             </Text>
           </PopoverBody>
         </PopoverContent>
