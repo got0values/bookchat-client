@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Goals } from "../types/types";
 import { 
   Box,
   Flex,
@@ -10,7 +11,15 @@ import {
   PopoverContent,
   Select,
   Divider,
-  PopoverArrow
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  FormControl,
+  FormLabel,
+  PopoverArrow,
+  useToast
 } from "@chakra-ui/react";
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
@@ -36,6 +45,7 @@ import { BookSuggestionPollVoteType } from "../types/types";
 
 export default function Analytics({server}: {server: string}) {
   dayjs.extend(utc);
+  const toast = useToast();
 
   ChartJS.register(
     BarElement,
@@ -103,6 +113,11 @@ export default function Analytics({server}: {server: string}) {
   const [bookshelfBooksAddedDateRange,setBookshelfBooksAddedDateRange] = useState<any[]>([]);
   const [bookshelfBooksAddedStartWeekDate,setBookshelfBooksAddedStartWeekDate] = useState<string>("");
 
+  const [goals,setGoals] = useState<Goals>({} as Goals);
+  const [yearSuggestions,setYearSuggestions] = useState(0);
+  const [yearPages,setYearPages] = useState(0);
+  const [yearBooks,setYearBooks] = useState(0);
+
   async function getStats() {
     const tokenCookie = Cookies.get().token
     await axios
@@ -119,6 +134,11 @@ export default function Analytics({server}: {server: string}) {
       }
       )
       .then((response)=>{
+        setGoals(prev=>response.data.message.goals)
+        setYearSuggestions(prev=>response.data.message.yearSuggestions)
+        setYearPages(prev=>response.data.message.yearPages)
+        setYearBooks(prev=>response.data.message.yearBooks)
+
         setSuggestionRating(response.data.message.suggestionRating)
         setSuggestionRatingGiven(response.data.message.suggestionRatingGiven)
         setSuggestionCount(response.data.message.suggestionCount)
@@ -262,9 +282,211 @@ export default function Analytics({server}: {server: string}) {
   useEffect(()=>{
     getStats()
   },[pagesReadStartWeekDate,currentlyReadingStartWeekDate,bookshelfBooksAddedStartWeekDate])
+
+  const suggestionsGoalRef = useRef({} as HTMLInputElement);
+  async function updateSuggestionsGoal() {
+    let tokenCookie: string | null = Cookies.get().token;
+    if (tokenCookie) {
+      await axios
+        .put(server + "/api/suggestionsgoal",
+        {
+          suggestions: suggestionsGoalRef.current.value ? parseInt(suggestionsGoalRef.current.value) : 0
+        },
+        {
+          headers: {
+            'authorization': tokenCookie
+          }
+        }
+        )
+        .then((response)=>{
+          toast({
+            description: "Suggestions goal updated",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          })
+          getStats()
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.message)
+        })
+    }
+  }
+  const pagesGoalRef = useRef({} as HTMLInputElement);
+  async function updatePagesGoal() {
+    let tokenCookie: string | null = Cookies.get().token;
+    if (tokenCookie) {
+      await axios
+        .put(server + "/api/pagesgoal",
+        {
+          pages: pagesGoalRef.current.value ? parseInt(pagesGoalRef.current.value) : 0
+        },
+        {
+          headers: {
+            'authorization': tokenCookie
+          }
+        }
+        )
+        .then((response)=>{
+          toast({
+            description: "Pages goal updated",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          })
+          getStats()
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.message)
+        })
+    }
+  }
+  const booksGoalRef = useRef({} as HTMLInputElement);
+  async function updateBooksGoal() {
+    let tokenCookie: string | null = Cookies.get().token;
+    if (tokenCookie) {
+      await axios
+        .put(server + "/api/booksgoal",
+        {
+          books: booksGoalRef.current.value ? parseInt(booksGoalRef.current.value) : 0
+        },
+        {
+          headers: {
+            'authorization': tokenCookie
+          }
+        }
+        )
+        .then((response)=>{
+          toast({
+            description: "Books goal updated",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          })
+          getStats()
+        })
+        .catch(({response})=>{
+          console.log(response)
+          throw new Error(response.message)
+        })
+    }
+  }
   
   return (
     <Box>
+
+      <Box
+        className="non-well"
+      >
+        <Heading as="h2" size="lg" mb={3} >{dayjs().year()} goals</Heading>
+        
+        <Flex align="center" justify="space-between" gap={2} rowGap={4} wrap="wrap">
+          <Box flex="1 1 250px">
+            <Flex
+              align="center"
+              gap={1}
+            >
+              <FormControl variant="floatingstatic">
+                <FormLabel>
+                  Suggestions
+                </FormLabel>
+                <NumberInput 
+                  borderColor="black" 
+                  value={goals?.suggestions ? goals?.suggestions : 0}
+                  onChange={e=>setGoals((prev:Goals)=>{
+                      return {...prev,suggestions: parseInt(e)}
+                  })}
+                >
+                  <NumberInputField ref={suggestionsGoalRef}/>
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
+              <Button
+                variant="outline"
+                colorScheme="black"
+                onClick={e=>updateSuggestionsGoal()}
+              >
+                {goals?.suggestions === null ? "Set" : "Update"}
+              </Button>
+            </Flex>
+            <Text>Current: <b>{yearSuggestions} ({ goals?.suggestions ? ((yearSuggestions/(goals?.suggestions ? goals?.suggestions : 0) * 100).toFixed(1)) : 0 }%)</b></Text>
+          </Box>
+          <Box flex="1 1 250px">
+            <Flex
+              align="center"
+              gap={1}
+            >
+              <FormControl variant="floatingstatic">
+                <FormLabel>
+                  Pages
+                </FormLabel>
+                <NumberInput 
+                  borderColor="black" 
+                  value={goals?.pages ? goals?.pages : 0} 
+                  onChange={e=>setGoals((prev:Goals)=>{
+                    return {...prev,pages: parseInt(e)}
+                  })}
+                >
+                  <NumberInputField ref={pagesGoalRef}/>
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
+              <Button
+                variant="outline"
+                colorScheme="black"
+                onClick={e=>updatePagesGoal()}
+              >
+                {goals?.pages === null ? "Set" : "Update"}
+              </Button>
+            </Flex>
+            <Text>Current: <b>{yearPages} ({ goals?.pages ? ((yearPages/(goals?.pages ? goals?.pages : 0) * 100).toFixed(1)) : 0 }%)</b></Text>
+          </Box>
+          <Box flex="1 1 250px">
+            <Flex
+              align="center"
+              gap={1}
+            >
+              <FormControl variant="floatingstatic">
+                <FormLabel>
+                  Books
+                </FormLabel>
+                <NumberInput 
+                  borderColor="black" 
+                  value={goals?.books ? goals?.books : 0} 
+                  onChange={e=>setGoals((prev:Goals)=>{
+                    return {...prev,books: parseInt(e)}
+                  })}
+                >
+                  <NumberInputField ref={booksGoalRef}/>
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
+              <Button
+                variant="outline"
+                colorScheme="black"
+                onClick={e=>updateBooksGoal()}
+              >
+                {goals?.books === null ? "Set" : "Update"}
+              </Button>
+            </Flex>
+            <Text>Current: <b>{yearBooks} ({ goals?.books ? (yearBooks/(goals?.books ? goals?.books : 0) * 100).toFixed(1) : 0 }%)</b></Text>
+          </Box>
+        </Flex>
+      </Box>
+
+      <Divider mt={3} />
+
       <Heading as="h2" size="lg" className="non-well">All-time</Heading>
       <Flex
         align="center"

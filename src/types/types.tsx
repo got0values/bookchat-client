@@ -499,3 +499,11 @@ export interface BookSuggestionPollVoteWinnerType {
   created_on: string;
   Profile: ProfileType;
 }
+
+export interface Goals {
+  id: number;
+  profile: number;
+  suggestions: number;
+  pages: number;
+  books: number;
+}
