@@ -19,7 +19,8 @@ import {
   FormControl,
   FormLabel,
   PopoverArrow,
-  useToast
+  useToast,
+  Progress
 } from "@chakra-ui/react";
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
@@ -382,8 +383,8 @@ export default function Analytics({server}: {server: string}) {
       >
         <Heading as="h2" size="lg" mb={3} >{dayjs().year()} goals</Heading>
         
-        <Flex align="center" justify="space-between" gap={2} rowGap={4} wrap="wrap">
-          <Box flex="1 1 250px">
+        <Flex align="center" justify="space-between" wrap="wrap">
+          <Box flex="1 1 250px" className="well" p={4}>
             <Flex
               align="center"
               gap={1}
@@ -414,9 +415,19 @@ export default function Analytics({server}: {server: string}) {
                 {goals?.suggestions === null ? "Set" : "Update"}
               </Button>
             </Flex>
-            <Text>Current: <b>{yearSuggestions} ({ goals?.suggestions ? ((yearSuggestions/(goals?.suggestions ? goals?.suggestions : 0) * 100).toFixed(1)) : 0 }%)</b></Text>
+            <Flex align="center" gap={2} mt={2}>
+              <Progress 
+                height="32px"
+                // bg="gray.200"
+                colorScheme="teal"
+                flex="1 1 auto"
+                hasStripe={true}
+                value={goals?.suggestions ? (yearSuggestions/(goals?.suggestions ? goals?.suggestions : 0) * 100) : 0} 
+              />
+              <b>{yearSuggestions} ({ goals?.suggestions ? ((yearSuggestions/(goals?.suggestions ? goals?.suggestions : 0) * 100).toFixed(1)) : 0 })%</b>
+            </Flex>
           </Box>
-          <Box flex="1 1 250px">
+          <Box flex="1 1 250px" className="well" p={4}>
             <Flex
               align="center"
               gap={1}
@@ -447,9 +458,19 @@ export default function Analytics({server}: {server: string}) {
                 {goals?.pages === null ? "Set" : "Update"}
               </Button>
             </Flex>
-            <Text>Current: <b>{yearPages} ({ goals?.pages ? ((yearPages/(goals?.pages ? goals?.pages : 0) * 100).toFixed(1)) : 0 }%)</b></Text>
+            <Flex align="center" gap={2} mt={2}>
+              <Progress 
+                height="32px"
+                // bg="gray.200"
+                colorScheme="teal"
+                flex="1 1 auto"
+                hasStripe={true}
+                value={ goals?.pages ? (yearPages/(goals?.pages ? goals?.pages : 0) * 100) : 0 } 
+              />
+              <b>{yearPages} ({ goals?.pages ? ((yearPages/(goals?.pages ? goals?.pages : 0) * 100).toFixed(1)) : 0 }%)</b>
+            </Flex>
           </Box>
-          <Box flex="1 1 250px">
+          <Box flex="1 1 250px" className="well" p={4}>
             <Flex
               align="center"
               gap={1}
@@ -480,7 +501,17 @@ export default function Analytics({server}: {server: string}) {
                 {goals?.books === null ? "Set" : "Update"}
               </Button>
             </Flex>
-            <Text>Current: <b>{yearBooks} ({ goals?.books ? (yearBooks/(goals?.books ? goals?.books : 0) * 100).toFixed(1) : 0 }%)</b></Text>
+            <Flex align="center" gap={2} mt={2}>
+              <Progress 
+                height="32px"
+                // bg="gray.200"
+                colorScheme="teal"
+                flex="1 1 auto"
+                hasStripe={true}
+                value={goals?.books ? (yearBooks/(goals?.books ? goals?.books : 0) * 100) : 0} 
+              />
+              <b>{yearBooks} ({ goals?.books ? (yearBooks/(goals?.books ? goals?.books : 0) * 100).toFixed(1) : 0 }%)</b>
+            </Flex>
           </Box>
         </Flex>
       </Box>
