@@ -39,13 +39,13 @@ function App() {
         } 
       />
       <Route 
-        path="/registerb" 
+        path="/register" 
         element={<Register onLogin={onLogin} server={server} />} 
       />
-      <Route 
+      {/* <Route 
         path="/register" 
         element={<RegisterTwo onLogin={onLogin} server={server} />} 
-      />
+      /> */}
       <Route 
         path="/terms" 
         element={<Terms/>} 

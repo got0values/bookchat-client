@@ -243,7 +243,7 @@ const Login: React.FC<LoginFormProps> = ({ onLogin, server }) => {
           />
         </Center>
         <Text fontSize={'lg'} color={'gray.600'} textAlign="center">
-          Don't have an account? <Link href="/registerb" fontWeight="bold">Register</Link>
+          Don't have an account? <Link href="/register" fontWeight="bold">Register</Link>
         </Text>
         {/* <Text fontSize={'lg'} color={'gray.600'} textAlign="center">
           Don't have an account? <Link href="https://bookchatnoir.com/apply" fontWeight="bold">Apply</Link>
