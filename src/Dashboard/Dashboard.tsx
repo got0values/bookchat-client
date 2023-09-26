@@ -1215,11 +1215,13 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     <>
                       {randomSorted.length && (
                         randomSorted.map((reading: CurrentlyReading,i:number)=>{
-                          return (
-                            <React.Fragment key={`random-feed-${reading.id}`}>
-                              <CurrentlyReadingFeed reading={reading}/>
-                            </React.Fragment>
-                          )
+                          if (reading.profile !== 20) {
+                            return (
+                              <React.Fragment key={`random-feed-${reading.id}`}>
+                                <CurrentlyReadingFeed reading={reading}/>
+                              </React.Fragment>
+                            )
+                          }
                         })
                       )}
                       {!endLoadMore && !isFetching ? (
