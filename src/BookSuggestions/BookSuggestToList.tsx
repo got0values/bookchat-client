@@ -9,6 +9,7 @@ import {
   Flex,
   Spinner,
   useDisclosure,
+  Text,
   Image
   // Text,
   // Avatar,
@@ -118,9 +119,12 @@ export function BookSuggestionToList({server}: {server: string;}) {
 
   return (
     <>
-      <CurrentWeekSuggestionCount/>
+      {/* <CurrentWeekSuggestionCount/> */}
       {firstBookshelf ? (
-        <Flex justify="center">
+        <Flex justify="center" align="center" direction="column" minHeight="50vh">
+          <Text fontWeight="bold" fontSize="sm" mb={3}>
+            Browse bookshelves to get some TBR ideas. If you think a bookshelf owner would enjoy a certain book that's not on their bookshelf yet, let them know about it by sending them a friendly book suggestion.
+          </Text>
           <Button
             as={Link}
             to={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}

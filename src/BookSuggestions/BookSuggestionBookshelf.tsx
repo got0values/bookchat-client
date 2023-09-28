@@ -731,7 +731,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                   </Text>
                 ): (
                   <>
-                    <CurrentWeekSuggestionCount/>
+                    {/* <CurrentWeekSuggestionCount/> */}
                     <Input
                       type="search"
                       bg="white"
