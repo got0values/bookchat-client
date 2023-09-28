@@ -584,7 +584,6 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
       await axios
         .get("https://www.googleapis.com/books/v1/volumes?q=" + navSearchValue + "&key=" + gbooksapi)
         .then((response)=>{
-          console.log(response.data)
           setSearchData(prev=>{
             return {...prev,books: response.data.items.slice(0,9) }
           })
