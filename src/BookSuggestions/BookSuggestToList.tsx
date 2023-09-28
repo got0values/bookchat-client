@@ -121,7 +121,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
     <>
       {/* <CurrentWeekSuggestionCount/> */}
       {firstBookshelf ? (
-        <Flex justify="center" align="center" direction="column" minHeight="50vh">
+        <Flex justify="center" align="center" direction="column">
           <Text fontWeight="bold" fontSize="sm" mb={3}>
             Browse bookshelves to get some TBR ideas. If you think a bookshelf owner would enjoy a certain book that's not on their bookshelf yet, let them know about it by sending them a friendly book suggestion.
           </Text>
