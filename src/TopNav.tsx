@@ -21,11 +21,13 @@ import {
   Heading,
   useDisclosure,
   useColorModeValue,
-  TableContainer,
-  Table,
-  Tbody,
-  Tr,
-  Td,
+  Popover,
+  PopoverTrigger,
+  PopoverCloseButton,
+  PopoverHeader,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
   Badge,
   Text,
   Icon,
@@ -43,12 +45,12 @@ import {
   Link as ChakraLink,
 } from '@chakra-ui/react';
 import { SkipNavLink, SkipNavContent } from '@chakra-ui/skip-nav';
-import { MdLogout, MdOutlineContactSupport } from 'react-icons/md';
+import { MdLogout, MdOutlineContactSupport, MdOutlineChat } from 'react-icons/md';
 import { BsFillMoonFill, BsFillSunFill, BsFillChatFill, BsPostcardHeartFill } from 'react-icons/bs';
 import { FiSettings } from 'react-icons/fi';
 import { RxDotFilled } from 'react-icons/rx';
 import { AiOutlineBell, AiFillHome } from 'react-icons/ai';
-import { FaSearch, FaBookReader } from 'react-icons/fa';
+import { FaSearch, FaBookReader, FaStore } from 'react-icons/fa';
 import { ImBooks, ImStatsDots } from 'react-icons/im';
 import logoIcon from './assets/BookChatNoirNewBlack.png';
 import logoIconWhite from './assets/BookChatNoirNewWhite.png';
@@ -568,11 +570,23 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
           console.log(response)
           throw new Error(response.data.message)
         })
+      // await axios
+      //   .get("https://openlibrary.org/search.json?q=" + navSearchValue)
+      //   .then((response)=>{
+      //     setSearchData(prev=>{
+      //       return {...prev,books: response.data.docs.slice(0,10) }
+      //     })
+      //   })
+      //   .catch((error)=>{
+      //     console.log(error)
+      //   })
+
       await axios
-        .get("https://openlibrary.org/search.json?q=" + navSearchValue)
+        .get("https://www.googleapis.com/books/v1/volumes?q=" + navSearchValue + "&key=" + gbooksapi)
         .then((response)=>{
+          console.log(response.data)
           setSearchData(prev=>{
-            return {...prev,books: response.data.docs.slice(0,10) }
+            return {...prev,books: response.data.items.slice(0,9) }
           })
         })
         .catch((error)=>{
@@ -582,6 +596,48 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
   })
   function navSearch(navSearchValue: string) {
     navSearchMutation.mutate(navSearchValue);
+  }
+
+  async function addToTbr(tbrBookToAdd: any) {
+    let tokenCookie: string | null = Cookies.get().token;
+    await axios
+      .post(server + "/api/addtbrbook", 
+        {
+          book: tbrBookToAdd
+        },
+        {headers: {
+          'authorization': tokenCookie
+        }}
+      )
+      .then((response)=>{
+        if (response.data.success === false) {
+          toast({
+            description: response.data?.message ? response.data.message : "An error has occurred",
+            status: "error",
+            duration: 9000,
+            isClosable: true
+          })
+        }
+        else {
+          toast({
+            description: "Book added to TBR",
+            status: "success",
+            duration: 9000,
+            isClosable: true
+          })
+          queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
+          queryClient.resetQueries({queryKey: ['bookshelfKey']})
+        }
+      })
+      .catch(({response})=>{
+        console.log(response)
+        toast({
+          description: "An error has occurred",
+          status: "error",
+          duration: 9000,
+          isClosable: true
+        })
+      })
   }
 
   const notificationQuery = useQuery({ queryKey: ['notificationKey'], queryFn: getNotifications });
@@ -1307,56 +1363,103 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                 <i>No book clubs based on the search term</i>
               )}
             </Box>
+
             <Box my={2}>
-              <Heading as="h3" size="md">Book Chat Rooms</Heading>
-              {searchData && searchData.books?.length > 0 ? (
-                <TableContainer>
-                  <Table size='sm'>
-                    <Tbody>
-                      {searchData.books?.map((book,i)=>{
-                        return (
-                          <Tr key={i}>
-                            <Td fontStyle="italic" px={0} maxW="100px" overflow="hidden" textOverflow="ellipsis">
-                              {book.title}
-                            </Td>
-                            <Td px={0} fontStyle="italic">
-                              {book.publish_date?.length ? dayjs(book.publish_date[0]).format('YYYY') : ""}
-                            </Td>
-                            <Td px={1} maxW="100px" overflow="hidden" textOverflow="ellipsis">
-                              {book.author_name ? book.author_name[0] : ""}
-                            </Td>
-                            <Td px={0}>
+              <Heading as="h3" size="md">Books</Heading>
+              <Flex
+                gap={2}
+                wrap="wrap"
+              >
+                {searchData && searchData.books?.length > 0 ? (
+                  <>
+                    {searchData.books.map(book=>{
+                      return (
+                        <Box
+                          flex="1 1 125px"
+                          maxWidth="125px"
+                        >
+                          <Image
+                            // maxHeight="100px"
+                            className="book-image"
+                            onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                            src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
+                            boxShadow="1px 1px 1px 1px darkgrey"
+                            mb={1}
+                          />
+                          <Box lineHeight={1.2}>
+                            <Popover isLazy>
+                              <PopoverTrigger>
+                                <Text 
+                                  noOfLines={2}
+                                  fontWeight="bold"
+                                  _hover={{
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  {book.volumeInfo.title}
+                                </Text>
+                              </PopoverTrigger>
+                              <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverHeader>{book.volumeInfo.title}</PopoverHeader>
+                                <PopoverBody>{book.volumeInfo.description}</PopoverBody>
+                              </PopoverContent>
+                            </Popover>
+                            <Text fontSize="sm" noOfLines={1}>
+                              {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
+                            </Text>
+                            <Text fontSize="sm" fontStyle="italic">
+                              {book.volumeInfo.publishedDate ? dayjs(book.volumeInfo.publishedDate).format('YYYY') : null}
+                            </Text>
+                            <Flex align="center" gap={1}>
                               <Button 
                                 as="a"
-                                href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.title + " " + (book.author_name ? book.author_name[0] : null))}`}
+                                href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.volumeInfo.title + " " + (book.volumeInfo.authors ? book.volumeInfo.authors[0] : null))}`}
                                 target="blank"
                                 size="xs"
+                                variant="ghost"
+                                p={0}
+                              >
+                                <FaStore size={17} />
+                              </Button>
+                              <Button
+                                size="xs"
+                                as={Link}
+                                to={`/chat/room?title=${book.volumeInfo.title}&author=${book.volumeInfo.authors ? book.volumeInfo.authors[0] : ""}`}
+                                onClick={e=>closeSearchModal()}
+                                variant="ghost"
+                                p={0}
+                              >
+                                <MdOutlineChat size={17} />
+                              </Button>
+                              <Button
+                                size="xs"
+                                onClick={e=>addToTbr({
+                                  image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
+                                  title: book.volumeInfo.title,
+                                  author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : null,
+                                  description: book.volumeInfo.description,
+                                  isbn: book.volumeInfo.industryIdentifiers?.length ? book.volumeInfo.industryIdentifiers[0].identifier : "",
+                                  page_count: book.volumeInfo.pageCount ? book.volumeInfo.pageCount : null,
+                                  published_date: book.volumeInfo.publishedDate ? dayjs(book.volumeInfo.publishedDate).format('YYYY') : "",
+                                })}
                                 variant="outline"
                                 backgroundColor="white"
                                 color="black"
                               >
-                                Buy
+                                TBR
                               </Button>
-                            </Td>
-                            <Td px={0}>
-                              <Button
-                                size="xs"
-                                as={Link}
-                                to={`/chat/room?title=${book.title}&author=${book.author_name ? book.author_name[0] : ""}`}
-                                onClick={e=>closeSearchModal()}
-                                backgroundColor="black"
-                                color="white"
-                              >
-                                Chat
-                              </Button>
-                            </Td>
-                          </Tr>
-                        )
-                      })}
-                    </Tbody>
-                  </Table>
-                </TableContainer>
-              ): null}
+                            </Flex>
+                          </Box>
+                        </Box>
+                      )
+                    })}
+                  </>
+                ) : (
+                  null
+                )}
+              </Flex>
             </Box>
 
           </ModalBody>

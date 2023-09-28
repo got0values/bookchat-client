@@ -174,7 +174,7 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
                           image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
                           isbn: book.volumeInfo.industryIdentifiers?.length ? book.volumeInfo.industryIdentifiers[0].identifier : null,
                           description: book.volumeInfo.description,
-                          page_count: book.volumeInfo.pageCount ? book.volumeInfo.pageCount: null,
+                          page_count: book.volumeInfo.pageCount ? book.volumeInfo.pageCount : null,
                           published_date: book.volumeInfo.publishedDate ? dayjs(book.volumeInfo.publishedDate).format('YYYY') : null
                         } as any)}
                         backgroundColor="black"
