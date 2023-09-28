@@ -1046,19 +1046,39 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                                 <Text fontWeight="bold">
                                   {bookSuggestionBookshelf?.Profile?.username}'s rating:
                                 </Text>
-                                <StarRating
-                                  ratingCallback={null} 
-                                  starRatingId={book.id}
-                                  defaultRating={book.rating}
-                                />
+                                {book.rating !== null ? (
+                                  <StarRating
+                                    ratingCallback={null} 
+                                    starRatingId={book.id}
+                                    defaultRating={book.rating}
+                                  />
+                                ): (
+                                  <Text>n/a</Text>
+                                )}
                               </Flex>
-                              {book.review ? (
-                                <Text fontStyle="italic">
-                                  "{book.review}"
-                                </Text>
-                              ): null}
+                              <Flex align="center" gap={1}>
+                                <Button
+                                  as={Link}
+                                  to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.title + " " + book.author)}`}
+                                  target="blank"
+                                  size="xs"
+                                  variant="ghost"
+                                  aria-label="View more info in Bookshop"
+                                  title="View more info in Bookshop"
+                                  p={0}
+                                >
+                                  <FaStore size={17} />
+                                </Button>
+                              </Flex>
                             </Box>
                           </Flex>
+                          <Box>
+                            {book.review ? (
+                              <Text fontStyle="italic">
+                                "{book.review}"
+                              </Text>
+                            ): null}
+                          </Box>
                         </Box>
                       )
                     })
