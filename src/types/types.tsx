@@ -507,3 +507,17 @@ export interface Goals {
   pages: number;
   books: number;
 }
+
+export interface TbrBook {
+  id: number;
+  profile: number;
+  google_books_id: string;
+  title: string;
+  author: string;
+  image: string;
+  description: string;
+  isbn: string;
+  page_count: number;
+  published_date: string;
+  created_on: string;
+}

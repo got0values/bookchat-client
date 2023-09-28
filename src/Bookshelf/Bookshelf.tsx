@@ -6,7 +6,6 @@ import {
   Box,
   Tag,
   TagCloseButton,
-  Heading,
   Text,
   Image,
   Spinner,
@@ -54,11 +53,18 @@ import {
   FormLabel,
   Checkbox,
   CheckboxGroup,
+  Tabs, 
+  TabList,
+  Heading, 
+  TabPanel,
+  TabPanels, 
+  Tab, 
   useColorMode
 } from "@chakra-ui/react";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
 import BooksSearch from "../shared/BooksSearch";
 import BookImage from "../shared/BookImage";
+import Tbr from "./Tbr";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { MdOutlineChat, MdEdit } from 'react-icons/md';
 import { BiDotsHorizontalRounded, BiTrash, BiPlus, BiHide } from 'react-icons/bi';
@@ -1163,1075 +1169,596 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
         isLoaded={!isLoading}
       >
         <Heading as="h1" className="visually-hidden">Bookshelf</Heading>
-        <Flex flexWrap="wrap" align="flex-start">
-          <Box flex="1 1 30%">
-            <Box
-              className="well"
+          <Tabs 
+            variant="enclosed"
+            p={2}
+            isLazy
+          >
+            <TabList
+              // borderBottom="none"
             >
-              <Flex
-                align="center"
-                justify="space-between"
-                className="non-well"
+              <Tab 
+                fontWeight="bold"
+                className="tab-button"
+                _selected={{
+                  borderBottom: "2px solid gray"
+                }}
               >
-                <FormLabel 
-                  htmlFor="allow-suggestions"
-                  mb={0}
-                  fontWeight="bold"
-                >
-                  Request suggestions (make public)
-                </FormLabel>
-                <Switch
-                  id="allow-suggestions"
-                  isChecked={allowSuggestions === true ? true : false}
-                  ref={allowSuggestionsRef}
-                  onChange={e=>allowSuggestionsToggle()}
-                />
-              </Flex>
-              {allowSuggestions ? (
-                <Flex
-                  direction="column"
-                  align="center"
-                  gap={1}
-                  mx={1}
-                >
-                  <Textarea
-                    placeholder="Suggestion notes"
-                    defaultValue={suggestionsNotesDefaultValue}
-                    ref={suggestionsNotesRef}
-                    maxLength={500}
-                    borderColor="black"
-                  >
-                  </Textarea>
-                  <Flex
-                    justify="flex-end"
-                    w="100%"
-                    gap={1}
-                  >
-                    <Popover isLazy>
-                      <PopoverTrigger>
-                        <Flex 
-                          align="center" 
-                          justify="center" 
-                          me={2}
-                          _hover={{
-                            cursor: "pointer"
-                          }}
-                        >
-                          <ImInfo size={20} color="gray" />
-                        </Flex>
-                      </PopoverTrigger>
-                      <PopoverContent>
-                        <PopoverArrow />
-                        <PopoverCloseButton />
-                        <PopoverBody 
-                          fontSize="sm"
-                          _dark={{
-                            bg: "black"
-                          }}
-                        >
-                          Be descriptive about what you're looking for. Bookshelves without any books and no suggestion notes will not be listed.
-                        </PopoverBody>
-                      </PopoverContent>
-                    </Popover>
-                    <Button
-                      onClick={e=>saveNotes()}
-                      colorScheme="black"
-                      variant="outline"
-                      size="sm"
-                    >
-                      Save notes
-                    </Button>  
-                  </Flex>
-                  <Flex 
-                    width="100%"
-                    direction="column"
-                    gap={2}
-                  >
-                    <Divider my={1} />
-                    <Flex
-                      align="center"
-                      justify="space-between"
-                      width="100%"
-                      className="non-well"
-                      sx={{
-                        m: "0!important"
-                      }}
-                    >
-                      <FormLabel 
-                        htmlFor="start-poll"
-                        fontWeight="bold"
-                        mb={0}
-                      >
-                        Start a poll?
-                      </FormLabel>
-                      <Switch
-                        id="start-poll"
-                        isChecked={startPoll}
-                        // ref={allowSuggestionsRef}
-                        onChange={e=>setStartPoll(prev=>!prev)}
-                      />
-                    </Flex>
-                    {startPoll ? (
-                      <Box>
-                        <Input 
-                          placeholder="Search for poll books" 
-                          size="lg"
-                          borderColor="black"
-                          onClick={e=>onOpenPollModal()}
-                          sx={{
-                            cursor: 'none',
-                            '&:hover': {
-                              cursor: 'pointer'
-                            }
-                          }}
-                          _dark={{
-                            borderColor: "darkgrey"
-                          }}
-                          readOnly={true}
-                        />
-                        <Flex 
-                          justify="space-between" 
-                          w="100%" 
-                          flexWrap="nowrap" 
-                          gap={2}
-                          p={5}
-                        >
-                          <Box flex="0 1 125px">
-                            {pollBookOne !== null ? (
-                            <>
-                              <Box maxW="75px">
-                                <Heading as="h5" size="sm" textAlign="center">1</Heading>
-                                <Image
-                                  maxW="100%" 
-                                  w="100%"
-                                  h="auto"
-                                  pt={2} 
-                                  mb={1}
-                                  className="book-image"
-                                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                  src={pollBookOne.image}
-                                  boxShadow="1px 1px 1px 1px darkgrey"
-                                  alt={pollBookOne.title}
-                                />
-                              </Box>
-                              <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
-                                {pollBookOne.title}
-                              </Text>
-                              <Text fontSize="sm">
-                                {pollBookOne.author}
-                              </Text>
-                              <Button
-                                size="xs"
-                                onClick={e=>setPollBookOne(null)}
-                              >
-                                Clear
-                              </Button> 
-                            </>
-                            ) : null}
-                          </Box>
-                          <Box flex="0 1 125px">
-                            {pollBookTwo !== null ? (
-                              <>
-                                <Box maxW="75px">
-                                  <Heading as="h5" size="sm" textAlign="center">2</Heading>
-                                  <Image
-                                    maxW="100%" 
-                                    w="100%"
-                                    h="auto"
-                                    pt={2} 
-                                    mb={1}
-                                    className="book-image"
-                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                    src={pollBookTwo.image}
-                                    boxShadow="1px 1px 1px 1px darkgrey"
-                                    alt={pollBookTwo.title}
-                                  />
-                                </Box>
-                                <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
-                                  {pollBookTwo.title}
-                                </Text>
-                                <Text fontSize="sm">
-                                  {pollBookTwo.author}
-                                </Text>
-                                <Button
-                                  size="xs"
-                                  onClick={e=>setPollBookTwo(null)}
-                                >
-                                  Clear
-                                </Button>
-                              </>
-                            ) : null}
-                          </Box>
-                          <Box flex="0 1 125px">
-                            {pollBookThree !== null ? (
-                              <>
-                                <Box maxW="75px">
-                                  <Heading as="h5" size="sm" textAlign="center">3</Heading>
-                                  <Image
-                                    maxW="100%" 
-                                    w="100%"
-                                    h="auto"
-                                    pt={2} 
-                                    mb={1}
-                                    className="book-image"
-                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                    src={pollBookThree.image}
-                                    boxShadow="1px 1px 1px 1px darkgrey"
-                                    alt={pollBookThree.title}
-                                  />
-                                </Box>
-                                <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
-                                  {pollBookThree.title}
-                                </Text>
-                                <Text fontSize="sm">
-                                  {pollBookThree.author}
-                                </Text>
-                                <Button
-                                  size="xs"
-                                  onClick={e=>setPollBookThree(null)}
-                                >
-                                  Clear
-                                </Button>
-                              </>
-                            ) : null}
-                          </Box>
-                        </Flex>
-                      </Box>
-                    ): null}
-                    <Flex justify="flex-end" w="100%" gap={1}>
-                      <Popover isLazy>
-                        <PopoverTrigger>
-                          <Flex 
-                            align="center" 
-                            justify="center" 
-                            me={2}
-                            _hover={{
-                              cursor: "pointer"
-                            }}
-                          >
-                            <ImInfo size={20} color="gray" />
-                          </Flex>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <PopoverArrow />
-                          <PopoverCloseButton />
-                          <PopoverBody 
-                            fontSize="sm"
-                            _dark={{
-                              bg: "black"
-                            }}
-                          >
-                            Saving will reset any current poll votes (if any).
-                          </PopoverBody>
-                        </PopoverContent>
-                      </Popover>
-                      <Button
-                        onClick={e=>savePollVoting()}
-                        colorScheme="black"
-                        variant="outline"
-                        size="sm"
-                      >
-                        Save poll
-                      </Button>  
-                    </Flex>
-                  </Flex>
-                </Flex>
-              ) : (
-                null
-              )}
-            </Box>
-            <Stack className="well">
-              <Box>
-                <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
-                  <Heading as="h2" size="md">
-                    Filter by Tags
-                  </Heading>
-
-                  {!showAddCategory && (
+                Bookshelf
+              </Tab>
+              <Tab 
+                fontWeight="bold"
+                className="tab-button"
+                _selected={{
+                  borderBottom: "2px solid gray"
+                }}
+              >
+                TBR
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel px={0}>
+                <Flex flexWrap="wrap" align="flex-start">
+                  <Box flex="1 1 30%">
                     <Box
-                      onClick={e=>setShowAddCategory(true)}
-                      rounded="md"
-                      _hover={{
-                        cursor: "pointer",
-                        bg: "grey"
-                      }}
+                      className="well"
                     >
-                      <IoIosAdd size={25} />
-                    </Box>
-                  )}
-
-                </Flex>
-
-                {showAddCategory && (
-                  <>
-                    <Flex
-                      align="center"
-                      justify="space-between"
-                      gap={1}
-                      mb={2}
-                    >
-                      <Input
-                        type="text"
-                        ref={createCategoryInputRef}
-                        onKeyUp={e=>e.key === 'Enter' ? createCategoryButtonRef.current.click() : null}
-                        maxLength={40}
-                        borderColor="black"
-                      />
-                      <Button
-                        ref={createCategoryButtonRef}
-                        onClick={e=>createCategory()}
-                        backgroundColor="black"
-                        color="white"
+                      <Flex
+                        align="center"
+                        justify="space-between"
+                        className="non-well"
                       >
-                        Add
-                      </Button>
-                      <Button
-                        onClick={e=>setShowAddCategory(false)}
-                        variant="outline"
-                        borderColor="black"
-                      >
-                        Cancel
-                      </Button>
-                    </Flex>
-                    {createCategoryError && (
-                      <Text color="red">{createCategoryError}</Text>
-                    )}
-                  </>
-                )}
-              </Box>
-
-              <CheckboxGroup
-                onChange={e=>filterByCategory(e as string[])}
-              >         
-                <Stack>
-                  {categories ? (
-                    categories.map((category: BookshelfCategory,i: number)=>{
-                      return (
-                        <Flex
-                          align="center"
-                          justify="space-between"
-                          key={i}
+                        <FormLabel 
+                          htmlFor="allow-suggestions"
+                          mb={0}
+                          fontWeight="bold"
                         >
-                          <Checkbox 
-                            me={1}
-                            value={category.id.toString()}
-                          >
-                            <Text>
-                              {category.name}
-                            </Text>
-                          </Checkbox>
-                          <Button 
-                            size="xs" 
-                            p={0}
-                            colorScheme="red"
-                            variant="ghost"
-                            rounded="xl"
-                            data-id={category.id}
-                            onClick={e=>removeCategory(e)}
-                          >
-                            <Box
-                              as={IoIosRemove} 
-                              size={20} 
-                              pointerEvents="none"
-                            />
-                          </Button>
-                        </Flex>
-                      )
-                    })
-                  ): null}
-                </Stack>
-              </CheckboxGroup>
-              <Divider/>
-              <Heading as="h2" size="md">
-                Search Bookshelf
-              </Heading>
-              <Flex
-                justify="space-between"
-                align="center"
-                gap={1}
-              >
-                <Input
-                  type="search"
-                  ref={searchInputRef}
-                  onKeyDown={e=> e.key === "Enter" ? searchFilter() : null}
-                  aria-label="search"
-                />
-                <Button
-                  onClick={e=>resetSearchFilter()}
-                >
-                  Reset
-                </Button>
-                <Button
-                  onClick={e=>searchFilter()}
-                  backgroundColor="black"
-                  color="white"
-                >
-                  Search
-                </Button>
-              </Flex>
-            </Stack>
-          </Box>
-          <Stack flex="1 1 65%" maxW="100%" className="well">
-            <Box>
-              <Flex align="center" justify="space-between">
-                <Heading as="h2" size="md">
-                  Bookshelf
-                </Heading>
-                <Menu>
-                  <MenuButton 
-                    as={Button}
-                    variant="ghost"
-                    rounded="full"
-                    height="20px"
-                    minWidth="auto"
-                    px={0}
-                    title="add"
-                  >
-                    <IoIosAdd size={25} />
-                  </MenuButton>
-                  <MenuList>
-                    <MenuItem
-                      onClick={onOpenBookSearchModal}
-                    >
-                      Add New
-                    </MenuItem>
-                    <MenuItem
-                      onClick={onOpenImportBookshelfModal}
-                    >
-                      Import
-                    </MenuItem>
-                    {bookshelfBooks && bookshelfBooks.length ? (
-                      <MenuItem
-                        onClick={clearBookshelf}
-                        color="red"
-                      >
-                        Clear Bookshelf
-                      </MenuItem>
-                    ): null}
-                  </MenuList>
-                </Menu>
-              </Flex>
-              {bookToAdd && (
-                <Stack className="well-card" position="relative">
-                  <CloseButton
-                    position="absolute"
-                    top={0}
-                    right={0}
-                    onClick={e=>setBookToAdd(null)}
-                  />
-                  <FormControl variant="floatingstatic">
-                    <FormLabel>
-                      Date
-                    </FormLabel>
-                    <Input
-                      type="date"
-                      defaultValue={dayjs(new Date()).local().format("YYYY-MM-DD")}
-                      ref={dateRef}
-                      maxW="150px"
-                      mb={1}
-                    />
-                  </FormControl>
-                  <Flex>
-                    <Image
-                      src={bookToAdd.image}
-                      onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                      maxH="125px"
-                      // minW="60px"
-                      boxShadow="1px 1px 1px 1px darkgrey"
-                      alt={bookToAdd.title}
-                    />
-                    <Input
-                      type="hidden"
-                      defaultValue={bookToAdd.image ? bookToAdd.image : "https://via.placeholder.com/165x215"}
-                      ref={imageRef}
-                    />
-                    <Box mx={2} w="100%">
-                      <Stack spacing={3} lineHeight={1.4}>
-                        <FormControl variant="floatingstatic">
-                          <FormLabel>
-                            Title
-                          </FormLabel>
-                          <Input
-                            type="text"
-                            defaultValue={bookToAdd.title}
-                            ref={titleRef}
-                            maxLength={200}
-                          />
-                        </FormControl>
-                        <FormControl variant="floatingstatic">
-                          <FormLabel>
-                            Author
-                          </FormLabel>
-                          <Input
-                            type="text"
-                            defaultValue={bookToAdd.author}
-                            ref={authorRef}
-                            maxLength={150}
-                          />
-                        </FormControl>
-                        <FormControl variant="floatingstatic">
-                          <FormLabel>
-                            Year
-                          </FormLabel>
-                          <Input
-                            type="text"
-                            defaultValue={bookToAdd.published_date ? dayjs(bookToAdd.published_date).format("YYYY") : ""}
-                            maxW="125px"
-                            ref={yearRef}
-                            maxLength={4}
-                          />
-                        </FormControl>
-                        <FormControl variant="floatingstatic">
-                          <FormLabel>
-                            Pages
-                          </FormLabel>
-                          <NumberInput
-                            defaultValue={bookToAdd.page_count ? bookToAdd.page_count : ""}
-                            maxW="125px"
-                          >
-                            <NumberInputField 
-                              ref={pagesRef} 
-                            />
-                            <NumberInputStepper>
-                              <NumberIncrementStepper />
-                              <NumberDecrementStepper />
-                            </NumberInputStepper>
-                          </NumberInput>
-                        </FormControl>
-                      </Stack>
-                    </Box>
-                  </Flex>
-                  <Flex
-                    align="center"
-                    gap={1}
-                    wrap="wrap"
-                    justify="flex-end"
-                  >
-                    {bookToAddCategories ? (
-                      bookToAddCategories.map((category: BookshelfCategory)=>{
-                        return (
-                          <Tag
-                            size="xs"
-                            rounded="lg"
-                            p={1}
-                            px={2}
-                            fontSize="xs"
-                            key={category.id}
-                          >
-                            {category.name}
-                          </Tag>
-                        )
-                      })
-                    ): null}
-                    {categories.length ? (
-                      <Menu>
-                        <MenuButton 
-                          as={Button}
-                          variant="ghost"
-                          rounded="full"
-                          height="20px"
-                          minWidth="auto"
-                          px={0}
-                          title="add"
-                        >
-                          <BiPlus size={20} />
-                        </MenuButton>
-                        <MenuList>
-                          <MenuItem
-                            onClick={e=>setBookToAddCategories([])}
-                          >
-                            None
-                          </MenuItem>
-                          {categories ? (
-                            categories.map((category: BookshelfCategory)=>{
-                              return (
-                                <MenuItem
-                                  key={category.id}
-                                  data-id={category.id}
-                                  data-name={category.name}
-                                  onClick={(e)=>{
-                                    setBookToAddCategories((prev: BookshelfCategory[])=>{
-                                      const id = (e as any).target.dataset.id;
-                                      const name = (e as any).target.dataset.name;
-                                      const alreadyIn = prev.filter((cat)=>cat.id===id).length;
-                                      if (id !== "" && alreadyIn === 0) {
-                                        return [...prev,{
-                                          id: id,
-                                          name: name
-                                        }]
-                                      }
-                                      else {
-                                        if (id === "") {
-                                          return []
-                                        }
-                                        else {
-                                          return [...prev]
-                                        }
-                                      }
-                                    })
-                                  }}
-                                >
-                                  {category.name}
-                                </MenuItem>
-                              )
-                            })
-                          ):null}
-
-                        </MenuList>
-                      </Menu>
-                    ) : null}
-                  </Flex>
-
-                  <Accordion defaultIndex={[0,1]} allowMultiple>
-                    <AccordionItem 
-                      borderColor="black" 
-                      borderLeft="1px solid black"
-                      borderRight="1px solid black"
-                      rounded="sm"
-                      boxShadow="0"
-                      py={1}
-                      bg="white"
-                      _dark={{
-                        bg: "blackAlpha.300"
-                      }}
-                    >
-                      <AccordionButton>
-                        <Heading as="h3" size="sm">
-                          Review
-                        </Heading>
-                        <AccordionIcon ml="auto" />
-                      </AccordionButton>
-                      <AccordionPanel>
+                          Request suggestions (make public)
+                        </FormLabel>
+                        <Switch
+                          id="allow-suggestions"
+                          isChecked={allowSuggestions === true ? true : false}
+                          ref={allowSuggestionsRef}
+                          onChange={e=>allowSuggestionsToggle()}
+                        />
+                      </Flex>
+                      {allowSuggestions ? (
                         <Flex
                           direction="column"
                           align="center"
-                          gap={2}
+                          gap={1}
+                          mx={1}
                         >
                           <Textarea
-                            rounded="md"
-                            ref={reviewRef}
-                            maxLength={9000}
-                          />
-                        </Flex>
-                      </AccordionPanel>
-                    </AccordionItem>
-                    <AccordionItem 
-                      border="1px solid black"
-                      borderLeft="1px solid black"
-                      borderRight="1px solid black"
-                      rounded="sm"
-                      boxShadow="0"
-                      py={1}
-                      bg="white"
-                      _dark={{
-                        bg: "blackAlpha.300"
-                      }}
-                    >
-                      <AccordionButton>
-                        <Heading as="h3" size="sm">
-                          Notes
-                        </Heading>
-                        <AccordionIcon ml="auto" />
-                      </AccordionButton>
-                      <AccordionPanel>
-                        <Textarea
-                          as={ReactQuill} 
-                          // id="location" 
-                          ref={notesRef}
-                          mb={1}
-                          theme="snow"
-                          rounded="md"
-                          sx={{
-                            '.ql-toolbar': {
-                              borderTopRadius: "5px",
-                              borderColor: colorMode === "light" ? "#ccc" : "#222222"
-                            },
-                            '.ql-container': {
-                              borderBottomRadius: "5px",
-                              borderColor: colorMode === "light" ? "#ccc" : "#222222"
-                            }
-                          }}
-                          modules={{
-                            toolbar: [
-                              [{ 'header': []}],
-                              ['bold', 'italic', 'underline'],
-                              [{'list': 'ordered'}, {'list': 'bullet'}],
-                              ['link'],
-                              [{'align': []}],
-                              ['clean']
-                            ]
-                          }}
-                          formats={[
-                            'header','bold', 'italic', 'underline','list', 'bullet', 'align','link'
-                          ]}
-                        />
-                      </AccordionPanel>
-                    </AccordionItem>
-                  </Accordion>
-                  <Flex
-                    justify="flex-end"
-                  >
-                    <Button
-                      backgroundColor="black"
-                      color="white"
-                      onClick={e=>addBookshelfBook()}
-                    >
-                      Save to Bookshelf
-                    </Button>
-                  </Flex>
-                </Stack>
-              )}
-            </Box>
-
-            <Box>
-              {!filterIsLoading ? (
-                <>
-                  {bookshelfBooks ? (
-                    bookshelfBooks.map((book: BookshelfBook)=>{
-                      return (
-                        <Flex 
-                          direction="column" 
-                          gap={2} 
-                          className="well-card" 
-                          key={book.id} 
-                          position="relative"
-                        >
-                          <Flex
-                            align="center"
-                            justify="space-between"
+                            placeholder="Suggestion notes"
+                            defaultValue={suggestionsNotesDefaultValue}
+                            ref={suggestionsNotesRef}
+                            maxLength={500}
+                            borderColor="black"
                           >
-                            <Box>
-                              <Flex align="center" gap={1} wrap="wrap">
-                                <Flex
-                                  align="center"
-                                  gap={1}
-                                  id={`date-text-${book.id}`}
-                                >
-                                  <Text 
-                                    fontStyle="italic"
-                                  >
-                                    {dayjs.utc(book.created_on).format('MMM DD, YYYY')}
-                                  </Text>
-                                  <Button
-                                    size="xs"
-                                    variant="ghost"
-                                    aria-label="edit date"
-                                    // px={0}
-                                    minW="35px"
-                                    onClick={e=>editDate(book.id)}
-                                  >
-                                    <MdEdit size={15} opacity={.9} />
-                                  </Button>
-                                </Flex>
+                          </Textarea>
+                          <Flex
+                            justify="flex-end"
+                            w="100%"
+                            gap={1}
+                          >
+                            <Popover isLazy>
+                              <PopoverTrigger>
                                 <Flex 
-                                  gap={1} 
-                                  align="center"
-                                  id={`date-input-block-${book.id}`}
-                                  display="none"
+                                  align="center" 
+                                  justify="center" 
+                                  me={2}
+                                  _hover={{
+                                    cursor: "pointer"
+                                  }}
                                 >
-                                  <Input
-                                    type="date"
-                                    defaultValue={dayjs.utc(book.created_on).format("YYYY-MM-DD")}
-                                    id={`date-input-${book.id}`}
-                                    size="sm"
-                                  />
-                                  <Button
-                                    backgroundColor="black"
-                                    color="white"
-                                    size="sm"
-                                    onClick={e=>saveDate(book.id)}
-                                  >
-                                    Save
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    onClick={e=>hideInputBlock(book.id)}
-                                    variant="outline"
-                                    borderColor="black"
-                                  >
-                                    Cancel
-                                  </Button>
+                                  <ImInfo size={20} color="gray" />
                                 </Flex>
-                              </Flex>
-                            </Box>
-                            <Flex align="center" gap={1}>
-                              {book.hidden ? (
-                                <Text 
-                                  as="span"
-                                  fontStyle="italic"
+                              </PopoverTrigger>
+                              <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody 
+                                  fontSize="sm"
+                                  _dark={{
+                                    bg: "black"
+                                  }}
                                 >
-                                  {" "} hidden
-                                </Text>
-                              ): null}
-                              <Menu>
-                                <MenuButton 
-                                  as={Button}
-                                  size="md"
-                                  maxH="25px"
-                                  variant="ghost"
-                                  rounded="full"
-                                  // p={1}
-                                  title="menu"
-                                >
-                                  <BiDotsHorizontalRounded size={20} />
-                                </MenuButton>
-                                <MenuList>
-                                  <MenuItem 
-                                    onClick={e=>navigate(`/chat/room?title=${book.title}&author=${book.author}`)}
-                                    fontWeight="bold"
-                                    icon={<MdOutlineChat size={20} />}
-                                  >
-                                    Chat Room
-                                  </MenuItem>
-                                  <MenuItem 
-                                    as={Link}
-                                    to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.title + " " + book.author)}`}
-                                    target="blank"
-                                    fontWeight="bold"
-                                    icon={<FaShoppingCart size={20} />}
-                                  >
-                                    Shop
-                                  </MenuItem>
-                                  <MenuItem
-                                    data-id={book.id}
-                                    onClick={e=>hideOrShowBookshelfBook([book.id,book.hidden ? "show" : "hide"])}
-                                    fontWeight="bold"
-                                    icon={<BiHide size={20} />}
-                                  >
-                                    {book.hidden ? "Unhide" : "Hide"} From Suggestions
-                                  </MenuItem>
-
-                                  <MenuItem
-                                    color="tomato"
-                                    data-id={book.id}
-                                    onClick={e=>deleteBookshelfBook(e)}
-                                    fontWeight="bold"
-                                    icon={<BiTrash size={20} />}
-                                  >
-                                    Delete
-                                  </MenuItem>
-                                </MenuList>
-                              </Menu>
-                            </Flex>
+                                  Be descriptive about what you're looking for. Bookshelves without any books and no suggestion notes will not be listed.
+                                </PopoverBody>
+                              </PopoverContent>
+                            </Popover>
+                            <Button
+                              onClick={e=>saveNotes()}
+                              colorScheme="black"
+                              variant="outline"
+                              size="sm"
+                            >
+                              Save notes
+                            </Button>  
                           </Flex>
-                          <Flex>
-                            <Image
-                              src={book.image}
-                              maxH="100px"
-                              // minW="60px"
-                              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                              boxShadow="1px 1px 1px 1px darkgrey"
-                              alt={book.title}
-                            />
-                            <Box w="100%">
-                              <Box
-                                mx={2} 
-                                w="100%" 
-                                lineHeight={1.4}
-                                id={`bookshelf-book-${book.id}`}
+                          <Flex 
+                            width="100%"
+                            direction="column"
+                            gap={2}
+                          >
+                            <Divider my={1} />
+                            <Flex
+                              align="center"
+                              justify="space-between"
+                              width="100%"
+                              className="non-well"
+                              sx={{
+                                m: "0!important"
+                              }}
+                            >
+                              <FormLabel 
+                                htmlFor="start-poll"
+                                fontWeight="bold"
+                                mb={0}
                               >
-                                <Flex
-                                  align="center"
-                                  // justify="space-between"
-                                  gap={1}
+                                Start a poll?
+                              </FormLabel>
+                              <Switch
+                                id="start-poll"
+                                isChecked={startPoll}
+                                // ref={allowSuggestionsRef}
+                                onChange={e=>setStartPoll(prev=>!prev)}
+                              />
+                            </Flex>
+                            {startPoll ? (
+                              <Box>
+                                <Input 
+                                  placeholder="Search for poll books" 
+                                  size="lg"
+                                  borderColor="black"
+                                  onClick={e=>onOpenPollModal()}
+                                  sx={{
+                                    cursor: 'none',
+                                    '&:hover': {
+                                      cursor: 'pointer'
+                                    }
+                                  }}
+                                  _dark={{
+                                    borderColor: "darkgrey"
+                                  }}
+                                  readOnly={true}
+                                />
+                                <Flex 
+                                  justify="space-between" 
+                                  w="100%" 
+                                  flexWrap="nowrap" 
+                                  gap={2}
+                                  p={5}
                                 >
-                                  <Heading 
-                                    as="h2" 
-                                    size="md"
-                                    // me={3}
-                                    noOfLines={2}
-                                  >
-                                    {book.title}
-                                  </Heading>
-                                  <Button
-                                    size="xs"
-                                    variant="ghost"
-                                    aria-label="edit"
-                                    // px={0}
-                                    minW="35px"
-                                    onClick={e=>showEditBookshelfBook(book.id)}
-                                  >
-                                    <MdEdit size={18} opacity={.9} />
-                                  </Button>
+                                  <Box flex="0 1 125px">
+                                    {pollBookOne !== null ? (
+                                    <>
+                                      <Box maxW="75px">
+                                        <Heading as="h5" size="sm" textAlign="center">1</Heading>
+                                        <Image
+                                          maxW="100%" 
+                                          w="100%"
+                                          h="auto"
+                                          pt={2} 
+                                          mb={1}
+                                          className="book-image"
+                                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                          src={pollBookOne.image}
+                                          boxShadow="1px 1px 1px 1px darkgrey"
+                                          alt={pollBookOne.title}
+                                        />
+                                      </Box>
+                                      <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                                        {pollBookOne.title}
+                                      </Text>
+                                      <Text fontSize="sm">
+                                        {pollBookOne.author}
+                                      </Text>
+                                      <Button
+                                        size="xs"
+                                        onClick={e=>setPollBookOne(null)}
+                                      >
+                                        Clear
+                                      </Button> 
+                                    </>
+                                    ) : null}
+                                  </Box>
+                                  <Box flex="0 1 125px">
+                                    {pollBookTwo !== null ? (
+                                      <>
+                                        <Box maxW="75px">
+                                          <Heading as="h5" size="sm" textAlign="center">2</Heading>
+                                          <Image
+                                            maxW="100%" 
+                                            w="100%"
+                                            h="auto"
+                                            pt={2} 
+                                            mb={1}
+                                            className="book-image"
+                                            onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                            src={pollBookTwo.image}
+                                            boxShadow="1px 1px 1px 1px darkgrey"
+                                            alt={pollBookTwo.title}
+                                          />
+                                        </Box>
+                                        <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                                          {pollBookTwo.title}
+                                        </Text>
+                                        <Text fontSize="sm">
+                                          {pollBookTwo.author}
+                                        </Text>
+                                        <Button
+                                          size="xs"
+                                          onClick={e=>setPollBookTwo(null)}
+                                        >
+                                          Clear
+                                        </Button>
+                                      </>
+                                    ) : null}
+                                  </Box>
+                                  <Box flex="0 1 125px">
+                                    {pollBookThree !== null ? (
+                                      <>
+                                        <Box maxW="75px">
+                                          <Heading as="h5" size="sm" textAlign="center">3</Heading>
+                                          <Image
+                                            maxW="100%" 
+                                            w="100%"
+                                            h="auto"
+                                            pt={2} 
+                                            mb={1}
+                                            className="book-image"
+                                            onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                            src={pollBookThree.image}
+                                            boxShadow="1px 1px 1px 1px darkgrey"
+                                            alt={pollBookThree.title}
+                                          />
+                                        </Box>
+                                        <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+                                          {pollBookThree.title}
+                                        </Text>
+                                        <Text fontSize="sm">
+                                          {pollBookThree.author}
+                                        </Text>
+                                        <Button
+                                          size="xs"
+                                          onClick={e=>setPollBookThree(null)}
+                                        >
+                                          Clear
+                                        </Button>
+                                      </>
+                                    ) : null}
+                                  </Box>
                                 </Flex>
-                                {/* <Popover isLazy>
-                                  <PopoverTrigger>
-
-                                  </PopoverTrigger>
-                                  <PopoverContent>
-                                    <PopoverArrow />
-                                    <PopoverCloseButton />
-                                    <PopoverBody 
+                              </Box>
+                            ): null}
+                            <Flex justify="flex-end" w="100%" gap={1}>
+                              <Popover isLazy>
+                                <PopoverTrigger>
+                                  <Flex 
+                                    align="center" 
+                                    justify="center" 
+                                    me={2}
+                                    _hover={{
+                                      cursor: "pointer"
+                                    }}
+                                  >
+                                    <ImInfo size={20} color="gray" />
+                                  </Flex>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                  <PopoverArrow />
+                                  <PopoverCloseButton />
+                                  <PopoverBody 
+                                    fontSize="sm"
                                     _dark={{
                                       bg: "black"
                                     }}
-                                      fontSize="sm"
-                                    >
-                                      {book.description}
-                                    </PopoverBody>
-                                  </PopoverContent>
-                                </Popover> */}
-                                <Text fontWeight="bold" fontSize="lg" noOfLines={1}>
-                                  {book.author}
-                                </Text>
-                                <Text fontStyle="italic">
-                                  {book.published_date ? dayjs(book.published_date).format("YYYY") : null}
-                                </Text>
-                                {book.page_count ? (
-                                  <Text noOfLines={1}>
-                                    {book.page_count} pages
-                                  </Text>
-                                ): null}
-                              </Box>
-                              <Box
-                                id={`edit-bookshelf-book-${book.id}`}
-                                display="none"
-                                mt={2}
-                                ms={2}
-                              >
-                                <Stack spacing={3} lineHeight={1.4}>
-                                  <FormControl variant="floatingstatic">
-                                    <FormLabel>
-                                      Title
-                                    </FormLabel>
-                                    <Input
-                                      type="text"
-                                      defaultValue={book.title}
-                                      id={`title-${book.id}`}
-                                      maxLength={200}
-                                    />
-                                  </FormControl>
-                                  <FormControl variant="floatingstatic">
-                                    <FormLabel>
-                                      Author
-                                    </FormLabel>
-                                    <Input
-                                      type="text"
-                                      defaultValue={book.author}
-                                      id={`author-${book.id}`}
-                                      maxLength={150}
-                                    />
-                                  </FormControl>
-                                  <FormControl variant="floatingstatic">
-                                    <FormLabel>
-                                      Year
-                                    </FormLabel>
-                                    <Input
-                                      type="text"
-                                      defaultValue={book.published_date ? dayjs(book.published_date).format("YYYY") : ""}
-                                      maxW="125px"
-                                      id={`year-${book.id}`}
-                                      maxLength={4}
-                                    />
-                                  </FormControl>
-                                  <Flex
-                                    justify="space-between"
                                   >
-                                    <FormControl variant="floatingstatic">
-                                      <FormLabel>
-                                        Pages
-                                      </FormLabel>
-                                      <NumberInput
-                                        defaultValue={book.page_count ? book.page_count : ""}
-                                        maxW="125px"
-                                      >
-                                        <NumberInputField 
-                                          id={`pages-${book.id}`} 
-                                        />
-                                        <NumberInputStepper>
-                                          <NumberIncrementStepper />
-                                          <NumberDecrementStepper />
-                                        </NumberInputStepper>
-                                      </NumberInput>
-                                    </FormControl>
-                                    <Flex
-                                      align="center"
-                                      gap={1}
-                                    >
-                                      <Button
-                                        variant="outline"
-                                        borderColor="black"
-                                        color="black"
-                                        onClick={e=>cancelShowEditBookshelfBook(book.id)}
-                                        aria-label="cancel"
-                                      >
-                                        Cancel
-                                      </Button>
-                                      <Button
-                                        backgroundColor="black"
-                                        color="white"
-                                        onClick={e=>updateBookshelfBook(book.id)}
-                                        aria-label="save"
-                                      >
-                                        Save
-                                      </Button>
-                                    </Flex>
-                                  </Flex>
-                                </Stack>
-                              </Box>
-                              <Box ms={2}>
-                                <StarRating
-                                  ratingCallback={ratingCallback} 
-                                  starRatingId={book.id}
-                                  defaultRating={book.rating ? book.rating : 0}
-                                />
-                              </Box>
+                                    Saving will reset any current poll votes (if any).
+                                  </PopoverBody>
+                                </PopoverContent>
+                              </Popover>
+                              <Button
+                                onClick={e=>savePollVoting()}
+                                colorScheme="black"
+                                variant="outline"
+                                size="sm"
+                              >
+                                Save poll
+                              </Button>  
+                            </Flex>
+                          </Flex>
+                        </Flex>
+                      ) : (
+                        null
+                      )}
+                    </Box>
+                    <Stack className="well">
+                      <Box>
+                        <Flex align="center" flexWrap="wrap" justify="space-between" mb={2}>
+                          <Heading as="h2" size="md">
+                            Filter by Tags
+                          </Heading>
+
+                          {!showAddCategory && (
+                            <Box
+                              onClick={e=>setShowAddCategory(true)}
+                              rounded="md"
+                              _hover={{
+                                cursor: "pointer",
+                                bg: "grey"
+                              }}
+                            >
+                              <IoIosAdd size={25} />
+                            </Box>
+                          )}
+
+                        </Flex>
+
+                        {showAddCategory && (
+                          <>
+                            <Flex
+                              align="center"
+                              justify="space-between"
+                              gap={1}
+                              mb={2}
+                            >
+                              <Input
+                                type="text"
+                                ref={createCategoryInputRef}
+                                onKeyUp={e=>e.key === 'Enter' ? createCategoryButtonRef.current.click() : null}
+                                maxLength={40}
+                                borderColor="black"
+                              />
+                              <Button
+                                ref={createCategoryButtonRef}
+                                onClick={e=>createCategory()}
+                                backgroundColor="black"
+                                color="white"
+                              >
+                                Add
+                              </Button>
+                              <Button
+                                onClick={e=>setShowAddCategory(false)}
+                                variant="outline"
+                                borderColor="black"
+                              >
+                                Cancel
+                              </Button>
+                            </Flex>
+                            {createCategoryError && (
+                              <Text color="red">{createCategoryError}</Text>
+                            )}
+                          </>
+                        )}
+                      </Box>
+
+                      <CheckboxGroup
+                        onChange={e=>filterByCategory(e as string[])}
+                      >         
+                        <Stack>
+                          {categories ? (
+                            categories.map((category: BookshelfCategory,i: number)=>{
+                              return (
+                                <Flex
+                                  align="center"
+                                  justify="space-between"
+                                  key={i}
+                                >
+                                  <Checkbox 
+                                    me={1}
+                                    value={category.id.toString()}
+                                  >
+                                    <Text>
+                                      {category.name}
+                                    </Text>
+                                  </Checkbox>
+                                  <Button 
+                                    size="xs" 
+                                    p={0}
+                                    colorScheme="red"
+                                    variant="ghost"
+                                    rounded="xl"
+                                    data-id={category.id}
+                                    onClick={e=>removeCategory(e)}
+                                  >
+                                    <Box
+                                      as={IoIosRemove} 
+                                      size={20} 
+                                      pointerEvents="none"
+                                    />
+                                  </Button>
+                                </Flex>
+                              )
+                            })
+                          ): null}
+                        </Stack>
+                      </CheckboxGroup>
+                      <Divider/>
+                      <Heading as="h2" size="md">
+                        Search Bookshelf
+                      </Heading>
+                      <Flex
+                        justify="space-between"
+                        align="center"
+                        gap={1}
+                      >
+                        <Input
+                          type="search"
+                          ref={searchInputRef}
+                          onKeyDown={e=> e.key === "Enter" ? searchFilter() : null}
+                          aria-label="search"
+                        />
+                        <Button
+                          onClick={e=>resetSearchFilter()}
+                        >
+                          Reset
+                        </Button>
+                        <Button
+                          onClick={e=>searchFilter()}
+                          backgroundColor="black"
+                          color="white"
+                        >
+                          Search
+                        </Button>
+                      </Flex>
+                    </Stack>
+                  </Box>
+                  <Stack flex="1 1 65%" maxW="100%" className="well">
+                    <Box>
+                      <Flex align="center" justify="space-between">
+                        <Heading as="h2" size="md">
+                          Bookshelf
+                        </Heading>
+                        <Menu>
+                          <MenuButton 
+                            as={Button}
+                            variant="ghost"
+                            rounded="full"
+                            height="20px"
+                            minWidth="auto"
+                            px={0}
+                            title="add"
+                          >
+                            <IoIosAdd size={25} />
+                          </MenuButton>
+                          <MenuList>
+                            <MenuItem
+                              onClick={onOpenBookSearchModal}
+                            >
+                              Add New
+                            </MenuItem>
+                            <MenuItem
+                              onClick={onOpenImportBookshelfModal}
+                            >
+                              Import
+                            </MenuItem>
+                            {bookshelfBooks && bookshelfBooks.length ? (
+                              <MenuItem
+                                onClick={clearBookshelf}
+                                color="red"
+                              >
+                                Clear Bookshelf
+                              </MenuItem>
+                            ): null}
+                          </MenuList>
+                        </Menu>
+                      </Flex>
+                      {bookToAdd && (
+                        <Stack className="well-card" position="relative">
+                          <CloseButton
+                            position="absolute"
+                            top={0}
+                            right={0}
+                            onClick={e=>setBookToAdd(null)}
+                          />
+                          <FormControl variant="floatingstatic">
+                            <FormLabel>
+                              Date
+                            </FormLabel>
+                            <Input
+                              type="date"
+                              defaultValue={dayjs(new Date()).local().format("YYYY-MM-DD")}
+                              ref={dateRef}
+                              maxW="150px"
+                              mb={1}
+                            />
+                          </FormControl>
+                          <Flex>
+                            <Image
+                              src={bookToAdd.image}
+                              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                              maxH="125px"
+                              // minW="60px"
+                              boxShadow="1px 1px 1px 1px darkgrey"
+                              alt={bookToAdd.title}
+                            />
+                            <Input
+                              type="hidden"
+                              defaultValue={bookToAdd.image ? bookToAdd.image : "https://via.placeholder.com/165x215"}
+                              ref={imageRef}
+                            />
+                            <Box mx={2} w="100%">
+                              <Stack spacing={3} lineHeight={1.4}>
+                                <FormControl variant="floatingstatic">
+                                  <FormLabel>
+                                    Title
+                                  </FormLabel>
+                                  <Input
+                                    type="text"
+                                    defaultValue={bookToAdd.title}
+                                    ref={titleRef}
+                                    maxLength={200}
+                                  />
+                                </FormControl>
+                                <FormControl variant="floatingstatic">
+                                  <FormLabel>
+                                    Author
+                                  </FormLabel>
+                                  <Input
+                                    type="text"
+                                    defaultValue={bookToAdd.author}
+                                    ref={authorRef}
+                                    maxLength={150}
+                                  />
+                                </FormControl>
+                                <FormControl variant="floatingstatic">
+                                  <FormLabel>
+                                    Year
+                                  </FormLabel>
+                                  <Input
+                                    type="text"
+                                    defaultValue={bookToAdd.published_date ? dayjs(bookToAdd.published_date).format("YYYY") : ""}
+                                    maxW="125px"
+                                    ref={yearRef}
+                                    maxLength={4}
+                                  />
+                                </FormControl>
+                                <FormControl variant="floatingstatic">
+                                  <FormLabel>
+                                    Pages
+                                  </FormLabel>
+                                  <NumberInput
+                                    defaultValue={bookToAdd.page_count ? bookToAdd.page_count : ""}
+                                    maxW="125px"
+                                  >
+                                    <NumberInputField 
+                                      ref={pagesRef} 
+                                    />
+                                    <NumberInputStepper>
+                                      <NumberIncrementStepper />
+                                      <NumberDecrementStepper />
+                                    </NumberInputStepper>
+                                  </NumberInput>
+                                </FormControl>
+                              </Stack>
                             </Box>
                           </Flex>
-
-                          <Flex align="center" gap={1} wrap="wrap" justify="flex-end">
-                            {book.BookshelfBookCategory.length ? (
-                              book.BookshelfBookCategory.map((category,i)=>{
+                          <Flex
+                            align="center"
+                            gap={1}
+                            wrap="wrap"
+                            justify="flex-end"
+                          >
+                            {bookToAddCategories ? (
+                              bookToAddCategories.map((category: BookshelfCategory)=>{
                                 return (
                                   <Tag
                                     size="xs"
                                     rounded="lg"
                                     p={1}
-                                    pl={4}
-                                    fontSize="sm"
-                                    display="flex"
-                                    alignItems="center"
-                                    gap={2}
-                                    key={i}
-                                    onClick={e=>{
-                                      const closeButton = document.getElementById(`close-button-${book.id}-${category.BookshelfCategory.id}`)
-                                      if(closeButton?.style.visibility === "hidden") {
-                                        closeButton.style.visibility = "visible"
-                                      }
-                                      else if (closeButton?.style.visibility === "visible") {
-                                        closeButton.style.visibility = "hidden"
-                                      }
-                                    }}
-                                    _hover={{
-                                      cursor: "pointer"
-                                    }}
+                                    px={2}
+                                    fontSize="xs"
+                                    key={category.id}
                                   >
-                                    <Text pointerEvents="none">
-                                      {category.BookshelfCategory.name}
-                                    </Text>
-                                    <Box 
-                                      id={`close-button-${book.id}-${category.BookshelfCategory.id}`}
-                                      style={{visibility: "hidden"}}
-                                      data-bookid={book.id}
-                                      data-categoryid={category.BookshelfCategory.id}
-                                      onClick={e=>removeCategoryFromBook(e)}
-                                      _hover={{
-                                        cursor: "pointer"
-                                      }}
-                                    >
-                                      <TagCloseButton 
-                                        color="red"
-                                        pointerEvents="none"
-                                      />
-                                    </Box>
-                                    {removeCategoryFromBookMutation.isLoading && (
-                                      <Spinner size="xs"/>
-                                    )}
+                                    {category.name}
                                   </Tag>
                                 )
                               })
                             ): null}
-                            {categories?.length ? (
+                            {categories.length ? (
                               <Menu>
                                 <MenuButton 
                                   as={Button}
@@ -2240,19 +1767,44 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                   height="20px"
                                   minWidth="auto"
                                   px={0}
-                                  title="menu"
+                                  title="add"
                                 >
                                   <BiPlus size={20} />
                                 </MenuButton>
                                 <MenuList>
+                                  <MenuItem
+                                    onClick={e=>setBookToAddCategories([])}
+                                  >
+                                    None
+                                  </MenuItem>
                                   {categories ? (
                                     categories.map((category: BookshelfCategory)=>{
                                       return (
                                         <MenuItem
-                                          data-categoryid={category.id}
-                                          data-bookid={book.id}
                                           key={category.id}
-                                          onClick={e=>addCategoryToBook(e)}
+                                          data-id={category.id}
+                                          data-name={category.name}
+                                          onClick={(e)=>{
+                                            setBookToAddCategories((prev: BookshelfCategory[])=>{
+                                              const id = (e as any).target.dataset.id;
+                                              const name = (e as any).target.dataset.name;
+                                              const alreadyIn = prev.filter((cat)=>cat.id===id).length;
+                                              if (id !== "" && alreadyIn === 0) {
+                                                return [...prev,{
+                                                  id: id,
+                                                  name: name
+                                                }]
+                                              }
+                                              else {
+                                                if (id === "") {
+                                                  return []
+                                                }
+                                                else {
+                                                  return [...prev]
+                                                }
+                                              }
+                                            })
+                                          }}
                                         >
                                           {category.name}
                                         </MenuItem>
@@ -2264,7 +1816,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                               </Menu>
                             ) : null}
                           </Flex>
-                          <Accordion defaultIndex={[2]} allowMultiple>
+
+                          <Accordion defaultIndex={[0,1]} allowMultiple>
                             <AccordionItem 
                               borderColor="black" 
                               borderLeft="1px solid black"
@@ -2291,31 +1844,14 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                 >
                                   <Textarea
                                     rounded="md"
-                                    defaultValue={book.review}
-                                    id={`review-input-${book.id}`}
+                                    ref={reviewRef}
                                     maxLength={9000}
                                   />
-                                  <Flex
-                                    justify="flex-end"
-                                    w="100%"
-                                  >
-                                    <Button
-                                      w="auto"
-                                      alignSelf="flex-end"
-                                      data-bookid={book.id}
-                                      onClick={e=>updateReview(e)}
-                                      size="sm"
-                                      backgroundColor="black"
-                                      color="white"
-                                    >
-                                      Save Review
-                                    </Button>
-                                  </Flex>
                                 </Flex>
                               </AccordionPanel>
                             </AccordionItem>
                             <AccordionItem 
-                              borderColor="black" 
+                              border="1px solid black"
                               borderLeft="1px solid black"
                               borderRight="1px solid black"
                               rounded="sm"
@@ -2328,126 +1864,630 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             >
                               <AccordionButton>
                                 <Heading as="h3" size="sm">
-                                  Private Notes
+                                  Notes
                                 </Heading>
                                 <AccordionIcon ml="auto" />
                               </AccordionButton>
                               <AccordionPanel>
-                                <Flex
-                                  direction="column"
-                                  align="center"
-                                  gap={2}
-                                >
-                                  <Textarea
-                                    as={ReactQuill}
-                                    border="0" 
-                                    rounded="md"
-                                    theme="snow"
-                                    sx={{
-                                      '.ql-toolbar': {
-                                        borderTopRadius: "5px",
-                                        borderColor: colorMode === "light" ? "#ccc" : "#222222"
-                                      },
-                                      '.ql-container': {
-                                        borderBottomRadius: "5px",
-                                        borderColor: colorMode === "light" ? "#ccc" : "#222222"
-                                      }
-                                    }}
-                                    modules={{
-                                      toolbar: [
-                                        [{ 'header': []}],
-                                        ['bold', 'italic', 'underline'],
-                                        [{'list': 'ordered'}, {'list': 'bullet'}],
-                                        ['link'],
-                                        [{'align': []}],
-                                        ['clean']
-                                      ]
-                                    }}
-                                    formats={[
-                                      'header','bold', 'italic', 'underline','list', 'bullet', 'align','link'
-                                    ]}
-                                    defaultValue={book.notes}
-                                    onChange={e=>{ 
-                                        const notesInput: any = document.getElementById(`notes-input-${book.id}`);
-                                        notesInput!.value = e;
-                                      }
+                                <Textarea
+                                  as={ReactQuill} 
+                                  // id="location" 
+                                  ref={notesRef}
+                                  mb={1}
+                                  theme="snow"
+                                  rounded="md"
+                                  sx={{
+                                    '.ql-toolbar': {
+                                      borderTopRadius: "5px",
+                                      borderColor: colorMode === "light" ? "#ccc" : "#222222"
+                                    },
+                                    '.ql-container': {
+                                      borderBottomRadius: "5px",
+                                      borderColor: colorMode === "light" ? "#ccc" : "#222222"
                                     }
-                                    id={`notes-input-${book.id}`}
-                                  />
-                                  <Flex
-                                    justify="space-between"
-                                    w="100%"
-                                  >
-                                    <Popover isLazy>
-                                      <PopoverTrigger>
-                                        <Flex 
-                                          align="center" 
-                                          justify="center" 
-                                          me={2}
-                                          _hover={{
-                                            cursor: "pointer"
-                                          }}
-                                        >
-                                          <ImInfo size={20} color="gray" />
-                                        </Flex>
-                                      </PopoverTrigger>
-                                      <PopoverContent>
-                                        <PopoverArrow />
-                                        <PopoverCloseButton />
-                                        <PopoverBody 
-                                          fontSize="sm"
-                                          _dark={{
-                                            bg: "black"
-                                          }}
-                                        >
-                                          Private notes are only visible to you.
-                                        </PopoverBody>
-                                      </PopoverContent>
-                                    </Popover>
-                                    <Button
-                                      w="auto"
-                                      alignSelf="flex-end"
-                                      data-bookid={book.id}
-                                      onClick={e=>updateNotes(e)}
-                                      size="sm"
-                                      backgroundColor="black"
-                                      color="white"
-                                    >
-                                      Save Notes
-                                    </Button>
-                                  </Flex>
-                                </Flex>
+                                  }}
+                                  modules={{
+                                    toolbar: [
+                                      [{ 'header': []}],
+                                      ['bold', 'italic', 'underline'],
+                                      [{'list': 'ordered'}, {'list': 'bullet'}],
+                                      ['link'],
+                                      [{'align': []}],
+                                      ['clean']
+                                    ]
+                                  }}
+                                  formats={[
+                                    'header','bold', 'italic', 'underline','list', 'bullet', 'align','link'
+                                  ]}
+                                />
                               </AccordionPanel>
                             </AccordionItem>
                           </Accordion>
-                        </Flex>
-                      )
-                    })
-                  ): null}
-                </>
-              ):(
-                <Flex justify="center">
-                  <Spinner size="xl" />
-                </Flex>
-              )}
-              {!endLoadMore && !isSearchResults ? (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    colorScheme="blue"
-                    onClick={e=>{
-                      setTake(prev=>prev+10)
-                    }}
-                  >
-                    Load more...
-                  </Button>
-                </>
-              ): null}
-            </Box>
-          </Stack>
+                          <Flex
+                            justify="flex-end"
+                          >
+                            <Button
+                              backgroundColor="black"
+                              color="white"
+                              onClick={e=>addBookshelfBook()}
+                            >
+                              Save to Bookshelf
+                            </Button>
+                          </Flex>
+                        </Stack>
+                      )}
+                    </Box>
 
-        </Flex>
+                    <Box>
+                      {!filterIsLoading ? (
+                        <>
+                          {bookshelfBooks ? (
+                            bookshelfBooks.map((book: BookshelfBook)=>{
+                              return (
+                                <Flex 
+                                  direction="column" 
+                                  gap={2} 
+                                  className="well-card" 
+                                  key={book.id} 
+                                  position="relative"
+                                >
+                                  <Flex
+                                    align="center"
+                                    justify="space-between"
+                                  >
+                                    <Box>
+                                      <Flex align="center" gap={1} wrap="wrap">
+                                        <Flex
+                                          align="center"
+                                          gap={1}
+                                          id={`date-text-${book.id}`}
+                                        >
+                                          <Text 
+                                            fontStyle="italic"
+                                          >
+                                            {dayjs.utc(book.created_on).format('MMM DD, YYYY')}
+                                          </Text>
+                                          <Button
+                                            size="xs"
+                                            variant="ghost"
+                                            aria-label="edit date"
+                                            // px={0}
+                                            minW="35px"
+                                            onClick={e=>editDate(book.id)}
+                                          >
+                                            <MdEdit size={15} opacity={.9} />
+                                          </Button>
+                                        </Flex>
+                                        <Flex 
+                                          gap={1} 
+                                          align="center"
+                                          id={`date-input-block-${book.id}`}
+                                          display="none"
+                                        >
+                                          <Input
+                                            type="date"
+                                            defaultValue={dayjs.utc(book.created_on).format("YYYY-MM-DD")}
+                                            id={`date-input-${book.id}`}
+                                            size="sm"
+                                          />
+                                          <Button
+                                            backgroundColor="black"
+                                            color="white"
+                                            size="sm"
+                                            onClick={e=>saveDate(book.id)}
+                                          >
+                                            Save
+                                          </Button>
+                                          <Button
+                                            size="sm"
+                                            onClick={e=>hideInputBlock(book.id)}
+                                            variant="outline"
+                                            borderColor="black"
+                                          >
+                                            Cancel
+                                          </Button>
+                                        </Flex>
+                                      </Flex>
+                                    </Box>
+                                    <Flex align="center" gap={1}>
+                                      {book.hidden ? (
+                                        <Text 
+                                          as="span"
+                                          fontStyle="italic"
+                                        >
+                                          {" "} hidden
+                                        </Text>
+                                      ): null}
+                                      <Menu>
+                                        <MenuButton 
+                                          as={Button}
+                                          size="md"
+                                          maxH="25px"
+                                          variant="ghost"
+                                          rounded="full"
+                                          // p={1}
+                                          title="menu"
+                                        >
+                                          <BiDotsHorizontalRounded size={20} />
+                                        </MenuButton>
+                                        <MenuList>
+                                          <MenuItem 
+                                            onClick={e=>navigate(`/chat/room?title=${book.title}&author=${book.author}`)}
+                                            fontWeight="bold"
+                                            icon={<MdOutlineChat size={20} />}
+                                          >
+                                            Chat Room
+                                          </MenuItem>
+                                          <MenuItem 
+                                            as={Link}
+                                            to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.title + " " + book.author)}`}
+                                            target="blank"
+                                            fontWeight="bold"
+                                            icon={<FaShoppingCart size={20} />}
+                                          >
+                                            Shop
+                                          </MenuItem>
+                                          <MenuItem
+                                            data-id={book.id}
+                                            onClick={e=>hideOrShowBookshelfBook([book.id,book.hidden ? "show" : "hide"])}
+                                            fontWeight="bold"
+                                            icon={<BiHide size={20} />}
+                                          >
+                                            {book.hidden ? "Unhide" : "Hide"} From Suggestions
+                                          </MenuItem>
+
+                                          <MenuItem
+                                            color="tomato"
+                                            data-id={book.id}
+                                            onClick={e=>deleteBookshelfBook(e)}
+                                            fontWeight="bold"
+                                            icon={<BiTrash size={20} />}
+                                          >
+                                            Delete
+                                          </MenuItem>
+                                        </MenuList>
+                                      </Menu>
+                                    </Flex>
+                                  </Flex>
+                                  <Flex>
+                                    <Image
+                                      src={book.image}
+                                      maxH="100px"
+                                      // minW="60px"
+                                      onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                      boxShadow="1px 1px 1px 1px darkgrey"
+                                      alt={book.title}
+                                    />
+                                    <Box w="100%">
+                                      <Box
+                                        mx={2} 
+                                        w="100%" 
+                                        lineHeight={1.4}
+                                        id={`bookshelf-book-${book.id}`}
+                                      >
+                                        <Flex
+                                          align="center"
+                                          // justify="space-between"
+                                          gap={1}
+                                        >
+                                          <Heading 
+                                            as="h2" 
+                                            size="md"
+                                            // me={3}
+                                            noOfLines={2}
+                                          >
+                                            {book.title}
+                                          </Heading>
+                                          <Button
+                                            size="xs"
+                                            variant="ghost"
+                                            aria-label="edit"
+                                            // px={0}
+                                            minW="35px"
+                                            onClick={e=>showEditBookshelfBook(book.id)}
+                                          >
+                                            <MdEdit size={18} opacity={.9} />
+                                          </Button>
+                                        </Flex>
+                                        {/* <Popover isLazy>
+                                          <PopoverTrigger>
+
+                                          </PopoverTrigger>
+                                          <PopoverContent>
+                                            <PopoverArrow />
+                                            <PopoverCloseButton />
+                                            <PopoverBody 
+                                            _dark={{
+                                              bg: "black"
+                                            }}
+                                              fontSize="sm"
+                                            >
+                                              {book.description}
+                                            </PopoverBody>
+                                          </PopoverContent>
+                                        </Popover> */}
+                                        <Text fontWeight="bold" fontSize="lg" noOfLines={1}>
+                                          {book.author}
+                                        </Text>
+                                        <Text fontStyle="italic">
+                                          {book.published_date ? dayjs(book.published_date).format("YYYY") : null}
+                                        </Text>
+                                        {book.page_count ? (
+                                          <Text noOfLines={1}>
+                                            {book.page_count} pages
+                                          </Text>
+                                        ): null}
+                                      </Box>
+                                      <Box
+                                        id={`edit-bookshelf-book-${book.id}`}
+                                        display="none"
+                                        mt={2}
+                                        ms={2}
+                                      >
+                                        <Stack spacing={3} lineHeight={1.4}>
+                                          <FormControl variant="floatingstatic">
+                                            <FormLabel>
+                                              Title
+                                            </FormLabel>
+                                            <Input
+                                              type="text"
+                                              defaultValue={book.title}
+                                              id={`title-${book.id}`}
+                                              maxLength={200}
+                                            />
+                                          </FormControl>
+                                          <FormControl variant="floatingstatic">
+                                            <FormLabel>
+                                              Author
+                                            </FormLabel>
+                                            <Input
+                                              type="text"
+                                              defaultValue={book.author}
+                                              id={`author-${book.id}`}
+                                              maxLength={150}
+                                            />
+                                          </FormControl>
+                                          <FormControl variant="floatingstatic">
+                                            <FormLabel>
+                                              Year
+                                            </FormLabel>
+                                            <Input
+                                              type="text"
+                                              defaultValue={book.published_date ? dayjs(book.published_date).format("YYYY") : ""}
+                                              maxW="125px"
+                                              id={`year-${book.id}`}
+                                              maxLength={4}
+                                            />
+                                          </FormControl>
+                                          <Flex
+                                            justify="space-between"
+                                          >
+                                            <FormControl variant="floatingstatic">
+                                              <FormLabel>
+                                                Pages
+                                              </FormLabel>
+                                              <NumberInput
+                                                defaultValue={book.page_count ? book.page_count : ""}
+                                                maxW="125px"
+                                              >
+                                                <NumberInputField 
+                                                  id={`pages-${book.id}`} 
+                                                />
+                                                <NumberInputStepper>
+                                                  <NumberIncrementStepper />
+                                                  <NumberDecrementStepper />
+                                                </NumberInputStepper>
+                                              </NumberInput>
+                                            </FormControl>
+                                            <Flex
+                                              align="center"
+                                              gap={1}
+                                            >
+                                              <Button
+                                                variant="outline"
+                                                borderColor="black"
+                                                color="black"
+                                                onClick={e=>cancelShowEditBookshelfBook(book.id)}
+                                                aria-label="cancel"
+                                              >
+                                                Cancel
+                                              </Button>
+                                              <Button
+                                                backgroundColor="black"
+                                                color="white"
+                                                onClick={e=>updateBookshelfBook(book.id)}
+                                                aria-label="save"
+                                              >
+                                                Save
+                                              </Button>
+                                            </Flex>
+                                          </Flex>
+                                        </Stack>
+                                      </Box>
+                                      <Box ms={2}>
+                                        <StarRating
+                                          ratingCallback={ratingCallback} 
+                                          starRatingId={book.id}
+                                          defaultRating={book.rating ? book.rating : 0}
+                                        />
+                                      </Box>
+                                    </Box>
+                                  </Flex>
+
+                                  <Flex align="center" gap={1} wrap="wrap" justify="flex-end">
+                                    {book.BookshelfBookCategory.length ? (
+                                      book.BookshelfBookCategory.map((category,i)=>{
+                                        return (
+                                          <Tag
+                                            size="xs"
+                                            rounded="lg"
+                                            p={1}
+                                            pl={4}
+                                            fontSize="sm"
+                                            display="flex"
+                                            alignItems="center"
+                                            gap={2}
+                                            key={i}
+                                            onClick={e=>{
+                                              const closeButton = document.getElementById(`close-button-${book.id}-${category.BookshelfCategory.id}`)
+                                              if(closeButton?.style.visibility === "hidden") {
+                                                closeButton.style.visibility = "visible"
+                                              }
+                                              else if (closeButton?.style.visibility === "visible") {
+                                                closeButton.style.visibility = "hidden"
+                                              }
+                                            }}
+                                            _hover={{
+                                              cursor: "pointer"
+                                            }}
+                                          >
+                                            <Text pointerEvents="none">
+                                              {category.BookshelfCategory.name}
+                                            </Text>
+                                            <Box 
+                                              id={`close-button-${book.id}-${category.BookshelfCategory.id}`}
+                                              style={{visibility: "hidden"}}
+                                              data-bookid={book.id}
+                                              data-categoryid={category.BookshelfCategory.id}
+                                              onClick={e=>removeCategoryFromBook(e)}
+                                              _hover={{
+                                                cursor: "pointer"
+                                              }}
+                                            >
+                                              <TagCloseButton 
+                                                color="red"
+                                                pointerEvents="none"
+                                              />
+                                            </Box>
+                                            {removeCategoryFromBookMutation.isLoading && (
+                                              <Spinner size="xs"/>
+                                            )}
+                                          </Tag>
+                                        )
+                                      })
+                                    ): null}
+                                    {categories?.length ? (
+                                      <Menu>
+                                        <MenuButton 
+                                          as={Button}
+                                          variant="ghost"
+                                          rounded="full"
+                                          height="20px"
+                                          minWidth="auto"
+                                          px={0}
+                                          title="menu"
+                                        >
+                                          <BiPlus size={20} />
+                                        </MenuButton>
+                                        <MenuList>
+                                          {categories ? (
+                                            categories.map((category: BookshelfCategory)=>{
+                                              return (
+                                                <MenuItem
+                                                  data-categoryid={category.id}
+                                                  data-bookid={book.id}
+                                                  key={category.id}
+                                                  onClick={e=>addCategoryToBook(e)}
+                                                >
+                                                  {category.name}
+                                                </MenuItem>
+                                              )
+                                            })
+                                          ):null}
+
+                                        </MenuList>
+                                      </Menu>
+                                    ) : null}
+                                  </Flex>
+                                  <Accordion defaultIndex={[2]} allowMultiple>
+                                    <AccordionItem 
+                                      borderColor="black" 
+                                      borderLeft="1px solid black"
+                                      borderRight="1px solid black"
+                                      rounded="sm"
+                                      boxShadow="0"
+                                      py={1}
+                                      bg="white"
+                                      _dark={{
+                                        bg: "blackAlpha.300"
+                                      }}
+                                    >
+                                      <AccordionButton>
+                                        <Heading as="h3" size="sm">
+                                          Review
+                                        </Heading>
+                                        <AccordionIcon ml="auto" />
+                                      </AccordionButton>
+                                      <AccordionPanel>
+                                        <Flex
+                                          direction="column"
+                                          align="center"
+                                          gap={2}
+                                        >
+                                          <Textarea
+                                            rounded="md"
+                                            defaultValue={book.review}
+                                            id={`review-input-${book.id}`}
+                                            maxLength={9000}
+                                          />
+                                          <Flex
+                                            justify="flex-end"
+                                            w="100%"
+                                          >
+                                            <Button
+                                              w="auto"
+                                              alignSelf="flex-end"
+                                              data-bookid={book.id}
+                                              onClick={e=>updateReview(e)}
+                                              size="sm"
+                                              backgroundColor="black"
+                                              color="white"
+                                            >
+                                              Save Review
+                                            </Button>
+                                          </Flex>
+                                        </Flex>
+                                      </AccordionPanel>
+                                    </AccordionItem>
+                                    <AccordionItem 
+                                      borderColor="black" 
+                                      borderLeft="1px solid black"
+                                      borderRight="1px solid black"
+                                      rounded="sm"
+                                      boxShadow="0"
+                                      py={1}
+                                      bg="white"
+                                      _dark={{
+                                        bg: "blackAlpha.300"
+                                      }}
+                                    >
+                                      <AccordionButton>
+                                        <Heading as="h3" size="sm">
+                                          Private Notes
+                                        </Heading>
+                                        <AccordionIcon ml="auto" />
+                                      </AccordionButton>
+                                      <AccordionPanel>
+                                        <Flex
+                                          direction="column"
+                                          align="center"
+                                          gap={2}
+                                        >
+                                          <Textarea
+                                            as={ReactQuill}
+                                            border="0" 
+                                            rounded="md"
+                                            theme="snow"
+                                            sx={{
+                                              '.ql-toolbar': {
+                                                borderTopRadius: "5px",
+                                                borderColor: colorMode === "light" ? "#ccc" : "#222222"
+                                              },
+                                              '.ql-container': {
+                                                borderBottomRadius: "5px",
+                                                borderColor: colorMode === "light" ? "#ccc" : "#222222"
+                                              }
+                                            }}
+                                            modules={{
+                                              toolbar: [
+                                                [{ 'header': []}],
+                                                ['bold', 'italic', 'underline'],
+                                                [{'list': 'ordered'}, {'list': 'bullet'}],
+                                                ['link'],
+                                                [{'align': []}],
+                                                ['clean']
+                                              ]
+                                            }}
+                                            formats={[
+                                              'header','bold', 'italic', 'underline','list', 'bullet', 'align','link'
+                                            ]}
+                                            defaultValue={book.notes}
+                                            onChange={e=>{ 
+                                                const notesInput: any = document.getElementById(`notes-input-${book.id}`);
+                                                notesInput!.value = e;
+                                              }
+                                            }
+                                            id={`notes-input-${book.id}`}
+                                          />
+                                          <Flex
+                                            justify="space-between"
+                                            w="100%"
+                                          >
+                                            <Popover isLazy>
+                                              <PopoverTrigger>
+                                                <Flex 
+                                                  align="center" 
+                                                  justify="center" 
+                                                  me={2}
+                                                  _hover={{
+                                                    cursor: "pointer"
+                                                  }}
+                                                >
+                                                  <ImInfo size={20} color="gray" />
+                                                </Flex>
+                                              </PopoverTrigger>
+                                              <PopoverContent>
+                                                <PopoverArrow />
+                                                <PopoverCloseButton />
+                                                <PopoverBody 
+                                                  fontSize="sm"
+                                                  _dark={{
+                                                    bg: "black"
+                                                  }}
+                                                >
+                                                  Private notes are only visible to you.
+                                                </PopoverBody>
+                                              </PopoverContent>
+                                            </Popover>
+                                            <Button
+                                              w="auto"
+                                              alignSelf="flex-end"
+                                              data-bookid={book.id}
+                                              onClick={e=>updateNotes(e)}
+                                              size="sm"
+                                              backgroundColor="black"
+                                              color="white"
+                                            >
+                                              Save Notes
+                                            </Button>
+                                          </Flex>
+                                        </Flex>
+                                      </AccordionPanel>
+                                    </AccordionItem>
+                                  </Accordion>
+                                </Flex>
+                              )
+                            })
+                          ): null}
+                        </>
+                      ):(
+                        <Flex justify="center">
+                          <Spinner size="xl" />
+                        </Flex>
+                      )}
+                      {!endLoadMore && !isSearchResults ? (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            colorScheme="blue"
+                            onClick={e=>{
+                              setTake(prev=>prev+10)
+                            }}
+                          >
+                            Load more...
+                          </Button>
+                        </>
+                      ): null}
+                    </Box>
+                  </Stack>
+                </Flex>
+              </TabPanel>
+              <TabPanel px={0}>
+                <Tbr server={server} gbooksapi={gbooksapi}/>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
 
         <Modal 
           isOpen={isOpenBookSearchModal} 

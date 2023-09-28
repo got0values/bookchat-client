@@ -336,6 +336,48 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
     castVoteMutation.mutate({pollBookNumber,pollBookId});
   }
 
+  async function addToTbr(tbrBookToAdd: any) {
+    let tokenCookie: string | null = Cookies.get().token;
+      await axios
+        .post(server + "/api/addtbrbook", 
+          {
+            book: tbrBookToAdd
+          },
+          {headers: {
+            'authorization': tokenCookie
+          }}
+        )
+        .then((response)=>{
+          if (response.data.success === false) {
+            toast({
+              description: response.data?.message ? response.data.message : "An error has occurred",
+              status: "error",
+              duration: 9000,
+              isClosable: true
+            })
+          }
+          else {
+            toast({
+              description: "Book added to TBR",
+              status: "success",
+              duration: 9000,
+              isClosable: true
+            })
+            queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
+            queryClient.resetQueries({queryKey: ['bookshelfKey']})
+          }
+        })
+        .catch(({response})=>{
+          console.log(response)
+          toast({
+            description: "An error has occurred",
+            status: "error",
+            duration: 9000,
+            isClosable: true
+          })
+        })
+  }
+
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['bookSuggestionBookshelfKey'], 
     queryFn: getBookSuggestionBookshelf
@@ -987,7 +1029,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                                 src={book.image ? book.image : "https://via.placeholder.com/165x215"}
                                 onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
                                 height="100%"
-                                maxH="125px"
+                                maxH="145px"
                                 boxShadow="1px 1px 1px 1px darkgrey"
                                 alt={book.title}
                               />
@@ -1068,6 +1110,25 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                                   p={0}
                                 >
                                   <FaStore size={17} />
+                                </Button>
+                                <Button
+                                  data-id={book.id}
+                                  onClick={e=>addToTbr({
+                                    image: book.image,
+                                    title: book.title,
+                                    author: book.author,
+                                    description: book.description,
+                                    isbn: book.isbn ? book.isbn : "",
+                                    page_count: book.page_count ? parseInt(book.page_count as any) : null,
+                                    published_date: book.published_date ? book.published_date : "",
+                                  })}
+                                  fontWeight="bold"
+                                  // icon={<BiTrash size={20} />}
+                                  size="sm"
+                                  p={0}
+                                  variant="ghost"
+                                >
+                                  Add to TBR
                                 </Button>
                               </Flex>
                             </Box>
