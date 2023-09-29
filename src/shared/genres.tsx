@@ -105,4 +105,14 @@ export const genres = [
     value: "20",
     color: "orange"
   },
+  {
+    name: "Fantasy Romance",
+    value: "21",
+    color: "orange"
+  },
+  {
+    name: "Mafia Romance",
+    value: "21",
+    color: "orange"
+  },
 ]
