@@ -112,7 +112,7 @@ export const genres = [
   },
   {
     name: "Mafia Romance",
-    value: "21",
+    value: "22",
     color: "orange"
   },
 ]
