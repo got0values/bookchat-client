@@ -178,6 +178,38 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
     }
   }
 
+  async function filterSuggestionBookshelfByRating(rating: number) {
+    let tokenCookie: string | null = Cookies.get().token;
+    await axios
+      .get(`${server}/api/filtersuggestionbookshelfbyrating`,
+        {
+          headers: {
+            Authorization: tokenCookie
+          },
+          params: {
+            profileName: bookshelfProfileName,
+            rating: rating
+          }
+        }
+      )
+      .then((response)=>{
+        const {data} = response;
+        const currentbookshelf = data.message;
+        setCurrentBookshelf(currentbookshelf);
+        setBookSuggestionBookshelf({
+          ...currentbookshelf,
+          Flag: currentbookshelf?.Profile.country ? (countryFlagIconsReact as any)[currentbookshelf.Profile.country] : <Box></Box>
+        });
+        setIsSearchResults(true);
+      })
+      .catch(({response})=>{
+        console.log(response)
+        if (response.data?.message) {
+          throw new Error(response.data?.message)
+        }
+      })
+  }
+
   useEffect(()=>{
     getBookSuggestionBookshelf()
   },[take])
@@ -958,7 +990,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                   Bookshelf
                 </Heading>
                 <Box>
-                  {bookSuggestionBookshelf?.BookshelfBook?.length ? (
+                  <Box mb={2}>
                     <Flex gap={1} mb={2}>
                       <Input
                         type="search"
@@ -973,7 +1005,51 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                         Search
                       </Button>
                     </Flex>
-                  ): null}
+                    <Flex align="center" gap={2} wrap="wrap">
+                      <Button
+                        size="xs"
+                        py={0}
+                        px={1}
+                        onClick={e=>filterSuggestionBookshelfByRating(1)}
+                      >
+                        <BsStarFill color="gold"/>
+                        <Text fontSize="xs" ms={1}>& up</Text>
+                      </Button>
+                      <Button
+                        size="xs"
+                        py={0}
+                        px={1}
+                        onClick={e=>filterSuggestionBookshelfByRating(2)}
+                      >
+                        <BsStarFill color="gold"/>
+                        <BsStarFill color="gold"/>
+                        <Text fontSize="xs" ms={1}>& up</Text>
+                      </Button>
+                      <Button
+                        size="xs"
+                        py={0}
+                        px={1}
+                        onClick={e=>filterSuggestionBookshelfByRating(3)}
+                      >
+                        <BsStarFill color="gold"/>
+                        <BsStarFill color="gold"/>
+                        <BsStarFill color="gold"/>
+                        <Text fontSize="xs" ms={1}>& up</Text>
+                      </Button>
+                      <Button
+                        size="xs"
+                        py={0}
+                        px={1}
+                        onClick={e=>filterSuggestionBookshelfByRating(4)}
+                      >
+                        <BsStarFill color="gold"/>
+                        <BsStarFill color="gold"/>
+                        <BsStarFill color="gold"/>
+                        <BsStarFill color="gold"/>
+                        <Text fontSize="xs" ms={1}>& up</Text>
+                      </Button>
+                    </Flex>
+                  </Box>
                   {bookSuggestionBookshelf?.BookshelfBook?.length ? (
                     bookSuggestionBookshelf.BookshelfBook.map((book: BookshelfBook,i: number)=>{
                       return (

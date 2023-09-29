@@ -70,6 +70,7 @@ import Tbr from "./Tbr";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { MdOutlineChat, MdEdit } from 'react-icons/md';
 import { BiDotsHorizontalRounded, BiTrash, BiPlus, BiHide } from 'react-icons/bi';
+import { BsStarFill, BsStar, BsStarHalf } from "react-icons/bs";
 import { FaShoppingCart } from 'react-icons/fa';
 import { ImInfo } from 'react-icons/im';
 import ReactQuill from 'react-quill';
@@ -628,6 +629,32 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   function resetSearchFilter() {
     searchInputRef.current.value = "";
     setBookshelfBooks(bookshelfBooksOriginal);
+  }
+
+  async function filterByRating(rating: number) {
+    const searchInput = searchInputRef.current.value.toLowerCase();
+    let tokenCookie: string | null = Cookies.get().token;
+    await axios
+      .get(`${server}/api/filterbyrating`,
+        {
+          headers: {
+            Authorization: tokenCookie
+          },
+          params: {
+            rating: rating
+          }
+        }
+      )
+      .then((response)=>{
+        setIsSearchResults(true)
+        setBookshelfBooks(response.data.message)
+      })
+      .catch(({response})=>{
+        console.log(response)
+        if (response.data?.message) {
+          throw new Error(response.data?.message)
+        }
+      })
   }
 
   const ratingCallbackMutation = useMutation({
@@ -1578,6 +1605,54 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           ): null}
                         </Stack>
                       </CheckboxGroup>
+                      <Divider/>
+                      <Heading as="h2" size="md">
+                        Filter by Rating
+                      </Heading>
+                      <Flex align="center" gap={2} wrap="wrap">
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>filterByRating(1)}
+                        >
+                          <BsStarFill color="gold"/>
+                          <Text fontSize="xs" ms={1}>& up</Text>
+                        </Button>
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>filterByRating(2)}
+                        >
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <Text fontSize="xs" ms={1}>& up</Text>
+                        </Button>
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>filterByRating(3)}
+                        >
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <Text fontSize="xs" ms={1}>& up</Text>
+                        </Button>
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>filterByRating(4)}
+                        >
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <Text fontSize="xs" ms={1}>& up</Text>
+                        </Button>
+                      </Flex>
                       <Divider/>
                       <Heading as="h2" size="md">
                         Search Bookshelf
