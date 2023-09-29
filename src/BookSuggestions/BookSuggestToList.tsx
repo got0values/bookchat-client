@@ -10,20 +10,20 @@ import {
   Spinner,
   useDisclosure,
   Text,
-  Image
+  Image,
   // Text,
-  // Avatar,
-  // Popover,
-  // PopoverTrigger,
-  // PopoverCloseButton,
-  // PopoverContent,
-  // PopoverBody,
-  // PopoverArrow,
-  // Divider,
-  // Alert,
-  // AlertDescription,
-  // CloseButton,
-  // Progress,
+  Avatar,
+  Popover,
+  PopoverTrigger,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
+  Divider,
+  Alert,
+  AlertDescription,
+  CloseButton,
+  Progress,
 } from "@chakra-ui/react";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import CurrentWeekSuggestionCount from "./CurrentWeekSuggestionCount";
@@ -120,11 +120,39 @@ export function BookSuggestionToList({server}: {server: string;}) {
   return (
     <>
       {/* <CurrentWeekSuggestionCount/> */}
+      
+      {alertIsVisible ? (
+        <Alert 
+          status='success'
+          rounded="md"
+          mb={3}
+          position="relative"
+        >
+          <Box>
+            <AlertDescription 
+              pe={7} 
+              display="flex" 
+              alignItems="center" 
+              gap={2} 
+              fontSize=".97rem"
+              lineHeight={1}
+            >
+              <Box as={ImInfo} size={15} minWidth="15px" /> 
+              Browse bookshelves to get some TBR ideas. If you think a bookshelf owner would enjoy a certain book that's not on their bookshelf yet, let them know about it by sending them a friendly book suggestion.
+            </AlertDescription>
+          </Box>
+          <CloseButton
+            alignSelf='flex-start'
+            position='absolute'
+            right={1}
+            top={0}
+            onClick={onClose}
+          />
+        </Alert>
+      ): null}
+
       {firstBookshelf ? (
         <Flex justify="center" align="center" direction="column">
-          <Text fontWeight="bold" fontSize="sm" mb={3}>
-            Browse bookshelves to get some TBR ideas. If you think a bookshelf owner would enjoy a certain book that's not on their bookshelf yet, let them know about it by sending them a friendly book suggestion.
-          </Text>
           <Button
             as={Link}
             to={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
@@ -158,36 +186,6 @@ export function BookSuggestionToList({server}: {server: string;}) {
           </Button>
         </Flex>
       ): null}
-      {/* {alertIsVisible ? (
-        <Alert 
-          status='success'
-          rounded="md"
-          mb={3}
-          position="relative"
-        >
-          <Box>
-            <AlertDescription 
-              pe={7} 
-              display="flex" 
-              alignItems="center" 
-              gap={2} 
-              fontSize=".97rem"
-              lineHeight={1}
-            >
-              <Box as={ImInfo} size={15} minWidth="15px" /> 
-              These users need your help discovering more books to read.
-            </AlertDescription>
-          </Box>
-          <CloseButton
-            alignSelf='flex-start'
-            position='absolute'
-            right={1}
-            top={0}
-            onClick={onClose}
-          />
-        </Alert>
-      ): null}
-
       {bookSuggestToList?.length ? (
         <>
           {bookSuggestToList.map((bookshelf: BookshelfType, i: number)=>{
@@ -316,7 +314,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
             Please check back tomorrow!
           </Text>
         </Box>
-      )} */}
+      )}
     </>
   )
 }

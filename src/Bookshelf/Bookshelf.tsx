@@ -596,6 +596,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   const searchInputRef = useRef({} as any);
   const [isSearchResults,setIsSearchResults] = useState(false);
   async function searchFilter() {
+    setFilterIsLoading(true)
     const searchInput = searchInputRef.current.value.toLowerCase();
     let tokenCookie: string | null = Cookies.get().token;
     await axios
@@ -624,6 +625,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
           throw new Error(response.data?.message)
         }
       })
+    setFilterIsLoading(false)
   }
   
   function resetSearchFilter() {
@@ -632,6 +634,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   }
 
   async function filterByRating(rating: number) {
+    setFilterIsLoading(true)
     const searchInput = searchInputRef.current.value.toLowerCase();
     let tokenCookie: string | null = Cookies.get().token;
     await axios
@@ -655,6 +658,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
           throw new Error(response.data?.message)
         }
       })
+    setFilterIsLoading(false)
   }
 
   const ratingCallbackMutation = useMutation({

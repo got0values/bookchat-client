@@ -138,9 +138,11 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
     return bookSuggestionBookshelfGet
   }
 
+  const [filterIsLoading,setFilterIsLoading] = useState(false);
   const searchBookshelfRef = useRef({} as HTMLInputElement);
   const [isSearchResults,setIsSearchResults] = useState(false);
   async function searchBookshelf() {
+    setFilterIsLoading(true)
     const searchTerm = searchBookshelfRef.current.value;
     if (!searchTerm.length) {
       setIsSearchResults(false);
@@ -175,10 +177,12 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           console.log(response)
           throw new Error(response.data.error)
         })
+      setFilterIsLoading(false)
     }
   }
 
   async function filterSuggestionBookshelfByRating(rating: number) {
+    setFilterIsLoading(true)
     let tokenCookie: string | null = Cookies.get().token;
     await axios
       .get(`${server}/api/filtersuggestionbookshelfbyrating`,
@@ -208,6 +212,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
           throw new Error(response.data?.message)
         }
       })
+    setFilterIsLoading(false)
   }
 
   useEffect(()=>{
@@ -989,232 +994,238 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                 <Heading as="h3" size="md" mb={2}>
                   Bookshelf
                 </Heading>
-                <Box>
-                  <Box mb={2}>
-                    <Flex gap={1} mb={2}>
-                      <Input
-                        type="search"
-                        rounded="md"
-                        placeholder={`Search ${bookshelfProfileName}'s bookshelf`}
-                        ref={searchBookshelfRef}
-                        onKeyDown={e=> e.key === "Enter" ? searchBookshelf() : null}
-                      />
-                      <Button
-                        onClick={e=>searchBookshelf()}
-                      >
-                        Search
-                      </Button>
-                    </Flex>
-                    <Flex align="center" gap={2} wrap="wrap">
-                      <Button
-                        size="xs"
-                        py={0}
-                        px={1}
-                        onClick={e=>filterSuggestionBookshelfByRating(1)}
-                      >
-                        <BsStarFill color="gold"/>
-                        <Text fontSize="xs" ms={1}>& up</Text>
-                      </Button>
-                      <Button
-                        size="xs"
-                        py={0}
-                        px={1}
-                        onClick={e=>filterSuggestionBookshelfByRating(2)}
-                      >
-                        <BsStarFill color="gold"/>
-                        <BsStarFill color="gold"/>
-                        <Text fontSize="xs" ms={1}>& up</Text>
-                      </Button>
-                      <Button
-                        size="xs"
-                        py={0}
-                        px={1}
-                        onClick={e=>filterSuggestionBookshelfByRating(3)}
-                      >
-                        <BsStarFill color="gold"/>
-                        <BsStarFill color="gold"/>
-                        <BsStarFill color="gold"/>
-                        <Text fontSize="xs" ms={1}>& up</Text>
-                      </Button>
-                      <Button
-                        size="xs"
-                        py={0}
-                        px={1}
-                        onClick={e=>filterSuggestionBookshelfByRating(4)}
-                      >
-                        <BsStarFill color="gold"/>
-                        <BsStarFill color="gold"/>
-                        <BsStarFill color="gold"/>
-                        <BsStarFill color="gold"/>
-                        <Text fontSize="xs" ms={1}>& up</Text>
-                      </Button>
-                      <Button
-                        size="xs"
-                        py={0}
-                        px={1}
-                        onClick={e=>filterSuggestionBookshelfByRating(5)}
-                      >
-                        <BsStarFill color="gold"/>
-                        <BsStarFill color="gold"/>
-                        <BsStarFill color="gold"/>
-                        <BsStarFill color="gold"/>
-                        <BsStarFill color="gold"/>
-                      </Button>
-                      <Button
-                        size="xs"
-                        py={0}
-                        px={1}
-                        onClick={e=>{
-                          setIsSearchResults(false)
-                          getBookSuggestionBookshelf()
-                        }}
-                      >
-                        Clear
-                      </Button>
-                    </Flex>
-                  </Box>
-                  {bookSuggestionBookshelf?.BookshelfBook?.length ? (
-                    bookSuggestionBookshelf.BookshelfBook.map((book: BookshelfBook,i: number)=>{
-                      return (
-                        <Box 
-                          className="well-card"
-                          key={i}
+                {filterIsLoading ? (
+                  <Flex justify="center">
+                    <Spinner size="xl" />
+                  </Flex>
+                ): (
+                  <Box>
+                    <Box mb={2}>
+                      <Flex gap={1} mb={2}>
+                        <Input
+                          type="search"
+                          rounded="md"
+                          placeholder={`Search ${bookshelfProfileName}'s bookshelf`}
+                          ref={searchBookshelfRef}
+                          onKeyDown={e=> e.key === "Enter" ? searchBookshelf() : null}
+                        />
+                        <Button
+                          onClick={e=>searchBookshelf()}
                         >
-                          <Flex>
-                            {book.image === "https://via.placeholder.com/165x215" ? (
-                              <BookImage isbn={book.isbn} id={`book-image-${Math.random()}`} maxHeight="125px"/>
-                            ) : (
-                              <Image
-                                src={book.image ? book.image : "https://via.placeholder.com/165x215"}
-                                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                height="100%"
-                                maxH="145px"
-                                boxShadow="1px 1px 1px 1px darkgrey"
-                                alt={book.title}
-                              />
-                            )}
-                            <Box mx={2} w="100%">
-                              <Popover isLazy>
-                                <PopoverTrigger>
-                                  <Heading 
-                                    as="h5" 
-                                    size="md"
-                                    me={3}
-                                    noOfLines={1}
-                                    _hover={{
-                                      cursor: 'pointer'
-                                    }}
+                          Search
+                        </Button>
+                      </Flex>
+                      <Flex align="center" gap={2} wrap="wrap">
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>filterSuggestionBookshelfByRating(1)}
+                        >
+                          <BsStarFill color="gold"/>
+                          <Text fontSize="xs" ms={1}>& up</Text>
+                        </Button>
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>filterSuggestionBookshelfByRating(2)}
+                        >
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <Text fontSize="xs" ms={1}>& up</Text>
+                        </Button>
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>filterSuggestionBookshelfByRating(3)}
+                        >
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <Text fontSize="xs" ms={1}>& up</Text>
+                        </Button>
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>filterSuggestionBookshelfByRating(4)}
+                        >
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <Text fontSize="xs" ms={1}>& up</Text>
+                        </Button>
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>filterSuggestionBookshelfByRating(5)}
+                        >
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                        </Button>
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>{
+                            setIsSearchResults(false)
+                            getBookSuggestionBookshelf()
+                          }}
+                        >
+                          Clear
+                        </Button>
+                      </Flex>
+                    </Box>
+                    {bookSuggestionBookshelf?.BookshelfBook?.length ? (
+                      bookSuggestionBookshelf.BookshelfBook.map((book: BookshelfBook,i: number)=>{
+                        return (
+                          <Box 
+                            className="well-card"
+                            key={i}
+                          >
+                            <Flex>
+                              {book.image === "https://via.placeholder.com/165x215" ? (
+                                <BookImage isbn={book.isbn} id={`book-image-${Math.random()}`} maxHeight="125px"/>
+                              ) : (
+                                <Image
+                                  src={book.image ? book.image : "https://via.placeholder.com/165x215"}
+                                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                  height="100%"
+                                  maxH="145px"
+                                  boxShadow="1px 1px 1px 1px darkgrey"
+                                  alt={book.title}
+                                />
+                              )}
+                              <Box mx={2} w="100%">
+                                <Popover isLazy>
+                                  <PopoverTrigger>
+                                    <Heading 
+                                      as="h5" 
+                                      size="md"
+                                      me={3}
+                                      noOfLines={1}
+                                      _hover={{
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      {book.title}
+                                    </Heading>
+                                  </PopoverTrigger>
+                                  <PopoverContent>
+                                    <PopoverArrow />
+                                    <PopoverCloseButton />
+                                    <PopoverHeader pe={5} fontWeight="bold">{book.title}</PopoverHeader>
+                                    <PopoverBody>
+                                      <GooglePopoverContent title={book.title} author={book.author} gBooksApi={gbooksapi} />
+                                    </PopoverBody>
+                                  </PopoverContent>
+                                </Popover>
+                                <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
+                                  {book.author}
+                                </Text>
+                                <Text fontStyle="italic">
+                                  {book.published_date ? dayjs(book.published_date).format("YYYY"): null}
+                                </Text>
+                                {book.page_count ? (
+                                  <Text fontSize="sm">
+                                    {book.page_count} pages
+                                  </Text>
+                                ): null}
+                                <Flex
+                                  align="center"
+                                  wrap="wrap"
+                                  gap={1}
+                                  rowGap={0}
+                                >
+                                  <Text fontWeight="bold">
+                                    {bookSuggestionBookshelf?.Profile?.username}'s rating:
+                                  </Text>
+                                  {book.rating !== null ? (
+                                    <StarRating
+                                      ratingCallback={null} 
+                                      starRatingId={book.id}
+                                      defaultRating={book.rating}
+                                    />
+                                  ): (
+                                    <Text>n/a</Text>
+                                  )}
+                                </Flex>
+                                <Flex align="center" gap={1}>
+                                  <Button
+                                    as={Link}
+                                    to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.title + " " + book.author)}`}
+                                    target="blank"
+                                    size="xs"
+                                    variant="ghost"
+                                    aria-label="View more info in Bookshop"
+                                    title="View more info in Bookshop"
+                                    p={0}
                                   >
-                                    {book.title}
-                                  </Heading>
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                  <PopoverArrow />
-                                  <PopoverCloseButton />
-                                  <PopoverHeader pe={5} fontWeight="bold">{book.title}</PopoverHeader>
-                                  <PopoverBody>
-                                    <GooglePopoverContent title={book.title} author={book.author} gBooksApi={gbooksapi} />
-                                  </PopoverBody>
-                                </PopoverContent>
-                              </Popover>
-                              <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
-                                {book.author}
-                              </Text>
-                              <Text fontStyle="italic">
-                                {book.published_date ? dayjs(book.published_date).format("YYYY"): null}
-                              </Text>
-                              {book.page_count ? (
-                                <Text fontSize="sm">
-                                  {book.page_count} pages
+                                    <FaStore size={17} />
+                                  </Button>
+                                  <Button
+                                    data-id={book.id}
+                                    onClick={e=>addToTbr({
+                                      image: book.image,
+                                      title: book.title,
+                                      author: book.author,
+                                      description: book.description,
+                                      isbn: book.isbn ? book.isbn : "",
+                                      page_count: book.page_count ? parseInt(book.page_count as any) : null,
+                                      published_date: book.published_date ? book.published_date : "",
+                                    },toast,queryClient)}
+                                    fontWeight="bold"
+                                    // icon={<BiTrash size={20} />}
+                                    size="sm"
+                                    p={0}
+                                    variant="ghost"
+                                  >
+                                    Add to TBR
+                                  </Button>
+                                </Flex>
+                              </Box>
+                            </Flex>
+                            <Box>
+                              {book.review ? (
+                                <Text fontStyle="italic" mt={2}>
+                                  "{book.review}"
                                 </Text>
                               ): null}
-                              <Flex
-                                align="center"
-                                wrap="wrap"
-                                gap={1}
-                                rowGap={0}
-                              >
-                                <Text fontWeight="bold">
-                                  {bookSuggestionBookshelf?.Profile?.username}'s rating:
-                                </Text>
-                                {book.rating !== null ? (
-                                  <StarRating
-                                    ratingCallback={null} 
-                                    starRatingId={book.id}
-                                    defaultRating={book.rating}
-                                  />
-                                ): (
-                                  <Text>n/a</Text>
-                                )}
-                              </Flex>
-                              <Flex align="center" gap={1}>
-                                <Button
-                                  as={Link}
-                                  to={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.title + " " + book.author)}`}
-                                  target="blank"
-                                  size="xs"
-                                  variant="ghost"
-                                  aria-label="View more info in Bookshop"
-                                  title="View more info in Bookshop"
-                                  p={0}
-                                >
-                                  <FaStore size={17} />
-                                </Button>
-                                <Button
-                                  data-id={book.id}
-                                  onClick={e=>addToTbr({
-                                    image: book.image,
-                                    title: book.title,
-                                    author: book.author,
-                                    description: book.description,
-                                    isbn: book.isbn ? book.isbn : "",
-                                    page_count: book.page_count ? parseInt(book.page_count as any) : null,
-                                    published_date: book.published_date ? book.published_date : "",
-                                  },toast,queryClient)}
-                                  fontWeight="bold"
-                                  // icon={<BiTrash size={20} />}
-                                  size="sm"
-                                  p={0}
-                                  variant="ghost"
-                                >
-                                  Add to TBR
-                                </Button>
-                              </Flex>
                             </Box>
-                          </Flex>
-                          <Box>
-                            {book.review ? (
-                              <Text fontStyle="italic" mt={2}>
-                                "{book.review}"
-                              </Text>
-                            ): null}
                           </Box>
-                        </Box>
-                      )
-                    })
-                  ): (
-                    <Text fontStyle="italic">
-                      Empty
-                    </Text>
-                  )}
-                  <Box>
-                    {!endLoadMore && !isSearchResults ? (
-                      <>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          colorScheme="blue"
-                          onClick={e=>{
-                            setTake(prev=>prev+10)
-                          }}
-                          isLoading={loadMoreIsLoading}
-                        >
-                          Load more...
-                        </Button>
-                      </>
-                    ): null}
+                        )
+                      })
+                    ): (
+                      <Text fontStyle="italic">
+                        Empty
+                      </Text>
+                    )}
+                    <Box>
+                      {!endLoadMore && !isSearchResults ? (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            colorScheme="blue"
+                            onClick={e=>{
+                              setTake(prev=>prev+10)
+                            }}
+                            isLoading={loadMoreIsLoading}
+                          >
+                            Load more...
+                          </Button>
+                        </>
+                      ): null}
+                    </Box>
                   </Box>
-                </Box>
+                )}
               </Box>
             </>
           )}
