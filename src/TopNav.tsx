@@ -45,6 +45,7 @@ import {
   Link as ChakraLink,
 } from '@chakra-ui/react';
 import { SkipNavLink, SkipNavContent } from '@chakra-ui/skip-nav';
+import addToTbr from './shared/addToTbr';
 import { MdLogout, MdOutlineContactSupport, MdOutlineChat } from 'react-icons/md';
 import { BsFillMoonFill, BsFillSunFill, BsFillChatFill, BsPostcardHeartFill } from 'react-icons/bs';
 import { FiSettings } from 'react-icons/fi';
@@ -595,48 +596,6 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
   })
   function navSearch(navSearchValue: string) {
     navSearchMutation.mutate(navSearchValue);
-  }
-
-  async function addToTbr(tbrBookToAdd: any) {
-    let tokenCookie: string | null = Cookies.get().token;
-    await axios
-      .post(server + "/api/addtbrbook", 
-        {
-          book: tbrBookToAdd
-        },
-        {headers: {
-          'authorization': tokenCookie
-        }}
-      )
-      .then((response)=>{
-        if (response.data.success === false) {
-          toast({
-            description: response.data?.message ? response.data.message : "An error has occurred",
-            status: "error",
-            duration: 9000,
-            isClosable: true
-          })
-        }
-        else {
-          toast({
-            description: "Book added to TBR",
-            status: "success",
-            duration: 9000,
-            isClosable: true
-          })
-          queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
-          queryClient.resetQueries({queryKey: ['bookshelfKey']})
-        }
-      })
-      .catch(({response})=>{
-        console.log(response)
-        toast({
-          description: "An error has occurred",
-          status: "error",
-          duration: 9000,
-          isClosable: true
-        })
-      })
   }
 
   const notificationQuery = useQuery({ queryKey: ['notificationKey'], queryFn: getNotifications });
@@ -1442,7 +1401,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                                   isbn: book.volumeInfo.industryIdentifiers?.length ? book.volumeInfo.industryIdentifiers[0].identifier : "",
                                   page_count: book.volumeInfo.pageCount ? book.volumeInfo.pageCount : null,
                                   published_date: book.volumeInfo.publishedDate ? dayjs(book.volumeInfo.publishedDate).format('YYYY') : "",
-                                })}
+                                },toast,queryClient)}
                                 variant="outline"
                                 backgroundColor="white"
                                 color="black"

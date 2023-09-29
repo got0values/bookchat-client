@@ -40,9 +40,11 @@ import {
   useToast
 } from "@chakra-ui/react";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
+import addToTbr from "../shared/addToTbr";
 import BookImage from "../shared/BookImage";
 import BooksSearch from "../shared/BooksSearch";
 import RequestSuggestion from "../shared/RequestSuggestion";
+import GooglePopoverContent from "../shared/GooglePopover.Content";
 import CurrentWeekSuggestionCount from "./CurrentWeekSuggestionCount";
 import { CheckedAnimation } from "../shared/Animations";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
@@ -334,48 +336,6 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
   })
   async function castVote({pollBookNumber, pollBookId}: {pollBookNumber: number, pollBookId: number}) {
     castVoteMutation.mutate({pollBookNumber,pollBookId});
-  }
-
-  async function addToTbr(tbrBookToAdd: any) {
-    let tokenCookie: string | null = Cookies.get().token;
-      await axios
-        .post(server + "/api/addtbrbook", 
-          {
-            book: tbrBookToAdd
-          },
-          {headers: {
-            'authorization': tokenCookie
-          }}
-        )
-        .then((response)=>{
-          if (response.data.success === false) {
-            toast({
-              description: response.data?.message ? response.data.message : "An error has occurred",
-              status: "error",
-              duration: 9000,
-              isClosable: true
-            })
-          }
-          else {
-            toast({
-              description: "Book added to TBR",
-              status: "success",
-              duration: 9000,
-              isClosable: true
-            })
-            queryClient.invalidateQueries({ queryKey: ['bookshelfKey'] })
-            queryClient.resetQueries({queryKey: ['bookshelfKey']})
-          }
-        })
-        .catch(({response})=>{
-          console.log(response)
-          toast({
-            description: "An error has occurred",
-            status: "error",
-            duration: 9000,
-            isClosable: true
-          })
-        })
   }
 
   const { isLoading, isError, data, error } = useQuery({ 
@@ -1035,14 +995,29 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                               />
                             )}
                             <Box mx={2} w="100%">
-                              <Heading 
-                                as="h5" 
-                                size="md"
-                                me={3}
-                                noOfLines={1}
-                              >
-                                {book.title}
-                              </Heading>
+                              <Popover isLazy>
+                                <PopoverTrigger>
+                                  <Heading 
+                                    as="h5" 
+                                    size="md"
+                                    me={3}
+                                    noOfLines={1}
+                                    _hover={{
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    {book.title}
+                                  </Heading>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                  <PopoverArrow />
+                                  <PopoverCloseButton />
+                                  <PopoverHeader pe={5} fontWeight="bold">{book.title}</PopoverHeader>
+                                  <PopoverBody>
+                                    <GooglePopoverContent title={book.title} author={book.author} gBooksApi={gbooksapi} />
+                                  </PopoverBody>
+                                </PopoverContent>
+                              </Popover>
                               <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
                                 {book.author}
                               </Text>
@@ -1054,31 +1029,6 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                                   {book.page_count} pages
                                 </Text>
                               ): null}
-                              {/* <Popover isLazy>
-                                <PopoverTrigger>
-                                  <Box
-                                    _hover={{
-                                      cursor: "pointer"
-                                    }}
-                                  >
-                                    <Text noOfLines={1}>
-                                      {book.description}
-                                    </Text>
-                                  </Box>
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                  <PopoverArrow />
-                                  <PopoverCloseButton />
-                                  <PopoverBody 
-                                  _dark={{
-                                    bg: "black"
-                                  }}
-                                    fontSize="sm"
-                                  >
-                                    {book.description}
-                                  </PopoverBody>
-                                </PopoverContent>
-                              </Popover> */}
                               <Flex
                                 align="center"
                                 wrap="wrap"
@@ -1121,7 +1071,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                                     isbn: book.isbn ? book.isbn : "",
                                     page_count: book.page_count ? parseInt(book.page_count as any) : null,
                                     published_date: book.published_date ? book.published_date : "",
-                                  })}
+                                  },toast,queryClient)}
                                   fontWeight="bold"
                                   // icon={<BiTrash size={20} />}
                                   size="sm"
@@ -1135,7 +1085,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                           </Flex>
                           <Box>
                             {book.review ? (
-                              <Text fontStyle="italic">
+                              <Text fontStyle="italic" mt={2}>
                                 "{book.review}"
                               </Text>
                             ): null}

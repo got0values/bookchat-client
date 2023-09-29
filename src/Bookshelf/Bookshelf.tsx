@@ -27,6 +27,7 @@ import {
   Popover,
   PopoverTrigger,
   PopoverCloseButton,
+  PopoverHeader,
   PopoverContent,
   PopoverBody,
   PopoverArrow,
@@ -64,6 +65,7 @@ import {
 import GooglePreviewLink from "../shared/GooglePreviewLink";
 import BooksSearch from "../shared/BooksSearch";
 import BookImage from "../shared/BookImage";
+import GooglePopoverContent from "../shared/GooglePopover.Content";
 import Tbr from "./Tbr";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { MdOutlineChat, MdEdit } from 'react-icons/md';
@@ -2070,14 +2072,29 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                           // justify="space-between"
                                           gap={1}
                                         >
-                                          <Heading 
-                                            as="h2" 
-                                            size="md"
-                                            // me={3}
-                                            noOfLines={2}
-                                          >
-                                            {book.title}
-                                          </Heading>
+                                          <Popover isLazy>
+                                            <PopoverTrigger>
+                                              <Heading 
+                                                as="h2" 
+                                                size="md"
+                                                // me={3}
+                                                noOfLines={2}
+                                                _hover={{
+                                                  cursor: 'pointer'
+                                                }}
+                                              >
+                                                {book.title}
+                                              </Heading>
+                                            </PopoverTrigger>
+                                            <PopoverContent>
+                                              <PopoverArrow />
+                                              <PopoverCloseButton />
+                                              <PopoverHeader pe={5} fontWeight="bold">{book.title}</PopoverHeader>
+                                              <PopoverBody>
+                                                <GooglePopoverContent title={book.title} author={book.author} gBooksApi={gbooksapi} />
+                                              </PopoverBody>
+                                            </PopoverContent>
+                                          </Popover>
                                           <Button
                                             size="xs"
                                             variant="ghost"

@@ -26,6 +26,13 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Popover,
+  PopoverTrigger,
+  PopoverCloseButton,
+  PopoverHeader,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
   useDisclosure,
   NumberInput,
   NumberInputField,
@@ -37,9 +44,8 @@ import {
   Heading, 
   useColorMode
 } from "@chakra-ui/react";
-import GooglePreviewLink from "../shared/GooglePreviewLink";
 import BooksSearch from "../shared/BooksSearch";
-import BookImage from "../shared/BookImage";
+import GooglePopoverContent from "../shared/GooglePopover.Content";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { MdOutlineChat, MdEdit } from 'react-icons/md';
 import { BiDotsHorizontalRounded, BiTrash, BiPlus, BiHide } from 'react-icons/bi';
@@ -162,7 +168,8 @@ export default function Tbr({server, gbooksapi}: {server: string; gbooksapi: str
     mutationFn: async (e: any)=>{
       let tokenCookie: string | null = Cookies.get().token;
       const id = e.target.dataset.id;
-        await axios
+      console.log(e.target.dataset.id)
+      await axios
         .delete(server + "/api/deletetbrbook", 
           {
             headers: {
@@ -379,7 +386,7 @@ export default function Tbr({server, gbooksapi}: {server: string; gbooksapi: str
                 <Flex 
                   className="well-card" 
                   flex="1 1 275px"
-                  maxW="275px"
+                  maxW="350px"
                   key={book.id} 
                 >
                   <Image
@@ -395,18 +402,28 @@ export default function Tbr({server, gbooksapi}: {server: string; gbooksapi: str
                     w="100%" 
                     lineHeight={1.4}
                   >
-                    <Flex
-                      align="center"
-                      gap={1}
-                    >
-                      <Heading 
-                        as="h2" 
-                        size="md"
-                        noOfLines={2}
-                      >
-                        {book.title}
-                      </Heading>
-                    </Flex>
+                    <Popover isLazy>
+                      <PopoverTrigger>
+                        <Heading 
+                          as="h2" 
+                          size="md"
+                          noOfLines={2}
+                          _hover={{
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {book.title}
+                        </Heading>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <PopoverArrow />
+                        <PopoverCloseButton />
+                        <PopoverHeader pe={5} fontWeight="bold">{book.title}</PopoverHeader>
+                        <PopoverBody>
+                          <GooglePopoverContent title={book.title} author={book.author} gBooksApi={gbooksapi} />
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Popover>
                     <Text fontWeight="bold" fontSize="lg" noOfLines={1}>
                       {book.author}
                     </Text>
@@ -418,24 +435,6 @@ export default function Tbr({server, gbooksapi}: {server: string; gbooksapi: str
                         {book.page_count} pages
                       </Text>
                     ): null}
-                    <Button
-                      data-id={book.id}
-                      onClick={e=>addToBookshelf({
-                        image: book.image,
-                        title: book.title,
-                        author: book.author,
-                        description: book.description,
-                        isbn: book.isbn ? book.isbn : "",
-                        page_count: book.page_count ? parseInt(book.page_count as any) : null,
-                        published_date: book.published_date ? book.published_date : "",
-                      })}
-                      fontWeight="bold"
-                      size="xs"
-                      p={0}
-                      variant="ghost"
-                    >
-                      Add to bookshelf
-                    </Button>
                     <Flex align="center" gap={1}>
                       <Button 
                         as={Link}
@@ -469,9 +468,31 @@ export default function Tbr({server, gbooksapi}: {server: string; gbooksapi: str
                         p={0}
                         variant="ghost"
                       >
-                        <BiTrash size={17} />
+                        <Box 
+                          as={BiTrash} 
+                          pointerEvents="none"
+                          size={17} 
+                        />
                       </Button>
                     </Flex>
+                    <Button
+                      data-id={book.id}
+                      onClick={e=>addToBookshelf({
+                        image: book.image,
+                        title: book.title,
+                        author: book.author,
+                        description: book.description,
+                        isbn: book.isbn ? book.isbn : "",
+                        page_count: book.page_count ? parseInt(book.page_count as any) : null,
+                        published_date: book.published_date ? book.published_date : "",
+                      })}
+                      fontWeight="bold"
+                      size="xs"
+                      p={0}
+                      variant="ghost"
+                    >
+                      Add to bookshelf
+                    </Button>
                   </Box>
                 </Flex>
               )

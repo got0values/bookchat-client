@@ -40,6 +40,7 @@ import {
   PopoverCloseButton,
   PopoverContent,
   PopoverBody,
+  PopoverHeader,
   PopoverArrow,
   NumberInput,
   NumberInputField,
@@ -54,10 +55,12 @@ import { editPagesRead, cancelEditPagesRead } from "../shared/editCancelPagesRea
 import { showEditCurrentlyReading, hideEditCurrentlyReading } from "../shared/editCancelCurrentlyReading";
 import BooksSearch from "../shared/BooksSearch";
 import BookImage from '../shared/BookImage';
+import GooglePopoverContent from "../shared/GooglePopover.Content";
 import { SocialSharePostButtons, SocialShareNoPostButtons } from "../shared/SocialShareButtons";
 import EditCurrentlyReading from "../shared/EditCurrentlyReading";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import RequestSuggestion from "../shared/RequestSuggestion";
+import addToTbr from "../shared/addToTbr";
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
 import { BsReplyFill, BsStarFill, BsHandThumbsUp, BsHandThumbsUpFill } from 'react-icons/bs';
@@ -872,9 +875,30 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               )}
               <Box mx={2} w="100%">
                 <Box lineHeight={1.4}>
-                  <Heading as="h2" size="md" me={3} noOfLines={1}>
-                    {reading.title}
-                  </Heading>
+                  <Popover isLazy>
+                    <PopoverTrigger>
+                      <Heading 
+                        as="h2" 
+                        size="md" 
+                        me={3} 
+                        noOfLines={1}
+                        _hover={{
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {reading.title}
+                      </Heading>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <PopoverArrow />
+                      <PopoverCloseButton />
+                      <PopoverHeader pe={5} fontWeight="bold">{reading.title}</PopoverHeader>
+                      <PopoverBody>
+                        <GooglePopoverContent title={reading.title} author={reading.author} gBooksApi={gbooksapi} />
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Popover>
+
                   <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
                     {reading.author}
                   </Text>
@@ -1018,6 +1042,24 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     p={0}
                   >
                     <MdOutlineChat size={20} />
+                  </Button>
+                  <Button
+                    onClick={e=>addToTbr({
+                      image: reading.image,
+                      title: reading.title,
+                      author: reading.author,
+                      description: reading.description,
+                      isbn: reading.isbn ? reading.isbn : "",
+                      page_count: reading.page_count ? parseInt(reading.page_count as any) : null,
+                      published_date: reading.published_date ? reading.published_date : "",
+                    }, toast, queryClient)}
+                    fontWeight="bold"
+                    // icon={<BiTrash size={20} />}
+                    size="sm"
+                    p={0}
+                    variant="ghost"
+                  >
+                    Add to TBR
                   </Button>
                 </Flex>
               </Box>
