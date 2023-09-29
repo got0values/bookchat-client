@@ -911,7 +911,13 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
               <Box 
                 className="non-well"
               >
-                <Heading as="h3" size="sm" mb={1} color="blackAlpha.800">Latest suggestion:</Heading>
+                <Heading 
+                  as="h3" 
+                  size="sm" 
+                  mb={1}
+                >
+                  Latest suggestion:
+                </Heading>
                 <Flex
                   // align="center"
                   wrap="wrap"
@@ -930,6 +936,10 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                       flex="1 0"
                       minW="250px"
                       backgroundColor="gray.50"
+                      _dark={{
+                        bgColor: "blackAlpha.500",
+                        borderColor: "black"
+                      }}
                     >
                       <Flex
                         // align="center"
@@ -950,15 +960,30 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                           >
                             {dayjs(previousSuggestions[previousSuggestions.length - 1].created_on).local().format("MM/DD/YY")}
                           </Text> */}
-                          <Text
-                            fontSize="md"
-                            fontWeight="bold"
-                            // fontStyle="italic"
-                            noOfLines={1}
-                            mb={-1}
-                          >
-                            {previousSuggestions[previousSuggestions.length - 1].title}
-                          </Text>
+                          <Popover isLazy>
+                            <PopoverTrigger>
+                              <Text
+                                fontSize="md"
+                                fontWeight="bold"
+                                // fontStyle="italic"
+                                noOfLines={1}
+                                mb={-1}
+                                _hover={{
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                {previousSuggestions[previousSuggestions.length - 1].title}
+                              </Text>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                              <PopoverArrow />
+                              <PopoverCloseButton />
+                              <PopoverHeader pe={5} fontWeight="bold">{previousSuggestions[previousSuggestions.length - 1].title}</PopoverHeader>
+                              <PopoverBody>
+                                <GooglePopoverContent title={previousSuggestions[previousSuggestions.length - 1].title} author={previousSuggestions[previousSuggestions.length - 1].author} gBooksApi={gbooksapi} />
+                              </PopoverBody>
+                            </PopoverContent>
+                          </Popover>
                           <Text
                             fontSize="md"
                             noOfLines={1}
