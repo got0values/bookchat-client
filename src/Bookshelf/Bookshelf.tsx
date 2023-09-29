@@ -1652,6 +1652,29 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           <BsStarFill color="gold"/>
                           <Text fontSize="xs" ms={1}>& up</Text>
                         </Button>
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>filterByRating(5)}
+                        >
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                        </Button>
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>{
+                            setIsSearchResults(false)
+                            getBookshelf()
+                          }}
+                        >
+                          Clear
+                        </Button>
                       </Flex>
                       <Divider/>
                       <Heading as="h2" size="md">

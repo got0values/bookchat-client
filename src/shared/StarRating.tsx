@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { StarRatingType } from "../types/types";
 import { BsStarFill, BsStar, BsStarHalf } from "react-icons/bs";
 import { Icon, Button, Flex, Input } from "@chakra-ui/react";
 
 const StarRating = ({ratingCallback, starRatingId, defaultRating}: StarRatingType) => {
   const [rating, setRating] = useState(defaultRating);
+  useEffect(()=>{
+    setRating(defaultRating)
+  },[defaultRating])
   const buttons = [];
 
   const onClick = (idx: number) => {
