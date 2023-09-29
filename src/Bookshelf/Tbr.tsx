@@ -168,7 +168,6 @@ export default function Tbr({server, gbooksapi}: {server: string; gbooksapi: str
     mutationFn: async (e: any)=>{
       let tokenCookie: string | null = Cookies.get().token;
       const id = e.target.dataset.id;
-      console.log(e.target.dataset.id)
       await axios
         .delete(server + "/api/deletetbrbook", 
           {
