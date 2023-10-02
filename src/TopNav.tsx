@@ -688,7 +688,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
             // spacing={[.25,3]}
             // pr={["0","150px"]}
             display="flex"
-            me={["0px","0px","200px"]}
+            me={["0px","0px","100px"]}
           >
             {LinkItems.map((linkItem, index) => (
               <Box
