@@ -2636,7 +2636,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
           <ModalOverlay />
           <ModalContent rounded="sm" boxShadow="1px 1px 2px 1px black">
             <ModalHeader>
-              Import Goodreads Library (Beta)
+              Import Goodreads Library (beta)
             </ModalHeader>
             <ModalCloseButton />
               <ModalBody>
