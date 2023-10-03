@@ -1058,8 +1058,9 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                     size="sm"
                     p={0}
                     variant="ghost"
+                    title="Add to TBR"
                   >
-                    Add to TBR
+                    TBR
                   </Button>
                 </Flex>
               </Box>
