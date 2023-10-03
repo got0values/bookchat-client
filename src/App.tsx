@@ -20,6 +20,7 @@ import SupportRequest from "./SupportRequest";
 import Stats from "./Stats/Stats";
 import Settings from './Settings';
 import AdminArea from "./AdminArea";
+import Documentation from "./Documentation";
 import Confirm from './Confirm';
 import ResetPassword from "./ResetPassword";
 import Terms from "./Terms";
@@ -149,6 +150,10 @@ function App() {
         <Route 
           path="supportrequest" 
           element={ <SupportRequest server={server} /> } 
+        />
+        <Route 
+          path="documentation" 
+          element={ <Documentation/> } 
         />
         <Route 
           path="*" 

@@ -121,7 +121,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
     <>
       {/* <CurrentWeekSuggestionCount/> */}
       
-      {alertIsVisible ? (
+      {/* {alertIsVisible ? (
         <Alert 
           status='success'
           rounded="md"
@@ -149,7 +149,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
             onClick={onClose}
           />
         </Alert>
-      ): null}
+      ): null} */}
 
       {firstBookshelf ? (
         <Flex justify="center" align="center" direction="column">
@@ -186,7 +186,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
           </Button>
         </Flex>
       ): null}
-      {bookSuggestToList?.length ? (
+      {/* {bookSuggestToList?.length ? (
         <>
           {bookSuggestToList.map((bookshelf: BookshelfType, i: number)=>{
             return (
@@ -314,7 +314,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
             Please check back tomorrow!
           </Text>
         </Box>
-      )}
+      )} */}
     </>
   )
 }

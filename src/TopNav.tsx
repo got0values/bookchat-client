@@ -53,6 +53,7 @@ import { RxDotFilled } from 'react-icons/rx';
 import { AiOutlineBell, AiFillHome } from 'react-icons/ai';
 import { FaSearch, FaBookReader, FaStore } from 'react-icons/fa';
 import { ImBooks, ImStatsDots } from 'react-icons/im';
+import { GrDocumentText } from 'react-icons/gr';
 import logoIcon from './assets/BookChatNoirNewBlack.png';
 import logoIconWhite from './assets/BookChatNoirNewWhite.png';
 import Cookies from "js-cookie";
@@ -826,6 +827,16 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                       fontWeight="600"
                     >
                       Settings
+                    </MenuItem>
+                  </Link>
+                  <Link to="/documentation">
+                    <MenuItem
+                      aria-label="documentation"
+                      icon={<GrDocumentText size={20}/>}
+                      fontSize="lg"
+                      fontWeight="600"
+                    >
+                      Documentation
                     </MenuItem>
                   </Link>
                   <Link to="/supportrequest">
