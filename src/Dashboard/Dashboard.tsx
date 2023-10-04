@@ -54,7 +54,6 @@ import {
 import { editPagesRead, cancelEditPagesRead } from "../shared/editCancelPagesRead";
 import { showEditCurrentlyReading, hideEditCurrentlyReading } from "../shared/editCancelCurrentlyReading";
 import BooksSearch from "../shared/BooksSearch";
-import BookImage from '../shared/BookImage';
 import GooglePopoverContent from "../shared/GooglePopover.Content";
 import { SocialSharePostButtons, SocialShareNoPostButtons } from "../shared/SocialShareButtons";
 import EditCurrentlyReading from "../shared/EditCurrentlyReading";
@@ -862,17 +861,13 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               </Text>
             ): null}
             <Flex>
-              {reading.image === "https://via.placeholder.com/165x215" ? (
-                <BookImage isbn={reading.isbn} id={`book-image-${Math.random()}`} maxHeight="150px"/>
-              ): (
-                <ChakraImage 
-                  src={reading.image ? reading.image : "https://via.placeholder.com/165x215"}
-                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                  maxH="150px"
-                  boxShadow="1px 1px 1px 1px darkgrey"
-                  alt={`${reading.title} image`}
-                />
-              )}
+              <ChakraImage 
+                src={reading.image ? reading.image : "https://via.placeholder.com/165x215"}
+                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                maxH="150px"
+                boxShadow="1px 1px 1px 1px darkgrey"
+                alt={`${reading.title} image`}
+              />
               <Box mx={2} w="100%">
                 <Box lineHeight={1.4}>
                   <Popover isLazy>
@@ -894,7 +889,11 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                       <PopoverCloseButton />
                       <PopoverHeader pe={5} fontWeight="bold">{reading.title}</PopoverHeader>
                       <PopoverBody>
-                        <GooglePopoverContent title={reading.title} author={reading.author} gBooksApi={gbooksapi} />
+                        {reading.description ? (
+                          reading.description
+                        ): (
+                          <GooglePopoverContent title={reading.title} author={reading.author} gBooksApi={gbooksapi} />
+                        )}
                       </PopoverBody>
                     </PopoverContent>
                   </Popover>

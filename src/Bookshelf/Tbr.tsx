@@ -419,7 +419,11 @@ export default function Tbr({server, gbooksapi}: {server: string; gbooksapi: str
                         <PopoverCloseButton />
                         <PopoverHeader pe={5} fontWeight="bold">{book.title}</PopoverHeader>
                         <PopoverBody>
-                          <GooglePopoverContent title={book.title} author={book.author} gBooksApi={gbooksapi} />
+                          {book.description ? (
+                            book.description
+                          ): (
+                            <GooglePopoverContent title={book.title} author={book.author} gBooksApi={gbooksapi} />
+                          )}
                         </PopoverBody>
                       </PopoverContent>
                     </Popover>

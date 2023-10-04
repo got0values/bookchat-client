@@ -41,7 +41,6 @@ import {
 } from "@chakra-ui/react";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
 import addToTbr from "../shared/addToTbr";
-import BookImage from "../shared/BookImage";
 import BooksSearch from "../shared/BooksSearch";
 import RequestSuggestion from "../shared/RequestSuggestion";
 import GooglePopoverContent from "../shared/GooglePopover.Content";
@@ -980,7 +979,11 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                               <PopoverCloseButton />
                               <PopoverHeader pe={5} fontWeight="bold">{previousSuggestions[previousSuggestions.length - 1].title}</PopoverHeader>
                               <PopoverBody>
-                                <GooglePopoverContent title={previousSuggestions[previousSuggestions.length - 1].title} author={previousSuggestions[previousSuggestions.length - 1].author} gBooksApi={gbooksapi} />
+                                {previousSuggestions[previousSuggestions.length - 1].description ? (
+                                  previousSuggestions[previousSuggestions.length - 1].description
+                                ): (
+                                  <GooglePopoverContent title={previousSuggestions[previousSuggestions.length - 1].title} author={previousSuggestions[previousSuggestions.length - 1].author} gBooksApi={gbooksapi} />
+                                )}
                               </PopoverBody>
                             </PopoverContent>
                           </Popover>
@@ -1117,18 +1120,14 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                               key={i}
                             >
                               <Flex>
-                                {book.image === "https://via.placeholder.com/165x215" ? (
-                                  <BookImage isbn={book.isbn} id={`book-image-${Math.random()}`} maxHeight="125px"/>
-                                ) : (
-                                  <Image
-                                    src={book.image ? book.image : "https://via.placeholder.com/165x215"}
-                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                    height="100%"
-                                    maxH="145px"
-                                    boxShadow="1px 1px 1px 1px darkgrey"
-                                    alt={book.title}
-                                  />
-                                )}
+                                <Image
+                                  src={book.image ? book.image : "https://via.placeholder.com/165x215"}
+                                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                  height="100%"
+                                  maxH="145px"
+                                  boxShadow="1px 1px 1px 1px darkgrey"
+                                  alt={book.title}
+                                />
                                 <Box mx={2} w="100%">
                                   <Popover isLazy>
                                     <PopoverTrigger>
@@ -1149,7 +1148,11 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                                       <PopoverCloseButton />
                                       <PopoverHeader pe={5} fontWeight="bold">{book.title}</PopoverHeader>
                                       <PopoverBody>
-                                        <GooglePopoverContent title={book.title} author={book.author} gBooksApi={gbooksapi} />
+                                        {book.description ? (
+                                          book.description
+                                        ): (
+                                          <GooglePopoverContent title={book.title} author={book.author} gBooksApi={gbooksapi} />
+                                        )}
                                       </PopoverBody>
                                     </PopoverContent>
                                   </Popover>

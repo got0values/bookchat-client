@@ -64,7 +64,6 @@ import {
 } from "@chakra-ui/react";
 import GooglePreviewLink from "../shared/GooglePreviewLink";
 import BooksSearch from "../shared/BooksSearch";
-import BookImage from "../shared/BookImage";
 import GooglePopoverContent from "../shared/GooglePopover.Content";
 import Tbr from "./Tbr";
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
@@ -2193,7 +2192,11 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                               <PopoverCloseButton />
                                               <PopoverHeader pe={5} fontWeight="bold">{book.title}</PopoverHeader>
                                               <PopoverBody>
-                                                <GooglePopoverContent title={book.title} author={book.author} gBooksApi={gbooksapi} />
+                                                {book.description ? (
+                                                  book.description
+                                                ): (
+                                                  <GooglePopoverContent title={book.title} author={book.author} gBooksApi={gbooksapi} />
+                                                )}
                                               </PopoverBody>
                                             </PopoverContent>
                                           </Popover>
@@ -2759,35 +2762,28 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                               gap={2}
                             >
                               <Box flex="1 1 auto" maxW="50px">
-                                {book.cover_i || book.lccn ? (
-                                  <Image
-                                    maxW="100%" 
-                                    w="100%"
-                                    h="auto"
-                                    className="book-image"
-                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                    src={book.cover_i ? (
-                                      `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg?default=false`
+                                <Image
+                                  maxW="100%" 
+                                  w="100%"
+                                  h="auto"
+                                  className="book-image"
+                                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                  src={book.cover_i ? (
+                                    `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg?default=false`
+                                  ) : (
+                                    book.lccn ? (
+                                      `https://covers.openlibrary.org/b/lccn/${book.lccn[0]}-M.jpg?default=false`
                                     ) : (
-                                      book.lccn ? (
-                                        `https://covers.openlibrary.org/b/lccn/${book.lccn[0]}-M.jpg?default=false`
-                                      ) : (
-                                        "https://via.placeholder.com/165x215"
-                                      )
-                                    )}
-                                    alt="book image"
-                                    boxShadow="1px 1px 1px 1px darkgrey"
-                                    _hover={{
-                                      cursor: "pointer"
-                                    }}
-                                    id={`book-cover-${i}`}
-                                  />
-                                ): (
-                                  <BookImage 
-                                    isbn={book.isbn?.length ? book.isbn[book.isbn.length - 1] : null}
-                                    id={`book-cover-${i}`}
-                                  />
-                                )}
+                                      "https://via.placeholder.com/165x215"
+                                    )
+                                  )}
+                                  alt="book image"
+                                  boxShadow="1px 1px 1px 1px darkgrey"
+                                  _hover={{
+                                    cursor: "pointer"
+                                  }}
+                                  id={`book-cover-${i}`}
+                                />
                               </Box>
                                 <Box flex="1 1 auto">
                                 <Heading

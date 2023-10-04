@@ -433,6 +433,11 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
                       }}
                     />
                   </FormControl>
+                  <Input
+                    type="hidden"
+                    value={selectedBook2.description}
+                    ref={descriptionRef}
+                  />
                   <FormControl variant="floatingstatic">
                     <FormLabel>
                       Year

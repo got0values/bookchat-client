@@ -58,7 +58,6 @@ import { BookClubGeneralComments } from "../shared/BookClubGeneralComments";
 import { ImInfo } from 'react-icons/im';
 import { FaShoppingCart, FaStore } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
-import BookImage from "../shared/BookImage";
 import Cookies from "js-cookie";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -2042,35 +2041,28 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                             gap={2}
                           >
                             <Box flex="1 1 auto" maxW="50px">
-                              {book.cover_i || book.lccn ? (
-                                <Image
-                                  maxW="100%" 
-                                  w="100%"
-                                  h="auto"
-                                  className="book-image"
-                                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                                  src={book.cover_i ? (
-                                    `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg?default=false`
+                              <Image
+                                maxW="100%" 
+                                w="100%"
+                                h="auto"
+                                className="book-image"
+                                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                src={book.cover_i ? (
+                                  `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg?default=false`
+                                ) : (
+                                  book.lccn ? (
+                                    `https://covers.openlibrary.org/b/lccn/${book.lccn[0]}-M.jpg?default=false`
                                   ) : (
-                                    book.lccn ? (
-                                      `https://covers.openlibrary.org/b/lccn/${book.lccn[0]}-M.jpg?default=false`
-                                    ) : (
-                                      "https://via.placeholder.com/165x215"
-                                    )
-                                  )}
-                                  alt="book image"
-                                  boxShadow="1px 1px 1px 1px darkgrey"
-                                  _hover={{
-                                    cursor: "pointer"
-                                  }}
-                                  id={`book-cover-${i}`}
-                                />
-                              ): (
-                                <BookImage 
-                                  isbn={book.isbn?.length ? book.isbn[book.isbn.length - 1] : null}
-                                  id={`book-cover-${i}`}
-                                />
-                              )}
+                                    "https://via.placeholder.com/165x215"
+                                  )
+                                )}
+                                alt="book image"
+                                boxShadow="1px 1px 1px 1px darkgrey"
+                                _hover={{
+                                  cursor: "pointer"
+                                }}
+                                id={`book-cover-${i}`}
+                              />
                             </Box>
                               <Box flex="1 1 auto">
                               <Heading
