@@ -1028,91 +1028,91 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                   </Flex>
                 ): (
                   <Box>
+                    <Box mb={2}>
+                      <Flex gap={1} mb={2}>
+                        <Input
+                          type="search"
+                          rounded="md"
+                          placeholder={`Search ${bookshelfProfileName}'s bookshelf`}
+                          ref={searchBookshelfRef}
+                          onKeyDown={e=> e.key === "Enter" ? searchBookshelf() : null}
+                        />
+                        <Button
+                          onClick={e=>searchBookshelf()}
+                        >
+                          Search
+                        </Button>
+                      </Flex>
+                      <Flex align="center" gap={2} wrap="wrap">
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>filterSuggestionBookshelfByRating(1)}
+                        >
+                          <BsStarFill color="gold"/>
+                          <Text fontSize="xs" ms={1}>& up</Text>
+                        </Button>
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>filterSuggestionBookshelfByRating(2)}
+                        >
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <Text fontSize="xs" ms={1}>& up</Text>
+                        </Button>
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>filterSuggestionBookshelfByRating(3)}
+                        >
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <Text fontSize="xs" ms={1}>& up</Text>
+                        </Button>
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>filterSuggestionBookshelfByRating(4)}
+                        >
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <Text fontSize="xs" ms={1}>& up</Text>
+                        </Button>
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>filterSuggestionBookshelfByRating(5)}
+                        >
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                          <BsStarFill color="gold"/>
+                        </Button>
+                        <Button
+                          size="xs"
+                          py={0}
+                          px={1}
+                          onClick={e=>{
+                            setIsSearchResults(false)
+                            getBookSuggestionBookshelf()
+                          }}
+                        >
+                          Clear
+                        </Button>
+                      </Flex>
+                    </Box>
                     {bookSuggestionBookshelf?.BookshelfBook?.length ? (
                       <>
-                        <Box mb={2}>
-                          <Flex gap={1} mb={2}>
-                            <Input
-                              type="search"
-                              rounded="md"
-                              placeholder={`Search ${bookshelfProfileName}'s bookshelf`}
-                              ref={searchBookshelfRef}
-                              onKeyDown={e=> e.key === "Enter" ? searchBookshelf() : null}
-                            />
-                            <Button
-                              onClick={e=>searchBookshelf()}
-                            >
-                              Search
-                            </Button>
-                          </Flex>
-                          <Flex align="center" gap={2} wrap="wrap">
-                            <Button
-                              size="xs"
-                              py={0}
-                              px={1}
-                              onClick={e=>filterSuggestionBookshelfByRating(1)}
-                            >
-                              <BsStarFill color="gold"/>
-                              <Text fontSize="xs" ms={1}>& up</Text>
-                            </Button>
-                            <Button
-                              size="xs"
-                              py={0}
-                              px={1}
-                              onClick={e=>filterSuggestionBookshelfByRating(2)}
-                            >
-                              <BsStarFill color="gold"/>
-                              <BsStarFill color="gold"/>
-                              <Text fontSize="xs" ms={1}>& up</Text>
-                            </Button>
-                            <Button
-                              size="xs"
-                              py={0}
-                              px={1}
-                              onClick={e=>filterSuggestionBookshelfByRating(3)}
-                            >
-                              <BsStarFill color="gold"/>
-                              <BsStarFill color="gold"/>
-                              <BsStarFill color="gold"/>
-                              <Text fontSize="xs" ms={1}>& up</Text>
-                            </Button>
-                            <Button
-                              size="xs"
-                              py={0}
-                              px={1}
-                              onClick={e=>filterSuggestionBookshelfByRating(4)}
-                            >
-                              <BsStarFill color="gold"/>
-                              <BsStarFill color="gold"/>
-                              <BsStarFill color="gold"/>
-                              <BsStarFill color="gold"/>
-                              <Text fontSize="xs" ms={1}>& up</Text>
-                            </Button>
-                            <Button
-                              size="xs"
-                              py={0}
-                              px={1}
-                              onClick={e=>filterSuggestionBookshelfByRating(5)}
-                            >
-                              <BsStarFill color="gold"/>
-                              <BsStarFill color="gold"/>
-                              <BsStarFill color="gold"/>
-                              <BsStarFill color="gold"/>
-                              <BsStarFill color="gold"/>
-                            </Button>
-                            <Button
-                              size="xs"
-                              py={0}
-                              px={1}
-                              onClick={e=>{
-                                setIsSearchResults(false)
-                                getBookSuggestionBookshelf()
-                              }}
-                            >
-                              Clear
-                            </Button>
-                          </Flex>
-                        </Box>
                         {bookSuggestionBookshelf.BookshelfBook.map((book: BookshelfBook,i: number)=>{
                           return (
                             <Box 
