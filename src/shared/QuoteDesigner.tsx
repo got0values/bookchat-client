@@ -187,9 +187,10 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
             fontSize={`${textSize}px`}
             fontWeight="bold"
             textAlign={textAlign as any}
-            lineHeight={1.1}
+            lineHeight={1}
             my="auto"
             zIndex={1}
+            fontFamily="Times New Roman"
           >
             {quote}
           </Text>
@@ -208,7 +209,10 @@ export const QuoteDesigner = ({sharedTitle, sharedAuthor, bookImage}: {sharedTit
                   boxShadow="-1px 1px 5px #222222"
                 />
               ): null}
-              <Box lineHeight={1.4}>
+              <Box 
+                lineHeight={1.3}
+                fontFamily="Times New Roman"
+              >
                 {includeTitle && sharedTitle ? (
                   <Text
                     fontStyle="italic"
