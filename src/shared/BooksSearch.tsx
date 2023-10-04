@@ -34,7 +34,7 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
     setBookResultsLoading(true)
     await axios
     // .get("https://openlibrary.org/search.json?q=" + searchInputRef.current.value)
-    .get(`https://api2.isbndb.com/books/${searchInputRef.current.value}`,
+    .get(`https://api2.isbndb.com/books/${searchInputRef.current.value}?page=1&pageSize=10`,
     {
       headers: {
         "Authorization": import.meta.env.VITE_ISBNDB_API_KEY
@@ -43,7 +43,7 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
       .then((response)=>{
         if (response.data.books) {
           if (response.data.books.length > 10) {
-            const slicedResponse = response.data.books.slice(0,10);
+            const slicedResponse = response.data.books;
             setBookResults(slicedResponse)
           }
           else {
