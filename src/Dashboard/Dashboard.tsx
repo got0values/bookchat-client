@@ -757,37 +757,7 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             </HStack>
           </Flex>
           <Divider mb={2} />
-          {reading.uploaded_image ? (
-            <>
-              <Flex 
-                justify="center"
-                mb={2}
-              >
-                <ChakraImage
-                  src={reading.uploaded_image}
-                  maxH="400px"
-                />
-              </Flex>
-              {reading.Profile.id === user?.Profile.id && (
-                <Flex
-                  justify="flex-end"
-                  mb={2}
-                >
-                  <Button
-                    color="tomato"
-                    size="xs"
-                    variant="ghost"
-                    onClick={e=>removeCurrentlyReadingUploadedImage(reading.id)}
-                    fontWeight="bold"
-                    title="remove image"
-                  >
-                    <BiTrash size={18} />
-                  </Button>
-                </Flex>
-              )}
-              <Divider mb={2} />
-            </>
-          ): null}
+          
           {reading.Profile.id === user?.Profile.id ? (
             <Flex justify="flex-end">
               <Flex align="center" gap={0}>
@@ -1090,6 +1060,39 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               isOwner={reading.Profile.id === user?.Profile.id}
             />
           </Box>
+          {reading.uploaded_image ? (
+            <>
+              <Divider my={3} />
+              <Flex 
+                justify="center"
+                mb={2}
+              >
+                <ChakraImage
+                  src={reading.uploaded_image}
+                  maxH="400px"
+                  objectFit="cover"
+                  width="100%"
+                />
+              </Flex>
+              {reading.Profile.id === user?.Profile.id && (
+                <Flex
+                  justify="flex-end"
+                  mb={2}
+                >
+                  <Button
+                    color="tomato"
+                    size="xs"
+                    variant="ghost"
+                    onClick={e=>removeCurrentlyReadingUploadedImage(reading.id)}
+                    fontWeight="bold"
+                    title="remove image"
+                  >
+                    <BiTrash size={18} />
+                  </Button>
+                </Flex>
+              )}
+            </>
+          ): null}
           <Divider mt={2} mb={1} />
           <Flex
             align="center"
