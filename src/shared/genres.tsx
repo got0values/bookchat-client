@@ -115,4 +115,9 @@ export const genres = [
     value: "22",
     color: "orange"
   },
+  {
+    name: "Suspense",
+    value: "23",
+    color: "green"
+  },
 ]
