@@ -57,6 +57,7 @@ import BooksSearch from "../shared/BooksSearch";
 import GooglePopoverContent from "../shared/GooglePopover.Content";
 import { SocialSharePostButtons, SocialShareNoPostButtons } from "../shared/SocialShareButtons";
 import EditCurrentlyReading from "../shared/EditCurrentlyReading";
+import SocialsTab from "./SocialsTab";
 import { SuggestionCountBadge } from "../shared/SuggestionCount";
 import RequestSuggestion from "../shared/RequestSuggestion";
 import addToTbr from "../shared/addToTbr";
@@ -1237,6 +1238,16 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               >
                 Following
               </Tab>
+              {/* <Tab
+                fontWeight="bold"
+                className="tab-button"
+                _selected={{
+                  borderBottom: "2px solid gray"
+                }}
+                onClick={e=>setPublicTabChosen(false)}
+              >
+                Socials
+              </Tab> */}
             </TabList>
             <TabPanels>
               <TabPanel px={0}>
@@ -1336,6 +1347,9 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
                   )}
                 </Flex>
               </TabPanel>
+              {/* <TabPanel px={0}>
+                <SocialsTab server={server} />
+              </TabPanel> */}
             </TabPanels>
           </Tabs>
         </Flex>
