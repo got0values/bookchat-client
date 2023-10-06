@@ -214,7 +214,7 @@ export default function Analytics({server}: {server: string}) {
           let subjects:any = []
           response.data.message.currentlyReadingPosts
             .forEach(
-                (crp:any)=>crp.subjects.length ? (
+                (crp:any)=>crp.subjects?.length ? (
                   Array(JSON.parse(crp.subjects))
                     .forEach(
                       (s:any)=>s.forEach((su:any)=>subjects.push(su))
