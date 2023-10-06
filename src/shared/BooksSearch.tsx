@@ -18,7 +18,8 @@ import {
   PopoverContent,
   PopoverArrow,
   PopoverCloseButton,
-  PopoverHeader,
+  FormControl,
+  FormLabel,
   PopoverBody,
   Select
 } from "@chakra-ui/react";
@@ -95,33 +96,40 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
         justify="space-between"
         gap={1}
       >
-        <Select
-          onChange={e=>{
-            setBookResults(null)
-            setBookResultsOther(null)
-            setApiChoice(e.target.value)
-          }}
-          variant="filled"
-          bg="white"
-          borderColor="black"
-          size="lg"
+        <FormControl 
+          variant="floatingstatic"
           maxW="60px"
-          defaultValue="1"
-          _dark={{
-            bg: "gray.800"
-          }}
         >
-          <option
-            value="1"
+          <FormLabel left="-10px!important">
+            Source
+          </FormLabel>
+          <Select
+            onChange={e=>{
+              setBookResults(null)
+              setBookResultsOther(null)
+              setApiChoice(e.target.value)
+            }}
+            variant="filled"
+            bg="white"
+            borderColor="black"
+            size="lg"
+            defaultValue="1"
+            _dark={{
+              bg: "gray.800"
+            }}
           >
-            1
-          </option>
-          <option
-            value="2"
-          >
-            2
-          </option>
-        </Select>
+            <option
+              value="1"
+            >
+              1
+            </option>
+            <option
+              value="2"
+            >
+              2
+            </option>
+          </Select>
+        </FormControl>
         <Input
           type="search"
           bg="white"
