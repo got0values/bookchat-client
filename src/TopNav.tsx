@@ -709,7 +709,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                   bg: window.location.pathname === linkItem.linkTo ? activeLinkBg : "",
                   color: window.location.pathname === linkItem.linkTo ? activeLinkColor : ""
                 }}
-                title={linkItem.tooltip}
+                aria-label={linkItem.tooltip}
               >
                 <Tooltip hasArrow label={linkItem.tooltip}>
                   <Flex align="center" justify="center">
