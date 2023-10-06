@@ -167,7 +167,9 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   const [analyzeIsLoading,setAnalyzeIsLoading] = useState(false)
   const [allSubjectsCounts,setAllSubjectsCounts] = useState<any[]>([]);
   const [subjectsCountsSum,setSubjectsCountsSum] = useState(0);
+  const [anaylyzeError,setAnalyzeError] = useState("");
   async function analyzeBookshelf() {
+    setAnalyzeError("")
     setAnalyzeIsLoading(true)
     const tokenCookie: string | null = Cookies.get().token;
     const allBookshelfBooks = await axios
@@ -185,6 +187,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
       })
       .catch((response)=>{
         console.log(response)
+        setAnalyzeError("Error!")
       })
     const allSubjects: any[] = []
     async function pushSubjects() {
@@ -198,13 +201,14 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
           })
           .catch((response)=>{
             console.log(response)
+            setAnalyzeError("Error!")
           })
       }
     }
     await pushSubjects()
-    setAllSubjectsCounts(prev=>{
-      let subjectsCountObject:any = {};
-      if (allSubjects.length) {
+    if (allSubjects.length) {
+      setAllSubjectsCounts(prev=>{
+        let subjectsCountObject:any = {};
         allSubjects.forEach((s:any)=>{
           if (subjectsCountObject[s]) {
             subjectsCountObject[s] += 1;
@@ -213,21 +217,24 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
             subjectsCountObject[s] = 1
           }
         })
-      }
-      let subjectsCount = []
-      for (const key in subjectsCountObject) {
-        subjectsCount.push({
-          name: key,
-          count: subjectsCountObject[key],
-          color: `rgb(${randomBetween(10,240)},${randomBetween(10,240)},${randomBetween(10,240)})`
-        })
-      }
-      setSubjectsCountsSum(subjectsCount.reduce((a,b)=>a + b["count"],0))
-      return subjectsCount
-    })
+        let subjectsCount = []
+        for (const key in subjectsCountObject) {
+          subjectsCount.push({
+            name: key,
+            count: subjectsCountObject[key],
+            color: `rgb(${randomBetween(10,240)},${randomBetween(10,240)},${randomBetween(10,240)})`
+          })
+        }
+        setSubjectsCountsSum(subjectsCount.reduce((a,b)=>a + b["count"],0))
+        return subjectsCount
+      })
+    }
+    else {
+      setAnalyzeError("No subjects")
+    }
 
-    setAnalyzeIsLoading(false)
     setShowAnalyze(true)
+    setAnalyzeIsLoading(false)
   }
   function randomBetween(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1) + min)
@@ -1864,7 +1871,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           </MenuList>
                         </Menu>
                       </Flex>
-
+                      <></>
                       {showAnalyze && allSubjectsCounts.length ? (
                         <Flex
                           justify="space-between"
@@ -1939,7 +1946,11 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           </Flex>
                         </Flex>
                       ): null}
-
+                      {showAnalyze && anaylyzeError ? (
+                        <Text p={2} color="tomato" fontWeight="bold">
+                          {anaylyzeError}
+                        </Text>
+                      ): null}
                       {bookToAdd && (
                         <Stack className="well-card" position="relative">
                           <CloseButton
