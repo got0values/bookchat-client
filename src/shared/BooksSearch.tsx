@@ -22,6 +22,7 @@ import {
   PopoverBody,
   Select
 } from "@chakra-ui/react";
+import GooglePopoverContent from './GooglePopover.Content';
 import dayjs from "dayjs";
 import axios from "axios";
 
@@ -204,7 +205,20 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
                                 {book.synopsis}
                               </PopoverBody>
                           </PopoverContent>
-                        ): null}
+                        ): (
+                          <PopoverContent>
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                              <PopoverBody 
+                              _dark={{
+                                bg: "black"
+                              }}
+                                fontSize="sm"
+                              >
+                                <GooglePopoverContent title={book.title} author={book.authors?.length ? book.authors[0] : null} gBooksApi={gBooksApi}/>
+                              </PopoverBody>
+                          </PopoverContent>
+                        )}
                       </Popover>
                       <Text fontSize="sm" noOfLines={1}>
                         {book.authors?.length ? book.authors[0] : null}
@@ -264,13 +278,35 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
                       />
                     </Box>
                     <Box flex="1 1 auto">
-                      <Heading
-                        as="h4"
-                        size="sm"
-                        noOfLines={1}
-                      >
-                        {book.title}
-                      </Heading>
+                      <Popover isLazy>
+                        <PopoverTrigger>
+                          <Box
+                            _hover={{
+                              cursor: "pointer"
+                            }}
+                          >
+                            <Heading
+                              as="h4"
+                              size="sm"
+                              noOfLines={1}
+                            >
+                              {book.title}
+                            </Heading>
+                          </Box>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <PopoverArrow />
+                          <PopoverCloseButton />
+                            <PopoverBody 
+                            _dark={{
+                              bg: "black"
+                            }}
+                              fontSize="sm"
+                            >
+                              <GooglePopoverContent title={book.title} author={book.author_name ? book.author_name[0] : null} gBooksApi={gBooksApi}/>
+                            </PopoverBody>
+                        </PopoverContent>
+                      </Popover>
                       <Text fontSize="sm" noOfLines={1}>
                         {book.author_name ? book.author_name[0] : null}
                       </Text>
