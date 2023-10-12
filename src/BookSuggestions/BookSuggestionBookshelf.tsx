@@ -1176,7 +1176,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                                     <Text fontWeight="bold">
                                       {bookSuggestionBookshelf?.Profile?.username}'s rating:
                                     </Text>
-                                    {book.rating !== null ? (
+                                    {book.rating !== null && book.rating !== 0 ? (
                                       <StarRating
                                         ratingCallback={null} 
                                         starRatingId={book.id}
