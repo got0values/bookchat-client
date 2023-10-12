@@ -182,11 +182,11 @@ export function BookSuggestionToList({server}: {server: string;}) {
               animationDuration: "2s"
             }}
           >
-            <Box as={FaPlay} me={2} /> Start
+            <Box as={FaPlay} me={2} /> Random
           </Button>
         </Flex>
       ): null}
-      {/* {bookSuggestToList?.length ? (
+      {bookSuggestToList?.length ? (
         <>
           {bookSuggestToList.map((bookshelf: BookshelfType, i: number)=>{
             return (
@@ -314,7 +314,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
             Please check back tomorrow!
           </Text>
         </Box>
-      )} */}
+      )}
     </>
   )
 }
