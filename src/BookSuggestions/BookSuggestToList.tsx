@@ -156,33 +156,16 @@ export function BookSuggestionToList({server}: {server: string;}) {
           <Button
             as={Link}
             to={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
-            // size="lg"
-            p={6}
             fontSize="xl"
             colorScheme="teal"
-            borderRadius="50px"
-            boxShadow="2px 2px 1px 1px black"
-            _active={{
-              boxShadow: "0 1px 1px 0 black"
-            }}
-            sx={{
-              animationIterationCount: "infinite",
-              '@keyframes glowing': {
-                '0%': {
-                  bgColor: "teal"
-                },
-                '50%': {
-                  bgColor: "teal.400"
-                },
-                '100%': {
-                  bgColor: "teal"
-                }
-              },
-              animationName: "glowing",
-              animationDuration: "2s"
-            }}
+            w="100%"
+            mb={5}
+            display="flex"
+            justifyContent="space-between"
+            px={2}
+            py={5}
           >
-            <Box as={FaPlay} me={2} /> Random
+            Random <FaArrowCircleRight size={20} color="white" />
           </Button>
         </Flex>
       ): null}

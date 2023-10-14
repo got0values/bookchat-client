@@ -416,7 +416,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                 separator={<MdChevronRight color='gray.500' />}
               >
                 <BreadcrumbItem>
-                  <BreadcrumbLink href='/booksuggestions'>Book Suggestions</BreadcrumbLink>
+                  <BreadcrumbLink href='/booksuggestions'>Bookshelves</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbItem isCurrentPage>
                   <BreadcrumbLink href='#'>Bookshelf</BreadcrumbLink>

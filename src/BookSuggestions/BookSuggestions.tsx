@@ -30,6 +30,9 @@ export default function BookSuggestions({server, gbooksapi}: {server: string; gb
       >
         <TabList
           // borderBottom="none"
+          overflowY="hidden"
+          overflowX="auto"
+          whiteSpace="nowrap"
         >
           <Tab 
             fontWeight="bold"
@@ -38,7 +41,7 @@ export default function BookSuggestions({server, gbooksapi}: {server: string; gb
               borderBottom: "2px solid gray"
             }}
           >
-            Suggest
+            Bookshelves
           </Tab>
           <Tab 
             fontWeight="bold"
