@@ -73,9 +73,9 @@ interface LinkItemProps {
 const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', linkTo: "/", icon: <AiFillHome size="25"/>, tooltip: "Home"},
   { name: 'Bookshelf', linkTo: "/bookshelf", icon: <ImBooks size="25"/>, tooltip: "Bookshelf" },
-  { name: 'Book Suggestions', linkTo: "/booksuggestions", icon: <BsPostcardHeartFill size="25" />, tooltip: "Book Suggestions" },
+  { name: 'Book Suggestions', linkTo: "/booksuggestions", icon: <BsPostcardHeartFill size="35" />, tooltip: "Bookshelves/Suggestions" },
   { name: 'Book Clubs', linkTo: "/bookclubs", icon: <FaBookReader size="25"/>, tooltip: "Book Clubs" },
-  { name: 'Chat Rooms', linkTo: "/chat", icon: <BsFillChatFill size="25" />, tooltip: "Chat Rooms" },
+  // { name: 'Chat Rooms', linkTo: "/chat", icon: <BsFillChatFill size="25" />, tooltip: "Chat Rooms" },
   { name: 'Stats', linkTo: "/stats", icon: <ImStatsDots size="25" />, tooltip: "Stats" },
 ];
 
@@ -710,6 +710,9 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                   color: window.location.pathname === linkItem.linkTo ? activeLinkColor : ""
                 }}
                 aria-label={linkItem.tooltip}
+                border={linkItem.name === "Book Suggestions" ? "1px solid" : "transparent"}
+                borderColor={linkItem.name === "Book Suggestions" ? "gray.400" : "transparent"}
+                borderRadius={25}
               >
                 <Tooltip hasArrow label={linkItem.tooltip}>
                   <Flex align="center" justify="center">
