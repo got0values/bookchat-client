@@ -289,7 +289,16 @@ export function BookSuggestionToList({server}: {server: string;}) {
                 Load more...
               </Button>
             </>
-          ): null}
+          ): (
+            <>
+              <Text
+                textAlign="center"
+                fontWeight="bold"
+              >
+                Click "Random" to view more
+              </Text>
+            </>
+          )}
         </>
       ): (
         <Box>
