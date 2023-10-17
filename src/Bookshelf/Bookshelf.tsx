@@ -85,6 +85,7 @@ import { BiDotsHorizontalRounded, BiTrash, BiPlus, BiHide } from 'react-icons/bi
 import { BsStarFill, BsStar, BsStarHalf } from "react-icons/bs";
 import { FaShoppingCart } from 'react-icons/fa';
 import { ImInfo } from 'react-icons/im';
+import { LiaFileImportSolid } from 'react-icons/lia'
 import ReactQuill from 'react-quill';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -1815,7 +1816,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   </Box>
                   <Stack flex="1 1 65%" maxW="100%" className="well">
                     <Box>
-                      <Flex align="center" justify="space-between">
+                      <Flex align="center" justify="space-between" wrap="wrap" rowGap={2}>
                         <Flex align="center" gap={3}>
                           <Heading as="h2" size="md">
                             Bookshelf
@@ -1837,39 +1838,47 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             {showAnalyze ? "Hide Analyze" : "Analyze"}
                           </Button>
                         </Flex>
-                        <Menu>
-                          <MenuButton 
-                            as={Button}
-                            variant="ghost"
-                            rounded="full"
-                            height="20px"
-                            minWidth="auto"
-                            px={0}
-                            title="add"
+                        <Flex align="center" gap={1}>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            borderColor="black"
+                            bg="white"
+                            color="black"
+                            _dark={{
+                              bg: "gray.400"
+                            }}
+                            onClick={onOpenBookSearchModal}
                           >
-                            <IoIosAdd size={25} />
-                          </MenuButton>
-                          <MenuList>
-                            <MenuItem
-                              onClick={onOpenBookSearchModal}
-                            >
-                              Add New
-                            </MenuItem>
-                            <MenuItem
-                              onClick={onOpenImportBookshelfModal}
-                            >
-                              Import
-                            </MenuItem>
-                            {bookshelfBooks && bookshelfBooks.length ? (
-                              <MenuItem
-                                onClick={clearBookshelf}
-                                color="red"
-                              >
-                                Clear Bookshelf
-                              </MenuItem>
-                            ): null}
-                          </MenuList>
-                        </Menu>
+                            <IoIosAdd size={25} /> Add new
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            borderColor="black"
+                            bg="white"
+                            color="black"
+                            _dark={{
+                              bg: "gray.400"
+                            }}
+                            onClick={onOpenImportBookshelfModal}
+                          >
+                            <LiaFileImportSolid size={22} /> Import
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            borderColor="black"
+                            bg="white"
+                            color="black"
+                            _dark={{
+                              bg: "gray.400"
+                            }}
+                            onClick={clearBookshelf}
+                          >
+                            Clear
+                          </Button>
+                        </Flex>
                       </Flex>
                       <></>
                       {showAnalyze && allSubjectsCounts.length ? (
