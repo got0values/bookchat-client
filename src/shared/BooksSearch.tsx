@@ -28,7 +28,7 @@ import dayjs from "dayjs";
 import axios from "axios";
 
 export default function BooksSearch({selectText,selectCallback,gBooksApi}: BooksSearchType) {
-  const [apiChoice,setApiChoice] = useState("1");
+  const [apiChoice,setApiChoice] = useState("2");
   const searchInputRef = useRef({} as HTMLInputElement);
   const [bookResults,setBookResults] = useState<any[] | null>(null);
   const [bookResultsOther,setBookResultsOther] = useState<any[] | null>(null);
@@ -113,7 +113,7 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
             bg="white"
             borderColor="black"
             size="lg"
-            defaultValue="1"
+            defaultValue="2"
             _dark={{
               bg: "gray.800"
             }}
