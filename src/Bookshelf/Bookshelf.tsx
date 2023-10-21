@@ -79,6 +79,7 @@ import { Doughnut } from 'react-chartjs-2';
 import BooksSearch from "../shared/BooksSearch";
 import GooglePopoverContent from "../shared/GooglePopover.Content";
 import Tbr from "./Tbr";
+import addToTbr from '../shared/addToTbr';
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { MdOutlineChat, MdEdit } from 'react-icons/md';
 import { BiDotsHorizontalRounded, BiTrash, BiPlus, BiHide } from 'react-icons/bi';
@@ -975,6 +976,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
               const isbn = cellData[5].replace(/[="]/g,"");
               const rating = parseInt(cellData[7]);
               const dateAdded = dayjs.utc(cellData[15]).format('YYYY-MM-DD HH:mm:ss');
+              const grBookshelf = cellData[16].replace(/[="]/g,"");
               await axios
                 .get(`https://openlibrary.org/search.json?q=${title}+${author}+${isbn}`)
                 .then(async (result)=>{
@@ -998,32 +1000,53 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                       published_date: bookResult.publish_date?.length ? dayjs(bookResult.publish_date[0]).format('YYYY') : ""
                     }
                     let tokenCookie: string | null = Cookies.get().token;
-                    await axios
-                      .post(server + "/api/addbookshelfbook", 
-                        {
-                          book: book,
-                          categories: [],
-                          rating: rating,
-                          dateAdded: dateAdded,
-                          notes: null
-                        },
-                        {headers: {
-                          'authorization': tokenCookie
-                        }}
-                      )
-                      .then((response)=>{
-                        if (response.data.success) {
-                          setImportProgressValue(((i+2) / rowData.length) * 100)
-                        }
-                        else {
-                          setImportBookshelfError(response.data?.message ? response.data.message : "")
+                    if (grBookshelf !== "to-read") {
+                      await axios
+                        .post(server + "/api/addbookshelfbook", 
+                          {
+                            book: book,
+                            categories: [],
+                            rating: rating,
+                            dateAdded: dateAdded,
+                            notes: null
+                          },
+                          {headers: {
+                            'authorization': tokenCookie
+                          }}
+                        )
+                        .then((response)=>{
+                          if (response.data.success) {
+                            setImportProgressValue(((i+2) / rowData.length) * 100)
+                          }
+                          else {
+                            setImportBookshelfError(response.data?.message ? response.data.message : "")
+                            return;
+                          }
+                        })
+                        .catch(({response})=>{
+                          console.log(response)
                           return;
-                        }
-                      })
-                      .catch(({response})=>{
-                        console.log(response)
-                        return;
-                      })
+                        })
+                    }
+                    else if (grBookshelf === "to-read") {
+                      addToTbr({
+                        image: bookResult.cover_i ? (
+                          `https://covers.openlibrary.org/b/id/${bookResult.cover_i}-M.jpg?default=false`
+                        ) : (
+                          bookResult.lccn ? (
+                            `https://covers.openlibrary.org/b/lccn/${bookResult.lccn[0]}-M.jpg?default=false`
+                          ) : (
+                            "https://via.placeholder.com/165x215"
+                          )
+                        ),
+                        title: title1,
+                        author: author1,
+                        description: "",
+                        isbn: isbn,
+                        page_count: bookResult.number_of_pages_median,
+                        published_date: bookResult.publish_date?.length ? dayjs(bookResult.publish_date[0]).format('YYYY') : "",
+                      },null,queryClient)
+                    }
                   }
                 })
                 .catch((response)=>{

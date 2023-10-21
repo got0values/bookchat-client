@@ -15,7 +15,7 @@ export default async function addToTbr(tbrBookToAdd: any, toast: any, queryClien
       )
       .then((response)=>{
         if (response.data.success === false) {
-          toast({
+          toast && toast({
             description: response.data?.message ? response.data.message : "An error has occurred",
             status: "error",
             duration: 9000,
@@ -23,7 +23,7 @@ export default async function addToTbr(tbrBookToAdd: any, toast: any, queryClien
           })
         }
         else {
-          toast({
+          toast && toast({
             description: "Book added to TBR",
             status: "success",
             duration: 9000,
@@ -35,7 +35,7 @@ export default async function addToTbr(tbrBookToAdd: any, toast: any, queryClien
       })
       .catch(({response})=>{
         console.log(response)
-        toast({
+        toast && toast({
           description: "An error has occurred",
           status: "error",
           duration: 9000,
