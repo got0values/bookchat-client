@@ -56,7 +56,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   }
 
   async function onLogin(token: string) {
-    Cookies.set("token", token);
+    Cookies.set("token", token, { expires: 7 });
     await getUser();
     setTimeout(async ()=>{
       if (locationState) {
