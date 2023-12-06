@@ -152,18 +152,26 @@ export function BookSuggestionToList({server}: {server: string;}) {
       ): null} */}
 
       {firstBookshelf ? (
-        <Flex justify="center" align="center" direction="column">
+        <Flex 
+          justify="center" 
+          align="center" 
+          direction="column" 
+          className="well" 
+          p={0}
+          marginBottom={"1rem!important"}
+        >
           <Button
             as={Link}
             to={`/booksuggestions/bookshelf?profile=${firstBookshelf.Profile.username}`}
             fontSize="xl"
             colorScheme="teal"
             w="100%"
-            mb={5}
+            // mb={5}
             display="flex"
             justifyContent="space-between"
             px={2}
-            py={5}
+            py={6}
+            pe={4}
           >
             Random <FaArrowCircleRight size={20} color="white" />
           </Button>
@@ -175,7 +183,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
             return (
               <React.Fragment key={i}>
                 <Box
-                  // className="well"
+                  className="well"
                 >
                   <Flex 
                     align="flex-start"
@@ -218,7 +226,7 @@ export function BookSuggestionToList({server}: {server: string;}) {
                     >
                       <Box>
                         <Box fontSize="sm">
-                          <Text as="span" fontWeight="bold">Shelf:</Text> {(bookshelf as any)._count.BookshelfBook}
+                          <Text as="span" fontWeight="bold">Books:</Text> {(bookshelf as any)._count.BookshelfBook}
                         </Box>
                         {bookshelf.start_poll ? (
                           <Text 
@@ -270,9 +278,9 @@ export function BookSuggestionToList({server}: {server: string;}) {
                     </Popover>
                   </Box>
                 </Box>
-                {i !== bookSuggestToList.length - 1 ? (
+                {/* {i !== bookSuggestToList.length - 1 ? (
                   <Divider borderColor="blackAlpha.600" my={2} />
-                ): null}
+                ): null} */}
               </React.Fragment>
             )
           })}

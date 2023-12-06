@@ -66,7 +66,7 @@ import { BiDotsHorizontalRounded, BiTrash, BiHide } from 'react-icons/bi';
 import { BsReplyFill, BsStarFill, BsHandThumbsUp, BsHandThumbsUpFill } from 'react-icons/bs';
 import { MdOutlineChat, MdEdit, MdOutlineCancel } from 'react-icons/md';
 import { FaStore } from 'react-icons/fa';
-import { ImBooks } from 'react-icons/im';
+import { ImBooks, ImInfo } from 'react-icons/im';
 import Comments from "../shared/CurrentlyReadingComments";
 import { useAuth } from '../hooks/useAuth';
 import Cookies from "js-cookie";
@@ -843,34 +843,41 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
               />
               <Box mx={2} w="100%">
                 <Box lineHeight={1.4}>
-                  <Popover isLazy>
-                    <PopoverTrigger>
-                      <Heading 
-                        as="h2" 
-                        size="md" 
-                        me={3} 
-                        noOfLines={1}
-                        _hover={{
-                          cursor: 'pointer'
-                        }}
-                      >
-                        {reading.title}
-                      </Heading>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <PopoverArrow />
-                      <PopoverCloseButton />
-                      <PopoverHeader pe={5} fontWeight="bold">{reading.title}</PopoverHeader>
-                      <PopoverBody>
-                        {reading.description ? (
-                          reading.description
-                        ): (
-                          <GooglePopoverContent title={reading.title} author={reading.author} gBooksApi={gbooksapi} />
-                        )}
-                      </PopoverBody>
-                    </PopoverContent>
-                  </Popover>
-
+                  <Flex gap={1} align="center">
+                    <Heading 
+                      as="h2" 
+                      size="md"
+                      noOfLines={1}
+                      _hover={{
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {reading.title}
+                    </Heading>
+                    <Popover isLazy>
+                      <PopoverTrigger>
+                        <Button 
+                          variant="ghost"
+                          size="xs"
+                          p={0}
+                        >
+                          <ImInfo size={13} color="grey" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <PopoverArrow />
+                        <PopoverCloseButton />
+                        <PopoverHeader pe={5} fontWeight="bold">{reading.title}</PopoverHeader>
+                        <PopoverBody>
+                          {reading.description ? (
+                            reading.description
+                          ): (
+                            <GooglePopoverContent title={reading.title} author={reading.author} gBooksApi={gbooksapi} />
+                          )}
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Popover>
+                  </Flex>
                   <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
                     {reading.author}
                   </Text>

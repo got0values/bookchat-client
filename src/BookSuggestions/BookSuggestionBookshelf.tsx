@@ -52,6 +52,7 @@ import { MdChevronRight } from 'react-icons/md';
 import { BsStarFill } from "react-icons/bs";
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import { FaStore } from 'react-icons/fa';
+import { ImInfo } from "react-icons/im";
 import StarRating from "../shared/StarRating";
 import countryFlagIconsReact from 'country-flag-icons/react/3x2';
 import dayjs from "dayjs";
@@ -1129,33 +1130,41 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                                   alt={book.title}
                                 />
                                 <Box mx={2} w="100%">
-                                  <Popover isLazy>
-                                    <PopoverTrigger>
-                                      <Heading 
-                                        as="h5" 
-                                        size="md"
-                                        me={3}
-                                        noOfLines={1}
-                                        _hover={{
-                                          cursor: 'pointer'
-                                        }}
-                                      >
-                                        {book.title}
-                                      </Heading>
-                                    </PopoverTrigger>
-                                    <PopoverContent>
-                                      <PopoverArrow />
-                                      <PopoverCloseButton />
-                                      <PopoverHeader pe={5} fontWeight="bold">{book.title}</PopoverHeader>
-                                      <PopoverBody>
-                                        {book.description ? (
-                                          book.description
-                                        ): (
-                                          <GooglePopoverContent title={book.title} author={book.author} gBooksApi={gbooksapi} />
-                                        )}
-                                      </PopoverBody>
-                                    </PopoverContent>
-                                  </Popover>
+                                  <Flex gap={1} align="center">
+                                    <Heading 
+                                      as="h5" 
+                                      size="md"
+                                      noOfLines={1}
+                                      _hover={{
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      {book.title}
+                                    </Heading>
+                                    <Popover isLazy>
+                                      <PopoverTrigger>
+                                        <Button 
+                                          variant="ghost"
+                                          size="xs"
+                                          p={0}
+                                        >
+                                          <ImInfo size={13} color="grey" />
+                                        </Button>
+                                      </PopoverTrigger>
+                                      <PopoverContent>
+                                        <PopoverArrow />
+                                        <PopoverCloseButton />
+                                        <PopoverHeader pe={5} fontWeight="bold">{book.title}</PopoverHeader>
+                                        <PopoverBody>
+                                          {book.description ? (
+                                            book.description
+                                          ): (
+                                            <GooglePopoverContent title={book.title} author={book.author} gBooksApi={gbooksapi} />
+                                          )}
+                                        </PopoverBody>
+                                      </PopoverContent>
+                                    </Popover>
+                                  </Flex>
                                   <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
                                     {book.author}
                                   </Text>
