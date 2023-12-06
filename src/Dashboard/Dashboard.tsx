@@ -94,12 +94,14 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             console.log("Not current version, please hard reload")
             caches.keys().then((keyList) => {
               return Promise.all(
-                keyList.map((key) => {
-                  return caches.delete(key);
+                keyList.forEach((key) => {
+                  caches.delete(key);
                 })
               );
             });
-            window.location.reload();
+            setTimeout(()=>{
+              window.location.reload(true);
+            },1000)
           }
         })
     },1000)
