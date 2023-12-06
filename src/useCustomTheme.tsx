@@ -30,8 +30,8 @@ const customTheme = {
   styles: {
     global: {
       body: {
-        // bg: 'gray.100',
-        bg: 'white',
+        bg: 'blackAlpha.50',
+        // bg: 'white',
         _dark: {
           bg: 'blackAlpha.50',
           color: 'whiteAlpha.700',
@@ -66,22 +66,24 @@ const customTheme = {
         bg: 'white',
         p: 2,
         m: '0.25rem!important',
-        boxShadow: "1px 1px 2px 1px black",
-        border: "1px solid black",
-        rounded: "sm",
+        boxShadow: "0px 1px 2px 1px grey",
+        // border: "1px solid black",
+        rounded: "md",
         _dark: {
-          bg: 'blackAlpha.300'
+          bg: 'blackAlpha.300',
+          boxShadow: "1px 1px 2px 1px black"
         }
       },
       '.well-card': {
         padding: 4, 
-        boxShadow: "1px 1px 1px 1px black",
-        border: "1px solid black",
+        boxShadow: "0px 1px 1px 1px grey",
+        // border: "1px solid black",
         m: 1, 
-        rounded: "sm",
+        rounded: "md",
         bg: "white",
         _dark: {
-          bg: 'blackAlpha.300'
+          bg: 'blackAlpha.300',
+          boxShadow: "1px 1px 2px 1px black"
         }
       },
       '.non-well': {
