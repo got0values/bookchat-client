@@ -73,7 +73,7 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
         // onOpenSearchModal();
       })
       .catch((error)=>{
-        setBookResults(null)
+        setBookResults(null) 
         axios
           .get("https://www.googleapis.com/books/v1/volumes?q=" + searchInputRef.current.value + "&key=" + gBooksApi)
           .then((response)=>{
