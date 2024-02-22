@@ -31,24 +31,22 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
   const [apiChoice,setApiChoice] = useState("2");
   const searchInputRef = useRef({} as HTMLInputElement);
   const [bookResults,setBookResults] = useState<any[] | null>(null);
-  const [bookResultsOther,setBookResultsOther] = useState<any[] | null>(null);
   const [bookResultsError,setBookResultsError] = useState("");
   const [bookResultsLoading,setBookResultsLoading] = useState(false)
   async function searchBook() {
     setBookResultsLoading(true)
     await axios
-    .get(apiChoice === "1" ? `https://api2.isbndb.com/books/${searchInputRef.current.value}?page=1&pageSize=10` : `https://openlibrary.org/search.json?q=${searchInputRef.current.value}`,
-    apiChoice === "1" ? {headers: { "Authorization": import.meta.env.VITE_ISBNDB_API_KEY}} : {}
+    .get(apiChoice === "1" ? "https://www.googleapis.com/books/v1/volumes?q=" + searchInputRef.current.value + "&key=" + gBooksApi : `https://openlibrary.org/search.json?q=${searchInputRef.current.value}`, {}
     )
       .then((response)=>{
         if (apiChoice === "1") {
-          if (response.data.books) {
-            if (response.data.books.length > 10) {
-              const slicedResponse = response.data.books;
+          if (response.data.items) {
+            if (response.data.items.length > 10) {
+              const slicedResponse = response.data.items.slice(0,10);
               setBookResults(slicedResponse)
             }
             else {
-              setBookResults(response.data.books)
+              setBookResults(response.data.items)
             }
           }
           else {
@@ -74,17 +72,7 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
       })
       .catch((error)=>{
         setBookResults(null) 
-        axios
-          .get("https://www.googleapis.com/books/v1/volumes?q=" + searchInputRef.current.value + "&key=" + gBooksApi)
-          .then((response)=>{
-            if(response.data.items) {
-              setBookResultsOther(response.data.items)
-            }
-          })
-          .catch((error)=>{
-            setBookResultsError(error.message);
-            console.log(error)
-          })
+        setBookResultsError(error.message);
       })
     setBookResultsLoading(false)
   }
@@ -106,7 +94,6 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
           <Select
             onChange={e=>{
               setBookResults(null)
-              setBookResultsOther(null)
               setApiChoice(e.target.value)
             }}
             variant="filled"
@@ -174,7 +161,7 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
                         h="auto"
                         className="book-image"
                         onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                        src={book.image ? book.image : "https://via.placeholder.com/165x215"}
+                        src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
                         alt="book image"
                         boxShadow="1px 1px 1px 1px darkgrey"
                         _hover={{
@@ -184,70 +171,45 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
                       />
                     </Box>
                     <Box flex="1 1 auto">
-                      <Popover isLazy>
-                        <PopoverTrigger>
-                          <Box
-                            _hover={{
-                              cursor: "pointer"
-                            }}
-                          >
-                            <Heading
-                              as="h4"
-                              size="sm"
-                              noOfLines={1}
-                            >
-                              {book.title}
-                            </Heading>
-                          </Box>
-                        </PopoverTrigger>
-                        {book.synopsis ? (
-                          <PopoverContent>
-                            <PopoverArrow />
-                            <PopoverCloseButton />
-                              <PopoverBody 
-                              _dark={{
-                                bg: "black"
-                              }}
-                                fontSize="sm"
-                              >
-                                {book.synopsis}
-                              </PopoverBody>
-                          </PopoverContent>
-                        ): (
-                          <PopoverContent>
-                            <PopoverArrow />
-                            <PopoverCloseButton />
-                              <PopoverBody 
-                              _dark={{
-                                bg: "black"
-                              }}
-                                fontSize="sm"
-                              >
-                                <GooglePopoverContent title={book.title} author={book.authors?.length ? book.authors[0] : null} gBooksApi={gBooksApi}/>
-                              </PopoverBody>
-                          </PopoverContent>
-                        )}
-                      </Popover>
+                      <Heading
+                        as="h4"
+                        size="sm"
+                        noOfLines={1}
+                      >
+                        {book.volumeInfo.title}
+                      </Heading>
                       <Text fontSize="sm" noOfLines={1}>
-                        {book.authors?.length ? book.authors[0] : null}
+                        {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
                       </Text>
                       <Text fontSize="sm" fontStyle="italic">
-                        {book.date_published ? dayjs(book.date_published).format('YYYY') : null}
+                        {book.volumeInfo.publishedDate ? dayjs(book.volumeInfo.publishedDate).format('YYYY') : null}
                       </Text>
                       <Flex align="center" gap={1}>
+                        {/* <GooglePreviewLink book={book}/> */}
+                        <Button 
+                          as="a"
+                          href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.volumeInfo.title + " " + (book.volumeInfo.authors ? book.volumeInfo.authors[0] : null))}`}
+                          target="blank"
+                          size="xs"
+                          variant="outline"
+                          backgroundColor="white"
+                          color="black"
+                        >
+                          Shop
+                        </Button>
                         <Button 
                           size="xs"
                           data-book={JSON.stringify(book)}
                           onClick={e=>selectCallback({
-                            title: book.title,
-                            google_books_id: null,
-                            author: book?.authors.length ? book.authors[0] : "",
-                            image: document.getElementById(`book-cover-${i}`)!.getAttribute("src"),
-                            isbn: book.isbn ? book.isbn : null,
-                            description: book.synopsis ? book.synopsis : "",
-                            subjects: book.subjects?.length ? book.subjects : null,
-                            page_count: book.pages ? book.pages : null,
-                            published_date: book.date_published ? dayjs(book.date_published).format('YYYY') : ""
+                            google_books_id: book.id,
+                            title: book.volumeInfo.title,
+                            author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : "",
+                            image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
+                            isbn: book.volumeInfo.industryIdentifiers?.length ? book.volumeInfo.industryIdentifiers[0].identifier : null,
+                            description: book.volumeInfo.description,
+                            page_count: book.volumeInfo.pageCount ? book.volumeInfo.pageCount : null,
+                            subjects: null,
+                            published_date: book.volumeInfo.publishedDate ? dayjs(book.volumeInfo.publishedDate).format('YYYY') : null
                           } as any)}
                           backgroundColor="black"
                           color="white"
@@ -347,88 +309,6 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
                 )}
 
                 {i !== bookResults.length - 1 ? (
-                  <Divider/>
-                ): null}
-              </React.Fragment>
-            )
-          }) : (
-            <Text fontStyle="italic" color="red">
-              {bookResultsError ? bookResultsError + ". Please try again later." : null}
-            </Text>
-          )}
-
-          {bookResultsOther ? bookResultsOther.map((book,i)=>{
-            return (
-              <React.Fragment key={i}>
-                <Flex
-                  gap={2}
-                >
-                  <Box flex="1 1 auto" maxW="65px">
-                    <Image
-                      maxW="100%" 
-                      w="100%"
-                      h="auto"
-                      className="book-image"
-                      onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                      src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
-                      alt="book image"
-                      boxShadow="1px 1px 1px 1px darkgrey"
-                      _hover={{
-                        cursor: "pointer"
-                      }}
-                      id={`book-cover-${i}`}
-                    />
-                  </Box>
-                  <Box flex="1 1 auto">
-                    <Heading
-                      as="h4"
-                      size="sm"
-                      noOfLines={1}
-                    >
-                      {book.volumeInfo.title}
-                    </Heading>
-                    <Text fontSize="sm" noOfLines={1}>
-                      {book.volumeInfo.authors ? book.volumeInfo.authors[0] : null}
-                    </Text>
-                    <Text fontSize="sm" fontStyle="italic">
-                      {book.volumeInfo.publishedDate ? dayjs(book.volumeInfo.publishedDate).format('YYYY') : null}
-                    </Text>
-                    <Flex align="center" gap={1}>
-                      {/* <GooglePreviewLink book={book}/> */}
-                      <Button 
-                        as="a"
-                        href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(book.volumeInfo.title + " " + (book.volumeInfo.authors ? book.volumeInfo.authors[0] : null))}`}
-                        target="blank"
-                        size="xs"
-                        variant="outline"
-                        backgroundColor="white"
-                        color="black"
-                      >
-                        Shop
-                      </Button>
-                      <Button 
-                        size="xs"
-                        data-book={JSON.stringify(book)}
-                        onClick={e=>selectCallback({
-                          google_books_id: book.id,
-                          title: book.volumeInfo.title,
-                          author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : "",
-                          image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
-                          isbn: book.volumeInfo.industryIdentifiers?.length ? book.volumeInfo.industryIdentifiers[0].identifier : null,
-                          description: book.volumeInfo.description,
-                          page_count: book.volumeInfo.pageCount ? book.volumeInfo.pageCount : null,
-                          subjects: null,
-                          published_date: book.volumeInfo.publishedDate ? dayjs(book.volumeInfo.publishedDate).format('YYYY') : null
-                        } as any)}
-                        backgroundColor="black"
-                        color="white"
-                      >
-                        {selectText}
-                      </Button>
-                    </Flex>
-                  </Box>
-                </Flex>
-                {i !== bookResultsOther.length - 1 ? (
                   <Divider/>
                 ): null}
               </React.Fragment>
