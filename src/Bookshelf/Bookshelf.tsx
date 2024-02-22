@@ -62,20 +62,6 @@ import {
   Tab, 
   useColorMode
 } from "@chakra-ui/react";
-import { 
-  Chart as ChartJS, 
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  ArcElement, 
-  Tooltip, 
-  Legend, 
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler, } from 'chart.js';
-import { Doughnut } from 'react-chartjs-2';
 import BooksSearch from "../shared/BooksSearch";
 import GooglePopoverContent from "../shared/GooglePopover.Content";
 import Tbr from "./Tbr";
@@ -83,7 +69,7 @@ import addToTbr from '../shared/addToTbr';
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { MdOutlineChat, MdEdit } from 'react-icons/md';
 import { BiDotsHorizontalRounded, BiTrash, BiPlus, BiHide } from 'react-icons/bi';
-import { BsStarFill, BsStar, BsStarHalf } from "react-icons/bs";
+import { BsStarFill } from "react-icons/bs";
 import { FaShoppingCart } from 'react-icons/fa';
 import { ImInfo } from 'react-icons/im';
 import { LiaFileImportSolid } from 'react-icons/lia'
@@ -93,7 +79,6 @@ import utc from "dayjs/plugin/utc";
 import Cookies from "js-cookie";
 import axios from "axios";
 import StarRating from "../shared/StarRating";
-import googleWatermark from "/src/assets/google_watermark.gif";
 
 
 export default function Bookshelf({server, gbooksapi}: {server: string; gbooksapi: string;}) {
@@ -102,20 +87,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   const {colorMode} = useColorMode();
   dayjs.extend(utc);
   const queryClient = useQueryClient();
-
-  ChartJS.register(
-    BarElement,
-    CategoryScale,
-    LinearScale,
-    Title, 
-    RadialLinearScale,
-    PointElement,
-    LineElement,
-    Filler,
-    ArcElement, 
-    Tooltip, 
-    Legend
-  );
 
   const [bookshelfBooks,setBookshelfBooks] = useState([] as BookshelfBook[])
   const [bookshelfBooksOriginal,setBookshelfBooksOriginal] = useState([] as BookshelfBook[])
@@ -164,83 +135,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
   useEffect(()=>{
     getBookshelf();
   },[take])
-
-  const [showAnalyze,setShowAnalyze] = useState(false)
-  const [analyzeIsLoading,setAnalyzeIsLoading] = useState(false)
-  const [allSubjectsCounts,setAllSubjectsCounts] = useState<any[]>([]);
-  const [subjectsCountsSum,setSubjectsCountsSum] = useState(0);
-  const [anaylyzeError,setAnalyzeError] = useState("");
-  async function analyzeBookshelf() {
-    setAnalyzeError("")
-    setAnalyzeIsLoading(true)
-    const tokenCookie: string | null = Cookies.get().token;
-    const allBookshelfBooks = await axios
-      .get(server + "/api/bookshelf",
-      {
-        headers: {
-          Authorization: tokenCookie
-        },
-        params: {
-          take: 5000
-        }
-      })
-      .then((response)=>{
-        return response.data.message.BookshelfBook
-      })
-      .catch((response)=>{
-        console.log(response)
-        setAnalyzeError("Error!")
-      })
-    const allSubjects: any[] = []
-    async function pushSubjects() {
-      for (let i = 0; i < allBookshelfBooks.length; i++) {
-        await axios
-          .get(`https://api2.isbndb.com/books/${encodeURIComponent(allBookshelfBooks[i].title + " " + allBookshelfBooks[i].author)}?page=1&pageSize=1`,{headers: {Authorization: import.meta.env.VITE_ISBNDB_API_KEY}})
-          .then((response)=>{
-            if (response.data.books.length && response.data.books[0].subjects?.length) {
-              response.data.books[0].subjects?.forEach((s: any)=>allSubjects.push(s))
-            }
-          })
-          .catch((response)=>{
-            console.log(response)
-            setAnalyzeError("Error!")
-          })
-      }
-    }
-    await pushSubjects()
-    if (allSubjects.length) {
-      setAllSubjectsCounts(prev=>{
-        let subjectsCountObject:any = {};
-        allSubjects.forEach((s:any)=>{
-          if (subjectsCountObject[s]) {
-            subjectsCountObject[s] += 1;
-          }
-          else {
-            subjectsCountObject[s] = 1
-          }
-        })
-        let subjectsCount = []
-        for (const key in subjectsCountObject) {
-          subjectsCount.push({
-            name: key,
-            count: subjectsCountObject[key],
-            color: `rgb(${randomBetween(10,240)},${randomBetween(10,240)},${randomBetween(10,240)})`
-          })
-        }
-        setSubjectsCountsSum(subjectsCount.reduce((a,b)=>a + b["count"],0))
-        return subjectsCount
-      })
-    }
-    else {
-      setAnalyzeError("No subjects")
-    }
-
-    setShowAnalyze(true)
-    setAnalyzeIsLoading(false)
-  }
-  function randomBetween(min: number, max: number) {
-    return Math.floor(Math.random() * (max - min + 1) + min)
-  }
 
   const createCategoryInputRef = useRef<HTMLInputElement>({} as HTMLInputElement);
   const createCategoryButtonRef = useRef<HTMLButtonElement>({} as HTMLButtonElement);
@@ -1844,22 +1738,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           <Heading as="h2" size="md">
                             Bookshelf
                           </Heading>
-                          <Button
-                            size="xs"
-                            variant="outline"
-                            borderColor="black"
-                            bg="white"
-                            color="black"
-                            _dark={{
-                              bg: "gray.400"
-                            }}
-                            onClick={e=>{
-                              showAnalyze ? setShowAnalyze(false) : analyzeBookshelf()
-                            }}
-                            isLoading={analyzeIsLoading}
-                          >
-                            {showAnalyze ? "Hide Analyze" : "Analyze"}
-                          </Button>
                         </Flex>
                         <Flex align="center" gap={1}>
                           <Button
@@ -1904,85 +1782,6 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         </Flex>
                       </Flex>
                       <></>
-                      {showAnalyze && allSubjectsCounts.length ? (
-                        <Flex
-                          justify="space-between"
-                          my={5}
-                        >
-                          <Flex 
-                            align="center"
-                            justify="space-between"
-                            columnGap={20}
-                            rowGap={5}
-                            wrap="wrap"
-                            w="100%"
-                            px={3}
-                          >
-                            <Flex 
-                              flex="1 1 auto" 
-                              direction="column" 
-                              gap={1} 
-                              wrap="wrap"
-                            >
-                              {allSubjectsCounts.map((s,i)=>{
-                                return (
-                                  <Flex
-                                    key={i}
-                                    fontSize="sm"
-                                    lineHeight={1}
-                                    gap={3}
-                                    justify="space-between"
-                                  >
-                                    <Box
-                                      noOfLines={1}
-                                      maxW="200px"
-                                      color={s.color}
-                                      textShadow="0px 0px 0px black"
-                                      _dark={{
-                                        textShadow: "0px 0px 0px white"
-                                      }}
-                                    >
-                                      {s.name}:
-                                    </Box>
-                                    <Box>
-                                      {((s.count / subjectsCountsSum) * 100).toFixed(2)}%
-                                    </Box>
-                                  </Flex>
-                                )
-                              })}
-                            </Flex>
-                            <Box flex="1 1 auto">
-                              <Doughnut
-                                options={{
-                                  responsive: true,
-                                  plugins: {
-                                    legend: {
-                                      display: false
-                                    }
-                                  }
-                                }} 
-                                data={{
-                                  labels: allSubjectsCounts.map(asc=>asc.name),
-                                  datasets:[
-                                      {
-                                        // label: "Subjects/genres",
-                                        data: allSubjectsCounts.map((asc)=>asc.count),
-                                        borderColor: `rgba(120, 146, 180, 1)`,
-                                        borderWidth: 1,
-                                        backgroundColor: allSubjectsCounts.map((asc)=>asc.color)
-                                      }
-                                    ]
-                                }}
-                              />
-                            </Box>
-                          </Flex>
-                        </Flex>
-                      ): null}
-                      {showAnalyze && anaylyzeError ? (
-                        <Text p={2} color="tomato" fontWeight="bold">
-                          {anaylyzeError}
-                        </Text>
-                      ): null}
                       {bookToAdd && (
                         <Stack className="well-card" position="relative">
                           <CloseButton
