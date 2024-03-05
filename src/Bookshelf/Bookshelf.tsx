@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BookshelfCategory, BookshelfBook, SelectedBook, SuggestionPollBookType } from "../types/types";
+import { BookshelfCategory, BookshelfBook, SelectedBook, SuggestionPollBookType, RecommendationType } from "../types/types";
 import { 
   Box,
   Tag,
@@ -69,7 +69,7 @@ import addToTbr from '../shared/addToTbr';
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 import { MdOutlineChat, MdEdit } from 'react-icons/md';
 import { BiDotsHorizontalRounded, BiTrash, BiPlus, BiHide } from 'react-icons/bi';
-import { BsStarFill } from "react-icons/bs";
+import { BsStarFill, BsStars } from "react-icons/bs";
 import { FaShoppingCart } from 'react-icons/fa';
 import { ImInfo } from 'react-icons/im';
 import { LiaFileImportSolid } from 'react-icons/lia'
@@ -1201,6 +1201,75 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
     clearBookshelfMutation.mutate()
   }
 
+  const { 
+    isOpen: isOpenRecommendationsModal, 
+    onOpen: onOpenRecommendationsModal, 
+    onClose: onCloseRecommendationsModal 
+  } = useDisclosure()
+
+  function openRecommendationsModal() {
+    if (bookshelfBooks.length < 1) {
+      setRecommendationsError("Please add books to your bookshelf")
+    }
+    else {
+      setRecommendationsError("")
+    }
+    onOpenRecommendationsModal();
+  }
+
+  const [checkedRecBases,setCheckedRecBases] = useState<string[]>([]);
+  function filterRecommendationsBase(checkedBases: string[]) {
+    setCheckedRecBases(checkedBases)
+  }
+
+  const [recommendations,setRecommendations] = useState<RecommendationType[]>([]);
+  const [recommendationsError,setRecommendationsError] = useState<string>("");
+  const [recommendationsIsLoading,setRecommendationsIsLoading] = useState(false);
+  async function getRecommendations() {
+    if (checkedRecBases.length < 1) {
+      setRecommendationsError("Please select books.")
+      return;
+    }
+    setRecommendationsError("");
+    setRecommendationsIsLoading(true);
+    setRecommendations([]);
+    let tokenCookie: string | null = Cookies.get().token;
+    await axios
+      .post(server + "/api/aitest", 
+        {
+          booksArray: checkedRecBases
+        },
+        {headers: {
+          'authorization': tokenCookie
+        }}
+      )
+      .then((response)=>{
+        const recommendationsResponse = JSON.parse(response.data.message).recommendations;
+        recommendationsResponse.forEach(async (rr: any)=>{
+          await axios
+          .get("https://www.googleapis.com/books/v1/volumes?q=" + rr.title + " " + rr.author + "&key=" + gbooksapi)
+          .then((response)=> {
+            var gbook = response.data.items[0].volumeInfo;
+            setRecommendations((r)=>(
+              [...r,
+                {
+                  title: gbook.title, 
+                  author: gbook.authors ? gbook.authors[0] : "",
+                  image: gbook.imageLinks?.thumbnail ? gbook.imageLinks.thumbnail : "",
+                  description: gbook.description ? gbook.description : "",
+                  publishedDate: gbook.publishedDate ? gbook.publishedDate : ""
+                }
+              ]
+            ))
+          })
+        })
+      })
+      .catch(({response})=>{
+        console.log(response)
+      })
+    setCheckedRecBases([])
+    setRecommendationsIsLoading(false);
+  }
 
   const { isLoading, isError, data, error } = useQuery({ 
     queryKey: ['bookshelfKey'], 
@@ -1738,6 +1807,19 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           <Heading as="h2" size="md">
                             Bookshelf
                           </Heading>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            borderColor="purple"
+                            color="purple"
+                            _dark={{
+                              bg: "gray.400"
+                            }}
+                            isLoading={recommendationsIsLoading}
+                            onClick={e=> openRecommendationsModal()}
+                          >
+                            <BsStars size={15}/> AI Recommendations
+                          </Button>
                         </Flex>
                         <Flex align="center" gap={1}>
                           <Button
@@ -2672,7 +2754,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
           <ModalOverlay />
           <ModalContent rounded="sm" boxShadow="1px 1px 2px 1px black">
             <ModalHeader>
-              Import Goodreads Library (beta)
+              Import Goodreads Library
             </ModalHeader>
             <ModalCloseButton />
               <ModalBody>
@@ -3004,6 +3086,156 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                   </Button>
                 </Flex>
               </ModalFooter>
+          </ModalContent>
+        </Modal>
+
+        <Modal 
+          isOpen={isOpenRecommendationsModal} 
+          onClose={onCloseRecommendationsModal}
+          isCentered
+        >
+          <ModalOverlay />
+          <ModalContent maxH="80vh" rounded="sm" boxShadow="1px 1px 2px 1px black">
+            <ModalHeader>
+              Recommendations
+            </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody minH="150px" h="auto" maxH="75vh" overflow="auto">
+              {recommendationsIsLoading && (
+                <Flex justifyContent="center">
+                  <Spinner size="lg"/>
+                </Flex>
+              )}
+              {recommendations.length > 0 ? (
+                <Flex gap={1} wrap="wrap">
+                  {recommendations.map((r,i)=>{
+                    return (
+                      <Flex gap={2} key={i} w="100%" className="well">
+                        <Box maxW="65px">
+                          <Image
+                            maxW="100%" 
+                            w="100%"
+                            h="auto"
+                            className="book-image"
+                            onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                            src={r.image ? r.image : "https://via.placeholder.com/165x215"}
+                            alt="book image"
+                            boxShadow="1px 1px 1px 1px darkgrey"
+                            _hover={{
+                              cursor: "pointer"
+                            }}
+                            id={`book-cover-${i}`}
+                          />
+                        </Box>
+                        <Box flex="1 1 auto">
+                          <Popover isLazy>
+                            <PopoverTrigger>
+                              <Box
+                                _hover={{
+                                  cursor: "pointer"
+                                }}
+                              >
+                                <Heading
+                                  as="h4"
+                                  size="sm"
+                                  noOfLines={1}
+                                >
+                                  {r.title}
+                                </Heading>
+                              </Box>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                              <PopoverArrow />
+                              <PopoverCloseButton />
+                              <PopoverHeader>
+                                {r.title}
+                              </PopoverHeader>
+                              <PopoverBody 
+                              _dark={{
+                                bg: "black"
+                              }}
+                                fontSize="sm"
+                              >
+                                {r.description}
+                              </PopoverBody>
+                            </PopoverContent>
+                          </Popover>
+                          <Text fontSize="sm" noOfLines={1}>
+                            {r.author ? r.author : null}
+                          </Text>
+                          <Text fontSize="sm" fontStyle="italic">
+                            {r.publishedDate ? dayjs(r.publishedDate).format('YYYY') : null}
+                          </Text>
+                          <Flex align="center" gap={1}>
+                            {/* <GooglePreviewLink book={book}/> */}
+                            <Button 
+                              as="a"
+                              href={`https://bookshop.org/books?affiliate=95292&keywords=${encodeURIComponent(r.title + " " + (r.author ? r.author : null))}`}
+                              target="blank"
+                              size="xs"
+                              variant="outline"
+                              backgroundColor="white"
+                              color="black"
+                            >
+                              Shop
+                            </Button>
+                          </Flex>
+                        </Box>
+                      </Flex>
+                    )
+                  })}
+                </Flex>
+              ) : (
+                bookshelfBooks.length > 0 && !recommendationsIsLoading ? (
+                  <>
+                    <Stack spacing={1}>
+                      <Text fontWeight="bold">
+                        Choose what books to base recommendations on:
+                      </Text>
+                      <CheckboxGroup
+                        onChange={(e)=>filterRecommendationsBase(e as string[])}
+                      >
+                        {bookshelfBooks.map((bsb,i)=>{
+                          return (
+                            <Checkbox
+                              value={`${bsb.title} by ${bsb.author}`}
+                              id={`rec-base-${i}`}
+                              key={i}
+                            >
+                              <i>{bsb.title}</i> by {bsb.author}
+                            </Checkbox>
+                          )
+                        })}
+                      </CheckboxGroup>
+                    </Stack>
+                  </>
+                ) : (
+                  <Box></Box>
+                )
+              )}
+              {recommendationsError ? (
+                <Box p={2} color="red">
+                  {recommendationsError}
+                </Box>
+              ) : null}
+            </ModalBody>
+            <ModalFooter flexDirection="column">
+              {recommendations.length > 0 ? (
+                !recommendationsError &&
+                <Button
+                  onClick={()=>setRecommendations([])}
+                >
+                  Clear
+                </Button>
+              ) : (
+                bookshelfBooks.length > 0 &&
+                <Button
+                  onClick={()=>getRecommendations()}
+                >
+                  Submit
+                </Button>
+              )}
+            </ModalFooter>
           </ModalContent>
         </Modal>
 

@@ -521,3 +521,11 @@ export interface TbrBook {
   published_date: string;
   created_on: string;
 }
+
+export interface RecommendationType {
+  title: string;
+  author: string;
+  description: string;
+  image: string;
+  publishedDate: string;
+}
