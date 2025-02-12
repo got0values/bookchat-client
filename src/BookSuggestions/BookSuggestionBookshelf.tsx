@@ -534,7 +534,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                           pt={2} 
                           mb={1}
                           className="book-image"
-                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                          onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                           src={pollBookOne.image}
                           boxShadow="1px 1px 1px 1px darkgrey"
                           alt={pollBookOne.title}
@@ -609,7 +609,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                           pt={2} 
                           mb={1}
                           className="book-image"
-                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                          onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                           src={pollBookTwo.image}
                           boxShadow="1px 1px 1px 1px darkgrey"
                           alt={pollBookTwo.title}
@@ -684,7 +684,7 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                           pt={2} 
                           mb={1}
                           className="book-image"
-                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                          onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                           src={pollBookThree.image}
                           boxShadow="1px 1px 1px 1px darkgrey"
                           alt={pollBookThree.title}
@@ -1122,8 +1122,8 @@ export default function BookSuggestionBookshelf({server,gbooksapi}: {server: str
                             >
                               <Flex>
                                 <Image
-                                  src={book.image ? book.image : "https://via.placeholder.com/165x215"}
-                                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                  src={book.image ? book.image : "https://placehold.co/165x215"}
+                                  onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                                   height="100%"
                                   maxH="145px"
                                   boxShadow="1px 1px 1px 1px darkgrey"

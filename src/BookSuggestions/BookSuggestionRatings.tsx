@@ -88,8 +88,8 @@ export default function BookSuggestionRatings({server}: {server: string}) {
                   </Flex>
                   <Flex gap={2} mb={2}>
                     <Image
-                      src={suggestion.image ? suggestion.image : "https://via.placeholder.com/165x215"}
-                      onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                      src={suggestion.image ? suggestion.image : "https://placehold.co/165x215"}
+                      onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                       maxH="60px"
                       boxShadow="1px 1px 1px 1px darkgrey"
                       alt={`${suggestion.title} image`}

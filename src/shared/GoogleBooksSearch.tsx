@@ -117,8 +117,8 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
                         w="100%"
                         h="auto"
                         className="book-image"
-                        onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                        src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
+                        onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
+                        src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://placehold.co/165x215"}
                         alt="book image"
                         boxShadow="1px 1px 1px 1px darkgrey"
                         _hover={{
@@ -171,7 +171,7 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
                           google_books_id: book.id,
                           title: book.volumeInfo.title,
                           author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : "",
-                          image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
+                          image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://placehold.co/165x215",
                           isbn: book.volumeInfo.industryIdentifiers?.length ? book.volumeInfo.industryIdentifiers[0].identifier : null,
                           description: book.volumeInfo.description,
                           page_count: book.volumeInfo.pageCount ? book.volumeInfo.pageCount : null,
@@ -210,8 +210,8 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
                         w="100%"
                         h="auto"
                         className="book-image"
-                        onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                        src={book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn[0] || book.isbn.length > 1 ? book.isbn[1] : "1"}-M.jpg?default=false` : "https://via.placeholder.com/165x215"}
+                        onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
+                        src={book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn[0] || book.isbn.length > 1 ? book.isbn[1] : "1"}-M.jpg?default=false` : "https://placehold.co/165x215"}
                         alt="book image"
                         boxShadow="1px 1px 1px 1px darkgrey"
                         _hover={{
@@ -261,7 +261,7 @@ export default function GoogleBooksSearch({selectText,selectCallback,gBooksApi}:
                           title: book.title,
                           google_books_id: null,
                           author: book.author_name ? book.author_name[0] : "",
-                          image: book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn[0] || book.isbn.length >= 2 ? book.isbn[1] : "1"}-M.jpg?default=false` : "https://via.placeholder.com/165x215",
+                          image: book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn[0] || book.isbn.length >= 2 ? book.isbn[1] : "1"}-M.jpg?default=false` : "https://placehold.co/165x215",
                           isbn: book.isbn ? book.isbn[0] : book.isbn.length > 1 ? book.isbn[1] : "",
                           description: "",
                           page_count: book.number_of_pages_median,

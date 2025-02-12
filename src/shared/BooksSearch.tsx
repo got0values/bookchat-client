@@ -160,8 +160,8 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
                         w="100%"
                         h="auto"
                         className="book-image"
-                        onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                        src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
+                        onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
+                        src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://placehold.co/165x215"}
                         alt="book image"
                         boxShadow="1px 1px 1px 1px darkgrey"
                         _hover={{
@@ -204,7 +204,7 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
                             google_books_id: book.id,
                             title: book.volumeInfo.title,
                             author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : "",
-                            image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
+                            image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://placehold.co/165x215",
                             isbn: book.volumeInfo.industryIdentifiers?.length ? book.volumeInfo.industryIdentifiers[0].identifier : null,
                             description: book.volumeInfo.description,
                             page_count: book.volumeInfo.pageCount ? book.volumeInfo.pageCount : null,
@@ -229,14 +229,14 @@ export default function BooksSearch({selectText,selectCallback,gBooksApi}: Books
                         w="100%"
                         h="auto"
                         className="book-image"
-                        onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                        onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                         src={book.cover_i ? (
                           `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg?default=false`
                         ) : (
                           book.lccn ? (
                             `https://covers.openlibrary.org/b/lccn/${book.lccn[0]}-M.jpg?default=false`
                           ) : (
-                            "https://via.placeholder.com/165x215"
+                            "https://placehold.co/165x215"
                           )
                         )}
                         alt="book image"

@@ -835,8 +835,8 @@ export default function Dashboard({server,gbooksapi}: DashboardProps) {
             ): null}
             <Flex>
               <ChakraImage 
-                src={reading.image ? reading.image : "https://via.placeholder.com/165x215"}
-                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                src={reading.image ? reading.image : "https://placehold.co/165x215"}
+                onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                 maxH="150px"
                 boxShadow="1px 1px 1px 1px darkgrey"
                 alt={`${reading.title} image`}

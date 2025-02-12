@@ -886,7 +886,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                         bookResult.lccn ? (
                           `https://covers.openlibrary.org/b/lccn/${bookResult.lccn[0]}-M.jpg?default=false`
                         ) : (
-                          "https://via.placeholder.com/165x215"
+                          "https://placehold.co/165x215"
                         )
                       ),
                       isbn: isbn,
@@ -930,7 +930,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           bookResult.lccn ? (
                             `https://covers.openlibrary.org/b/lccn/${bookResult.lccn[0]}-M.jpg?default=false`
                           ) : (
-                            "https://via.placeholder.com/165x215"
+                            "https://placehold.co/165x215"
                           )
                         ),
                         title: title1,
@@ -1466,7 +1466,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                           pt={2} 
                                           mb={1}
                                           className="book-image"
-                                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                          onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                                           src={pollBookOne.image}
                                           boxShadow="1px 1px 1px 1px darkgrey"
                                           alt={pollBookOne.title}
@@ -1499,7 +1499,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                             pt={2} 
                                             mb={1}
                                             className="book-image"
-                                            onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                            onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                                             src={pollBookTwo.image}
                                             boxShadow="1px 1px 1px 1px darkgrey"
                                             alt={pollBookTwo.title}
@@ -1532,7 +1532,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                             pt={2} 
                                             mb={1}
                                             className="book-image"
-                                            onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                            onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                                             src={pollBookThree.image}
                                             boxShadow="1px 1px 1px 1px darkgrey"
                                             alt={pollBookThree.title}
@@ -1887,7 +1887,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           <Flex>
                             <Image
                               src={bookToAdd.image}
-                              onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                              onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                               maxH="125px"
                               // minW="60px"
                               boxShadow="1px 1px 1px 1px darkgrey"
@@ -1895,7 +1895,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             />
                             <Input
                               type="hidden"
-                              defaultValue={bookToAdd.image ? bookToAdd.image : "https://via.placeholder.com/165x215"}
+                              defaultValue={bookToAdd.image ? bookToAdd.image : "https://placehold.co/165x215"}
                               ref={imageRef}
                             />
                             <Box mx={2} w="100%">
@@ -2272,7 +2272,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                       src={book.image}
                                       maxH="100px"
                                       // minW="60px"
-                                      onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                      onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                                       boxShadow="1px 1px 1px 1px darkgrey"
                                       alt={book.title}
                                     />
@@ -2882,14 +2882,14 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                                   w="100%"
                                   h="auto"
                                   className="book-image"
-                                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                  onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                                   src={book.cover_i ? (
                                     `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg?default=false`
                                   ) : (
                                     book.lccn ? (
                                       `https://covers.openlibrary.org/b/lccn/${book.lccn[0]}-M.jpg?default=false`
                                     ) : (
-                                      "https://via.placeholder.com/165x215"
+                                      "https://placehold.co/165x215"
                                     )
                                   )}
                                   alt="book image"
@@ -2975,7 +2975,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                           pt={2} 
                           mb={1}
                           className="book-image"
-                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                          onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                           src={pollBookOne.image}
                           boxShadow="1px 1px 1px 1px darkgrey"
                           alt={pollBookOne.title}
@@ -3008,7 +3008,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             pt={2} 
                             mb={1}
                             className="book-image"
-                            onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                            onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                             src={pollBookTwo.image}
                             boxShadow="1px 1px 1px 1px darkgrey"
                             alt={pollBookTwo.title}
@@ -3041,7 +3041,7 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             pt={2} 
                             mb={1}
                             className="book-image"
-                            onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                            onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                             src={pollBookThree.image}
                             boxShadow="1px 1px 1px 1px darkgrey"
                             alt={pollBookThree.title}
@@ -3117,8 +3117,8 @@ export default function Bookshelf({server, gbooksapi}: {server: string; gbooksap
                             w="100%"
                             h="auto"
                             className="book-image"
-                            onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                            src={r.image ? r.image : "https://via.placeholder.com/165x215"}
+                            onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
+                            src={r.image ? r.image : "https://placehold.co/165x215"}
                             alt="book image"
                             boxShadow="1px 1px 1px 1px darkgrey"
                             _hover={{

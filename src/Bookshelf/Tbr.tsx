@@ -296,7 +296,7 @@ export default function Tbr({server, gbooksapi}: {server: string; gbooksapi: str
               <Flex>
                 <Image
                   src={tbrToAdd.image}
-                  onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                  onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                   maxH="125px"
                   // minW="60px"
                   boxShadow="1px 1px 1px 1px darkgrey"
@@ -304,7 +304,7 @@ export default function Tbr({server, gbooksapi}: {server: string; gbooksapi: str
                 />
                 <Input
                   type="hidden"
-                  defaultValue={tbrToAdd.image ? tbrToAdd.image : "https://via.placeholder.com/165x215"}
+                  defaultValue={tbrToAdd.image ? tbrToAdd.image : "https://placehold.co/165x215"}
                   ref={imageRef}
                 />
                 <Box mx={2} w="100%">
@@ -392,7 +392,7 @@ export default function Tbr({server, gbooksapi}: {server: string; gbooksapi: str
                     src={book.image}
                     maxH="150px"
                     // minW="60px"
-                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                    onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                     boxShadow="1px 1px 1px 1px darkgrey"
                     alt={book.title}
                   />

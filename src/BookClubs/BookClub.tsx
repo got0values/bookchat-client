@@ -1231,7 +1231,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 h="auto"
                                 m={1}
                                 className="book-image"
-                                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                                 src={currentBook?.image}
                                 boxShadow="1px 1px 1px 1px darkgrey"
                                 alt={currentBook?.title}
@@ -1558,7 +1558,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                     pt={2} 
                                     mb={1}
                                     className="book-image"
-                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                                     src={pollBookOneReceived.image}
                                     boxShadow="1px 1px 1px 1px darkgrey"
                                     alt={pollBookOneReceived.title}
@@ -1634,7 +1634,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                     pt={2} 
                                     mb={1}
                                     className="book-image"
-                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                                     src={pollBookTwoReceived.image}
                                     boxShadow="1px 1px 1px 1px darkgrey"
                                     alt={pollBookTwoReceived.title}
@@ -1709,7 +1709,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                     pt={2} 
                                     mb={1}
                                     className="book-image"
-                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                    onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                                     src={pollBookThreeReceived.image}
                                     boxShadow="1px 1px 1px 1px darkgrey"
                                     alt={pollBookThreeReceived.title}
@@ -2046,14 +2046,14 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                                 w="100%"
                                 h="auto"
                                 className="book-image"
-                                onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                                onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                                 src={book.cover_i ? (
                                   `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg?default=false`
                                 ) : (
                                   book.lccn ? (
                                     `https://covers.openlibrary.org/b/lccn/${book.lccn[0]}-M.jpg?default=false`
                                   ) : (
-                                    "https://via.placeholder.com/165x215"
+                                    "https://placehold.co/165x215"
                                   )
                                 )}
                                 alt="book image"
@@ -2142,7 +2142,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                         pt={2} 
                         mb={1}
                         className="book-image"
-                        onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                        onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                         src={pollBookOne.image}
                         boxShadow="1px 1px 1px 1px darkgrey"
                         alt={pollBookOne.title}
@@ -2175,7 +2175,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                           pt={2} 
                           mb={1}
                           className="book-image"
-                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                          onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                           src={pollBookTwo.image}
                           boxShadow="1px 1px 1px 1px darkgrey"
                           alt={pollBookTwo.title}
@@ -2208,7 +2208,7 @@ export default function BookClub({server,gbooksapi}: {server: string,gbooksapi: 
                           pt={2} 
                           mb={1}
                           className="book-image"
-                          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                          onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                           src={pollBookThree.image}
                           boxShadow="1px 1px 1px 1px darkgrey"
                           alt={pollBookThree.title}

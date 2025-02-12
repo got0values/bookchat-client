@@ -1353,8 +1353,8 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                           <Image
                             // maxHeight="100px"
                             className="book-image"
-                            onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
-                            src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215"}
+                            onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
+                            src={book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://placehold.co/165x215"}
                             boxShadow="1px 1px 1px 1px darkgrey"
                             mb={1}
                           />
@@ -1408,7 +1408,7 @@ export default function TopNav({server,onLogout,gbooksapi}: TopNavProps) {
                               <Button
                                 size="xs"
                                 onClick={e=>addToTbr({
-                                  image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://via.placeholder.com/165x215",
+                                  image: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.smallThumbnail : "https://placehold.co/165x215",
                                   title: book.volumeInfo.title,
                                   author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : null,
                                   description: book.volumeInfo.description,

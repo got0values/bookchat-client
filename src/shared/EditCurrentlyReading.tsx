@@ -359,14 +359,14 @@ export default function EditCurrentlyReading({server,selectedBook, setSelectedBo
             <Flex>
               <Box>
                 <Image 
-                  src={selectedBook2.image ? selectedBook2.image : "https://via.placeholder.com/165x215"}
+                  src={selectedBook2.image ? selectedBook2.image : "https://placehold.co/165x215"}
                   maxH="120px"
                   boxShadow="1px 1px 1px 1px darkgrey"
                   alt={selectedBook2.title}
                 />
                 <Input
                   type="hidden"
-                  defaultValue={selectedBook2.image ? selectedBook2.image : "https://via.placeholder.com/165x215"}
+                  defaultValue={selectedBook2.image ? selectedBook2.image : "https://placehold.co/165x215"}
                   ref={imageRef}
                 />
                 {/* <Flex justify="center" mt={1}>

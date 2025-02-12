@@ -7,7 +7,7 @@ import axios from "axios";
 
 export default function BookImage({isbn,id,maxHeight="unset"}: {isbn?: string,id:string, maxHeight?: string}) {
   const RAPIDAPIKEY = import.meta.env.VITE_RAPID_API_KEY;
-  const [bookImageSrc,setBookImageSrc] = useState("https://via.placeholder.com/165x215");
+  const [bookImageSrc,setBookImageSrc] = useState("https://placehold.co/165x215");
   const [bookImgIsLoading,setBookImgIsLoading] = useState(false);
   useEffect(()=>{
     async function getBookImage() {
@@ -25,7 +25,7 @@ export default function BookImage({isbn,id,maxHeight="unset"}: {isbn?: string,id
             setBookImageSrc(response.data.url)
           }
           else {
-            setBookImageSrc("https://via.placeholder.com/165x215")
+            setBookImageSrc("https://placehold.co/165x215")
           }
         })
         .catch((error)=>{
@@ -49,7 +49,7 @@ export default function BookImage({isbn,id,maxHeight="unset"}: {isbn?: string,id
           // w="100%"
           // h="auto"
           className="book-image"
-          onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+          onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
           src={bookImageSrc}
           maxHeight={maxHeight}
           alt="book image"

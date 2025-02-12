@@ -299,7 +299,7 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                     pt={2} 
                     mb={1}
                     className="book-image"
-                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                    onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                     src={bookshelf.BookSuggestionPollBookOne[0].image}
                     boxShadow="1px 1px 1px 1px darkgrey"
                     alt={bookshelf.BookSuggestionPollBookOne[0].title}
@@ -360,7 +360,7 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                     pt={2} 
                     mb={1}
                     className="book-image"
-                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                    onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                     src={bookshelf.BookSuggestionPollBookTwo[0].image}
                     boxShadow="1px 1px 1px 1px darkgrey"
                     alt={bookshelf.BookSuggestionPollBookTwo[0].title}
@@ -421,7 +421,7 @@ export function BookSuggestionsForMe({server}: {server: string;}) {
                     pt={2} 
                     mb={1}
                     className="book-image"
-                    onError={(e)=>(e.target as HTMLImageElement).src = "https://via.placeholder.com/165x215"}
+                    onError={(e)=>(e.target as HTMLImageElement).src = "https://placehold.co/165x215"}
                     src={bookshelf.BookSuggestionPollBookThree[0].image}
                     boxShadow="1px 1px 1px 1px darkgrey"
                     alt={bookshelf.BookSuggestionPollBookThree[0].title}
