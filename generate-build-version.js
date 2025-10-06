@@ -1,6 +1,6 @@
 import fs from "fs";
-import packageJson from "./package.json" with { type: "json" };
 
+const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 const appVersion = packageJson.version;
 
 const jsonData = {
